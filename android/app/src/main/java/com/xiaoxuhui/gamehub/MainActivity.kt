@@ -182,7 +182,7 @@ class MainActivity : ComponentActivity() {
         })
         val headerRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         column.addView(headerRow, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
-        headerRow.addView(label("合集 v0.1.0  ·  ${bundleCommit.take(10)}", 11f, MUTED, false).apply {
+        headerRow.addView(label("合集 v${installedVersionName()}  ·  ${bundleCommit.take(10)}", 11f, MUTED, false).apply {
             setPadding(dp(6), 0, 0, 0)
         }, LinearLayout.LayoutParams(0, -2, 1f))
         updateLink = label("检查更新", 13f, 0xFF8AB7FF.toInt(), true).apply {
@@ -249,8 +249,7 @@ class MainActivity : ComponentActivity() {
         updateLink.text = "查询中…"
         Thread {
             val result = runCatching {
-                val version = packageManager.getPackageInfo(packageName, 0).versionName ?: "0.1.0"
-                ReleaseClient.latest(version)
+                ReleaseClient.latest(installedVersionName())
             }
             runOnUiThread {
                 if (isDestroyed) return@runOnUiThread
@@ -577,6 +576,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun gameUrl(game: Game) = "https://$ASSET_DOMAIN/assets/games/${game.id}/${game.entry}"
+    private fun installedVersionName() = packageManager.getPackageInfo(packageName, 0).versionName ?: "未知"
     private fun dp(value: Int) = (value * resources.displayMetrics.density + 0.5f).toInt()
     private fun label(text: String, size: Float, color: Int, bold: Boolean) = TextView(this).apply {
         this.text = text

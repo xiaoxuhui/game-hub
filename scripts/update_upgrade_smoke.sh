@@ -16,5 +16,5 @@ adb shell am instrument -w "$package.test/androidx.test.runner.AndroidJUnitRunne
 grep -q 'OK (1 test)' "$evidence/instrumentation.txt"
 
 adb install -r emulator-fixtures/fixture.apk | tee "$evidence/upgrade-install.txt"
-adb shell dumpsys package "$package" | tee "$evidence/package-after-upgrade.txt" | grep -m1 'versionCode=2'
+adb shell dumpsys package "$package" | tee "$evidence/package-after-upgrade.txt" | grep -m1 'versionCode=3'
 adb shell run-as "$package" ls files/upgrade-marker.txt | tee "$evidence/preserved-data.txt"

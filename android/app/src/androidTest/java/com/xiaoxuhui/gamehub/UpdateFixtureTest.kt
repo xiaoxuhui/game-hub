@@ -18,7 +18,7 @@ class UpdateFixtureTest {
         assertTrue("CI must copy the second APK into the app cache", apk.isFile)
         val digest = MessageDigest.getInstance("SHA-256").digest(apk.readBytes())
             .joinToString("") { "%02x".format(it) }
-        val release = ReleaseApk("0.2.0", 42, apk.length(), digest)
+        val release = ReleaseApk("0.2.1", 42, apk.length(), digest)
         val updater = ApkUpdateManager(context)
         updater.verifyArchive(apk, release, apk.length(), digest)
         val intent = updater.installationIntent(apk)
