@@ -43,6 +43,7 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: Nexus 6
+          disk-size: 2048M
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: python3 scripts/emulator_smoke.py android/app/build/outputs/apk/debug/app-debug.apk
       - name: Upload screenshots and UI hierarchy
