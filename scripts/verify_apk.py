@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -21,19 +22,17 @@ def main(apk_path: Path, commit: str) -> None:
         manifest = json.loads(packaged_manifest)
         if manifest["bundleCommit"] != commit:
             raise ValueError("Bundle commit differs from the workflow checkout")
-        expected_sources = {item["id"]: item for item in lock["sources"]}
-        actual_sources = {item["id"]: item for item in manifest["sources"]}
-        if len(actual_sources) != 4 or set(actual_sources) != set(expected_sources):
+        fields = ("id", "displayName", "repository", "revision", "version", "entryPage")
+        expected_sources = [{field: item[field] for field in fields} for item in lock["sources"]]
+        if len(expected_sources) != 4 or manifest["sources"] != expected_sources:
             raise ValueError("Source list differs from the lock")
-        for game_id, source in expected_sources.items():
-            item = actual_sources[game_id]
-            for field in ("revision", "version", "repository", "entryPage"):
-                if item[field] != source[field]:
-                    raise ValueError(f"{game_id}: {field} differs from the lock")
+        source_ids = {item["id"] for item in expected_sources}
         expected_assets = {"assets/bundle-manifest.json"}
         for item in manifest["files"]:
             path = item["path"]
-            if not path.startswith("games/") or ".." in path.split("/"):
+            if not re.fullmatch(r"games/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+", path) or any(
+                part in ("", ".", "..") for part in path.split("/")
+            ):
                 raise ValueError(f"Unsafe manifest path: {path}")
             packaged_path = f"assets/{path}"
             if packaged_path in expected_assets:
@@ -44,10 +43,10 @@ def main(apk_path: Path, commit: str) -> None:
                 raise ValueError(f"APK resource differs from manifest: {path}")
         if set(names) != expected_assets:
             raise ValueError(f"APK has missing or unregistered assets: {sorted(set(names) ^ expected_assets)}")
-        for path in ["games/LICENSE", *(f"games/{game_id}/LICENSE" for game_id in expected_sources)]:
+        for path in ["games/LICENSE", *(f"games/{game_id}/LICENSE" for game_id in source_ids)]:
             if f"assets/{path}" not in expected_assets:
                 raise ValueError(f"Missing bundled license: {path}")
-    print(f"Verified {len(actual_sources)} sources and {len(expected_assets) - 1} APK resources for {commit}")
+    print(f"Verified {len(expected_sources)} sources and {len(expected_assets) - 1} APK resources for {commit}")
 
 
 if __name__ == "__main__":
