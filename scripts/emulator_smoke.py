@@ -38,9 +38,17 @@ def hierarchy() -> ET.Element:
     last_error = "UI hierarchy unavailable"
     for _ in range(10):
         try:
-            dump = adb("shell", "uiautomator", "dump", "/sdcard/game-hub-window.xml").decode(errors="replace")
-            if "null root node" in dump.lower():
-                last_error = dump.strip()
+            adb("shell", "rm", "-f", "/sdcard/game-hub-window.xml")
+            result = subprocess.run(
+                ["adb", "shell", "uiautomator", "dump", "/sdcard/game-hub-window.xml"],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=30,
+            )
+            dump = result.stdout.decode(errors="replace")
+            if "dumped to" not in dump.lower():
+                last_error = dump.strip() or "UIAutomator did not report a successful dump"
             else:
                 raw = adb("exec-out", "cat", "/sdcard/game-hub-window.xml")
                 (EVIDENCE / "last-window.xml").write_bytes(raw)
