@@ -24,7 +24,7 @@ class UpdatePolicyTest {
     @Test fun rejectsMissingOrUntrustedMetadataBeforeDownload() {
         for (raw in listOf(release(name = "other.apk"), release(digest = ""), release(size = 0),
                            release(size = 200L * 1024 * 1024), release(id = -1),
-                           release(tag = "v0.2.0-rc1"), release(prerelease = true))) {
+                           release(tag = "v0.2.0-rc1"), release(tag = "0.2.0"), release(prerelease = true))) {
             assertThrows(IllegalStateException::class.java) { UpdatePolicy.parseLatest(raw, "0.1.0") }
         }
     }

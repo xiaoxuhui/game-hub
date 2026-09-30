@@ -32,6 +32,7 @@ test('compact lobby uses four fixed source icons and clickable cards', () => {
   }
   assert.match(activity, /contentDescription = "\$\{game\.name\}，版本/);
   assert.doesNotMatch(activity, /"进入项目"/);
+  assert.match(activity, /blockNetworkLoads\s*=\s*true/);
 });
 
 test('CI builds pinned sources and checks APK without a publish step', () => {

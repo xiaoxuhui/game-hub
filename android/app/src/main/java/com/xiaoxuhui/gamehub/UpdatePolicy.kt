@@ -8,7 +8,7 @@ internal data class ReleaseApk(val version: String, val assetId: Long, val size:
 
 internal object UpdatePolicy {
     private const val MAX_APK_BYTES = 150L * 1024 * 1024
-    private val versionPattern = Regex("^v?(\\d+)\\.(\\d+)\\.(\\d+)$")
+    private val versionPattern = Regex("^v(\\d+)\\.(\\d+)\\.(\\d+)$")
     private val digestPattern = Regex("^sha256:([a-fA-F0-9]{64})$")
 
     fun parseLatest(raw: String, installedVersion: String): ReleaseApk? {
@@ -16,7 +16,7 @@ internal object UpdatePolicy {
         if (release.optBoolean("draft") || release.optBoolean("prerelease")) error("不是正式发布版本")
         val tag = release.optString("tag_name")
         val latest = versionParts(tag) ?: error("发布版本号格式错误")
-        val current = versionParts(installedVersion) ?: error("当前版本号格式错误")
+        val current = versionParts("v$installedVersion") ?: error("当前版本号格式错误")
         if (compareVersions(latest, current) <= 0) return null
         val assets = release.optJSONArray("assets") ?: error("发布缺少 APK 文件")
         val matches = (0 until assets.length()).map { assets.getJSONObject(it) }

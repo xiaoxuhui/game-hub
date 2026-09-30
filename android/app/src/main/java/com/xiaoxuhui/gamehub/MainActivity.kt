@@ -237,7 +237,8 @@ class MainActivity : ComponentActivity() {
                             .setPositiveButton("确定", null).show()
                     }
                 }.onFailure { error ->
-                    AlertDialog.Builder(this).setMessage(error.message ?: "查询失败，请检查网络")
+                    val message = if (error is java.io.IOException) "网络连接失败，请检查网络后重试" else error.message ?: "查询失败，请稍后重试"
+                    AlertDialog.Builder(this).setMessage(message)
                         .setPositiveButton("确定", null).show()
                 }
             }
@@ -264,6 +265,7 @@ class MainActivity : ComponentActivity() {
                 displayZoomControls = false
                 javaScriptCanOpenWindowsAutomatically = false
                 mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                blockNetworkLoads = true
                 textZoom = 100
             }
             webViewClient = gameClient(game)
