@@ -1,0 +1,5 @@
+Performing Incremental Install
+Performing Streamed Install
+Success
+Starting: Intent { cmp=com.xiaoxuhui.gamehub/.MainActivity }
+[{"game": "conway", "opened": true}, {"game": "eml", "opened": true}, {"game": "light", "opened": true}, {"game": "turing", "opened": true}]

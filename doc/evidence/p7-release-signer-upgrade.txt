@@ -1,4 +1,5 @@
 Android 34 AOSP emulator, Windows WHPX, 2026-10-01
+This file is an execution summary. Non-secret command stdout and a complete smoke-test exit code are in p7-release-signer-raw/.
 Workspace: isolated game-hub checkout at aff2dbb599c059fa589d161088c58fbdac381df1
 Fixture difference in isolated checkout only: versionCode 2 -> 3; versionName 0.2.0 -> 0.2.1
 
@@ -22,5 +23,7 @@ conway opened=true, eml opened=true, light opened=true, turing opened=true; each
 Native lobby screenshot shows four cards in the regular first viewport. 320dp/1.5x font accessibility checks passed.
 Manual update query on private repository showed no_public_release. Screenshot captured.
 Private marker still present after all UI checks.
+
+Independent review of d7184b6 found that results.json alone did not establish that the full smoke test reached its end. The complete rerun is archived as p7-release-signer-raw/emulator-smoke-output.txt with exit_code=0 in emulator-smoke-exit.txt. The script performs the update query and 320dp/1.5x font checks before exiting successfully. Screenshots p7-release-signer-small-font-top.png and p7-release-signer-small-font-bottom.png record the compact layout.
 
 This test proves Android package private-file preservation across an upgrade signed with the release certificate. It does not prove that each game's own WebView save format or import/export survives a version change; those remain separate device checks.

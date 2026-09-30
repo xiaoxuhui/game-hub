@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Game Hub Release, O=xiaoxuhui
+Signer #1 certificate SHA-256 digest: 44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2
+Signer #1 certificate SHA-1 digest: e6b87129d152dc21f392c93716075b02d4508181
+Signer #1 certificate MD5 digest: e05421084f9fc7508d79a6e918d9dc89
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 6e0cdf983fd428f151db6e4f2a40e601265cbada15b0ff7528e8491c97c0dcf9
+Signer #1 public key SHA-1 digest: 6e9f6dacba32aa00758832f54eb088f5549da982
+Signer #1 public key MD5 digest: be7bef912bc579296a39f8e8f5cf1a39
