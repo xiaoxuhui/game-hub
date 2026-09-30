@@ -2,7 +2,7 @@
 
 一个离线 Android 应用，把康威生命游戏、EML 计算台、光学游戏和图灵机实验台装进同一个 APK。Android 原生首页显示四个项目及固定来源版本；游戏网页资源内置，离线可用。首页另有用户手动触发的 GitHub Release 更新查询。
 
-正式发布后可到 [GitHub Releases](https://github.com/xiaoxuhui/game-hub/releases/latest) 下载签名的 `game-hub.apk`；发布前该地址尚不可访问。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。v0.2.0 已通过 Android CI、模拟器四入口与同发行证书升级检查；真机安装、文件操作及真实游戏存档由使用者在发布后验收。发行密钥目前只有同一台电脑上的副本，异机备份仍待完成。
+**v0.2.0 已发布。** 从 [GitHub Releases](https://github.com/xiaoxuhui/game-hub/releases/latest) 下载正式签名的 `game-hub.apk`。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。v0.2.0 已通过 Android CI、模拟器四入口与同发行证书升级检查；真机安装、文件操作及真实游戏存档由使用者在发布后验收。发行密钥目前只有同一台电脑上的副本，异机备份仍待完成。
 
 ![Android 模拟器中的游戏大厅](doc/screenshots/lobby.png)
 
