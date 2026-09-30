@@ -94,7 +94,7 @@ jobs:
           "$AAPT" dump badging "$APK" | grep -E "^package: name='com\\.xiaoxuhui\\.gamehub' versionCode='2' versionName='0\\.2\\.0'([[:space:]]|$)"
           "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" | tee "$RUNNER_TEMP/apk-signature.txt"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: game-hub-debug-apk
           path: |
@@ -104,7 +104,7 @@ jobs:
 
       - name: Upload build diagnostics on failure
         if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: game-hub-build-diagnostics
           path: android/app/build/reports/**

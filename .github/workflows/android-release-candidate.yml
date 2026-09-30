@@ -64,7 +64,7 @@ jobs:
       - name: Record bundled Android runtime dependencies
         working-directory: android
         run: ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --no-daemon > ../release-candidate/releaseRuntimeClasspath.txt
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: game-hub-unsigned-release-candidate
           path: release-candidate/
