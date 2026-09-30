@@ -5,3 +5,14 @@ android/.gradle/
 android/build/
 android/app/build/
 *.log
+*.apk
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+.env
+.env.local
+.idea/
+.vscode/
+android/local.properties

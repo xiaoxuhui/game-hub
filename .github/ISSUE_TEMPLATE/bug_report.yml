@@ -1,0 +1,31 @@
+name: 缺陷报告
+description: 报告游戏大厅或内置项目的可复现问题
+title: "bug: "
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 问题描述
+      description: 请说明实际结果与预期结果。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 请列出项目、入口、操作和是否断网。
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本与设备
+      description: 请填写合集提交或版本、Android 版本、设备型号。
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 截图或日志
+      description: 请移除个人数据和密钥。安全漏洞请按 SECURITY.md 私下报告。

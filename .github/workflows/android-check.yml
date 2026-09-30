@@ -70,9 +70,14 @@ jobs:
           unzip -Z1 "$APK" | grep '^assets/' | sort > "$RUNNER_TEMP/apk-assets.txt"
           for path in \
             assets/bundle-manifest.json \
+            assets/games/LICENSE \
+            assets/games/conway/LICENSE \
             assets/games/conway/index.html \
+            assets/games/eml/LICENSE \
             assets/games/eml/eml-workbench.html \
+            assets/games/light/LICENSE \
             assets/games/light/index.html \
+            assets/games/turing/LICENSE \
             assets/games/turing/index.html \
             assets/games/turing/campaign.html; do
             grep -Fx "$path" "$RUNNER_TEMP/apk-assets.txt"

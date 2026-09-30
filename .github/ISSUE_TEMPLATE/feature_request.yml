@@ -1,0 +1,17 @@
+name: 功能建议
+description: 提议改进游戏大厅的集成能力
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: 使用场景与目标
+      description: 请说明遇到的实际问题及预期行为。
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: 来源与兼容性影响
+      description: 是否涉及某个原项目、存档或 Android 权限？

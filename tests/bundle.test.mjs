@@ -76,12 +76,16 @@ test('failed checkout or missing locked resource preserves the last complete bun
     git(['config', 'user.email', 'test@example.invalid']);
     writeFileSync(join(original, 'package.json'), '{"version":"1.0.0"}');
     writeFileSync(join(original, 'index.html'), '<h1>fixture</h1>');
+    writeFileSync(join(original, 'LICENSE'), 'MIT License\nfixture\n');
+    writeFileSync(join(hub, 'LICENSE'), 'MIT License\nfixture hub\n');
     git(['add', '.']);
     git(['commit', '-m', 'fixture']);
     const sha = git(['rev-parse', 'HEAD']);
     const source = { id: 'fixture', displayName: 'Fixture', repository: original, revision: sha, version: '1.0.0', buildKind: 'static', entryPage: 'index.html', files: ['index.html'] };
     assemble([source], hub, output, 'a'.repeat(40));
-    assert.equal(verifyBundle(output, [source], 'a'.repeat(40)).files.length, 1);
+    assert.equal(verifyBundle(output, [source], 'a'.repeat(40)).files.length, 3);
+    assert.equal(readFileSync(join(output, 'games', 'fixture', 'LICENSE'), 'utf8'), 'MIT License\nfixture\n');
+    assert.equal(readFileSync(join(output, 'games', 'LICENSE'), 'utf8'), 'MIT License\nfixture hub\n');
     assert.throws(() => verifyBundle(output, [source], 'b'.repeat(40)), /does not match/);
     assert.throws(() => verifyBundle(output, [{ ...source, version: '9.9.9' }], 'a'.repeat(40)), /does not match/);
     writeFileSync(join(output, 'games', 'fixture', 'unregistered.js'), 'not in the manifest');

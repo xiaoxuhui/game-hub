@@ -1,0 +1,52 @@
+# 游戏大厅
+
+一个离线 Android 应用，把康威生命游戏、EML 计算台、光学游戏和图灵机实验台装进同一个 APK。Android 原生首页显示四个项目及固定来源版本；网页资源内置，不需要运行时联网。
+
+**当前状态：开发验证中，未发布。** 仓库目前保持私有；没有正式签名、版本标签或 GitHub Release。CI 产出的是调试 APK，仅用于检查和测试。
+
+## 固定来源
+
+四个项目的完整 Git SHA、只读工作树基线与构建方式见 [来源基线](doc/来源基线.md) 和 [`sources.lock.json`](sources.lock.json)。构建脚本按 SHA 重新检出到独立目录，生成的资源清单逐文件记录 SHA-256。原四仓库不参与写入或构建。
+
+| 项目 | 合集入口 | 版本 |
+|---|---|---|
+| 康威生命游戏 | `games/conway/index.html` | 0.17.0 |
+| EML 计算台 | `games/eml/eml-workbench.html` | 1.3.0 |
+| 光学游戏 | `games/light/index.html` | 1.2.0 |
+| 图灵机实验台 | `games/turing/index.html`、`campaign.html` | 0.5.0 |
+
+## 在独立检出中构建
+
+需要 Node.js 24、pnpm 11.19、JDK 17、Android SDK 34，以及可访问四个来源仓库的 Git。以下命令必须在新检出的工作目录执行；不要在四个原游戏仓库或本仓库的开发工作树运行构建。
+
+```bash
+git clone https://github.com/xiaoxuhui/game-hub.git game-hub-build
+cd game-hub-build
+pnpm install --frozen-lockfile
+pnpm run check
+pnpm run bundle
+pnpm run verify:bundle
+pnpm run audit:storage
+cd android
+./gradlew testDebugUnitTest assembleDebug
+```
+
+调试 APK 位于 `android/app/build/outputs/apk/debug/app-debug.apk`。GitHub Actions 的 [Android 检查](.github/workflows/android-check.yml) 运行同类步骤，并上传调试 APK 与摘要；工作流不会发布。资源组装完成前，`audit:storage` 没有输入，需按上述顺序运行。`pnpm run bundle` 只接受干净的独立检出，防止把开发中未提交的文件误打进 APK。
+
+## 使用与数据
+
+在首页进入项目；系统返回键优先返回当前项目的上一网页，随后回到大厅。文件导入使用系统选择器，导出使用系统“创建文档”界面。四个项目共享 WebView origin，固定来源中已知的存储键互不相同，但路径不构成数据隔离。旧版独立 APK 的私有数据不会自动迁移；可迁移的内容见 [迁移说明](doc/迁移说明.md)。
+
+详细需求、架构、阶段审阅及验证结果见 [需求与测试用例](doc/需求与测试用例.md)、[设计文档](doc/设计文档.md)、[实施计划](doc/实施计划.md)、[阶段审阅记录](doc/阶段审阅记录.md)和[测试报告](doc/测试报告.md)。
+
+## 项目结构
+
+- `sources.lock.json`：四个固定来源及运行资源范围。
+- `scripts/`：独立组装、资源摘要验证和已知存储键审计。
+- `android/`：原生大厅、WebView 容器和 Android 单元测试。
+- `tests/`：组装失败保护、Android 外壳配置及导出点击时序测试。
+- `doc/`：需求、设计、基线、实施、迁移、测试与审阅记录。
+
+## 协作与许可
+
+贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及其许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

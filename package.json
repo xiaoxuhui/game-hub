@@ -9,6 +9,9 @@
     "type": "git",
     "url": "git+https://github.com/xiaoxuhui/game-hub.git"
   },
+  "homepage": "https://github.com/xiaoxuhui/game-hub#readme",
+  "bugs": "https://github.com/xiaoxuhui/game-hub/issues",
+  "keywords": ["android", "offline", "game-hub", "webview"],
   "engines": { "node": ">=20.19.0" },
   "packageManager": "pnpm@11.19.0",
   "scripts": {

@@ -114,6 +114,7 @@ function stageSource(source, staging, gamesDir, root = repoRoot) {
   const checkout = join(staging, 'sources', source.id);
   const origin = sourceCloneUrl(source);
   run('git', ['clone', '--quiet', '--no-local', '--no-checkout', origin, checkout], root);
+  run('git', ['config', 'core.autocrlf', 'false'], checkout);
   run('git', ['checkout', '--quiet', '--detach', source.revision], checkout);
   const actual = gitOutput(['rev-parse', 'HEAD'], checkout);
   if (actual !== source.revision) throw new Error(`Revision mismatch for ${source.id}: ${actual}`);
@@ -127,6 +128,11 @@ function stageSource(source, staging, gamesDir, root = repoRoot) {
   }
   const gameDir = join(gamesDir, source.id);
   mkdirSync(gameDir, { recursive: true });
+  const sourceLicense = join(checkout, 'LICENSE');
+  if (!existsSync(sourceLicense) || !/^MIT License\r?\n/.test(readFileSync(sourceLicense, 'utf8'))) {
+    throw new Error(`Missing or unexpected MIT license for ${source.id}`);
+  }
+  copyFileSync(sourceLicense, join(gameDir, 'LICENSE'));
   let files = source.files;
   if (source.buildKind === 'turing') files = listFiles(join(checkout, 'dist')).map((name) => `dist/${name}`);
   for (const item of files) {
@@ -183,6 +189,11 @@ function assemble(sourcesToBuild, root, output, bundleCommit) {
   mkdirSync(join(payload, 'games'), { recursive: true });
   try {
     const sources = sourcesToBuild.map((source) => stageSource(source, staging, join(payload, 'games'), root));
+    const hubLicense = join(root, 'LICENSE');
+    if (!existsSync(hubLicense) || !/^MIT License\r?\n/.test(readFileSync(hubLicense, 'utf8'))) {
+      throw new Error('Missing or unexpected game-hub MIT license');
+    }
+    writeFileSync(join(payload, 'games', 'LICENSE'), readFileSync(hubLicense, 'utf8').replace(/\r\n/g, '\n'));
     const manifest = buildManifest(join(payload, 'games'), sources, bundleCommit);
     writeFileSync(join(payload, 'bundle-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
     if (existsSync(output)) renameSync(output, backup);
