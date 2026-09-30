@@ -27,7 +27,7 @@ test('floating revision, duplicate IDs, and unsafe paths are rejected', () => {
 });
 
 test('HTML references exclude external and fragment links while preserving local assets', () => {
-  const refs = collectReferences('<link href="style.css?v=1"><script src="scripts/app.js"></script><a href="#a"></a><img src="data:image/png;base64,AA"><a href="https://example.org"></a>');
+  const refs = collectReferences('<link href="./style.css?v=1"><script src="scripts/app.js"></script><a href="#a"></a><img src="data:image/png;base64,AA"><a href="https://example.org"></a>');
   assert.deepEqual(refs, ['style.css', 'scripts/app.js']);
 });
 

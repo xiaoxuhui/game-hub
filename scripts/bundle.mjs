@@ -84,7 +84,7 @@ function collectReferences(html) {
   for (const match of html.matchAll(/\b(?:src|href)\s*=\s*["']([^"']+)["']/gi)) {
     const ref = match[1].split(/[?#]/, 1)[0];
     if (!ref || /^(?:data:|https?:|mailto:|tel:|javascript:)/i.test(ref)) continue;
-    refs.push(safeRelative(ref));
+    refs.push(safeRelative(ref.replace(/^\.\//, '')));
   }
   return refs;
 }
