@@ -134,6 +134,13 @@ def assert_card_in_viewport(card: ET.Element, name: str, viewport: tuple[int, in
     if not (max(0, x1) <= left < right <= min(width, x2)
             and max(0, y1) <= top < bottom <= min(height, y2)):
         raise AssertionError(f"Lobby card requires scrolling or is clipped: {name} {card.attrib['bounds']}")
+    density_output = adb("shell", "wm", "density").decode(errors="replace")
+    density_match = re.search(r"(?:Override|Physical) density: (\d+)", density_output.splitlines()[-1])
+    if not density_match:
+        raise AssertionError(f"Unknown emulator density: {density_output}")
+    scale = int(density_match.group(1)) / 160
+    if bottom - top < round(176 * scale) - 2 or right - left < round(120 * scale) - 2:
+        raise AssertionError(f"Lobby card is partially clipped: {name} {card.attrib['bounds']}")
 
 
 def screen_size() -> tuple[int, int]:
@@ -151,12 +158,15 @@ def scroll_down() -> None:
 
 
 def check_compact_accessibility() -> None:
-    adb("shell", "wm", "size", "320x568")
-    adb("shell", "wm", "density", "160")
-    adb("shell", "settings", "put", "system", "font_scale", "1.5")
-    adb("shell", "am", "force-stop", PACKAGE)
-    adb("shell", "am", "start", "-n", f"{PACKAGE}/.MainActivity")
+    original_size = adb("shell", "wm", "size").decode(errors="replace")
+    original_density = adb("shell", "wm", "density").decode(errors="replace")
+    original_font = adb("shell", "settings", "get", "system", "font_scale").decode().strip()
     try:
+        adb("shell", "wm", "size", "320x568")
+        adb("shell", "wm", "density", "160")
+        adb("shell", "settings", "put", "system", "font_scale", "1.5")
+        adb("shell", "am", "force-stop", PACKAGE)
+        adb("shell", "am", "start", "-n", f"{PACKAGE}/.MainActivity")
         for _ in range(12):
             root = hierarchy()
             if is_lobby(root):
@@ -182,9 +192,21 @@ def check_compact_accessibility() -> None:
                 raise AssertionError(f"Compact layout cannot reach card: {name}")
         snapshot("lobby-small-large-font-bottom")
     finally:
-        adb("shell", "wm", "size", "reset")
-        adb("shell", "wm", "density", "reset")
-        adb("shell", "settings", "put", "system", "font_scale", "1.0")
+        size_override = re.search(r"Override size: (\d+x\d+)", original_size)
+        density_override = re.search(r"Override density: (\d+)", original_density)
+        for kind, value in (("size", size_override.group(1) if size_override else "reset"),
+                            ("density", density_override.group(1) if density_override else "reset")):
+            try:
+                adb("shell", "wm", kind, value)
+            except subprocess.CalledProcessError:
+                pass
+        try:
+            if original_font == "null":
+                adb("shell", "settings", "delete", "system", "font_scale")
+            else:
+                adb("shell", "settings", "put", "system", "font_scale", original_font)
+        except subprocess.CalledProcessError:
+            pass
 
 
 def wait_for_webview(game_id: str) -> ET.Element:
@@ -195,7 +217,7 @@ def wait_for_webview(game_id: str) -> ET.Element:
         ):
             if any(error in visible_text(root) for error in ("资源缺失", "加载失败", "已阻止未登记", "内置资源清单不可用")):
                 raise AssertionError("Game displayed the native error state")
-            if any(marker in visible_text(root) for marker in GAME_MARKERS[game_id]):
+            if any(marker in visible_text(root) for marker in GAME_MARKERS[game_id]) or (game_id == "turing" and has_text(root, "图灵机实验台")):
                 return root
         time.sleep(2)
     raise AssertionError(f"No populated WebView appeared for {game_id}")
