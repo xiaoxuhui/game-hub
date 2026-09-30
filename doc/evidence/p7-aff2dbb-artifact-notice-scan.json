@@ -1,0 +1,182 @@
+[
+  {
+    "dep": "androidx.activity:activity:1.9.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.activity:activity-ktx:1.9.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.annotation:annotation:1.6.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.annotation:annotation-experimental:1.4.0",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.annotation:annotation-jvm:1.6.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.arch.core:core-common:2.2.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.arch.core:core-runtime:2.2.0",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.collection:collection:1.0.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.concurrent:concurrent-futures:1.1.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.core:core:1.13.1",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.core:core-ktx:1.13.1",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.interpolator:interpolator:1.0.0",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.lifecycle:lifecycle-common:2.6.2",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.lifecycle:lifecycle-livedata-core:2.6.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.lifecycle:lifecycle-runtime:2.6.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.lifecycle:lifecycle-viewmodel:2.6.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.profileinstaller:profileinstaller:1.3.1",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.savedstate:savedstate:1.2.1",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.savedstate:savedstate-ktx:1.2.1",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.startup:startup-runtime:1.1.1",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.tracing:tracing:1.0.0",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.versionedparcelable:versionedparcelable:1.1.1",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "androidx.webkit:webkit:1.11.0",
+    "pack": "aar",
+    "notices": ""
+  },
+  {
+    "dep": "com.google.guava:listenablefuture:1.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "org.jetbrains:annotations:13.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "org.jetbrains.kotlin:kotlin-stdlib:1.9.24",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "org.jetbrains.kotlin:kotlin-stdlib-common:1.9.24",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4",
+    "pack": "jar",
+    "notices": ""
+  },
+  {
+    "dep": "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4",
+    "pack": "pom",
+    "notices": "metadata only"
+  },
+  {
+    "dep": "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4",
+    "pack": "pom",
+    "notices": "metadata only"
+  },
+  {
+    "dep": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4",
+    "pack": "jar",
+    "notices": ""
+  }
+]
