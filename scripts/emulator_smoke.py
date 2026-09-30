@@ -85,13 +85,12 @@ def find_game_button(root: ET.Element, name: str):
     for label in nodes(root):
         if label.attrib.get("text") != name:
             continue
-        parent = parents.get(label)
-        while parent is not None:
-            matches = [node for node in nodes(parent) if node.attrib.get("text") == "进入项目" and node.attrib.get("clickable") == "true"]
-            for button in matches:
-                if button_visible(button):
-                    return button
-            parent = parents.get(parent)
+        card = parents.get(label)
+        if card is None:
+            continue
+        for button in nodes(card):
+            if button.attrib.get("text") == "进入项目" and button.attrib.get("clickable") == "true" and button_visible(button):
+                return button
     return None
 
 
