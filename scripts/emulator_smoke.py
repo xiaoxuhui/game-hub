@@ -17,10 +17,16 @@ GAMES = [
     ("turing", "图灵机实验台"),
 ]
 EVIDENCE = Path("emulator-evidence")
+GAME_MARKERS = {
+    "conway": ("CELLULAR AUTOMATON", "代数"),
+    "eml": ("数值栏", "计算"),
+    "light": ("第一束光", "关卡"),
+    "turing": ("运行状态", "当前状态"),
+}
 
 
 def adb(*args: str, capture: bool = True) -> bytes:
-    result = subprocess.run(["adb", *args], check=True, stdout=subprocess.PIPE if capture else None)
+    result = subprocess.run(["adb", *args], check=True, stdout=subprocess.PIPE if capture else None, timeout=30)
     return result.stdout or b""
 
 
@@ -43,12 +49,35 @@ def has_text(root: ET.Element, text: str) -> bool:
     return any(node.attrib.get("text") == text for node in nodes(root))
 
 
+def visible_text(root: ET.Element) -> str:
+    return " ".join(
+        node.attrib.get("text", "") + " " + node.attrib.get("content-desc", "")
+        for node in nodes(root)
+        if node.attrib.get("package") == PACKAGE
+    )
+
+
+def is_lobby(root: ET.Element) -> bool:
+    return any(node.attrib.get("text") == "进入项目" and node.attrib.get("package") == PACKAGE for node in nodes(root)) and not any(
+        node.attrib.get("class") == "android.webkit.WebView" for node in nodes(root)
+    )
+
+
 def tap(node: ET.Element) -> None:
     match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.attrib["bounds"])
     if not match:
         raise AssertionError(f"Invalid bounds: {node.attrib.get('bounds')}")
     left, top, right, bottom = map(int, match.groups())
     adb("shell", "input", "tap", str((left + right) // 2), str((top + bottom) // 2))
+
+
+def button_visible(node: ET.Element) -> bool:
+    match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.attrib.get("bounds", ""))
+    if not match or node.attrib.get("visible-to-user") == "false":
+        return False
+    left, top, right, bottom = map(int, match.groups())
+    width, height = screen_size()
+    return right > left and bottom > top and 0 <= (left + right) // 2 < width and 0 <= (top + bottom) // 2 < height
 
 
 def find_game_button(root: ET.Element, name: str):
@@ -59,8 +88,9 @@ def find_game_button(root: ET.Element, name: str):
         parent = parents.get(label)
         while parent is not None:
             matches = [node for node in nodes(parent) if node.attrib.get("text") == "进入项目" and node.attrib.get("clickable") == "true"]
-            if matches:
-                return matches[0]
+            for button in matches:
+                if button_visible(button):
+                    return button
             parent = parents.get(parent)
     return None
 
@@ -79,17 +109,18 @@ def scroll_down() -> None:
     time.sleep(1)
 
 
-def wait_for_webview() -> ET.Element:
+def wait_for_webview(game_id: str) -> ET.Element:
     for _ in range(12):
         root = hierarchy()
         if any(node.attrib.get("class") == "android.webkit.WebView" for node in nodes(root)) and not any(
             "正在打开" in node.attrib.get("text", "") for node in nodes(root)
         ):
-            if any("资源缺失" in node.attrib.get("text", "") or "加载失败" in node.attrib.get("text", "") for node in nodes(root)):
+            if any(error in visible_text(root) for error in ("资源缺失", "加载失败", "已阻止未登记", "内置资源清单不可用")):
                 raise AssertionError("Game displayed the native error state")
-            return root
+            if any(marker in visible_text(root) for marker in GAME_MARKERS[game_id]):
+                return root
         time.sleep(2)
-    raise AssertionError("No WebView appeared after opening the game")
+    raise AssertionError(f"No populated WebView appeared for {game_id}")
 
 
 def main(apk: Path) -> None:
@@ -98,10 +129,13 @@ def main(apk: Path) -> None:
     try:
         adb("install", "-r", str(apk.resolve()), capture=False)
         adb("shell", "am", "start", "-n", f"{PACKAGE}/.MainActivity", capture=False)
-        time.sleep(4)
-        root = hierarchy()
-        if not has_text(root, "游戏大厅"):
-            raise AssertionError("Native lobby title is missing")
+        for _ in range(12):
+            root = hierarchy()
+            if has_text(root, "游戏大厅") and is_lobby(root):
+                break
+            time.sleep(1)
+        else:
+            raise AssertionError("Native lobby title or cards are missing")
         snapshot("lobby")
         for game_id, name in GAMES:
             button = None
@@ -114,15 +148,25 @@ def main(apk: Path) -> None:
             if button is None:
                 raise AssertionError(f"Lobby card was not found: {name}")
             tap(button)
-            wait_for_webview()
+            wait_for_webview(game_id)
             snapshot(game_id)
             results.append({"game": game_id, "opened": True})
             adb("shell", "input", "keyevent", "KEYCODE_BACK")
-            time.sleep(2)
-            root = hierarchy()
-            if any(node.attrib.get("class") == "android.webkit.WebView" for node in nodes(root)):
-                raise AssertionError(f"Back did not return from {game_id} to lobby")
+            for _ in range(8):
+                root = hierarchy()
+                if is_lobby(root):
+                    break
+                time.sleep(1)
+            else:
+                raise AssertionError(f"Back did not return from {game_id} to native lobby")
         print(json.dumps(results, ensure_ascii=False))
+    except Exception as error:
+        (EVIDENCE / "error.txt").write_text(str(error), encoding="utf-8")
+        try:
+            snapshot("failure")
+        except Exception:
+            pass
+        raise
     finally:
         (EVIDENCE / "results.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
 
