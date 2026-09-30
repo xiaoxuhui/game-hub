@@ -275,13 +275,13 @@ class MainActivity : ComponentActivity() {
         }
 
         override fun onPageFinished(view: WebView, url: String) {
-            if (view === webView && currentGame?.id == game.id && !loadFailed) {
+            if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) {
                 if (game.id != "light" && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, assetPaths)) {
                     view.evaluateJavascript(exportBridgeJs(bridgeName(game.id)), null)
                 }
                 if (game.id == "turing" && Uri.parse(url).path?.endsWith("/campaign.html") == true) {
                     view.evaluateJavascript(CAMPAIGN_MOBILE_FIT_JS) {
-                        if (view === webView && currentGame?.id == game.id && !loadFailed) hideOverlay()
+                        if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) hideOverlay()
                     }
                 } else {
                     hideOverlay()
