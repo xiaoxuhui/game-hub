@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var root: FrameLayout
     private lateinit var lobby: ScrollView
+    private lateinit var updateLink: TextView
     private var webView: WebView? = null
     private var overlay: View? = null
     private var currentGame: Game? = null
@@ -152,9 +153,18 @@ class MainActivity : ComponentActivity() {
         column.addView(label("游戏大厅", 27f, Color.WHITE, true).apply {
             setPadding(dp(6), 0, 0, dp(2))
         })
-        column.addView(label("合集 v0.1.0  ·  ${bundleCommit.take(10)}", 11f, MUTED, false).apply {
-            setPadding(dp(6), 0, 0, dp(10))
-        })
+        val headerRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        column.addView(headerRow, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
+        headerRow.addView(label("合集 v0.1.0  ·  ${bundleCommit.take(10)}", 11f, MUTED, false).apply {
+            setPadding(dp(6), 0, 0, 0)
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+        updateLink = label("检查更新", 13f, 0xFF8AB7FF.toInt(), true).apply {
+            setPadding(dp(8), dp(4), dp(6), dp(4))
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { checkUpdates() }
+        }
+        headerRow.addView(updateLink)
         for (rowIndex in 0..1) {
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -204,6 +214,34 @@ class MainActivity : ComponentActivity() {
         "light" -> R.drawable.game_light
         "turing" -> R.drawable.game_turing
         else -> error("未知项目：$id")
+    }
+
+    private fun checkUpdates() {
+        if (!updateLink.isEnabled) return
+        updateLink.isEnabled = false
+        updateLink.text = "查询中…"
+        Thread {
+            val result = runCatching {
+                val version = packageManager.getPackageInfo(packageName, 0).versionName ?: "0.1.0"
+                ReleaseClient.latest(version)
+            }
+            runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
+                updateLink.isEnabled = true
+                updateLink.text = "检查更新"
+                result.onSuccess { release ->
+                    if (release == null) {
+                        AlertDialog.Builder(this).setMessage("当前已是最新公开版本").setPositiveButton("确定", null).show()
+                    } else {
+                        AlertDialog.Builder(this).setMessage("发现新版本 v${release.version}，下载功能正在接入")
+                            .setPositiveButton("确定", null).show()
+                    }
+                }.onFailure { error ->
+                    AlertDialog.Builder(this).setMessage(error.message ?: "查询失败，请检查网络")
+                        .setPositiveButton("确定", null).show()
+                }
+            }
+        }.start()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
