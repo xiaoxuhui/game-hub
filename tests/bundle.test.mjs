@@ -83,6 +83,10 @@ test('failed checkout or missing locked resource preserves the last complete bun
     assemble([source], hub, output, 'a'.repeat(40));
     assert.equal(verifyBundle(output, [source], 'a'.repeat(40)).files.length, 1);
     assert.throws(() => verifyBundle(output, [source], 'b'.repeat(40)), /does not match/);
+    assert.throws(() => verifyBundle(output, [{ ...source, version: '9.9.9' }], 'a'.repeat(40)), /does not match/);
+    writeFileSync(join(output, 'games', 'fixture', 'unregistered.js'), 'not in the manifest');
+    assert.throws(() => verifyBundle(output, [source], 'a'.repeat(40)), /differ/);
+    rmSync(join(output, 'games', 'fixture', 'unregistered.js'));
     const before = readFileSync(join(output, 'bundle-manifest.json'), 'utf8');
     assert.throws(() => assemble([{ ...source, revision: 'f'.repeat(40) }], hub, output, 'a'.repeat(40)), /failed|moved/i);
     assert.equal(readFileSync(join(output, 'bundle-manifest.json'), 'utf8'), before);

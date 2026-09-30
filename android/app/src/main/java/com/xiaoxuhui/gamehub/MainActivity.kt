@@ -1,16 +1,20 @@
 package com.xiaoxuhui.gamehub
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
+import android.webkit.JsResult
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -115,7 +119,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun buildLobby(): ScrollView {
-        val scroll = ScrollView(this).apply { fillViewport = true; isVerticalScrollBarEnabled = false }
+        val scroll = ScrollView(this).apply { isFillViewport = true; isVerticalScrollBarEnabled = false }
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val side = if (resources.configuration.screenWidthDp >= 600) dp(48) else dp(20)
@@ -177,6 +181,17 @@ class MainActivity : ComponentActivity() {
                 textZoom = 100
             }
             webViewClient = gameClient(game)
+            webChromeClient = object : WebChromeClient() {
+                override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setMessage(message)
+                        .setPositiveButton("确定") { _, _ -> result.confirm() }
+                        .setNegativeButton("取消") { _, _ -> result.cancel() }
+                        .setOnCancelListener { result.cancel() }
+                        .show()
+                    return true
+                }
+            }
         }
         webView = view
         root.addView(view, FrameLayout.LayoutParams(-1, -1))
@@ -196,10 +211,12 @@ class MainActivity : ComponentActivity() {
             if (!request.isForMainFrame) return !isAllowedAsset(request.url)
             val uri = request.url
             val path = uri.path ?: ""
-            val ownPage = isAllowedAsset(uri) && path.startsWith("/assets/games/${game.id}/") && path.endsWith(".html")
+            val ownPage = isAllowedAsset(uri) && AssetAccessPolicy.pageAllowed(game.id, path, assetPaths)
             if (ownPage) return false
             if (uri.scheme == "https" || uri.scheme == "http") {
-                if (uri.host != ASSET_DOMAIN) runCatching { startActivity(Intent(Intent.ACTION_VIEW, uri)) }
+                if (uri.host != ASSET_DOMAIN) runCatching {
+                    startActivity(Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE))
+                }
             }
             if (uri.host == ASSET_DOMAIN) showError("已阻止未登记或跨项目的页面跳转")
             return true
@@ -214,15 +231,18 @@ class MainActivity : ComponentActivity() {
         }
 
         override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
-            if (view === webView && response.statusCode >= 400) showError("${game.name} 资源缺失：${request.url.path ?: "未知路径"}")
+            if (view !== webView || response.statusCode < 400) return
+            val path = request.url.path ?: "未知路径"
+            if (request.isForMainFrame || (isAllowedAsset(request.url) && (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".html")))) {
+                showError("${game.name} 资源缺失：$path")
+            } else {
+                Log.w("GameHub", "Blocked or optional resource: $path (${response.statusCode})")
+            }
         }
     }
 
     private fun isAllowedAsset(uri: Uri): Boolean {
-        if (uri.scheme != "https" || uri.host != ASSET_DOMAIN || uri.port != -1) return false
-        val encoded = uri.encodedPath ?: return false
-        if (encoded.contains('%') || encoded.contains('\\')) return false
-        return assetPaths.contains(uri.path)
+        return AssetAccessPolicy.resourceAllowed(uri.scheme, uri.host, uri.port, uri.encodedPath, uri.path, assetPaths)
     }
 
     private fun blockedResponse(): WebResourceResponse {
