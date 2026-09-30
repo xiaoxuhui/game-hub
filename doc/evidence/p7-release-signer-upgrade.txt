@@ -1,0 +1,26 @@
+Android 34 AOSP emulator, Windows WHPX, 2026-10-01
+Workspace: isolated game-hub checkout at aff2dbb599c059fa589d161088c58fbdac381df1
+Fixture difference in isolated checkout only: versionCode 2 -> 3; versionName 0.2.0 -> 0.2.1
+
+Base 0.2.0/code2: unsigned Release CI 36758908013, signed outside repository
+Base signed APK SHA-256: 164717f00ce0be2727fc1dac85c4aabe94bdd1063c868514914e20e2e946858a
+Fixture 0.2.1/code3: local independent checkout, Gradle assembleRelease success, signed outside repository
+Fixture signed APK SHA-256: 751df010914693edbc1ae5cccde91e1f8176161e19221f872856271248d9c4af
+Both APKs: com.xiaoxuhui.gamehub, apksigner v2/v3 verified, signer certificate SHA-256
+44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2
+
+adb install -r BASE: Success
+adb shell dumpsys package: versionCode=2 minSdk=24 targetSdk=34
+adb root; inserted p7-release-marker-20261001 into app private files/upgrade-marker.txt
+adb install -r FIXTURE: Success
+adb shell dumpsys package: versionCode=3 minSdk=24 targetSdk=34
+adb shell cat app private files/upgrade-marker.txt: p7-release-marker-20261001
+adb shell am start -n com.xiaoxuhui.gamehub/.MainActivity after upgrade: success
+
+Repeated fixture install and ran repository emulator_smoke.py:
+conway opened=true, eml opened=true, light opened=true, turing opened=true; each returned to native lobby.
+Native lobby screenshot shows four cards in the regular first viewport. 320dp/1.5x font accessibility checks passed.
+Manual update query on private repository showed no_public_release. Screenshot captured.
+Private marker still present after all UI checks.
+
+This test proves Android package private-file preservation across an upgrade signed with the release certificate. It does not prove that each game's own WebView save format or import/export survives a version change; those remain separate device checks.
