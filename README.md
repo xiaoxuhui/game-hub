@@ -2,7 +2,7 @@
 
 一个离线 Android 应用，把康威生命游戏、EML 计算台、光学游戏和图灵机实验台装进同一个 APK。Android 原生首页显示四个项目及固定来源版本；游戏网页资源内置，离线可用。首页另有用户手动触发的 GitHub Release 更新查询。
 
-**当前状态：0.2.0 发布候选验证中，未发布。** 仓库目前保持私有；没有版本标签或 GitHub Release。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。
+**当前状态：0.2.0 发布候选验证中，未发布。** 仓库目前保持私有；没有版本标签或 GitHub Release。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。仓库外已有发行证书签署的候选包，其设备回归与异机密钥备份仍待完成。
 
 ![Android 模拟器中的游戏大厅](doc/screenshots/lobby.png)
 
@@ -55,4 +55,4 @@ cd android
 
 ## 协作与许可
 
-贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及其许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及 Android 运行依赖的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。该清单及 Apache 2.0 全文均内置于 APK；发行审计见 [开源就绪度审计](doc/开源就绪度审计.md)。
