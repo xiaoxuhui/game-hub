@@ -13,12 +13,13 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
+import java.util.UUID
 
 internal class ApkUpdateManager(private val context: Context) {
     fun downloadAndVerify(release: ReleaseApk, cancelled: () -> Boolean, progress: (Long, Long) -> Unit): File {
         val directory = File(context.cacheDir, "updates")
         if (!directory.isDirectory && !directory.mkdirs()) error("无法创建下载缓存")
-        val uniqueName = "game-hub-${release.assetId}-${System.nanoTime()}"
+        val uniqueName = "game-hub-${release.assetId}-${UUID.randomUUID()}"
         val partial = File(directory, "$uniqueName.part.apk")
         val ready = File(directory, "$uniqueName.apk")
         try {

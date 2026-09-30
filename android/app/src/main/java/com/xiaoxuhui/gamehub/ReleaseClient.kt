@@ -7,8 +7,8 @@ import java.io.ByteArrayOutputStream
 internal object ReleaseClient {
     private const val LATEST_URL = "https://api.github.com/repos/xiaoxuhui/game-hub/releases/latest"
 
-    fun latest(installedVersion: String): ReleaseApk? {
-        val connection = URL(LATEST_URL).openConnection() as HttpURLConnection
+    fun latest(installedVersion: String, connectionFactory: () -> HttpURLConnection = { URL(LATEST_URL).openConnection() as HttpURLConnection }): ReleaseApk? {
+        val connection = connectionFactory()
         connection.connectTimeout = 10_000
         connection.readTimeout = 15_000
         connection.instanceFollowRedirects = false

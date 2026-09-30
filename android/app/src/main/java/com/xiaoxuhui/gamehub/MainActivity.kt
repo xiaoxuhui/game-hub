@@ -126,6 +126,8 @@ class MainActivity : ComponentActivity() {
             loadBundleManifest()
             lobby = buildLobby()
             root.addView(lobby, FrameLayout.LayoutParams(-1, -1))
+            restorePendingInstall(savedInstanceState)
+            cleanStaleUpdateFiles()
             val restoreId = savedInstanceState?.getString(STATE_GAME)
             if (restoreId != null) {
                 games.firstOrNull { it.id == restoreId }?.let { openGame(it, savedInstanceState) }
@@ -352,6 +354,23 @@ class MainActivity : ComponentActivity() {
             }
     }
 
+    private fun restorePendingInstall(state: Bundle?) {
+        val name = state?.getString(STATE_PENDING_INSTALL) ?: return
+        if (!Regex("^game-hub-[0-9]+-[0-9a-f-]{36}\\.apk$").matches(name)) return
+        val file = File(File(cacheDir, "updates"), name)
+        if (!file.isFile) return
+        pendingInstallApk = file
+        updateLink.isEnabled = false
+        updateLink.text = "安装处理中…"
+    }
+
+    private fun cleanStaleUpdateFiles() {
+        val cutoff = System.currentTimeMillis() - 24L * 60 * 60 * 1000
+        File(cacheDir, "updates").listFiles()?.forEach { file ->
+            if (file.isFile && file != pendingInstallApk && file.lastModified() < cutoff) file.delete()
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun openGame(game: Game, restoredState: Bundle? = null) {
         clearWebView()
@@ -547,6 +566,7 @@ class MainActivity : ComponentActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         currentGame?.let { outState.putString(STATE_GAME, it.id) }
+        pendingInstallApk?.let { outState.putString(STATE_PENDING_INSTALL, it.name) }
         webView?.saveState(outState)
     }
 
@@ -608,6 +628,7 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val ASSET_DOMAIN = "appassets.androidplatform.net"
         private const val STATE_GAME = "game-hub.current-game"
+        private const val STATE_PENDING_INSTALL = "game-hub.pending-install"
         private val BACKGROUND = Color.rgb(16, 20, 28)
         private val MUTED = Color.rgb(164, 180, 201)
         private val CAMPAIGN_MOBILE_FIT_JS = """
