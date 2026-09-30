@@ -139,7 +139,10 @@ def assert_card_in_viewport(card: ET.Element, name: str, viewport: tuple[int, in
     if not density_match:
         raise AssertionError(f"Unknown emulator density: {density_output}")
     scale = int(density_match.group(1)) / 160
-    if bottom - top < round(176 * scale) - 2 or right - left < round(120 * scale) - 2:
+    font_output = adb("shell", "settings", "get", "system", "font_scale").decode().strip()
+    font_scale = 1.0 if font_output == "null" else float(font_output)
+    card_min_dp = 176 + int(max(0.0, font_scale - 1.0) * 72)
+    if bottom - top < round(card_min_dp * scale) - 2 or right - left < round(120 * scale) - 2:
         raise AssertionError(f"Lobby card is partially clipped: {name} {card.attrib['bounds']}")
 
 
