@@ -35,10 +35,20 @@ def snapshot(name: str) -> None:
 
 
 def hierarchy() -> ET.Element:
-    adb("shell", "uiautomator", "dump", "/sdcard/game-hub-window.xml")
-    raw = adb("exec-out", "cat", "/sdcard/game-hub-window.xml")
-    (EVIDENCE / "last-window.xml").write_bytes(raw)
-    return ET.fromstring(raw)
+    last_error = "UI hierarchy unavailable"
+    for _ in range(10):
+        try:
+            dump = adb("shell", "uiautomator", "dump", "/sdcard/game-hub-window.xml").decode(errors="replace")
+            if "null root node" in dump.lower():
+                last_error = dump.strip()
+            else:
+                raw = adb("exec-out", "cat", "/sdcard/game-hub-window.xml")
+                (EVIDENCE / "last-window.xml").write_bytes(raw)
+                return ET.fromstring(raw)
+        except (ET.ParseError, subprocess.CalledProcessError) as error:
+            last_error = f"Invalid UI hierarchy: {error}"
+        time.sleep(2)
+    raise AssertionError(last_error)
 
 
 def nodes(root: ET.Element):
@@ -163,6 +173,10 @@ def main(apk: Path) -> None:
         (EVIDENCE / "error.txt").write_text(str(error), encoding="utf-8")
         try:
             snapshot("failure")
+        except Exception:
+            pass
+        try:
+            (EVIDENCE / "logcat.txt").write_bytes(adb("logcat", "-d", "-t", "600"))
         except Exception:
             pass
         raise
