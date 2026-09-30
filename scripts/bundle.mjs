@@ -5,7 +5,6 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const sourceRoot = join(repoRoot, '.build');
 const assetsRoot = join(repoRoot, 'android', 'app', 'src', 'main', 'assets');
 const HEX_SHA = /^[0-9a-f]{40}$/;
 const SAFE_ID = /^[a-z][a-z0-9-]*$/;
@@ -111,10 +110,10 @@ function sourceCloneUrl(source) {
   return local;
 }
 
-function stageSource(source, staging, gamesDir) {
+function stageSource(source, staging, gamesDir, root = repoRoot) {
   const checkout = join(staging, 'sources', source.id);
   const origin = sourceCloneUrl(source);
-  run('git', ['clone', '--quiet', '--no-local', '--no-checkout', origin, checkout], repoRoot);
+  run('git', ['clone', '--quiet', '--no-local', '--no-checkout', origin, checkout], root);
   run('git', ['checkout', '--quiet', '--detach', source.revision], checkout);
   const actual = gitOutput(['rev-parse', 'HEAD'], checkout);
   if (actual !== source.revision) throw new Error(`Revision mismatch for ${source.id}: ${actual}`);
@@ -158,33 +157,66 @@ function buildManifest(gamesDir, sources, bundleCommit) {
   return { schemaVersion: 1, bundleCommit, sources, files };
 }
 
-function bundle() {
-  const lock = validateLock(JSON.parse(readFileSync(join(repoRoot, 'sources.lock.json'), 'utf8')));
-  const bundleCommit = gitOutput(['rev-parse', 'HEAD'], repoRoot);
-  if (gitOutput(['status', '--porcelain=v1', '--untracked-files=all'], repoRoot)) throw new Error('Bundle must run from a clean independent checkout');
-  mkdirSync(sourceRoot, { recursive: true });
-  mkdirSync(dirname(assetsRoot), { recursive: true });
-  cleanChild(repoRoot, assetsRoot);
-  const staging = join(sourceRoot, `bundle-${process.pid}-${Date.now()}`);
+function verifyBundle(output, sources, bundleCommit) {
+  const manifestFile = join(output, 'bundle-manifest.json');
+  if (!existsSync(manifestFile)) throw new Error('Missing bundle-manifest.json');
+  const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'));
+  const expectedSources = sources.map((source) => ({ id: source.id, displayName: source.displayName, repository: source.repository, revision: source.revision, version: source.version, entryPage: source.entryPage }));
+  if (manifest.schemaVersion !== 1 || manifest.bundleCommit !== bundleCommit || JSON.stringify(manifest.sources) !== JSON.stringify(expectedSources)) {
+    throw new Error('Bundle manifest does not match this checkout and source lock');
+  }
+  const files = buildManifest(join(output, 'games'), expectedSources, bundleCommit).files;
+  if (JSON.stringify(manifest.files) !== JSON.stringify(files)) throw new Error('Bundle resources differ from manifest hashes');
+  if (manifest.files.length === 0) throw new Error('Empty bundle');
+  console.log(`Verified ${manifest.sources.length} sources and ${manifest.files.length} resources`);
+  return manifest;
+}
+
+function assemble(sourcesToBuild, root, output, bundleCommit) {
+  const buildRoot = join(root, '.build');
+  ensureInside(root, output);
+  mkdirSync(buildRoot, { recursive: true });
+  mkdirSync(dirname(output), { recursive: true });
+  const staging = join(buildRoot, `bundle-${process.pid}-${Date.now()}`);
+  const backup = join(buildRoot, `previous-${process.pid}-${Date.now()}`);
   const payload = join(staging, 'payload');
   mkdirSync(join(payload, 'games'), { recursive: true });
   try {
-    const sources = lock.sources.map((source) => stageSource(source, staging, join(payload, 'games')));
+    const sources = sourcesToBuild.map((source) => stageSource(source, staging, join(payload, 'games'), root));
     const manifest = buildManifest(join(payload, 'games'), sources, bundleCommit);
     writeFileSync(join(payload, 'bundle-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-    mkdirSync(dirname(assetsRoot), { recursive: true });
-    renameSync(payload, assetsRoot);
-    cleanChild(sourceRoot, staging);
+    if (existsSync(output)) renameSync(output, backup);
+    try { renameSync(payload, output); }
+    catch (error) {
+      if (existsSync(backup)) renameSync(backup, output);
+      throw error;
+    }
+    if (existsSync(backup)) cleanChild(buildRoot, backup);
+    cleanChild(buildRoot, staging);
     console.log(`Bundled ${sources.length} sources, ${manifest.files.length} files, commit ${bundleCommit}`);
-    console.log(`Manifest SHA-256: ${sha256(readFileSync(join(assetsRoot, 'bundle-manifest.json')))}`);
+    console.log(`Manifest SHA-256: ${sha256(readFileSync(join(output, 'bundle-manifest.json')))}`);
+    return manifest;
   } catch (error) {
-    cleanChild(sourceRoot, staging);
+    if (existsSync(staging)) cleanChild(buildRoot, staging);
     throw error;
   }
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  try { bundle(); } catch (error) { console.error(error.message); process.exitCode = 1; }
+function bundle() {
+  const lock = validateLock(JSON.parse(readFileSync(join(repoRoot, 'sources.lock.json'), 'utf8')));
+  const bundleCommit = gitOutput(['rev-parse', 'HEAD'], repoRoot);
+  if (gitOutput(['status', '--porcelain=v1', '--untracked-files=all'], repoRoot)) throw new Error('Bundle must run from a clean independent checkout');
+  return assemble(lock.sources, repoRoot, assetsRoot, bundleCommit);
 }
 
-export { safeRelative, validateLock, collectReferences, assertReferences, buildManifest, bundle };
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try {
+    if (process.argv[2] === '--verify') {
+      const lock = validateLock(JSON.parse(readFileSync(join(repoRoot, 'sources.lock.json'), 'utf8')));
+      verifyBundle(assetsRoot, lock.sources, gitOutput(['rev-parse', 'HEAD'], repoRoot));
+    } else if (process.argv.length === 2) bundle();
+    else throw new Error('Usage: node scripts/bundle.mjs [--verify]');
+  } catch (error) { console.error(error.message); process.exitCode = 1; }
+}
+
+export { safeRelative, validateLock, collectReferences, assertReferences, buildManifest, verifyBundle, stageSource, assemble, bundle };

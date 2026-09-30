@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { assertReferences, buildManifest, collectReferences, safeRelative, validateLock } from '../scripts/bundle.mjs';
+import { spawnSync } from 'node:child_process';
+import { assemble, assertReferences, buildManifest, collectReferences, safeRelative, validateLock, verifyBundle } from '../scripts/bundle.mjs';
 
 const lock = JSON.parse(readFileSync(new URL('../sources.lock.json', import.meta.url), 'utf8'));
 
@@ -53,4 +54,47 @@ test('manifest hashes are stable and change when a resource changes', () => {
     writeFileSync(file, 'second');
     assert.notEqual(first.files[0].sha256, buildManifest(root, [], 'a'.repeat(40)).files[0].sha256);
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('failed checkout or missing locked resource preserves the last complete bundle', () => {
+  const root = mkdtempSync(join(tmpdir(), 'game-hub-integration-'));
+  const original = join(root, 'original');
+  const hub = join(root, 'hub');
+  const output = join(hub, 'android', 'app', 'src', 'main', 'assets');
+  mkdirSync(original);
+  mkdirSync(hub);
+  const git = (args) => {
+    const result = spawnSync('git', args, { cwd: original, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
+  const priorEnv = process.env.GAME_HUB_LOCAL_SOURCES;
+  delete process.env.GAME_HUB_LOCAL_SOURCES;
+  try {
+    git(['init', '-b', 'main']);
+    git(['config', 'user.name', 'Test']);
+    git(['config', 'user.email', 'test@example.invalid']);
+    writeFileSync(join(original, 'package.json'), '{"version":"1.0.0"}');
+    writeFileSync(join(original, 'index.html'), '<h1>fixture</h1>');
+    git(['add', '.']);
+    git(['commit', '-m', 'fixture']);
+    const sha = git(['rev-parse', 'HEAD']);
+    const source = { id: 'fixture', displayName: 'Fixture', repository: original, revision: sha, version: '1.0.0', buildKind: 'static', entryPage: 'index.html', files: ['index.html'] };
+    assemble([source], hub, output, 'a'.repeat(40));
+    assert.equal(verifyBundle(output, [source], 'a'.repeat(40)).files.length, 1);
+    assert.throws(() => verifyBundle(output, [source], 'b'.repeat(40)), /does not match/);
+    const before = readFileSync(join(output, 'bundle-manifest.json'), 'utf8');
+    assert.throws(() => assemble([{ ...source, revision: 'f'.repeat(40) }], hub, output, 'a'.repeat(40)), /failed|moved/i);
+    assert.equal(readFileSync(join(output, 'bundle-manifest.json'), 'utf8'), before);
+    assert.throws(() => assemble([{ ...source, files: ['missing.js'] }], hub, output, 'a'.repeat(40)), /Missing required resource/);
+    assert.equal(readFileSync(join(output, 'bundle-manifest.json'), 'utf8'), before);
+    assert.throws(() => assemble([{ ...source, files: ['../outside'] }], hub, output, 'a'.repeat(40)), /Unsafe asset path/);
+    assert.equal(readFileSync(join(output, 'bundle-manifest.json'), 'utf8'), before);
+    assert.ok(existsSync(join(output, 'games', 'fixture', 'index.html')));
+    assert.equal(git(['status', '--porcelain=v1', '--untracked-files=all']), '');
+  } finally {
+    if (priorEnv === undefined) delete process.env.GAME_HUB_LOCAL_SOURCES;
+    else process.env.GAME_HUB_LOCAL_SOURCES = priorEnv;
+    rmSync(root, { recursive: true, force: true });
+  }
 });
