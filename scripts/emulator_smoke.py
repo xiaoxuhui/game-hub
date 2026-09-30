@@ -145,7 +145,7 @@ def assert_card_in_viewport(card: ET.Element, name: str, viewport: tuple[int, in
 
 def screen_size() -> tuple[int, int]:
     output = adb("shell", "wm", "size").decode(errors="replace")
-    match = re.search(r"(\d+)x(\d+)", output)
+    match = re.search(r"Override size: (\d+)x(\d+)", output) or re.search(r"Physical size: (\d+)x(\d+)", output)
     if not match:
         raise AssertionError(f"Unknown emulator screen size: {output}")
     return int(match.group(1)), int(match.group(2))
@@ -194,19 +194,22 @@ def check_compact_accessibility() -> None:
     finally:
         size_override = re.search(r"Override size: (\d+x\d+)", original_size)
         density_override = re.search(r"Override density: (\d+)", original_density)
+        restore_errors = []
         for kind, value in (("size", size_override.group(1) if size_override else "reset"),
                             ("density", density_override.group(1) if density_override else "reset")):
             try:
                 adb("shell", "wm", kind, value)
-            except subprocess.CalledProcessError:
-                pass
+            except subprocess.CalledProcessError as error:
+                restore_errors.append(f"{kind}: {error}")
         try:
             if original_font == "null":
                 adb("shell", "settings", "delete", "system", "font_scale")
             else:
                 adb("shell", "settings", "put", "system", "font_scale", original_font)
-        except subprocess.CalledProcessError:
-            pass
+        except subprocess.CalledProcessError as error:
+            restore_errors.append(f"font_scale: {error}")
+        if restore_errors:
+            raise AssertionError("Emulator settings restore failed: " + "; ".join(restore_errors))
 
 
 def wait_for_webview(game_id: str) -> ET.Element:
