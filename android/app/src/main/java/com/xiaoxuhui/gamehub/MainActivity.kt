@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
         }
         if (games.map { it.id }.toSet() != setOf("conway", "eml", "light", "turing")) error("项目清单不完整")
         assetPaths = (0 until files.length()).map { index ->
-            "/assets/${files.getJSONObject(index).getString("path")}" 
+            "/assets/${files.getJSONObject(index).getString("path")}"
         }.toSet()
         for (game in games) {
             if (!assetPaths.contains("/assets/games/${game.id}/${game.entry}")) error("${game.name} 入口缺失")
