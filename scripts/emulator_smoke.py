@@ -20,7 +20,8 @@ EVIDENCE = Path("emulator-evidence")
 GAME_MARKERS = {
     "conway": ("CELLULAR AUTOMATON", "代数"),
     "eml": ("数值栏", "计算"),
-    "light": ("第一束光", "关卡"),
+    # WebView may expose only the fixed document title after the canvas tutorial auto-completes.
+    "light": ("第一束光", "关卡", "光的游戏 · Light Game"),
     "turing": ("运行状态", "当前状态"),
 }
 

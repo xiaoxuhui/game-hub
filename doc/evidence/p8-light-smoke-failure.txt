@@ -1,0 +1,12 @@
+Performing Incremental Install
+Performing Streamed Install
+Success
+Starting: Intent { cmp=com.xiaoxuhui.gamehub/.MainActivity }
+Traceback (most recent call last):
+  File "D:\soft\game-hub-build-p7\scripts\emulator_smoke.py", line 312, in <module>
+    main(Path(sys.argv[1]))
+  File "D:\soft\game-hub-build-p7\scripts\emulator_smoke.py", line 280, in main
+    wait_for_webview(game_id)
+  File "D:\soft\game-hub-build-p7\scripts\emulator_smoke.py", line 251, in wait_for_webview
+    raise AssertionError(f"No populated WebView appeared for {game_id}")
+AssertionError: No populated WebView appeared for light
