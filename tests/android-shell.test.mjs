@@ -19,7 +19,10 @@ test('Manifest has one launcher and only the planned update permission', () => {
   const manifest = text('android/app/src/main/AndroidManifest.xml');
   assert.equal((manifest.match(/android\.intent\.category\.LAUNCHER/g) ?? []).length, 1);
   assert.match(manifest, /android\.permission\.INTERNET/);
-  assert.doesNotMatch(manifest, /android\.permission\.(?!INTERNET)[A-Z_]+/);
+  assert.match(manifest, /android\.permission\.REQUEST_INSTALL_PACKAGES/);
+  assert.doesNotMatch(manifest, /android\.permission\.(?!INTERNET|REQUEST_INSTALL_PACKAGES)[A-Z_]+/);
+  assert.match(manifest, /androidx\.core\.content\.FileProvider/);
+  assert.ok(existsSync(join(root, 'android/app/src/main/res/xml/update_paths.xml')));
   assert.match(manifest, /android:exported="true"/);
   assert.ok(existsSync(join(root, 'android/gradle/wrapper/gradle-wrapper.jar')));
 });

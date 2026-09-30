@@ -1,6 +1,7 @@
 package com.xiaoxuhui.gamehub
 
 import org.json.JSONObject
+import java.net.URI
 
 internal data class ReleaseApk(val version: String, val assetId: Long, val size: Long, val sha256: String) {
     val apiUrl: String get() = "https://api.github.com/repos/xiaoxuhui/game-hub/releases/assets/$assetId"
@@ -10,6 +11,7 @@ internal object UpdatePolicy {
     private const val MAX_APK_BYTES = 150L * 1024 * 1024
     private val versionPattern = Regex("^v(\\d+)\\.(\\d+)\\.(\\d+)$")
     private val digestPattern = Regex("^sha256:([a-fA-F0-9]{64})$")
+    private val downloadHosts = setOf("api.github.com", "github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com")
 
     fun parseLatest(raw: String, installedVersion: String): ReleaseApk? {
         val release = JSONObject(raw)
@@ -29,6 +31,21 @@ internal object UpdatePolicy {
             ?: error("发布 APK 缺少有效的 SHA-256")
         if (id <= 0 || size <= 0 || size > MAX_APK_BYTES) error("发布 APK 的编号或大小无效")
         return ReleaseApk(tag.removePrefix("v"), id, size, digest.lowercase())
+    }
+
+    fun allowDownloadUrl(raw: String): Boolean = runCatching {
+        val uri = URI(raw)
+        uri.scheme.equals("https", true) && uri.host in downloadHosts && uri.userInfo == null &&
+            (uri.port == -1 || uri.port == 443) && uri.fragment == null
+    }.getOrDefault(false)
+
+    fun verifyCandidate(release: ReleaseApk, actualSize: Long, actualDigest: String, apkPackage: String,
+                        currentPackage: String, apkVersionCode: Long, currentVersionCode: Long,
+                        apkSigners: Set<String>, currentSigners: Set<String>) {
+        if (actualSize != release.size || !actualDigest.equals(release.sha256, true)) error("APK 大小或 SHA-256 校验失败")
+        if (apkPackage != currentPackage) error("APK 包名与已安装的游戏大厅不一致")
+        if (apkVersionCode <= currentVersionCode) error("APK 版本号没有递增")
+        if (apkSigners.isEmpty() || currentSigners.isEmpty() || apkSigners != currentSigners) error("APK 签名与当前安装版本不一致")
     }
 
     private fun versionParts(version: String): List<Long>? {

@@ -9,7 +9,9 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -39,6 +41,7 @@ import androidx.core.view.updatePadding
 import androidx.webkit.WebViewAssetLoader
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
+import java.io.File
 
 class MainActivity : ComponentActivity() {
     private data class Game(val id: String, val name: String, val version: String, val revision: String, val entry: String)
@@ -47,6 +50,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var root: FrameLayout
     private lateinit var lobby: ScrollView
     private lateinit var updateLink: TextView
+    private val updateManager by lazy { ApkUpdateManager(this) }
+    @Volatile private var downloadCancelled = false
+    private var pendingInstallApk: File? = null
     private var webView: WebView? = null
     private var overlay: View? = null
     private var currentGame: Game? = null
@@ -72,6 +78,16 @@ class MainActivity : ComponentActivity() {
                     ?: error("无法写入所选文件")
             }.onSuccess { toast("已保存 ${export.name}") }
                 .onFailure { toast("保存失败：${it.message ?: "未知错误"}") }
+        }
+    }
+    private val installSourcesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val apk = pendingInstallApk
+        pendingInstallApk = null
+        if (apk != null && apk.exists() && (Build.VERSION.SDK_INT < 26 || packageManager.canRequestPackageInstalls())) {
+            openSystemInstaller(apk)
+        } else {
+            apk?.delete()
+            toast("未授权安装，更新已取消")
         }
     }
     private val accents = mapOf(
@@ -233,8 +249,10 @@ class MainActivity : ComponentActivity() {
                     if (release == null) {
                         AlertDialog.Builder(this).setMessage("当前已是最新公开版本").setPositiveButton("确定", null).show()
                     } else {
-                        AlertDialog.Builder(this).setMessage("发现新版本 v${release.version}，下载功能正在接入")
-                            .setPositiveButton("确定", null).show()
+                        AlertDialog.Builder(this).setTitle("发现新版本 v${release.version}")
+                            .setMessage("安装包大小约 ${release.size / (1024 * 1024) + 1} MB。下载并校验后，将交给 Android 系统确认安装。")
+                            .setPositiveButton("下载更新") { _, _ -> downloadUpdate(release) }
+                            .setNegativeButton("稍后", null).show()
                     }
                 }.onFailure { error ->
                     val message = if (error is java.io.IOException) "网络连接失败，请检查网络后重试" else error.message ?: "查询失败，请稍后重试"
@@ -243,6 +261,67 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun downloadUpdate(release: ReleaseApk) {
+        downloadCancelled = false
+        updateLink.isEnabled = false
+        updateLink.text = "下载中…"
+        val status = label("已下载 0%", 15f, Color.WHITE, false).apply { setPadding(dp(24), dp(16), dp(24), dp(16)) }
+        val dialog = AlertDialog.Builder(this).setTitle("下载 v${release.version}").setView(status)
+            .setNegativeButton("取消") { _, _ -> downloadCancelled = true }.create()
+        dialog.show()
+        Thread {
+            var lastPercent = -1
+            val result = runCatching {
+                updateManager.downloadAndVerify(release, { downloadCancelled }) { done, total ->
+                    val percent = (done * 100 / total).toInt()
+                    if (percent != lastPercent) {
+                        lastPercent = percent
+                        runOnUiThread { if (!isDestroyed) status.text = "已下载 $percent%" }
+                    }
+                }
+            }
+            runOnUiThread {
+                if (isDestroyed) {
+                    result.getOrNull()?.delete()
+                    return@runOnUiThread
+                }
+                dialog.dismiss()
+                updateLink.isEnabled = true
+                updateLink.text = "检查更新"
+                if (downloadCancelled) {
+                    result.getOrNull()?.delete()
+                    return@runOnUiThread
+                }
+                result.onSuccess { apk ->
+                    AlertDialog.Builder(this).setTitle("APK 校验通过")
+                        .setMessage("即将打开 Android 系统安装界面，请确认更新。")
+                        .setPositiveButton("继续安装") { _, _ -> requestSystemInstall(apk) }
+                        .setNegativeButton("取消") { _, _ -> apk.delete() }.show()
+                }.onFailure { error ->
+                    if (!downloadCancelled) AlertDialog.Builder(this)
+                        .setMessage(error.message ?: "下载或校验失败，请重试")
+                        .setPositiveButton("确定", null).show()
+                }
+            }
+        }.start()
+    }
+
+    private fun requestSystemInstall(apk: File) {
+        if (Build.VERSION.SDK_INT >= 26 && !packageManager.canRequestPackageInstalls()) {
+            pendingInstallApk = apk
+            val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName"))
+            runCatching { installSourcesLauncher.launch(intent) }
+                .onFailure { pendingInstallApk = null; apk.delete(); toast("无法打开安装授权设置") }
+        } else {
+            openSystemInstaller(apk)
+        }
+    }
+
+    private fun openSystemInstaller(apk: File) {
+        runCatching { startActivity(updateManager.installationIntent(apk)) }
+            .onFailure { apk.delete(); toast("无法打开系统安装界面") }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -444,6 +523,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        downloadCancelled = true
         clearWebView()
         super.onDestroy()
     }

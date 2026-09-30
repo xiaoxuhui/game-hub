@@ -28,4 +28,29 @@ class UpdatePolicyTest {
             assertThrows(IllegalStateException::class.java) { UpdatePolicy.parseLatest(raw, "0.1.0") }
         }
     }
+
+    @Test fun allowsOnlyHttpsGithubAssetRedirectHosts() {
+        for (url in listOf("https://api.github.com/repos/xiaoxuhui/game-hub/releases/assets/42",
+                           "https://release-assets.githubusercontent.com/a?token=123")) {
+            assertEquals(true, UpdatePolicy.allowDownloadUrl(url))
+        }
+        for (url in listOf("http://api.github.com/x", "https://evil.example/x",
+                           "https://api.github.com.evil.example/x", "https://user@github.com/x",
+                           "https://github.com:444/x")) {
+            assertEquals(false, UpdatePolicy.allowDownloadUrl(url))
+        }
+    }
+
+    @Test fun rejectsWrongDigestPackageVersionAndSignerBeforeInstall() {
+        val apk = UpdatePolicy.parseLatest(release(), "0.1.0")!!
+        fun check(size: Long = apk.size, digest: String = apk.sha256, name: String = "com.xiaoxuhui.gamehub",
+                  code: Long = 2, signers: Set<String> = setOf("certA")) = UpdatePolicy.verifyCandidate(
+            apk, size, digest, name, "com.xiaoxuhui.gamehub", code, 1, signers, setOf("certA"))
+        check()
+        for (action in listOf<() -> Unit>({ check(size = 7) }, { check(digest = "b".repeat(64)) },
+                                           { check(name = "other.app") }, { check(code = 1) },
+                                           { check(signers = setOf("certB")) })) {
+            assertThrows(IllegalStateException::class.java) { action() }
+        }
+    }
 }
