@@ -33,6 +33,16 @@ jobs:
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
+      - name: Free build cache space for AVD
+        run: |
+          du -sh "$HOME/.gradle/caches" || true
+          rm -rf "$HOME/.gradle/caches"
+          df -h "$HOME"
+          available_mb=$(df -Pm "$HOME" | awk 'NR == 2 {print $4}')
+          if [ "$available_mb" -lt 7800 ]; then
+            echo "Only ${available_mb} MB free; emulator requires more than 7373 MB" >&2
+            exit 1
+          fi
       - name: Enable KVM on the runner
         run: |
           if [ -e /dev/kvm ]; then sudo chmod 666 /dev/kvm; fi
