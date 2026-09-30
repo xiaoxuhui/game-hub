@@ -124,10 +124,16 @@ def assert_all_cards_in_viewport(root: ET.Element) -> None:
         card = find_game_button(root, name)
         if card is None:
             raise AssertionError(f"Lobby card is not visible: {name}")
-        left, top, right, bottom = bounds(card)
-        if not (max(0, x1) <= left < right <= min(width, x2)
-                and max(0, y1) <= top < bottom <= min(height, y2)):
-            raise AssertionError(f"Lobby card requires scrolling or is clipped: {name} {card.attrib['bounds']}")
+        assert_card_in_viewport(card, name, (x1, y1, x2, y2), (width, height))
+
+
+def assert_card_in_viewport(card: ET.Element, name: str, viewport: tuple[int, int, int, int], screen: tuple[int, int]) -> None:
+    x1, y1, x2, y2 = viewport
+    width, height = screen
+    left, top, right, bottom = bounds(card)
+    if not (max(0, x1) <= left < right <= min(width, x2)
+            and max(0, y1) <= top < bottom <= min(height, y2)):
+        raise AssertionError(f"Lobby card requires scrolling or is clipped: {name} {card.attrib['bounds']}")
 
 
 def screen_size() -> tuple[int, int]:
@@ -146,25 +152,38 @@ def scroll_down() -> None:
 
 def check_compact_accessibility() -> None:
     adb("shell", "wm", "size", "320x568")
+    adb("shell", "wm", "density", "160")
     adb("shell", "settings", "put", "system", "font_scale", "1.5")
     adb("shell", "am", "force-stop", PACKAGE)
     adb("shell", "am", "start", "-n", f"{PACKAGE}/.MainActivity")
     try:
-        root = hierarchy()
-        if not is_lobby(root):
+        for _ in range(12):
+            root = hierarchy()
+            if is_lobby(root):
+                break
+            time.sleep(1)
+        else:
             raise AssertionError("Compact layout did not show native lobby")
         snapshot("lobby-small-large-font-top")
         for _, name in GAMES:
             for _ in range(6):
                 root = hierarchy()
-                if find_game_button(root, name) is not None:
-                    break
+                card = find_game_button(root, name)
+                scroll = next((node for node in nodes(root) if node.attrib.get("class") == "android.widget.ScrollView"
+                               and node.attrib.get("package") == PACKAGE), None)
+                if card is not None and scroll is not None:
+                    try:
+                        assert_card_in_viewport(card, name, bounds(scroll), screen_size())
+                        break
+                    except AssertionError:
+                        pass
                 scroll_down()
             else:
                 raise AssertionError(f"Compact layout cannot reach card: {name}")
         snapshot("lobby-small-large-font-bottom")
     finally:
         adb("shell", "wm", "size", "reset")
+        adb("shell", "wm", "density", "reset")
         adb("shell", "settings", "put", "system", "font_scale", "1.0")
 
 
