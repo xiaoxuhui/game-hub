@@ -11,6 +11,9 @@ android/app/build/
 *.p12
 *.pfx
 *.pem
+*.key
+keystore.properties
+signing.properties
 .env
 .env.local
 .idea/
