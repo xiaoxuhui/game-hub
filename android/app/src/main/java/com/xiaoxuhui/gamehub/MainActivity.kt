@@ -82,13 +82,22 @@ class MainActivity : ComponentActivity() {
     }
     private val installSourcesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val apk = pendingInstallApk
-        pendingInstallApk = null
         if (apk != null && apk.exists() && (Build.VERSION.SDK_INT < 26 || packageManager.canRequestPackageInstalls())) {
             openSystemInstaller(apk)
         } else {
+            pendingInstallApk = null
             apk?.delete()
+            updateLink.isEnabled = true
+            updateLink.text = "检查更新"
             toast("未授权安装，更新已取消")
         }
+    }
+    private val installerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        pendingInstallApk?.delete()
+        pendingInstallApk = null
+        updateLink.isEnabled = true
+        updateLink.text = "检查更新"
+        if (result.resultCode != Activity.RESULT_OK) toast("安装未完成，下载缓存已清理")
     }
     private val accents = mapOf(
         "conway" to 0xFF6EE7B7.toInt(),
@@ -270,6 +279,7 @@ class MainActivity : ComponentActivity() {
         val status = label("已下载 0%", 15f, Color.WHITE, false).apply { setPadding(dp(24), dp(16), dp(24), dp(16)) }
         val dialog = AlertDialog.Builder(this).setTitle("下载 v${release.version}").setView(status)
             .setNegativeButton("取消") { _, _ -> downloadCancelled = true }.create()
+        dialog.setOnCancelListener { downloadCancelled = true }
         dialog.show()
         Thread {
             var lastPercent = -1
@@ -298,7 +308,8 @@ class MainActivity : ComponentActivity() {
                     AlertDialog.Builder(this).setTitle("APK 校验通过")
                         .setMessage("即将打开 Android 系统安装界面，请确认更新。")
                         .setPositiveButton("继续安装") { _, _ -> requestSystemInstall(apk) }
-                        .setNegativeButton("取消") { _, _ -> apk.delete() }.show()
+                        .setNegativeButton("取消") { _, _ -> apk.delete() }
+                        .setOnCancelListener { apk.delete() }.show()
                 }.onFailure { error ->
                     if (!downloadCancelled) AlertDialog.Builder(this)
                         .setMessage(error.message ?: "下载或校验失败，请重试")
@@ -311,17 +322,34 @@ class MainActivity : ComponentActivity() {
     private fun requestSystemInstall(apk: File) {
         if (Build.VERSION.SDK_INT >= 26 && !packageManager.canRequestPackageInstalls()) {
             pendingInstallApk = apk
+            updateLink.isEnabled = false
+            updateLink.text = "安装处理中…"
             val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName"))
             runCatching { installSourcesLauncher.launch(intent) }
-                .onFailure { pendingInstallApk = null; apk.delete(); toast("无法打开安装授权设置") }
+                .onFailure {
+                    pendingInstallApk = null
+                    apk.delete()
+                    updateLink.isEnabled = true
+                    updateLink.text = "检查更新"
+                    toast("无法打开安装授权设置")
+                }
         } else {
             openSystemInstaller(apk)
         }
     }
 
     private fun openSystemInstaller(apk: File) {
-        runCatching { startActivity(updateManager.installationIntent(apk)) }
-            .onFailure { apk.delete(); toast("无法打开系统安装界面") }
+        pendingInstallApk = apk
+        updateLink.isEnabled = false
+        updateLink.text = "安装处理中…"
+        runCatching { installerLauncher.launch(updateManager.installationIntent(apk)) }
+            .onFailure {
+                pendingInstallApk = null
+                apk.delete()
+                updateLink.isEnabled = true
+                updateLink.text = "检查更新"
+                toast("无法打开系统安装界面")
+            }
     }
 
     @SuppressLint("SetJavaScriptEnabled")

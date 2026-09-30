@@ -215,6 +215,23 @@ def check_compact_accessibility() -> None:
             raise AssertionError("Emulator settings restore failed: " + "; ".join(restore_errors))
 
 
+def check_private_release_message() -> None:
+    root = hierarchy()
+    button = next((node for node in nodes(root) if node.attrib.get("text") == "检查更新"
+                   and node.attrib.get("package") == PACKAGE and node_visible(node)), None)
+    if button is None:
+        raise AssertionError("Manual update check is missing from the lobby")
+    tap(button)
+    for _ in range(20):
+        root = hierarchy()
+        if has_text(root, "暂无公开版本（仓库仍私有或尚未发布）"):
+            snapshot("update-private-repository")
+            adb("shell", "input", "keyevent", "KEYCODE_BACK")
+            return
+        time.sleep(2)
+    raise AssertionError("Private repository did not show the expected no-public-release message: " + visible_text(root))
+
+
 def wait_for_webview(game_id: str) -> ET.Element:
     for _ in range(12):
         root = hierarchy()
@@ -266,6 +283,7 @@ def main(apk: Path) -> None:
                 time.sleep(1)
             else:
                 raise AssertionError(f"Back did not return from {game_id} to native lobby")
+        check_private_release_message()
         check_compact_accessibility()
         print(json.dumps(results, ensure_ascii=False))
     except Exception as error:

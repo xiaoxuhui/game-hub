@@ -11,7 +11,6 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
-import java.net.URI
 import java.net.URL
 import java.security.MessageDigest
 
@@ -19,10 +18,9 @@ internal class ApkUpdateManager(private val context: Context) {
     fun downloadAndVerify(release: ReleaseApk, cancelled: () -> Boolean, progress: (Long, Long) -> Unit): File {
         val directory = File(context.cacheDir, "updates")
         if (!directory.isDirectory && !directory.mkdirs()) error("无法创建下载缓存")
-        val partial = File(directory, "game-hub.part.apk")
-        val ready = File(directory, "game-hub.apk")
-        partial.delete()
-        ready.delete()
+        val uniqueName = "game-hub-${release.assetId}-${System.nanoTime()}"
+        val partial = File(directory, "$uniqueName.part.apk")
+        val ready = File(directory, "$uniqueName.apk")
         try {
             var url = release.apiUrl
             var connection: HttpURLConnection? = null
@@ -42,32 +40,18 @@ internal class ApkUpdateManager(private val context: Context) {
                     error("APK 下载失败：HTTP $response")
                 }
                 val location = connection.getHeaderField("Location") ?: error("下载重定向缺少地址")
-                val next = URI(url).resolve(location).toString()
+                val next = UpdatePolicy.resolvedRedirect(url, location)
                 connection.disconnect()
                 url = next
             }
             val active = connection ?: error("无法连接下载地址")
             try {
                 if (active.contentLengthLong > release.size) error("APK 文件超过发布声明的大小")
-                val digest = MessageDigest.getInstance("SHA-256")
-                var total = 0L
-                active.inputStream.use { input ->
+                val (total, actualDigest) = active.inputStream.use { input ->
                     FileOutputStream(partial).use { output ->
-                        val buffer = ByteArray(64 * 1024)
-                        while (true) {
-                            if (cancelled()) error("已取消下载")
-                            val count = input.read(buffer)
-                            if (count < 0) break
-                            total += count
-                            if (total > release.size) error("APK 文件超过发布声明的大小")
-                            output.write(buffer, 0, count)
-                            digest.update(buffer, 0, count)
-                            progress(total, release.size)
-                        }
+                        DownloadPayload.copy(input, output, release.size, cancelled, progress)
                     }
                 }
-                if (cancelled()) error("已取消下载")
-                val actualDigest = digest.digest().joinToString("") { "%02x".format(it) }
                 val magic = partial.inputStream().use { input ->
                     ByteArray(4).also { bytes -> if (input.read(bytes) != 4) error("APK 文件无效") }
                 }
@@ -93,6 +77,7 @@ internal class ApkUpdateManager(private val context: Context) {
         val archiveCode = if (Build.VERSION.SDK_INT >= 28) archive.longVersionCode else archive.versionCode.toLong()
         val installedCode = if (Build.VERSION.SDK_INT >= 28) installed.longVersionCode else installed.versionCode.toLong()
         UpdatePolicy.verifyCandidate(release, size, digest, archive.packageName, context.packageName,
+            archive.versionName ?: "",
             archiveCode, installedCode, signerHashes(archive), signerHashes(installed))
     }
 
@@ -110,10 +95,11 @@ internal class ApkUpdateManager(private val context: Context) {
 
     fun installationIntent(apk: File): Intent {
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.updates", apk)
-        return Intent(Intent.ACTION_VIEW).apply {
+        return Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
             setDataAndType(uri, "application/vnd.android.package-archive")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             clipData = android.content.ClipData.newUri(context.contentResolver, "game-hub.apk", uri)
+            putExtra(Intent.EXTRA_RETURN_RESULT, true)
         }
     }
 }

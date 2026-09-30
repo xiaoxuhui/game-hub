@@ -39,11 +39,18 @@ internal object UpdatePolicy {
             (uri.port == -1 || uri.port == 443) && uri.fragment == null
     }.getOrDefault(false)
 
+    fun resolvedRedirect(current: String, location: String): String {
+        val next = URI(current).resolve(location).toString()
+        if (!allowDownloadUrl(next)) error("下载重定向地址不可信")
+        return next
+    }
+
     fun verifyCandidate(release: ReleaseApk, actualSize: Long, actualDigest: String, apkPackage: String,
-                        currentPackage: String, apkVersionCode: Long, currentVersionCode: Long,
+                        currentPackage: String, apkVersion: String, apkVersionCode: Long, currentVersionCode: Long,
                         apkSigners: Set<String>, currentSigners: Set<String>) {
         if (actualSize != release.size || !actualDigest.equals(release.sha256, true)) error("APK 大小或 SHA-256 校验失败")
         if (apkPackage != currentPackage) error("APK 包名与已安装的游戏大厅不一致")
+        if (apkVersion != release.version) error("APK 版本名与发布标签不一致")
         if (apkVersionCode <= currentVersionCode) error("APK 版本号没有递增")
         if (apkSigners.isEmpty() || currentSigners.isEmpty() || apkSigners != currentSigners) error("APK 签名与当前安装版本不一致")
     }

@@ -39,16 +39,19 @@ class UpdatePolicyTest {
                            "https://github.com:444/x")) {
             assertEquals(false, UpdatePolicy.allowDownloadUrl(url))
         }
+        assertEquals("https://release-assets.githubusercontent.com/file", UpdatePolicy.resolvedRedirect(
+            "https://api.github.com/repos/xiaoxuhui/game-hub/releases/assets/42", "https://release-assets.githubusercontent.com/file"))
+        assertThrows(IllegalStateException::class.java) { UpdatePolicy.resolvedRedirect("https://api.github.com/x", "http://evil.example/file") }
     }
 
     @Test fun rejectsWrongDigestPackageVersionAndSignerBeforeInstall() {
         val apk = UpdatePolicy.parseLatest(release(), "0.1.0")!!
         fun check(size: Long = apk.size, digest: String = apk.sha256, name: String = "com.xiaoxuhui.gamehub",
-                  code: Long = 2, signers: Set<String> = setOf("certA")) = UpdatePolicy.verifyCandidate(
-            apk, size, digest, name, "com.xiaoxuhui.gamehub", code, 1, signers, setOf("certA"))
+                  version: String = "0.2.0", code: Long = 2, signers: Set<String> = setOf("certA")) = UpdatePolicy.verifyCandidate(
+            apk, size, digest, name, "com.xiaoxuhui.gamehub", version, code, 1, signers, setOf("certA"))
         check()
         for (action in listOf<() -> Unit>({ check(size = 7) }, { check(digest = "b".repeat(64)) },
-                                           { check(name = "other.app") }, { check(code = 1) },
+                                           { check(name = "other.app") }, { check(version = "9.9.9") }, { check(code = 1) },
                                            { check(signers = setOf("certB")) })) {
             assertThrows(IllegalStateException::class.java) { action() }
         }
