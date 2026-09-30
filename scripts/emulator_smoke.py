@@ -258,6 +258,7 @@ def wait_for_webview(game_id: str) -> ET.Element:
                 (EVIDENCE / "light-webview-check.json").write_text(
                     json.dumps({"criterion": "document_title_only", "screenshot_review_required": True}), encoding="utf-8"
                 )
+                print("light WebView title only: review light.png for gameplay rendering", file=sys.stderr)
                 return root
         time.sleep(2)
     raise AssertionError(f"No populated WebView appeared for {game_id}")
@@ -265,6 +266,8 @@ def wait_for_webview(game_id: str) -> ET.Element:
 
 def main(apk: Path) -> None:
     EVIDENCE.mkdir(exist_ok=True)
+    for stale_result in ("light-webview-check.json", "error.txt"):
+        (EVIDENCE / stale_result).unlink(missing_ok=True)
     results = []
     try:
         adb("install", "-r", str(apk.resolve()), capture=False)
