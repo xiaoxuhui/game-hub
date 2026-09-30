@@ -4,6 +4,10 @@
 
 **当前状态：开发验证中，未发布。** 仓库目前保持私有；没有正式签名、版本标签或 GitHub Release。CI 产出的是调试 APK，仅用于检查和测试。
 
+![Android 模拟器中的游戏大厅](doc/screenshots/lobby.png)
+
+[四个项目的模拟器截图与测试范围](doc/测试报告.md)。
+
 ## 固定来源
 
 四个项目的完整 Git SHA、只读工作树基线与构建方式见 [来源基线](doc/来源基线.md) 和 [`sources.lock.json`](sources.lock.json)。构建脚本按 SHA 重新检出到独立目录，生成的资源清单逐文件记录 SHA-256。原四仓库不参与写入或构建。
@@ -31,7 +35,7 @@ cd android
 ./gradlew testDebugUnitTest assembleDebug
 ```
 
-调试 APK 位于 `android/app/build/outputs/apk/debug/app-debug.apk`。GitHub Actions 的 [Android 检查](.github/workflows/android-check.yml) 运行同类步骤，并上传调试 APK 与摘要；工作流不会发布。资源组装完成前，`audit:storage` 没有输入，需按上述顺序运行。`pnpm run bundle` 只接受干净的独立检出，防止把开发中未提交的文件误打进 APK。
+调试 APK 位于 `android/app/build/outputs/apk/debug/app-debug.apk`。GitHub Actions 的 [Android 检查](.github/workflows/android-check.yml) 运行同类步骤，并上传调试 APK 与摘要；[Android 模拟器烟测](.github/workflows/android-emulator-smoke.yml) 可手动运行，验证四入口和返回大厅，并上传截图与 UI 层级。工作流不会发布。资源组装完成前，`audit:storage` 没有输入，需按上述顺序运行。`pnpm run bundle` 只接受干净的独立检出，防止把开发中未提交的文件误打进 APK。
 
 ## 使用与数据
 
