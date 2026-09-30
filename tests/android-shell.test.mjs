@@ -40,6 +40,7 @@ test('four original export bridge names and a file chooser are wired', () => {
   assert.match(activity, /fun saveFile\(name: String, content: String\): Boolean/);
   assert.match(activity, /onShowFileChooser/);
   assert.match(activity, /FileChooserParams\.parseResult/);
-  assert.match(activity, /ActivityResultContracts\.CreateDocument/);
-  assert.match(activity, /fetch\(node\.href\)/);
+  assert.match(activity, /Intent\.ACTION_CREATE_DOCUMENT/);
+  assert.match(activity, /HTMLAnchorElement\.prototype\.click/);
+  assert.match(activity, /blob\.text\(\)/);
 });

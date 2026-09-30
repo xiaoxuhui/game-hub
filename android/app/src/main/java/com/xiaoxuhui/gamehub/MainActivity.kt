@@ -1,6 +1,7 @@
 package com.xiaoxuhui.gamehub
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
@@ -56,7 +57,8 @@ class MainActivity : ComponentActivity() {
         filePathCallback?.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data))
         filePathCallback = null
     }
-    private val saveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+    private val saveLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val uri = if (result.resultCode == Activity.RESULT_OK) result.data?.data else null
         val export = pendingExport
         pendingExport = null
         if (uri == null) {
@@ -395,7 +397,11 @@ class MainActivity : ComponentActivity() {
             val export = Export(FileNamePolicy.sanitize(name), content)
             pendingExport = export
             runOnUiThread {
-                runCatching { saveLauncher.launch(export.name) }
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType(FileNamePolicy.mimeType(export.name))
+                    .putExtra(Intent.EXTRA_TITLE, export.name)
+                runCatching { saveLauncher.launch(intent) }
                     .onFailure {
                         pendingExport = null
                         toast("无法打开保存对话框")
@@ -425,17 +431,36 @@ class MainActivity : ComponentActivity() {
             (function () {
               if (window.__gameHubExportBridge) return;
               window.__gameHubExportBridge = true;
+              var blobs = new Map();
+              var create = URL.createObjectURL.bind(URL);
+              var revoke = URL.revokeObjectURL.bind(URL);
+              URL.createObjectURL = function (blob) {
+                var url = create(blob);
+                blobs.set(url, blob);
+                return url;
+              };
+              URL.revokeObjectURL = function (url) {
+                blobs.delete(url);
+                return revoke(url);
+              };
+              function saveAnchor(anchor, event) {
+                if (!anchor || !anchor.getAttribute('download') || !anchor.href.startsWith('blob:')) return false;
+                var blob = blobs.get(anchor.href);
+                if (!blob) return false;
+                if (event) event.preventDefault();
+                blob.text().then(function (content) {
+                  window.__BRIDGE__.saveFile(anchor.getAttribute('download'), content);
+                }).catch(function () { window.__BRIDGE__.saveFile(anchor.getAttribute('download'), ''); });
+                return true;
+              }
+              var nativeClick = HTMLAnchorElement.prototype.click;
+              HTMLAnchorElement.prototype.click = function () {
+                if (!saveAnchor(this, null)) return nativeClick.call(this);
+              };
               document.addEventListener('click', function (event) {
-                var node = event.target;
-                while (node && node !== document && !(node.getAttribute && node.getAttribute('download'))) node = node.parentNode;
-                if (!node || node === document || !node.href || node.href.indexOf('blob:') !== 0) return;
-                event.preventDefault();
-                event.stopPropagation();
-                var name = node.getAttribute('download') || 'game-hub-export.json';
-                fetch(node.href).then(function (response) { return response.text(); }).then(function (content) {
-                  window.__BRIDGE__.saveFile(name, content);
-                }).catch(function () { window.__BRIDGE__.saveFile(name, ''); });
-              }, true);
+                var anchor = event.target && event.target.closest && event.target.closest('a[download]');
+                saveAnchor(anchor, event);
+              });
             })();
         """.trimIndent()
     }

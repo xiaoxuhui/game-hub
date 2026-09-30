@@ -6,4 +6,10 @@ internal object FileNamePolicy {
         val safe = if (cleaned.isBlank() || cleaned == "." || cleaned == "..") "game-hub-export.json" else cleaned
         return safe.take(120)
     }
+
+    fun mimeType(name: String): String = when {
+        name.endsWith(".csv", ignoreCase = true) -> "text/csv"
+        name.endsWith(".json", ignoreCase = true) -> "application/json"
+        else -> "text/plain"
+    }
 }

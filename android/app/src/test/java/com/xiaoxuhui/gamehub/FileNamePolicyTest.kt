@@ -15,4 +15,10 @@ class FileNamePolicyTest {
         assertEquals("game-hub-export.json", FileNamePolicy.sanitize("   "))
         assertEquals(120, FileNamePolicy.sanitize("a".repeat(200)).length)
     }
+
+    @Test fun preservesExportMimeType() {
+        assertEquals("text/csv", FileNamePolicy.mimeType("turing-machine-log.csv"))
+        assertEquals("application/json", FileNamePolicy.mimeType("project.JSON"))
+        assertEquals("text/plain", FileNamePolicy.mimeType("notes.txt"))
+    }
 }
