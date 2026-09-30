@@ -142,6 +142,7 @@ class MainActivity : ComponentActivity() {
 
     private fun buildLobby(): ScrollView {
         val scroll = ScrollView(this).apply { isFillViewport = true; isVerticalScrollBarEnabled = false }
+        val cardMinDp = 176 + ((resources.configuration.fontScale - 1f).coerceAtLeast(0f) * 72).toInt()
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val side = if (resources.configuration.screenWidthDp >= 600) dp(48) else dp(14)
@@ -157,7 +158,7 @@ class MainActivity : ComponentActivity() {
         for (rowIndex in 0..1) {
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
-                minimumHeight = dp(184)
+                minimumHeight = dp(cardMinDp + 8)
             }
             column.addView(row, LinearLayout.LayoutParams(-1, 0, 1f))
             for (columnIndex in 0..1) {
@@ -166,7 +167,7 @@ class MainActivity : ComponentActivity() {
                 val card = LinearLayout(this).apply {
                     orientation = LinearLayout.VERTICAL
                     gravity = Gravity.CENTER
-                    minimumHeight = dp(176)
+                    minimumHeight = dp(cardMinDp)
                     setPadding(dp(8), dp(12), dp(8), dp(12))
                     background = rounded(0xFF1B2330.toInt(), dp(16)).apply { setStroke(dp(1), accent) }
                     contentDescription = "${game.name}，版本 ${game.version}，提交 ${game.revision.take(10)}，打开"
@@ -187,9 +188,9 @@ class MainActivity : ComponentActivity() {
                     maxLines = 2
                     setPadding(0, dp(9), 0, 0)
                 })
-                card.addView(label("v${game.version}  ·  ${game.revision.take(8)}", 11f, MUTED, false).apply {
+                card.addView(label("v${game.version}  ·  ${game.revision.take(6)}", 9.5f, MUTED, false).apply {
                     gravity = Gravity.CENTER
-                    maxLines = 1
+                    maxLines = 2
                     setPadding(0, dp(4), 0, 0)
                 })
             }
