@@ -11,6 +11,22 @@ import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 
+ALLOWED_HOSTS = {"dl.google.com", "repo.maven.apache.org"}
+MAX_ARCHIVE_BYTES = 100 * 1024 * 1024
+MAX_NESTED_JAR_BYTES = 32 * 1024 * 1024
+
+
+def require_allowed_url(url: str) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
+        raise ValueError(f"Unexpected Maven URL: {url}")
+
+
+class AllowedRedirects(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        require_allowed_url(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
 
 def notice_entries(archive: zipfile.ZipFile) -> list[str]:
     return sorted(name for name in archive.namelist() if re.fullmatch(
@@ -22,21 +38,26 @@ def scan(row: dict[str, str]) -> dict[str, object]:
     coordinate = row["coordinate"]
     packaging = row["packaging"]
     pom_url = row["pom_url"]
-    if urlparse(pom_url).hostname not in {"dl.google.com", "repo.maven.apache.org"}:
-        raise ValueError(f"Unexpected Maven host: {pom_url}")
+    require_allowed_url(pom_url)
     if packaging == "pom":
         return {"coordinate": coordinate, "packaging": packaging, "archive": None}
     if packaging not in {"aar", "jar"} or not pom_url.endswith(".pom"):
         raise ValueError(f"Unexpected artifact type: {coordinate}: {packaging}")
     archive_url = pom_url[:-4] + "." + packaging
-    with urllib.request.urlopen(archive_url, timeout=60) as response:
-        data = response.read()
+    opener = urllib.request.build_opener(AllowedRedirects())
+    with opener.open(archive_url, timeout=60) as response:
+        require_allowed_url(response.geturl())
+        data = response.read(MAX_ARCHIVE_BYTES + 1)
+    if len(data) > MAX_ARCHIVE_BYTES:
+        raise ValueError(f"Archive too large: {coordinate}")
     with zipfile.ZipFile(io.BytesIO(data)) as outer:
         direct = notice_entries(outer)
         nested = []
         if packaging == "aar":
             for name in outer.namelist():
-                if name.endswith(".jar"):
+                if name.lower().endswith(".jar"):
+                    if outer.getinfo(name).file_size > MAX_NESTED_JAR_BYTES:
+                        raise ValueError(f"Nested JAR too large: {coordinate}: {name}")
                     with zipfile.ZipFile(io.BytesIO(outer.read(name))) as inner:
                         nested.extend(f"{name}:{entry}" for entry in notice_entries(inner))
     return {
@@ -59,7 +80,13 @@ def main() -> None:
     if len(rows) != 36 or len({row["coordinate"] for row in rows}) != 36:
         raise ValueError("Expected 36 unique resolved coordinates")
     results = [scan(row) for row in rows]
-    args.output_json.write_text(json.dumps(results, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    serialized = json.dumps(results, indent=2, ensure_ascii=False) + "\n"
+    if args.output_json.exists():
+        archived = json.loads(args.output_json.read_text(encoding="utf-8-sig"))
+        if archived != results:
+            raise ValueError("Scan differs from archived artifact hashes or NOTICE results")
+    else:
+        args.output_json.write_text(serialized, encoding="utf-8")
     archives = [item for item in results if item["archive"]]
     notices = [item for item in archives if item["notice_entries"] or item["nested_jar_notice_entries"]]
     print(f"Scanned {len(archives)} archives and {len(results) - len(archives)} POM-only coordinates; {len(notices)} with NOTICE entries")
