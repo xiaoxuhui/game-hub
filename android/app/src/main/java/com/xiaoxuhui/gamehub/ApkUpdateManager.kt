@@ -70,7 +70,7 @@ internal class ApkUpdateManager(private val context: Context) {
         }
     }
 
-    private fun verifyArchive(apk: File, release: ReleaseApk, size: Long, digest: String) {
+    internal fun verifyArchive(apk: File, release: ReleaseApk, size: Long, digest: String) {
         val manager = context.packageManager
         val flags = if (Build.VERSION.SDK_INT >= 28) PackageManager.GET_SIGNING_CERTIFICATES else PackageManager.GET_SIGNATURES
         val archive = manager.getPackageArchiveInfo(apk.absolutePath, flags) ?: error("下载的文件不是可识别的 APK")

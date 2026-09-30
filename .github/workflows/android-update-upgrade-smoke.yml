@@ -1,0 +1,85 @@
+name: Android update upgrade smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+          run_install: false
+      - run: pnpm test
+      - run: pnpm run bundle
+      - run: pnpm run verify:bundle
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-34 build-tools;34.0.0'
+      - name: Build installed app and instrumentation test
+        working-directory: android
+        run: ./gradlew assembleDebug assembleDebugAndroidTest --no-daemon
+      - name: Save base and test APKs, then build same-signer newer fixture
+        run: |
+          mkdir -p emulator-fixtures
+          cp android/app/build/outputs/apk/debug/app-debug.apk emulator-fixtures/base.apk
+          cp android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk emulator-fixtures/test.apk
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('android/app/build.gradle.kts')
+          text = path.read_text()
+          assert text.count('versionCode = 1') == 1
+          assert text.count('versionName = "0.1.0"') == 1
+          path.write_text(text.replace('versionCode = 1', 'versionCode = 2').replace('versionName = "0.1.0"', 'versionName = "0.2.0"'))
+          PY
+          cd android
+          ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../emulator-fixtures/fixture.apk
+          "$ANDROID_HOME/build-tools/34.0.0/aapt" dump badging ../emulator-fixtures/fixture.apk | grep "versionCode='2' versionName='0.2.0'"
+      - name: Free build cache space for AVD
+        run: |
+          du -sh "$HOME/.gradle/caches" || true
+          rm -rf "$HOME/.gradle/caches"
+          df -h "$HOME"
+          available_mb=$(df -Pm "$HOME" | awk 'NR == 2 {print $4}')
+          if [ "$available_mb" -lt 7800 ]; then
+            echo "Only ${available_mb} MB free; emulator requires more than 7373 MB" >&2
+            exit 1
+          fi
+      - name: Enable KVM on the runner
+        run: |
+          if [ -e /dev/kvm ]; then sudo chmod 666 /dev/kvm; fi
+      - name: Validate same-signer APK and upgrade preserving data
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          profile: pixel_2
+          ram-size: 2048M
+          disk-size: 2048M
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -partition-size 2048
+          pre-emulator-launch-script: bash scripts/check_emulator_disk.sh
+          script: bash scripts/update_upgrade_smoke.sh
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: game-hub-update-upgrade-evidence
+          path: update-upgrade-evidence/
+          if-no-files-found: ignore
