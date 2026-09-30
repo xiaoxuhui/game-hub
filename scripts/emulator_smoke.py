@@ -20,10 +20,10 @@ EVIDENCE = Path("emulator-evidence")
 GAME_MARKERS = {
     "conway": ("CELLULAR AUTOMATON", "代数"),
     "eml": ("数值栏", "计算"),
-    # WebView may expose only the fixed document title after the canvas tutorial auto-completes.
-    "light": ("第一束光", "关卡", "光的游戏 · Light Game"),
+    "light": ("第一束光", "关卡"),
     "turing": ("运行状态", "当前状态"),
 }
+LIGHT_DOCUMENT_TITLE = "光的游戏 · Light Game"
 
 
 def adb(*args: str, capture: bool = True) -> bytes:
@@ -247,6 +247,17 @@ def wait_for_webview(game_id: str) -> ET.Element:
             if any(error in visible_text(root) for error in ("资源缺失", "加载失败", "已阻止未登记", "内置资源清单不可用")):
                 raise AssertionError("Game displayed the native error state")
             if any(marker in visible_text(root) for marker in GAME_MARKERS[game_id]) or (game_id == "turing" and has_text(root, "图灵机实验台")):
+                if game_id == "light":
+                    (EVIDENCE / "light-webview-check.json").write_text(
+                        json.dumps({"criterion": "game_text"}), encoding="utf-8"
+                    )
+                return root
+            # UIAutomator may expose only the document title for the canvas game.
+            # This establishes document loading; inspect light.png to confirm gameplay rendering.
+            if game_id == "light" and has_text(root, LIGHT_DOCUMENT_TITLE):
+                (EVIDENCE / "light-webview-check.json").write_text(
+                    json.dumps({"criterion": "document_title_only", "screenshot_review_required": True}), encoding="utf-8"
+                )
                 return root
         time.sleep(2)
     raise AssertionError(f"No populated WebView appeared for {game_id}")
