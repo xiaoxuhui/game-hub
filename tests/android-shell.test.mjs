@@ -23,6 +23,16 @@ test('Manifest has one launcher and no extra Android permissions', () => {
   assert.ok(existsSync(join(root, 'android/gradle/wrapper/gradle-wrapper.jar')));
 });
 
+test('compact lobby uses four fixed source icons and clickable cards', () => {
+  const activity = text('android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt');
+  for (const id of ['conway', 'eml', 'light', 'turing']) {
+    assert.ok(existsSync(join(root, `android/app/src/main/res/drawable-nodpi/game_${id}.png`)));
+    assert.match(activity, new RegExp(`R\\.drawable\\.game_${id}`));
+  }
+  assert.match(activity, /contentDescription = "\$\{game\.name\}，版本/);
+  assert.doesNotMatch(activity, /"进入项目"/);
+});
+
 test('CI builds pinned sources and checks APK without a publish step', () => {
   const workflow = text('.github/workflows/android-check.yml');
   assert.match(workflow, /pnpm run bundle/);

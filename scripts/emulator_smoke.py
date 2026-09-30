@@ -76,7 +76,7 @@ def visible_text(root: ET.Element) -> str:
 
 
 def is_lobby(root: ET.Element) -> bool:
-    return any(node.attrib.get("text") == "进入项目" and node.attrib.get("package") == PACKAGE for node in nodes(root)) and not any(
+    return any(node.attrib.get("text") in {name for _, name in GAMES} and node.attrib.get("package") == PACKAGE for node in nodes(root)) and not any(
         node.attrib.get("class") == "android.webkit.WebView" for node in nodes(root)
     )
 
@@ -89,7 +89,7 @@ def tap(node: ET.Element) -> None:
     adb("shell", "input", "tap", str((left + right) // 2), str((top + bottom) // 2))
 
 
-def button_visible(node: ET.Element) -> bool:
+def node_visible(node: ET.Element) -> bool:
     match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.attrib.get("bounds", ""))
     if not match or node.attrib.get("visible-to-user") == "false":
         return False
@@ -104,11 +104,8 @@ def find_game_button(root: ET.Element, name: str):
         if label.attrib.get("text") != name:
             continue
         card = parents.get(label)
-        if card is None:
-            continue
-        for button in nodes(card):
-            if button.attrib.get("text") == "进入项目" and button.attrib.get("clickable") == "true" and button_visible(button):
-                return button
+        if card is not None and card.attrib.get("clickable") == "true" and node_visible(card):
+            return card
     return None
 
 
@@ -153,6 +150,8 @@ def main(apk: Path) -> None:
             time.sleep(1)
         else:
             raise AssertionError("Native lobby title or cards are missing")
+        if not all(has_text(root, name) for _, name in GAMES):
+            raise AssertionError("Four game cards are not all visible without scrolling")
         snapshot("lobby")
         for game_id, name in GAMES:
             button = None

@@ -24,6 +24,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
@@ -72,12 +73,6 @@ class MainActivity : ComponentActivity() {
                 .onFailure { toast("保存失败：${it.message ?: "未知错误"}") }
         }
     }
-    private val descriptions = mapOf(
-        "conway" to "在无限棋盘上探索生命演化",
-        "eml" to "公式、数值与计算树工作台",
-        "light" to "布置元件，让光抵达目标",
-        "turing" to "编程图灵机并挑战关卡"
-    )
     private val accents = mapOf(
         "conway" to 0xFF6EE7B7.toInt(),
         "eml" to 0xFFF8C56A.toInt(),
@@ -149,40 +144,65 @@ class MainActivity : ComponentActivity() {
         val scroll = ScrollView(this).apply { isFillViewport = true; isVerticalScrollBarEnabled = false }
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            val side = if (resources.configuration.screenWidthDp >= 600) dp(48) else dp(20)
-            setPadding(side, dp(28), side, dp(40))
+            val side = if (resources.configuration.screenWidthDp >= 600) dp(48) else dp(14)
+            setPadding(side, dp(16), side, dp(12))
         }
         scroll.addView(column, FrameLayout.LayoutParams(-1, -2))
-        column.addView(label("游戏大厅", 32f, Color.WHITE, true))
-        column.addView(label("四个项目，一个离线入口", 15f, MUTED, false).apply {
-            setPadding(0, dp(8), 0, dp(6))
+        column.addView(label("游戏大厅", 27f, Color.WHITE, true).apply {
+            setPadding(dp(6), 0, 0, dp(2))
         })
-        column.addView(label("合集 0.1.0  ·  ${bundleCommit.take(10)}", 12f, MUTED, false).apply {
-            setPadding(0, 0, 0, dp(20))
+        column.addView(label("合集 v0.1.0  ·  ${bundleCommit.take(10)}", 11f, MUTED, false).apply {
+            setPadding(dp(6), 0, 0, dp(10))
         })
-        for (game in games) {
-            val card = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(dp(18), dp(16), dp(18), dp(16))
-                background = rounded(0xFF1B2330.toInt(), dp(18))
+        for (rowIndex in 0..1) {
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                minimumHeight = dp(184)
             }
-            val layout = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(14) }
-            column.addView(card, layout)
-            card.addView(label(game.name, 21f, accents[game.id] ?: Color.WHITE, true))
-            card.addView(label(descriptions[game.id] ?: "离线项目", 14f, 0xFFE0E8F3.toInt(), false).apply {
-                setPadding(0, dp(7), 0, dp(7))
-            })
-            card.addView(label("v${game.version}  ·  ${game.revision.take(10)}", 12f, MUTED, false))
-            card.addView(Button(this).apply {
-                text = "进入项目"
-                isAllCaps = false
-                setTextColor(BACKGROUND)
-                background = rounded(accents[game.id] ?: Color.WHITE, dp(12))
-                setOnClickListener { openGame(game) }
-            }, LinearLayout.LayoutParams(-1, dp(48)).apply { topMargin = dp(14) })
+            column.addView(row, LinearLayout.LayoutParams(-1, 0, 1f))
+            for (columnIndex in 0..1) {
+                val game = games[rowIndex * 2 + columnIndex]
+                val accent = accents[game.id] ?: Color.WHITE
+                val card = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    gravity = Gravity.CENTER
+                    minimumHeight = dp(176)
+                    setPadding(dp(8), dp(12), dp(8), dp(12))
+                    background = rounded(0xFF1B2330.toInt(), dp(16)).apply { setStroke(dp(1), accent) }
+                    contentDescription = "${game.name}，版本 ${game.version}，提交 ${game.revision.take(10)}，打开"
+                    isClickable = true
+                    isFocusable = true
+                    setOnClickListener { openGame(game) }
+                }
+                row.addView(card, LinearLayout.LayoutParams(0, -1, 1f).apply { setMargins(dp(4), dp(4), dp(4), dp(4)) })
+                card.addView(ImageView(this).apply {
+                    setImageResource(iconFor(game.id))
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    background = rounded(BACKGROUND, dp(17))
+                    clipToOutline = true
+                    contentDescription = null
+                }, LinearLayout.LayoutParams(dp(76), dp(76)))
+                card.addView(label(game.name, 17f, Color.WHITE, true).apply {
+                    gravity = Gravity.CENTER
+                    maxLines = 2
+                    setPadding(0, dp(9), 0, 0)
+                })
+                card.addView(label("v${game.version}  ·  ${game.revision.take(8)}", 11f, MUTED, false).apply {
+                    gravity = Gravity.CENTER
+                    maxLines = 1
+                    setPadding(0, dp(4), 0, 0)
+                })
+            }
         }
-        column.addView(label("资源内置于应用；首次使用从新存档开始。", 12f, MUTED, false))
         return scroll
+    }
+
+    private fun iconFor(id: String) = when (id) {
+        "conway" -> R.drawable.game_conway
+        "eml" -> R.drawable.game_eml
+        "light" -> R.drawable.game_light
+        "turing" -> R.drawable.game_turing
+        else -> error("未知项目：$id")
     }
 
     @SuppressLint("SetJavaScriptEnabled")
