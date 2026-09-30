@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -245,6 +246,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun gameClient(game: Game): WebViewClient = object : WebViewClient() {
+        override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+            if (view === webView && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, assetPaths)) {
+                loadFailed = false
+                showLoading("正在打开${game.name}…")
+            }
+        }
+
         override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse {
             val uri = request.url
             if (!isAllowedAsset(uri)) return blockedResponse()
@@ -271,7 +279,13 @@ class MainActivity : ComponentActivity() {
                 if (game.id != "light" && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, assetPaths)) {
                     view.evaluateJavascript(exportBridgeJs(bridgeName(game.id)), null)
                 }
-                hideOverlay()
+                if (game.id == "turing" && Uri.parse(url).path?.endsWith("/campaign.html") == true) {
+                    view.evaluateJavascript(CAMPAIGN_MOBILE_FIT_JS) {
+                        if (view === webView && currentGame?.id == game.id && !loadFailed) hideOverlay()
+                    }
+                } else {
+                    hideOverlay()
+                }
             }
         }
 
@@ -427,6 +441,15 @@ class MainActivity : ComponentActivity() {
         private const val STATE_GAME = "game-hub.current-game"
         private val BACKGROUND = Color.rgb(16, 20, 28)
         private val MUTED = Color.rgb(164, 180, 201)
+        private val CAMPAIGN_MOBILE_FIT_JS = """
+            (function () {
+              if (document.getElementById('game-hub-campaign-fit')) return;
+              var style = document.createElement('style');
+              style.id = 'game-hub-campaign-fit';
+              style.textContent = '@media(max-width:980px){.course-layout > * {min-width:0}.level-sidebar{overflow-x:auto}}';
+              document.head.appendChild(style);
+            })();
+        """.trimIndent()
         private val EXPORT_BRIDGE_JS = """
             (function () {
               if (window.__gameHubExportBridge) return;
