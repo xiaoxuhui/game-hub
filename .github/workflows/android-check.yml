@@ -1,0 +1,89 @@
+name: Check Android game hub
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+          run_install: false
+
+      - name: Verify source lock and assembler
+        run: pnpm test
+
+      - name: Build four pinned sources in this isolated checkout
+        run: pnpm run bundle
+
+      - name: Verify bundle manifest and resource hashes
+        run: pnpm run verify:bundle
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-34 build-tools;34.0.0'
+
+      - name: Assemble debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Check APK permissions and included resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
+          "$AAPT" dump permissions "$APK" | tee "$RUNNER_TEMP/apk-permissions.txt"
+          if grep -q '^uses-permission' "$RUNNER_TEMP/apk-permissions.txt"; then
+            echo '::error title=Unexpected Android permission::APK must not request permissions'
+            exit 1
+          fi
+          unzip -Z1 "$APK" | grep '^assets/' | sort > "$RUNNER_TEMP/apk-assets.txt"
+          for path in \
+            assets/bundle-manifest.json \
+            assets/games/conway/index.html \
+            assets/games/eml/eml-workbench.html \
+            assets/games/light/index.html \
+            assets/games/turing/index.html \
+            assets/games/turing/campaign.html; do
+            grep -Fx "$path" "$RUNNER_TEMP/apk-assets.txt"
+          done
+          sha256sum "$APK" | tee android/app/build/outputs/apk/debug/apk-sha256.txt
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: game-hub-debug-apk
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/debug/apk-sha256.txt
+          if-no-files-found: error
+
+      - name: Upload build diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: game-hub-build-diagnostics
+          path: android/app/build/reports/**
+          if-no-files-found: ignore
