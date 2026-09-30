@@ -6,7 +6,7 @@ evidence=update-upgrade-evidence
 mkdir -p "$evidence"
 
 adb install -r emulator-fixtures/base.apk
-adb install -r emulator-fixtures/test.apk
+adb install -r -t emulator-fixtures/test.apk
 adb push emulator-fixtures/fixture.apk /data/local/tmp/game-hub-fixture.apk
 adb shell run-as "$package" mkdir -p cache/updates files
 adb shell run-as "$package" cp /data/local/tmp/game-hub-fixture.apk cache/updates/fixture.apk
