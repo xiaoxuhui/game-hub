@@ -76,7 +76,7 @@ def visible_text(root: ET.Element) -> str:
 
 
 def is_lobby(root: ET.Element) -> bool:
-    return any(node.attrib.get("text") in {name for _, name in GAMES} and node.attrib.get("package") == PACKAGE for node in nodes(root)) and not any(
+    return any(find_game_button(root, name) is not None for _, name in GAMES) and not any(
         node.attrib.get("class") == "android.webkit.WebView" for node in nodes(root)
     )
 
@@ -99,14 +99,35 @@ def node_visible(node: ET.Element) -> bool:
 
 
 def find_game_button(root: ET.Element, name: str):
-    parents = {child: parent for parent in root.iter() for child in parent}
-    for label in nodes(root):
-        if label.attrib.get("text") != name:
-            continue
-        card = parents.get(label)
-        if card is not None and card.attrib.get("clickable") == "true" and node_visible(card):
+    for card in nodes(root):
+        if (card.attrib.get("package") == PACKAGE and card.attrib.get("clickable") == "true"
+                and card.attrib.get("content-desc", "").startswith(f"{name}，版本") and node_visible(card)):
             return card
     return None
+
+
+def bounds(node: ET.Element) -> tuple[int, int, int, int]:
+    match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.attrib.get("bounds", ""))
+    if not match:
+        raise AssertionError(f"Invalid bounds: {node.attrib.get('bounds')}")
+    return tuple(map(int, match.groups()))
+
+
+def assert_all_cards_in_viewport(root: ET.Element) -> None:
+    scroll = next((node for node in nodes(root) if node.attrib.get("class") == "android.widget.ScrollView"
+                   and node.attrib.get("package") == PACKAGE), None)
+    if scroll is None:
+        raise AssertionError("Lobby scroll viewport is missing")
+    x1, y1, x2, y2 = bounds(scroll)
+    width, height = screen_size()
+    for _, name in GAMES:
+        card = find_game_button(root, name)
+        if card is None:
+            raise AssertionError(f"Lobby card is not visible: {name}")
+        left, top, right, bottom = bounds(card)
+        if not (max(0, x1) <= left < right <= min(width, x2)
+                and max(0, y1) <= top < bottom <= min(height, y2)):
+            raise AssertionError(f"Lobby card requires scrolling or is clipped: {name} {card.attrib['bounds']}")
 
 
 def screen_size() -> tuple[int, int]:
@@ -150,8 +171,7 @@ def main(apk: Path) -> None:
             time.sleep(1)
         else:
             raise AssertionError("Native lobby title or cards are missing")
-        if not all(has_text(root, name) for _, name in GAMES):
-            raise AssertionError("Four game cards are not all visible without scrolling")
+        assert_all_cards_in_viewport(root)
         snapshot("lobby")
         for game_id, name in GAMES:
             button = None
