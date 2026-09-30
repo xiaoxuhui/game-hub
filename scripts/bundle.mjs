@@ -191,13 +191,19 @@ function assemble(sourcesToBuild, root, output, bundleCommit) {
       if (existsSync(backup)) renameSync(backup, output);
       throw error;
     }
-    if (existsSync(backup)) cleanChild(buildRoot, backup);
-    cleanChild(buildRoot, staging);
+    for (const leftover of [backup, staging]) {
+      if (!existsSync(leftover)) continue;
+      try { cleanChild(buildRoot, leftover); }
+      catch (error) { console.warn(`Bundle complete; temporary cleanup failed: ${leftover}: ${error.message}`); }
+    }
     console.log(`Bundled ${sources.length} sources, ${manifest.files.length} files, commit ${bundleCommit}`);
     console.log(`Manifest SHA-256: ${sha256(readFileSync(join(output, 'bundle-manifest.json')))}`);
     return manifest;
   } catch (error) {
-    if (existsSync(staging)) cleanChild(buildRoot, staging);
+    if (existsSync(staging)) {
+      try { cleanChild(buildRoot, staging); }
+      catch (cleanupError) { console.warn(`Temporary cleanup failed: ${cleanupError.message}`); }
+    }
     throw error;
   }
 }
