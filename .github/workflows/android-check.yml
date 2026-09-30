@@ -84,6 +84,16 @@ jobs:
           done
           sha256sum "$APK" | tee android/app/build/outputs/apk/debug/apk-sha256.txt
 
+      - name: Verify packaged hashes, app identity and debug signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          python3 scripts/verify_apk.py "$APK" "$GITHUB_SHA"
+          AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
+          "$AAPT" dump badging "$APK" | grep -E "^package: name='com.xiaoxuhui.gamehub' versionCode='1' versionName='0.1.0'"
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" | grep -E '^Signer #1 certificate DN: CN=Android Debug'
+
       - uses: actions/upload-artifact@v5
         with:
           name: game-hub-debug-apk
