@@ -194,6 +194,16 @@ function assemble(sourcesToBuild, root, output, bundleCommit) {
       throw new Error('Missing or unexpected game-hub MIT license');
     }
     writeFileSync(join(payload, 'games', 'LICENSE'), readFileSync(hubLicense, 'utf8').replace(/\r\n/g, '\n'));
+    const notices = join(root, 'THIRD_PARTY_NOTICES.md');
+    const apacheLicense = join(root, 'licenses', 'Apache-2.0.txt');
+    if (!existsSync(notices) || !readFileSync(notices, 'utf8').startsWith('# 第三方许可与来源')) {
+      throw new Error('Missing third-party notices');
+    }
+    if (!existsSync(apacheLicense) || !/Apache License\s+Version 2\.0/.test(readFileSync(apacheLicense, 'utf8'))) {
+      throw new Error('Missing Apache 2.0 license');
+    }
+    copyFileSync(notices, join(payload, 'games', 'THIRD_PARTY_NOTICES.md'));
+    copyFileSync(apacheLicense, join(payload, 'games', 'Apache-2.0.txt'));
     const manifest = buildManifest(join(payload, 'games'), sources, bundleCommit);
     writeFileSync(join(payload, 'bundle-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
     if (existsSync(output)) renameSync(output, backup);

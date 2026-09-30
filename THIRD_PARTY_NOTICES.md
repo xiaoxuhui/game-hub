@@ -1,6 +1,8 @@
 # 第三方许可与来源
 
-合集打包以下四个固定来源的网页资源。四个固定提交都包含 MIT `LICENSE`，其版权声明均为 `Copyright (c) 2026 xiaoxuhui`。构建会将每个来源的许可文本放入 `assets/games/<id>/LICENSE`，并将本仓库许可文本放入 `assets/games/LICENSE`。完整 SHA 见 [`sources.lock.json`](sources.lock.json)，许可文本与运行资源的摘要都在构建生成的 `bundle-manifest.json` 中。
+本文件对应游戏大厅 **0.2.0 发布候选**。随 APK 一同放在 `assets/games/THIRD_PARTY_NOTICES.md`；Apache 2.0 完整文本位于 `assets/games/Apache-2.0.txt`，本仓库对应文件为 [`licenses/Apache-2.0.txt`](licenses/Apache-2.0.txt)。合集 MIT 文本与四份来源 MIT 文本也分别放在 APK 的 `assets/games/LICENSE` 和 `assets/games/<id>/LICENSE`。这些文件均纳入 `bundle-manifest.json` 的逐文件 SHA-256 校验。
+
+## 四个固定游戏来源（MIT）
 
 | 来源 | 固定版本 | 许可 |
 |---|---|---|
@@ -9,4 +11,49 @@
 | [light_game](https://github.com/xiaoxuhui/light_game) | 1.2.0 | MIT |
 | [turing-machine-simulator](https://github.com/xiaoxuhui/turing-machine-simulator) | 0.5.0 | MIT |
 
-构建阶段使用 Node.js、pnpm、Vite、TypeScript、Android Gradle Plugin 与 Gradle；它们不作为源代码目录复制进 APK。APK 使用 AndroidX Core、Activity、WebKit 和 Kotlin 运行库。正式对外分发前仍需从最终 APK 的依赖清单复核它们的精确版本及许可证，并随分发包提供所需的许可文本。本文件目前是源码来源清单，不冒充最终发行版的完整第三方许可清单。
+四个固定提交的完整 Git SHA 见 [`sources.lock.json`](sources.lock.json)，每个提交均包含其 MIT `LICENSE`，版权声明为 `Copyright (c) 2026 xiaoxuhui`。组装时从固定提交复制许可文本，不读取四个原工作树。
+
+## Android 运行依赖（Apache License 2.0）
+
+以下是 [未签名 Release 候选 CI](https://github.com/xiaoxuhui/game-hub/actions/runs/36756586701) 的 `releaseRuntimeClasspath` 所解析的坐标；它是依赖图清单，包含仅作元数据或平台约束的坐标，不声称每项都以独立文件存在于最终 APK。逐项 Maven POM 许可字段均为 Apache 2.0；`com.google.guava:listenablefuture` 的许可由其 `guava-parent:26.0-android` POM 继承。来源分别为 [AndroidX](https://android.googlesource.com/platform/frameworks/support/)、[Kotlin 标准库](https://github.com/JetBrains/kotlin)、[Kotlin 协程](https://github.com/Kotlin/kotlinx.coroutines)、[JetBrains Annotations](https://github.com/JetBrains/java-annotations) 和 [Guava](https://github.com/google/guava)。
+
+```text
+androidx.activity:activity:1.9.2
+androidx.activity:activity-ktx:1.9.2
+androidx.annotation:annotation:1.6.0
+androidx.annotation:annotation-experimental:1.4.0
+androidx.annotation:annotation-jvm:1.6.0
+androidx.arch.core:core-common:2.2.0
+androidx.arch.core:core-runtime:2.2.0
+androidx.collection:collection:1.0.0
+androidx.concurrent:concurrent-futures:1.1.0
+androidx.core:core:1.13.1
+androidx.core:core-ktx:1.13.1
+androidx.interpolator:interpolator:1.0.0
+androidx.lifecycle:lifecycle-common:2.6.2
+androidx.lifecycle:lifecycle-livedata-core:2.6.2
+androidx.lifecycle:lifecycle-runtime:2.6.2
+androidx.lifecycle:lifecycle-runtime-ktx:2.6.2
+androidx.lifecycle:lifecycle-viewmodel:2.6.2
+androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2
+androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2
+androidx.profileinstaller:profileinstaller:1.3.1
+androidx.savedstate:savedstate:1.2.1
+androidx.savedstate:savedstate-ktx:1.2.1
+androidx.startup:startup-runtime:1.1.1
+androidx.tracing:tracing:1.0.0
+androidx.versionedparcelable:versionedparcelable:1.1.1
+androidx.webkit:webkit:1.11.0
+com.google.guava:listenablefuture:1.0
+org.jetbrains:annotations:13.0
+org.jetbrains.kotlin:kotlin-stdlib:1.9.24
+org.jetbrains.kotlin:kotlin-stdlib-common:1.9.24
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0
+org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4
+org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
+org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
+org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
+```
+
+构建阶段使用 Node.js、pnpm、Vite、TypeScript、Android Gradle Plugin 与 Gradle；这些工具不作为运行依赖复制进 APK。每次正式候选变更依赖后需重新生成依赖图、核对许可并更新此文件。

@@ -46,7 +46,10 @@ def main(apk_path: Path, commit: str) -> None:
         game_assets = set(names) - generated_profiles
         if game_assets != expected_assets:
             raise ValueError(f"APK has missing or unregistered game assets: {sorted(game_assets ^ expected_assets)}")
-        for path in ["games/LICENSE", *(f"games/{game_id}/LICENSE" for game_id in source_ids)]:
+        for path in [
+            "games/LICENSE", "games/THIRD_PARTY_NOTICES.md", "games/Apache-2.0.txt",
+            *(f"games/{game_id}/LICENSE" for game_id in source_ids),
+        ]:
             if f"assets/{path}" not in expected_assets:
                 raise ValueError(f"Missing bundled license: {path}")
     print(f"Verified {len(expected_sources)} sources and {len(expected_assets) - 1} APK resources for {commit}")
