@@ -41,8 +41,11 @@ def main(apk_path: Path, commit: str) -> None:
             data = apk.read(packaged_path)
             if len(data) != item["bytes"] or hashlib.sha256(data).hexdigest() != item["sha256"]:
                 raise ValueError(f"APK resource differs from manifest: {path}")
-        if set(names) != expected_assets:
-            raise ValueError(f"APK has missing or unregistered assets: {sorted(set(names) ^ expected_assets)}")
+        # Release builds may add Android's generated startup profile beside our locked game assets.
+        generated_profiles = {"assets/dexopt/baseline.prof", "assets/dexopt/baseline.profm"}
+        game_assets = set(names) - generated_profiles
+        if game_assets != expected_assets:
+            raise ValueError(f"APK has missing or unregistered game assets: {sorted(game_assets ^ expected_assets)}")
         for path in ["games/LICENSE", *(f"games/{game_id}/LICENSE" for game_id in source_ids)]:
             if f"assets/{path}" not in expected_assets:
                 raise ValueError(f"Missing bundled license: {path}")
