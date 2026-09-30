@@ -52,9 +52,10 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
-          target: google_apis
+          target: default
           arch: x86_64
-          profile: Nexus 6
+          profile: pixel_2
+          ram-size: 2048M
           disk-size: 2048M
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -partition-size 2048
           pre-emulator-launch-script: bash scripts/check_emulator_disk.sh

@@ -184,7 +184,7 @@ def main(apk: Path) -> None:
         except Exception:
             pass
         try:
-            (EVIDENCE / "logcat.txt").write_bytes(adb("logcat", "-d", "-t", "600"))
+            (EVIDENCE / "logcat.txt").write_bytes(adb("logcat", "-d", "-t", "12000"))
         except Exception:
             pass
         raise
