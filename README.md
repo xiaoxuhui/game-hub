@@ -2,7 +2,7 @@
 
 一个离线 Android 应用，把康威生命游戏、EML 计算台、光学游戏和图灵机实验台装进同一个 APK。Android 原生首页显示四个项目及固定来源版本；游戏网页资源内置，离线可用。首页另有用户手动触发的 GitHub Release 更新查询。
 
-**当前状态：开发验证中，未发布。** 仓库目前保持私有；没有正式签名、版本标签或 GitHub Release。CI 产出的是调试 APK，仅用于检查和测试。
+**当前状态：0.2.0 发布候选验证中，未发布。** 仓库目前保持私有；没有版本标签或 GitHub Release。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。
 
 ![Android 模拟器中的游戏大厅](doc/screenshots/lobby.png)
 
