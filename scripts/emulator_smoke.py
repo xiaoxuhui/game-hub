@@ -144,6 +144,30 @@ def scroll_down() -> None:
     time.sleep(1)
 
 
+def check_compact_accessibility() -> None:
+    adb("shell", "wm", "size", "320x568")
+    adb("shell", "settings", "put", "system", "font_scale", "1.5")
+    adb("shell", "am", "force-stop", PACKAGE)
+    adb("shell", "am", "start", "-n", f"{PACKAGE}/.MainActivity")
+    try:
+        root = hierarchy()
+        if not is_lobby(root):
+            raise AssertionError("Compact layout did not show native lobby")
+        snapshot("lobby-small-large-font-top")
+        for _, name in GAMES:
+            for _ in range(6):
+                root = hierarchy()
+                if find_game_button(root, name) is not None:
+                    break
+                scroll_down()
+            else:
+                raise AssertionError(f"Compact layout cannot reach card: {name}")
+        snapshot("lobby-small-large-font-bottom")
+    finally:
+        adb("shell", "wm", "size", "reset")
+        adb("shell", "settings", "put", "system", "font_scale", "1.0")
+
+
 def wait_for_webview(game_id: str) -> ET.Element:
     for _ in range(12):
         root = hierarchy()
@@ -195,6 +219,7 @@ def main(apk: Path) -> None:
                 time.sleep(1)
             else:
                 raise AssertionError(f"Back did not return from {game_id} to native lobby")
+        check_compact_accessibility()
         print(json.dumps(results, ensure_ascii=False))
     except Exception as error:
         (EVIDENCE / "error.txt").write_text(str(error), encoding="utf-8")
