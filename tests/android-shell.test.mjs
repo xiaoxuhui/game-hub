@@ -31,3 +31,15 @@ test('CI builds pinned sources and checks APK without a publish step', () => {
   assert.match(workflow, /dump permissions/);
   assert.doesNotMatch(workflow, /action-gh-release|refs\/tags\/|deploy/);
 });
+
+test('four original export bridge names and a file chooser are wired', () => {
+  const activity = text('android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt');
+  for (const bridge of ['ConwayAndroid', 'EMLAndroid', 'LightAndroid', 'TuringAndroid']) {
+    assert.ok(activity.includes(`"${bridge}"`), `${bridge} is missing`);
+  }
+  assert.match(activity, /fun saveFile\(name: String, content: String\): Boolean/);
+  assert.match(activity, /onShowFileChooser/);
+  assert.match(activity, /FileChooserParams\.parseResult/);
+  assert.match(activity, /ActivityResultContracts\.CreateDocument/);
+  assert.match(activity, /fetch\(node\.href\)/);
+});

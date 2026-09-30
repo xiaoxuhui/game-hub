@@ -14,6 +14,8 @@ import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.JsResult
+import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -24,8 +26,10 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -35,6 +39,7 @@ import java.io.ByteArrayInputStream
 
 class MainActivity : ComponentActivity() {
     private data class Game(val id: String, val name: String, val version: String, val revision: String, val entry: String)
+    private data class Export(val name: String, val content: String)
 
     private lateinit var root: FrameLayout
     private lateinit var lobby: ScrollView
@@ -45,6 +50,25 @@ class MainActivity : ComponentActivity() {
     private var games: List<Game> = emptyList()
     private var assetPaths: Set<String> = emptySet()
     private var bundleCommit = ""
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    @Volatile private var pendingExport: Export? = null
+    private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        filePathCallback?.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data))
+        filePathCallback = null
+    }
+    private val saveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        val export = pendingExport
+        pendingExport = null
+        if (uri == null) {
+            toast("已取消保存")
+        } else if (export != null) {
+            runCatching {
+                contentResolver.openOutputStream(uri)?.use { it.write(export.content.toByteArray(Charsets.UTF_8)) }
+                    ?: error("无法写入所选文件")
+            }.onSuccess { toast("已保存 ${export.name}") }
+                .onFailure { toast("保存失败：${it.message ?: "未知错误"}") }
+        }
+    }
     private val descriptions = mapOf(
         "conway" to "在无限棋盘上探索生命演化",
         "eml" to "公式、数值与计算树工作台",
@@ -182,6 +206,23 @@ class MainActivity : ComponentActivity() {
             }
             webViewClient = gameClient(game)
             webChromeClient = object : WebChromeClient() {
+                override fun onShowFileChooser(
+                    webView: WebView,
+                    filePathCallback: ValueCallback<Array<Uri>>,
+                    fileChooserParams: FileChooserParams
+                ): Boolean {
+                    this@MainActivity.filePathCallback?.onReceiveValue(null)
+                    this@MainActivity.filePathCallback = filePathCallback
+                    return try {
+                        fileChooserLauncher.launch(fileChooserParams.createIntent())
+                        true
+                    } catch (error: Exception) {
+                        this@MainActivity.filePathCallback = null
+                        toast("无法打开文件选择器")
+                        false
+                    }
+                }
+
                 override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
                     AlertDialog.Builder(this@MainActivity)
                         .setMessage(message)
@@ -192,6 +233,7 @@ class MainActivity : ComponentActivity() {
                     return true
                 }
             }
+            addJavascriptInterface(SaveBridge(), bridgeName(game.id))
         }
         webView = view
         root.addView(view, FrameLayout.LayoutParams(-1, -1))
@@ -216,14 +258,19 @@ class MainActivity : ComponentActivity() {
             if (uri.scheme == "https" || uri.scheme == "http") {
                 if (uri.host != ASSET_DOMAIN) runCatching {
                     startActivity(Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE))
-                }
+                }.onFailure { toast("无法打开外部链接") }
             }
             if (uri.host == ASSET_DOMAIN) showError("已阻止未登记或跨项目的页面跳转")
             return true
         }
 
         override fun onPageFinished(view: WebView, url: String) {
-            if (view === webView && currentGame?.id == game.id && !loadFailed) hideOverlay()
+            if (view === webView && currentGame?.id == game.id && !loadFailed) {
+                if (game.id != "light" && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, assetPaths)) {
+                    view.evaluateJavascript(exportBridgeJs(bridgeName(game.id)), null)
+                }
+                hideOverlay()
+            }
         }
 
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
@@ -303,6 +350,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun clearWebView() {
+        filePathCallback?.onReceiveValue(null)
+        filePathCallback = null
         webView?.let { view ->
             root.removeView(view)
             view.stopLoading()
@@ -335,10 +384,59 @@ class MainActivity : ComponentActivity() {
         cornerRadius = radius.toFloat()
     }
 
+    private inner class SaveBridge {
+        @JavascriptInterface
+        @Synchronized
+        fun saveFile(name: String, content: String): Boolean {
+            if (pendingExport != null || content.isEmpty()) {
+                runOnUiThread { toast(if (content.isEmpty()) "导出内容为空" else "请先完成当前保存") }
+                return false
+            }
+            val export = Export(FileNamePolicy.sanitize(name), content)
+            pendingExport = export
+            runOnUiThread {
+                runCatching { saveLauncher.launch(export.name) }
+                    .onFailure {
+                        pendingExport = null
+                        toast("无法打开保存对话框")
+                    }
+            }
+            return true
+        }
+    }
+
+    private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    private fun bridgeName(id: String) = when (id) {
+        "conway" -> "ConwayAndroid"
+        "eml" -> "EMLAndroid"
+        "light" -> "LightAndroid"
+        "turing" -> "TuringAndroid"
+        else -> error("未知项目：$id")
+    }
+
+    private fun exportBridgeJs(bridge: String) = EXPORT_BRIDGE_JS.replace("__BRIDGE__", bridge)
+
     companion object {
         private const val ASSET_DOMAIN = "appassets.androidplatform.net"
         private const val STATE_GAME = "game-hub.current-game"
         private val BACKGROUND = Color.rgb(16, 20, 28)
         private val MUTED = Color.rgb(164, 180, 201)
+        private val EXPORT_BRIDGE_JS = """
+            (function () {
+              if (window.__gameHubExportBridge) return;
+              window.__gameHubExportBridge = true;
+              document.addEventListener('click', function (event) {
+                var node = event.target;
+                while (node && node !== document && !(node.getAttribute && node.getAttribute('download'))) node = node.parentNode;
+                if (!node || node === document || !node.href || node.href.indexOf('blob:') !== 0) return;
+                event.preventDefault();
+                event.stopPropagation();
+                var name = node.getAttribute('download') || 'game-hub-export.json';
+                fetch(node.href).then(function (response) { return response.text(); }).then(function (content) {
+                  window.__BRIDGE__.saveFile(name, content);
+                }).catch(function () { window.__BRIDGE__.saveFile(name, ''); });
+              }, true);
+            })();
+        """.trimIndent()
     }
 }

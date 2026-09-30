@@ -34,6 +34,9 @@ jobs:
       - name: Verify bundle manifest and resource hashes
         run: pnpm run verify:bundle
 
+      - name: Audit shared-origin storage keys
+        run: pnpm run audit:storage
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
