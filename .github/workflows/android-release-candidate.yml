@@ -52,15 +52,29 @@ jobs:
           AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
           "$AAPT" dump badging "$APK" | grep -E "^package: name='com\.xiaoxuhui\.gamehub' versionCode='2' versionName='0\.2\.0'([[:space:]]|$)"
           "$AAPT" dump permissions "$APK" > "$RUNNER_TEMP/apk-permissions.txt"
+          grep -Fx "uses-permission: name='android.permission.INTERNET'" "$RUNNER_TEMP/apk-permissions.txt"
+          grep -Fx "uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'" "$RUNNER_TEMP/apk-permissions.txt"
           grep '^uses-permission' "$RUNNER_TEMP/apk-permissions.txt" | \
             grep -v -E "^uses-permission: name='(com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION|android.permission.INTERNET|android.permission.REQUEST_INSTALL_PACKAGES)'$" \
             > "$RUNNER_TEMP/unexpected-permissions.txt" || true
           test ! -s "$RUNNER_TEMP/unexpected-permissions.txt"
           mkdir -p release-candidate
           cp "$APK" release-candidate/game-hub-unsigned.apk
-          sha256sum release-candidate/game-hub-unsigned.apk > release-candidate/unsigned-sha256.txt
+          (cd release-candidate && sha256sum game-hub-unsigned.apk > unsigned-sha256.txt)
           cp "$RUNNER_TEMP/apk-permissions.txt" release-candidate/permissions.txt
-          test -z "$("$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" 2>/dev/null || true)"
+          APKSIGNER="$ANDROID_HOME/build-tools/34.0.0/apksigner"
+          "$APKSIGNER" version
+          set +e
+          signature_output=$("$APKSIGNER" verify --verbose "$APK" 2>&1)
+          signature_status=$?
+          set -e
+          test "$signature_status" -ne 0
+          printf '%s\n' "$signature_output" | grep -F 'DOES NOT VERIFY'
+          python3 - "$APK" <<'PY'
+          import re, sys, zipfile
+          with zipfile.ZipFile(sys.argv[1]) as apk:
+              assert not any(re.fullmatch(r'META-INF/[^/]+\.(?:RSA|DSA|EC|SF)', name, re.I) for name in apk.namelist())
+          PY
       - name: Record bundled Android runtime dependencies
         working-directory: android
         run: ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --no-daemon > ../release-candidate/releaseRuntimeClasspath.txt
