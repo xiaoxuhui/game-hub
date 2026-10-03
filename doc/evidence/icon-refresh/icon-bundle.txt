@@ -1,0 +1,46 @@
+Built dist/eml-workbench.html (105046 bytes)
+✓ Lockfile passes supply-chain policies (verified 45d ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +52
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: D:\.pnpm-store\v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 52, reused 52, downloaded 0, added 52, done
+
+devDependencies:
++ typescript 5.9.3
++ vite 7.3.6
++ vitest 3.2.7
+
+Done in 1s using pnpm v11.19.0
+
+   ╭─────────────────────────────────────────╮
+   │                                         │
+   │   Update available! 11.19.0 → 12.8.1.   │
+   │   Changelog: https://pnpm.io/v/12.8.1   │
+   │    To update, run: pnpm add -g pnpm     │
+   │                                         │
+   ╰─────────────────────────────────────────╯
+
+$ tsc -b
+$ vite build --base=./
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 22 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        0.58 kB │ gzip:  0.38 kB
+dist/campaign.html                     0.59 kB │ gzip:  0.39 kB
+dist/assets/route-worker--cIr4Dp-.js   2.82 kB
+dist/assets/campaign-Qcp10PZC.css      7.92 kB │ gzip:  2.37 kB
+dist/assets/main-BJgtYmnF.css          9.75 kB │ gzip:  2.94 kB
+dist/assets/core-BmS44wlX.js           3.57 kB │ gzip:  1.58 kB
+dist/assets/campaign-DqPQaVHE.js      25.85 kB │ gzip:  9.12 kB
+dist/assets/main-Cq8er0ZM.js          30.14 kB │ gzip: 11.22 kB
+✓ built in 222ms
+Bundled 4 sources, 40 files, commit de3607b3a6698834613f58a067b3ff932ec7ea55
+Manifest SHA-256: 177bfd7c361396e03d37f593b1a7aa4cd2813145194177012906a6316e7a7d06
+(node:26068) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)

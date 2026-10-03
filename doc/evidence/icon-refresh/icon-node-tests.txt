@@ -1,0 +1,25 @@
+✔ Android application identity and minimum API stay independent of source APKs (1.6467ms)
+✔ Manifest has one launcher and only the planned update permission (1.7265ms)
+✔ compact lobby uses four fixed source icons and clickable cards (0.8001ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.3118ms)
+✔ four original export bridge names and a file chooser are wired (0.4053ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: 2c7df29151bb8fad186527a2b15fd9d1690a70b671054f9dd221164619db6167
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.0045ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (1.865ms)
+✔ HTML references exclude external and fragment links while preserving local assets (1.5515ms)
+✔ missing local HTML reference stops bundling (26.6138ms)
+✔ manifest hashes are stable and change when a resource changes (7.2115ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (3533.404ms)
+✔ detached programmatic Blob click saves content before immediate revoke (4.6342ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (1.3352ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3767.1061

@@ -4,4 +4,4 @@
 
 Android 实际资源为 `res/mipmap-anydpi/ic_launcher.xml` 的普通图标、`res/drawable/ic_launcher_foreground.xml` 的透明前景和 `res/drawable/ic_launcher_monochrome.xml` 的单色镂空层。Manifest 使用同名 mipmap：API24–25 选择普通矢量，API26–32 选择 v26 adaptive，API33+ 选择 v33 adaptive/monochrome。没有单独设置 roundIcon；系统使用同一个自适应图标作形状裁切。
 
-SVG 和 Android 前景路径一致；修改图案时同步三份 Android 矢量及 SVG。所有层采用 108×108 画布，主要图形处于中心安全区域。实际预览和编译证据见图标改版记录。
+SVG 和 Android 前景路径一致；修改图案时同步三份 Android 矢量及 SVG。所有层采用 108×108 画布，主要图形处于中心安全区域。`store-icon-512.png` 是原生矢量的导出预览，不是另一套 Android 运行资源。实际预览和编译证据见[图标改版记录](../../doc/大厅图标改版记录.md)。

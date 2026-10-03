@@ -1,0 +1,11 @@
+Implementation: de3607b3a6698834613f58a067b3ff932ec7ea55
+Independent checkout: D:\soft\game-hub-build-icon-20261003
+node --test: 13 tests, 13 pass, 0 fail
+Gradle testDebugUnitTest: 13 tests, 0 failures, 0 errors
+Gradle testDebugUnitTest assembleDebug: exit 0, BUILD SUCCESSFUL in 1m 13s
+APK SHA256: 17d8ead3fae1f044815435bf4f0374516e0e62b921af2675742b621fe35cbef2
+APK: versionCode=2, versionName=0.2.0, debug verification candidate only
+adb -s emulator-5560 install -r: Success; dedicated Android 34 AVD
+Actual launcher: com.android.launcher3; colored icon visible
+Themed launcher mode: unavailable in this AOSP launcher; not verified
+Resource package: 4 pinned sources, 40 files verified

@@ -1,0 +1,5 @@
+package: com.xiaoxuhui.gamehub
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'
+permission: com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission: name='com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
