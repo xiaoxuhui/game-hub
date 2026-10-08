@@ -36,3 +36,14 @@
 ## 结论
 
 当前首切片的基本展示与离线打开证据可信；上述 UI 线程磁盘提交、外部流程门禁与确认框生命周期问题需批改并在提交后复审，再进入下一切片。主仓库受审时 `HEAD` 为 `529a9884e22fc370a00e35c2a8477c128d76f28b`，工作树干净。
+
+## 797eac9 批改复审（2026-10-09）
+
+- 批改提交：`797eac905be8b76f7da40dd0a2b591778a2037bb`，已推送；主仓库工作树干净。只读比较主仓库与独立构建目录的 `MainActivity`、`UpdateCoordinator`、`UpdateTaskGate`、两份新增/修改测试，五个文件的 SHA-256 均一致。独立目录的 JVM XML 汇总 43 项、0 失败/错误；设备日志显示 6 项、0 失败与 `BUILD SUCCESSFUL`。没有把这 6 项当作真实 SAF、系统安装或移动网络端到端证据。
+- 原 P1 同步写盘：**主路径已修**。`UpdateCoordinator.kt:89-105` 先保守撤销权限，在单工作线程做 `SharedPreferences.commit()`，成功后才赋予新增许可；失败恢复旧设置。详情保存期间禁用两项控件。StrictMode 设备测试在 Activity 主线程调用设置未记录同步写盘违规。
+- 原 P1 外部流程门禁：**同一 Activity 的主路径已修**。`UpdateTaskGate.kt:25-28` 的 `externalFlowPending` 使大厅下载门禁关闭并取消在途 token；`MainActivity.kt:72-111,176-179,395-427,520-530,718-730` 在建立和释放 pending 时刷新 presence。JVM 负例覆盖 pending 时三类下载入口拒绝和释放后恢复。真实 SAF/安装结果与旋转组合仍待 M6 验证。
+- 原 P2 确认框生命周期：**已修**。`MainActivity.kt:181-185,353-358,386-392` 将安装/计费确认框登记并在 onStop dismiss；点击回调复核 Activity 前台状态，APK 安装还复核当前 ready 文件。设备测试通过旋转验证统一登记的确认框关闭、重建 Activity 不重开。真实确认流程仍待 M6。
+
+### 新发现的残余 P2：保存桥晚回调可能报告成功却不启动保存
+
+`MainActivity.kt:711-732` 中 `SaveBridge.saveFile()` 在 WebView 线程把 `pendingExport` 设为非空并立即返回 `true`。如果 `runOnUiThread` 里的任务轮到执行时 Activity 已停止或销毁，`:719` 将它清空后直接返回。网页已经得到 `true`（光学游戏按此判断保存请求已受理），但 SAF 没打开、文件没写入，也没有失败反馈。可通过在桥调用后、UI runnable 执行前切后台/切游戏来触发。建议桥入口用线程安全的活动状态先拒绝并返回 `false`；更稳妥的是等主线程确认已成功发起 SAF 后再向 WebView 返回受理结果，同时保留晚回调防护。这个问题应在声明保存桥生命周期闭环前批改；真实文件选择/安装的组合测试仍可保留给 M6。

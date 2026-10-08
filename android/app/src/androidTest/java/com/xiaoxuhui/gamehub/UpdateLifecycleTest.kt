@@ -10,6 +10,23 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateLifecycleTest {
+    @Test fun stoppedActivitySaveBridgeRejectsBeforeOpeningExternalFlow() {
+        lateinit var bridge: Any
+        lateinit var activity: MainActivity
+        lateinit var method: java.lang.reflect.Method
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { current ->
+                activity = current
+                val type = MainActivity::class.java.declaredClasses.single { it.simpleName == "SaveBridge" }
+                bridge = type.getDeclaredConstructor(MainActivity::class.java).apply { isAccessible = true }.newInstance(current)
+                method = type.getDeclaredMethod("saveFile", String::class.java, String::class.java).apply { isAccessible = true }
+            }
+            scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+            assertEquals(false, method.invoke(bridge, "must-not-open.json", "{}"))
+            val pending = MainActivity::class.java.getDeclaredField("pendingExport").apply { isAccessible = true }
+            assertNull(pending.get(activity))
+        }
+    }
     @Test fun settingsPersistWithoutUiThreadDiskWrites() {
         if (android.os.Build.VERSION.SDK_INT < 28) return
         val instrumentation = InstrumentationRegistry.getInstrumentation()

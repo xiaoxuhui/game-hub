@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var updateLink: TextView
     private lateinit var updateSummary: TextView
     private val updates by lazy { UpdateCoordinator.get(applicationContext) }
-    private var activityStarted = false
+    @Volatile private var activityStarted = false
     private val updateDialogs = mutableSetOf<AlertDialog>()
     private val updateListener: (UpdateSnapshot) -> Unit = { state -> renderUpdates(state) }
     private val updateManager by lazy { ApkUpdateManager(this) }
@@ -709,27 +709,39 @@ class MainActivity : ComponentActivity() {
         @JavascriptInterface
         @Synchronized
         fun saveFile(name: String, content: String): Boolean {
+            if (!activityStarted) return false
             if (pendingExport != null || content.isEmpty()) {
                 runOnUiThread { toast(if (content.isEmpty()) "导出内容为空" else "请先完成当前保存") }
                 return false
             }
             val export = Export(FileNamePolicy.sanitize(name), content)
-            pendingExport = export
+            val receipt = UiRequestAcceptance()
             runOnUiThread {
-                if (!activityStarted || isDestroyed) { pendingExport = null; return@runOnUiThread }
-                refreshUpdatePresence()
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .setType(FileNamePolicy.mimeType(export.name))
-                    .putExtra(Intent.EXTRA_TITLE, export.name)
-                runCatching { saveLauncher.launch(intent) }
-                    .onFailure {
-                        pendingExport = null
+                receipt.dispatch {
+                    if (!activityStarted || isDestroyed || pendingExport != null || filePathCallback != null || pendingInstallApk != null) {
+                        if (!isDestroyed) toast("保存请求未受理，请回到游戏后重试")
+                        false
+                    } else {
+                        pendingExport = export
                         refreshUpdatePresence()
-                        toast("无法打开保存对话框")
+                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                            .addCategory(Intent.CATEGORY_OPENABLE)
+                            .setType(FileNamePolicy.mimeType(export.name))
+                            .putExtra(Intent.EXTRA_TITLE, export.name)
+                        runCatching { saveLauncher.launch(intent) }.fold({ true }, {
+                            pendingExport = null
+                            refreshUpdatePresence()
+                            toast("无法打开保存对话框")
+                            false
+                        })
                     }
+                }
             }
-            return true
+            val accepted = receipt.awaitAccepted()
+            if (!accepted && receipt.cancelledBeforeAcceptance()) runOnUiThread {
+                if (activityStarted && !isDestroyed) toast("保存请求超时，请重试")
+            }
+            return accepted
         }
     }
 
