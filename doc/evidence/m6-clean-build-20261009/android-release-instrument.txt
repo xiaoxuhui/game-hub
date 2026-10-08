@@ -1,0 +1,60 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :app:compileReleaseKotlin UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:compileReleaseJavaWithJavac NO-SOURCE
+> Task :app:bundleReleaseClassesToCompileJar UP-TO-DATE
+> Task :app:preReleaseAndroidTestBuild SKIPPED
+> Task :app:checkReleaseAndroidTestAarMetadata
+> Task :app:generateReleaseAndroidTestResValues FROM-CACHE
+> Task :app:mapReleaseAndroidTestSourceSetPaths
+> Task :app:generateReleaseAndroidTestResources FROM-CACHE
+> Task :app:mergeReleaseAndroidTestResources FROM-CACHE
+> Task :app:processReleaseAndroidTestManifest
+> Task :app:processReleaseAndroidTestResources FROM-CACHE
+> Task :app:compileReleaseAndroidTestKotlin FROM-CACHE
+> Task :app:javaPreCompileReleaseAndroidTest FROM-CACHE
+> Task :app:compileReleaseAndroidTestJavaWithJavac NO-SOURCE
+> Task :app:mergeReleaseAndroidTestShaders
+> Task :app:compileReleaseAndroidTestShaders NO-SOURCE
+> Task :app:generateReleaseAndroidTestAssets UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestAssets
+> Task :app:compressReleaseAndroidTestAssets
+> Task :app:checkReleaseAndroidTestDuplicateClasses
+> Task :app:dexBuilderReleaseAndroidTest FROM-CACHE
+> Task :app:desugarReleaseAndroidTestFileDependencies FROM-CACHE
+> Task :app:mergeExtDexReleaseAndroidTest FROM-CACHE
+> Task :app:mergeDexReleaseAndroidTest FROM-CACHE
+> Task :app:mergeReleaseAndroidTestGlobalSynthetics FROM-CACHE
+> Task :app:processReleaseAndroidTestJavaRes
+> Task :app:mergeReleaseAndroidTestJniLibFolders
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:mergeReleaseAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripReleaseAndroidTestDebugSymbols NO-SOURCE
+> Task :app:writeReleaseAndroidTestSigningConfigVersions
+> Task :app:mergeReleaseAndroidTestJavaResource
+> Task :app:packageReleaseAndroidTest
+> Task :app:createReleaseAndroidTestApkListingFileRedirect
+> Task :app:assembleReleaseAndroidTest
+
+BUILD SUCCESSFUL in 15s
+43 actionable tasks: 14 executed, 11 from cache, 18 up-to-date

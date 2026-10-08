@@ -1,0 +1,2 @@
+$ node scripts/audit-storage.mjs
+Verified 6 distinct storage keys in four pinned bundles; no direct broad clear

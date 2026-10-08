@@ -1,0 +1,48 @@
+✓ Lockfile passes supply-chain policies (verified 1h ago)
+Already up to date
+
+Done in 383ms using pnpm v11.19.0
+$ node --check scripts/bundle.mjs && node --test
+✔ Android application identity and minimum API stay independent of source APKs (1.2354ms)
+✔ Manifest has one launcher and only the planned update permission (1.3422ms)
+✔ compact lobby uses four fixed source icons and clickable cards (0.7556ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.5335ms)
+✔ four original export bridge names and a file chooser are wired (0.5083ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: 6965572c80fd6a6d2a7a17f466b055efe9fde9d57ffb2d4f190472d3d223ab80
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.1967ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (0.6861ms)
+✔ HTML references exclude external and fragment links while preserving local assets (0.9707ms)
+✔ missing local HTML reference stops bundling (15.0019ms)
+✔ manifest hashes are stable and change when a resource changes (6.1688ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (3373.5409ms)
+✔ detached programmatic Blob click saves content before immediate revoke (4.0833ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (1.2601ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (1.4476ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (0.5886ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (0.9891ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.5859ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (2.8539ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (87.5184ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.4118ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.7024ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (150.353ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3591.0416

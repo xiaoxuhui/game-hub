@@ -1,0 +1,3 @@
+Verified 4 sources and 40 resources
+Verified 4 resource ZIPs and complete file manifests; source commit dbcb8b3d3ae737eb62014361ccf257fc1eb3b3b2
+Built four deterministic resource ZIPs from dbcb8b3d3ae737eb62014361ccf257fc1eb3b3b2

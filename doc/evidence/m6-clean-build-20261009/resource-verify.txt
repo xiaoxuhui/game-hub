@@ -1,0 +1,2 @@
+$ node scripts/resource-bundle.mjs --verify
+Verified 4 resource ZIPs and complete file manifests; source commit dbcb8b3d3ae737eb62014361ccf257fc1eb3b3b2
