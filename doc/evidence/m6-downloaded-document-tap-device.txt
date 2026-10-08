@@ -1,0 +1,21 @@
+
+com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest:
+Error in fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest):
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest.fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(DownloadedDocumentBridgeTest.kt:135)
+
+
+Time: 7.189
+There was 1 failure:
+1) fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest.fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(DownloadedDocumentBridgeTest.kt:135)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

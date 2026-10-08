@@ -1,0 +1,17 @@
+
+com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest:
+Error in fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest):
+java.lang.IllegalStateException: Expected native document control missing
+	at com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest.awaitNode(DownloadedDocumentBridgeTest.kt:34)
+	at com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest.fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(DownloadedDocumentBridgeTest.kt:111)
+
+
+Time: 21.048
+There was 1 failure:
+1) fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest)
+java.lang.IllegalStateException: Expected native document control missing
+	at com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest.awaitNode(DownloadedDocumentBridgeTest.kt:34)
+	at com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest.fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker(DownloadedDocumentBridgeTest.kt:111)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

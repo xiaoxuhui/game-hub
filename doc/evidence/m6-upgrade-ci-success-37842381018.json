@@ -1,0 +1,95 @@
+{
+  "id": 113534722112,
+  "name": "upgrade",
+  "conclusion": "success",
+  "steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-node@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run pnpm/action-setup@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run pnpm test",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run pnpm run bundle",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run pnpm run verify:bundle",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-java@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run gradle/actions/setup-gradle@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run android-actions/setup-android@v3",
+      "conclusion": "success"
+    },
+    {
+      "name": "Build installed app and instrumentation test",
+      "conclusion": "success"
+    },
+    {
+      "name": "Save base and test APKs, then build same-signer newer fixture",
+      "conclusion": "success"
+    },
+    {
+      "name": "Free build cache space for AVD",
+      "conclusion": "success"
+    },
+    {
+      "name": "Enable KVM on the runner",
+      "conclusion": "success"
+    },
+    {
+      "name": "Validate same-signer APK and upgrade preserving data",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/upload-artifact@v5",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run gradle/actions/setup-gradle@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/setup-java@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run pnpm/action-setup@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/setup-node@v4",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ]
+}
