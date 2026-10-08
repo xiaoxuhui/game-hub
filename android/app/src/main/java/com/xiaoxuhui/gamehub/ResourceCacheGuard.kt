@@ -17,16 +17,22 @@ internal object ResourceCacheGuard {
     /** Only registered resource URLs may be removed. Unknown CacheStorage is preserved and blocks activation. */
     @SuppressLint("SetJavaScriptEnabled")
     fun inspectAndClear(context: Context, registeredPaths: Set<String>, result: (Assessment) -> Unit) {
-        inspect(context, registeredPaths, true, result)
+        inspect(context, registeredPaths, "appassets.androidplatform.net", false, true, result)
+    }
+    fun inspectAndClear(context: Context, registeredPaths: Set<String>, gameId: String, result: (Assessment) -> Unit) {
+        inspect(context, registeredPaths, AssetAccessPolicy.hostFor(gameId), DynamicGamePolicy.validId(gameId), true, result)
     }
     @SuppressLint("SetJavaScriptEnabled")
-    private fun inspect(context: Context, registeredPaths: Set<String>, mayRecreate: Boolean, result: (Assessment) -> Unit) {
+    private fun inspect(context: Context, registeredPaths: Set<String>, host: String, strict: Boolean, mayRecreate: Boolean, result: (Assessment) -> Unit) {
+        WebViewCookiePolicy.disable()
         val handler = Handler(Looper.getMainLooper()); val view = WebView(context)
+        WebViewCookiePolicy.configure(view)
         val trustedMainResponse = java.util.concurrent.atomic.AtomicBoolean(false)
         var finished = false; val deadline = android.os.SystemClock.elapsedRealtime() + 10000
         fun finish(ok: Boolean, safe: Boolean, message: String) { if (finished) return; finished = true; view.stopLoading(); view.destroy(); result(Assessment(ok, safe, message)) }
-        val paths = JSONArray(registeredPaths.sorted().map { "https://appassets.androidplatform.net$it" }).toString()
-        val script = SCRIPT.replace("__PATHS__", paths)
+        val origin = "https://$host"
+        val paths = JSONArray(registeredPaths.sorted().map { "$origin$it" }).toString()
+        val script = SCRIPT.replace("__PATHS__", paths).replace("__ORIGIN__", JSONObject.quote(origin)).replace("__UNKNOWN_SAFE__", (!strict).toString())
         fun poll() {
             if (finished) return
             if (android.os.SystemClock.elapsedRealtime() >= deadline) { finish(false, false, "缓存检查超时，未启动游戏；资源和存档保留"); return }
@@ -36,7 +42,7 @@ internal object ResourceCacheGuard {
                 else runCatching { JSONObject(raw) }.onSuccess {
                     if (it.optBoolean("recreate") && mayRecreate) {
                         finished = true; view.stopLoading(); view.destroy()
-                        handler.post { inspect(context, registeredPaths, false, result) }
+                        handler.post { inspect(context, registeredPaths, host, strict, false, result) }
                     } else finish(it.optBoolean("ok"), it.optBoolean("safe"), it.optString("reason"))
                 }.onFailure { finish(false, false, "缓存检查结果无效，未启动游戏") }
             }
@@ -44,7 +50,7 @@ internal object ResourceCacheGuard {
         view.settings.apply { javaScriptEnabled = true; domStorageEnabled = true; allowFileAccess = false; allowContentAccess = false; blockNetworkLoads = true; cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE }
         view.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(webView: WebView, request: WebResourceRequest): WebResourceResponse {
-                if (request.url.toString() != "https://appassets.androidplatform.net/runtime/cache-check") return GameContentResolver.blocked()
+                if (request.url.toString() != "$origin/runtime/cache-check") return GameContentResolver.blocked()
                 if (!request.isForMainFrame) return GameContentResolver.blocked()
                 trustedMainResponse.set(true)
                 return WebResourceResponse("text/html", "UTF-8", 200, "OK", mapOf("Cache-Control" to "no-store"), ByteArrayInputStream("<!doctype html><meta charset=utf-8><title>缓存检查</title>".toByteArray()))
@@ -56,14 +62,14 @@ internal object ResourceCacheGuard {
             }
         }
         handler.postDelayed({ if (!finished) finish(false, false, "缓存检查超时，未启动游戏；资源和存档保留") }, 10000)
-        view.loadUrl("https://appassets.androidplatform.net/runtime/cache-check")
+        view.loadUrl("$origin/runtime/cache-check")
     }
     private val SCRIPT = """
         (function () {
           if (window.__gameHubCacheStarted) return;
           window.__gameHubCacheStarted = true;
           var paths = new Set(__PATHS__);
-          var origin = 'https://appassets.androidplatform.net';
+          var origin = __ORIGIN__;
           function relevant(reg) {
             return reg.scope.startsWith(origin + '/assets/games/') || Array.from(paths).some(function (p) { return p.startsWith(reg.scope); });
           }
@@ -85,7 +91,7 @@ internal object ResourceCacheGuard {
               var requests = await cache.keys();
               for (var request of requests) {
                 if (request.method !== 'GET' || !paths.has(request.url.split(/[?#]/)[0])) {
-                  window.__gameHubCacheCheck = { ok: false, safe: true, reason: '发现用途不明的缓存，未删除存档或缓存；暂停激活，使用旧资源' };
+                  window.__gameHubCacheCheck = { ok: false, safe: __UNKNOWN_SAFE__, reason: '发现用途不明的缓存，未删除存档或缓存；暂停资源激活' };
                   return;
                 }
               }

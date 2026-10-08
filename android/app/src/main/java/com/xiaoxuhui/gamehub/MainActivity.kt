@@ -114,6 +114,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WebViewCookiePolicy.disable()
         root = FrameLayout(this).apply { setBackgroundColor(BACKGROUND) }
         setContentView(root)
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
@@ -526,18 +527,22 @@ class MainActivity : ComponentActivity() {
         showLoading("正在校验${game.name}资源…")
         Thread {
             val prepared = runCatching {
-                ResourceRuntime.get(this).also { resourceRuntime = it }.let { it to (assetPaths + it.store.knownResourcePaths()) }
+                ResourceRuntime.get(this).also { resourceRuntime = it }.let { runtime ->
+                    val known = runtime.storeFor(game.id).knownResourcePaths()
+                    runtime to if (DynamicGamePolicy.validId(game.id)) known.filter { it.startsWith("/assets/games/${game.id}/") }.toSet() else assetPaths + known
+                }
             }
             runOnUiThread {
                 if (isDestroyed || serial != navigationSerial) return@runOnUiThread
                 prepared.onFailure { showError("资源状态不可用：${it.message}") }.onSuccess { (runtime, paths) ->
                     runtime.prepareWorkerInterceptor()
-                    ResourceCacheGuard.inspectAndClear(this, paths) { assessment ->
+                    ResourceCacheGuard.inspectAndClear(this, paths, game.id) { assessment ->
                         if (isDestroyed || serial != navigationSerial) return@inspectAndClear
                         if (!assessment.canPlay) { showError(assessment.reason); return@inspectAndClear }
                         Thread {
-                            val selected = runCatching { runtime.store.openSession(game.id, assessment.canActivate) }
-                            val failedIdentity = if (selected.isFailure) runtime.store.selection(game.id).active.takeIf { it != "builtin" } else null
+                            val store = runtime.storeFor(game.id)
+                            val selected = runCatching { store.openSession(game.id, assessment.canActivate) }
+                            val failedIdentity = if (selected.isFailure) runCatching { store.selection(game.id).active.takeIf { it != "builtin" } }.getOrNull() else null
                             runOnUiThread selectedUi@{
                                 if (isDestroyed || serial != navigationSerial) { selected.getOrNull()?.close(); return@selectedUi }
                                 selected.onFailure { showError("资源校验失败：${it.message}", failedIdentity) }.onSuccess selectedSession@{ session ->
@@ -554,14 +559,16 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     private fun openGamePrepared(game: Game, restoredState: Bundle?, session: ResourceSession, runtime: ResourceRuntime) {
         clearWebView()
+        val selectedGame = session.game?.let { game.copy(version = it.version, revision = it.sourceRevision, entry = it.entry) } ?: game
         resourceSession = session
         val resolver = GameContentResolver(assets, game.id, session, assetPaths)
         gameResolver = resolver
         runtime.bind(resolver)
-        currentGame = game
+        currentGame = selectedGame
         loadFailed = false
         lobby.visibility = View.GONE
         val view = WebView(this).apply {
+            WebViewCookiePolicy.configure(this)
             setBackgroundColor(BACKGROUND)
             overScrollMode = View.OVER_SCROLL_NEVER
             settings.apply {
@@ -625,12 +632,14 @@ class MainActivity : ComponentActivity() {
         root.addView(view, FrameLayout.LayoutParams(-1, -1))
         showLoading("正在打开${game.name}…")
         val restored = if (restoredState != null) view.restoreState(restoredState) else null
-        if (restored == null) view.loadUrl(gameUrl(game))
+        val restoredUrl = restored?.currentItem?.url?.let(Uri::parse)
+        if (restoredUrl == null || !resolver.allowed(restoredUrl) || !AssetAccessPolicy.pageAllowed(game.id, restoredUrl.path, resolver.allowedPaths))
+            view.loadUrl(gameUrl(selectedGame))
     }
 
     private fun gameClient(game: Game, resolver: GameContentResolver): WebViewClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-            if (view === webView && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, resolver.allowedPaths)) {
+            if (view === webView && resolver.allowed(Uri.parse(url)) && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, resolver.allowedPaths)) {
                 loadFailed = false
                 showLoading("正在打开${game.name}…")
             }
@@ -649,16 +658,16 @@ class MainActivity : ComponentActivity() {
             val ownPage = resolver.allowed(uri) && AssetAccessPolicy.pageAllowed(game.id, path, resolver.allowedPaths)
             if (ownPage) return false
             if (uri.scheme == "https" || uri.scheme == "http") {
-                if (uri.host != ASSET_DOMAIN) runCatching {
+                if (!AssetAccessPolicy.isAppAssetHost(uri.host)) runCatching {
                     startActivity(Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE))
                 }.onFailure { toast("无法打开外部链接") }
             }
-            if (uri.host == ASSET_DOMAIN) toast("已阻止未登记或跨项目的页面跳转")
+            if (AssetAccessPolicy.isAppAssetHost(uri.host)) toast("已阻止未登记或跨项目的页面跳转")
             return true
         }
 
         override fun onPageFinished(view: WebView, url: String) {
-            if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) {
+            if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed && resolver.allowed(Uri.parse(url))) {
                 if (game.id != "light" && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, resolver.allowedPaths)) {
                     view.evaluateJavascript(exportBridgeJs(bridgeName(game.id)), null)
                 }
@@ -792,7 +801,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    private fun gameUrl(game: Game) = "https://$ASSET_DOMAIN/assets/games/${game.id}/${game.entry}"
+    private fun gameUrl(game: Game) = "https://${AssetAccessPolicy.hostFor(game.id)}/assets/games/${game.id}/${game.entry}"
     private fun installedVersionName() = packageManager.getPackageInfo(packageName, 0).versionName ?: "未知"
     private fun dp(value: Int) = (value * resources.displayMetrics.density + 0.5f).toInt()
     private fun label(text: String, size: Float, color: Int, bold: Boolean) = TextView(this).apply {
@@ -853,13 +862,12 @@ class MainActivity : ComponentActivity() {
         "eml" -> "EMLAndroid"
         "light" -> "LightAndroid"
         "turing" -> "TuringAndroid"
-        else -> error("未知项目：$id")
+        else -> { require(DynamicGamePolicy.validId(id)); "GameHubBridge" }
     }
 
     private fun exportBridgeJs(bridge: String) = EXPORT_BRIDGE_JS.replace("__BRIDGE__", bridge)
 
     companion object {
-        private const val ASSET_DOMAIN = "appassets.androidplatform.net"
         private const val STATE_GAME = "game-hub.current-game"
         private const val STATE_PENDING_INSTALL = "game-hub.pending-install"
         private val BACKGROUND = Color.rgb(16, 20, 28)

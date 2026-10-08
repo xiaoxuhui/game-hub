@@ -7,10 +7,15 @@ import java.io.ByteArrayInputStream
 
 internal class GameContentResolver(private val assets: AssetManager, val gameId: String, private val session: ResourceSession,
     builtinPaths: Set<String>) {
+    val host = AssetAccessPolicy.hostFor(gameId)
+    init {
+        require(session.game == null || session.game.id == gameId)
+        require(!DynamicGamePolicy.validId(gameId) || session.game != null && session.root != null) { "Dynamic game requires verified installed resources" }
+    }
     private val prefix = "/assets/games/$gameId/"
     private val metadata = session.game?.files?.associateBy { prefix + it.path }
     val allowedPaths: Set<String> = metadata?.keys ?: builtinPaths.filter { it.startsWith(prefix) }.toSet()
-    fun allowed(uri: Uri) = AssetAccessPolicy.resourceAllowed(uri.scheme, uri.host, uri.port, uri.encodedPath, uri.path, allowedPaths)
+    fun allowed(uri: Uri) = AssetAccessPolicy.resourceAllowed(uri.scheme, uri.host, uri.port, uri.encodedPath, uri.path, allowedPaths, host)
     fun response(uri: Uri): WebResourceResponse {
         if (!allowed(uri)) return blocked()
         val path = uri.path!!; val relative = path.removePrefix(prefix)
