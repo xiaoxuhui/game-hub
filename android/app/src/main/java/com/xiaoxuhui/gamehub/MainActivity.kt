@@ -323,6 +323,7 @@ class MainActivity : ComponentActivity() {
                 local?.readyError != null -> "候选损坏，旧版保留"
                 local?.ready != null && !local.readyFresh -> "候选已过期，请检查"
                 local?.ready != null -> "#${local.ready.contentCode} 待生效"
+                remote != null && remote.contentCode > code && state.resourcesRemembered -> "上次发现更新 · 待检查"
                 remote != null && remote.contentCode > code && !remote.compatible(hostVersionCode, ResourcePolicy.contract(game.id)) -> "更新与此大厅不兼容"
                 remote != null && remote.contentCode > code -> if (local?.selection?.pinned == true) "有更新 · 固定版本" else "#${remote.contentCode} 可更新"
                 local?.selection?.pinned == true -> "固定版本"
@@ -393,7 +394,8 @@ class MainActivity : ComponentActivity() {
                 }
                 .setNegativeButton("稍后", null).create())
         } else state.apk?.let { release ->
-            detailButton(column, "下载大厅 v${release.version}（${release.size / 1024} KiB）", !state.busy) {
+            if (state.apkRemembered) description("上次发现大厅 v${release.version}；请先重新检查后下载")
+            else detailButton(column, "下载大厅 v${release.version}（${release.size / 1024} KiB）", !state.busy) {
                 confirmDownload { allowed -> if (!updates.downloadApk(allowed)) toast("下载未开始，请检查网络或等待当前任务结束") }
             }
         }

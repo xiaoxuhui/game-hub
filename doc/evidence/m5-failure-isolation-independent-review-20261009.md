@@ -36,3 +36,11 @@
 `MainActivity.kt:676-684` 的 `onReceivedError` 和 `onReceivedHttpError` 仍把 `request.isForMainFrame` 作为调用 `showResourceError` 的充分条件。若同域未登记/跨项目主框架请求未被 `shouldOverrideUrlLoading` 拦截（例如该 API 不处理的 POST 导航、应用直接加载或重定向边界），`GameContentResolver` 会拒绝该路径并给出 404/错误；错误回调却会把当前有效下载版 identity 作为加载故障并持久隔离。新设备负例只调用 `shouldOverrideUrlLoading`，未覆盖错误回调。按设计的限定，只有**当前游戏登记的主入口/必需文件**实际加载失败才应隔离。
 
 建议在两个错误回调内先判定 `resolver.allowed(request.url)`；主框架还应核对 `AssetAccessPolicy.pageAllowed(game.id, request.url.path, resolver.allowedPaths)`。未登记主框架错误仅按策略拒绝或展示非隔离提示。增加直接调用两个 WebViewClient 错误回调的跨项目主框架负例，断言旧会话仍在、没有失败上报/隔离；同时保持已登记主入口和必需子资源的正向隔离用例。**因此导航误隔离 P1 尚未完全闭合。**
+
+## 140d108 回调批改复审（2026-10-09）
+
+- 受审提交 `140d10847503c4beeac4cbda006cce903335f77a` 已推送，主仓库 `HEAD` 与 `origin/main` 一致且工作树干净。只读确认独立构建目录的 `MainActivity.kt`、`UpdateLifecycleTest.kt` 与受审提交 SHA-256 相同；`git diff 2fe55e9 140d108 --check` 无输出。
+- **残余 P1 已闭合。** `MainActivity.kt:676-692` 的 `onReceivedError` 与 `onReceivedHttpError` 都要求 `resolver.allowed(request.url)`；主框架还要求 `AssetAccessPolicy.pageAllowed(game.id, path, resolver.allowedPaths)`，才调用 `showResourceError`。未登记或跨项目主框架回调只提示，不关闭当前会话或上报下载版身份；已登记主入口和所有清单登记的必需子资源仍走故障关闭与隔离路径。通用 `showError` 仍不携带失败身份。
+- 新设备负例在临时签名、完整 Light 下载 session 的生产 Activity WebViewClient 上，依次调用跨项目主框架导航、404 和真实 `WebResourceError` 回调，三次均断言同一 WebView 留存，随后确认 session 直到 Activity 退出才关闭。正例对登记的 Light 入口注入 404，实际触发视图销毁、旧桥拒绝和存档保留。夹具 store 与协调器 production store 仍不同实例，因此本测试不独立证明生产持久隔离状态；它证明本次两条错误回调不再进入失败关闭/上报路径。
+- 首轮测试因 `WebResourceError` 构造器不可公开调用而编译失败，原始失败日志已保留。修正测试通过禁用网络的临时 WebView 获取原生错误对象，没有发送探测请求到网络；重新编译后专项 2 项设备测试通过，`BUILD SUCCESSFUL`，1 分 4 秒。本轮没有重跑 JVM 或全生命周期套件，仍引用前轮 54 项 JVM 与 10 项/2 项设备证据，不将专项 2 项冒充全量。
+- 未见新阻塞，可进入跨进程缓存切片。真实生产密钥在线资源故障、真实未登记 POST/重定向导航的页面恢复、杀进程与 SAF 仍属后续 M6 验收；M5 完整阶段继续 `PENDING`。

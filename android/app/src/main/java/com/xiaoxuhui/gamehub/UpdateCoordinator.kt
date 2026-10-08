@@ -17,6 +17,7 @@ internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: L
     val localResources: Map<String, LocalResourceInfo> = emptyMap(),
     val localDiagnostic: String? = null,
     val localLoaded: Boolean = false, val localReadError: String? = null,
+    val apkRemembered: Boolean = false, val resourcesRemembered: Boolean = false,
     val apkStatus: String = "尚未检查大厅更新", val resourceStatus: String = "尚未检查游戏更新",
     val busy: Boolean = false, val task: String? = null, val done: Long = 0, val total: Long = 0,
     val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false,
@@ -44,6 +45,8 @@ internal class UpdateCoordinator private constructor(context: Context) {
     private val runtime by lazy { ResourceRuntime.get(app) }
     private val resourceClient by lazy { ResourceCatalogClient(runtime.publicKey, http) }
     private val apkManager = ApkUpdateManager(app)
+    private val metadataCache by lazy { UpdateMetadataCache(AndroidResourceStateFile(File(app.filesDir, "apk-reminder.json")),
+        AndroidResourceStateFile(File(app.filesDir, "resources-reminder.json"))) }
     init {
         gate.settings(state.automatic, state.metered)
         // Only this process owner cleans abandoned private parts, before any worker can download.
@@ -51,6 +54,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
             val directory = File(app.cacheDir, "resource-updates")
             directory.listFiles()?.filter { Regex("resource-(conway|eml|light|turing)-[0-9a-f-]{36}\\.part").matches(it.name) && it.canonicalFile.parentFile == directory.canonicalFile }?.forEach { it.delete() }
             readLocalResources()
+            readRememberedUpdates()
         }
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) = refreshNetwork()
@@ -121,7 +125,9 @@ internal class UpdateCoordinator private constructor(context: Context) {
                         val version = app.packageManager.getPackageInfo(app.packageName, 0).versionName ?: ""
                         val response = http.metadata("${PublicReleaseHttp.API_ROOT}/releases/latest", 1000000, PublicReleaseHttp.deadline(), { checkCancelled || !foreground })
                         val release = UpdatePolicy.parseLatest(response.bytes.toString(Charsets.UTF_8), version)
-                        publish { it.copy(apk = release, apkCheckedAt = System.currentTimeMillis(), apkStatus = if (release == null) "大厅已是最新版本" else "大厅 ${release.version} 可更新") }
+                        val checkedAt = System.currentTimeMillis()
+                        val saved = runCatching { metadataCache.saveApk(release, checkedAt) }.isSuccess
+                        publish { it.copy(apk = release, apkRemembered = false, apkCheckedAt = checkedAt, apkStatus = (if (release == null) "大厅已是最新版本" else "大厅 ${release.version} 可更新") + if (saved) "" else "；历史提醒保存失败") }
                     } catch (error: Exception) { channelFailure("apk", error) }
                 } else publish { it.copy(apkStatus = "大厅查询限流，稍后可重试") }
                 if (!checkCancelled && foreground && gate.channelAllowed("resources")) {
@@ -131,10 +137,12 @@ internal class UpdateCoordinator private constructor(context: Context) {
                         runtime.store.acceptCatalog(next.envelope)
                         runtime.store.refreshReadyProof(next.envelope)
                         val available = next.catalog.games.filter { runtime.store.isEligible(it) }
+                        val checkedAt = System.currentTimeMillis()
+                        val saved = runCatching { metadataCache.saveResources(next.catalog, checkedAt) }.isSuccess
                         readLocalResources()
                         synchronized(stateLock) {
                             attempted.clear(); offer = next
-                            publish { it.copy(resources = available, catalogGames = next.catalog.games, resourcesCheckedAt = System.currentTimeMillis(), resourceStatus = if (available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新") }
+                            publish { it.copy(resources = available, catalogGames = next.catalog.games, resourcesRemembered = false, resourcesCheckedAt = checkedAt, resourceStatus = (if (available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新") + if (saved) "" else "；历史提醒保存失败") }
                         }
                     } catch (error: Exception) { channelFailure("resources", error) }
                 } else if (foreground) publish { it.copy(resourceStatus = if (checkCancelled) "游戏检查已取消，已安装资源保留" else "游戏查询限流，稍后可重试") }
@@ -191,6 +199,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
         return true
     }
     fun downloadApk(meteredConfirmed: Boolean): Boolean = synchronized(stateLock) {
+        if (state.apkRemembered) return false
         val release = state.apk ?: return false
         if (state.readyApk?.exists() == true) return false
         val token = gate.beginDownload(UpdateDownloadKind.APK, true, meteredConfirmed) ?: return false
@@ -286,6 +295,23 @@ internal class UpdateCoordinator private constructor(context: Context) {
         true
     }
     fun reloadLocalResources() { worker.execute { readLocalResources() } }
+    private fun readRememberedUpdates() {
+        try {
+            val version = app.packageManager.getPackageInfo(app.packageName, 0).versionName ?: ""
+            metadataCache.readApk(version)?.let { remembered ->
+                publish { it.copy(apk = remembered.release, apkCheckedAt = remembered.checkedAt, apkRemembered = true,
+                    apkStatus = remembered.release?.let { apk -> "上次发现大厅 ${apk.version}，待检查" } ?: "上次未发现大厅更新，待检查") }
+            }
+        } catch (error: Exception) { publish { it.copy(apkStatus = "大厅历史提醒不可用，请联网检查") } }
+        try {
+            runtime.store.rememberedCatalog()?.let { catalog ->
+                val checkedAt = metadataCache.readResources(catalog)
+                val fresh = runCatching { catalog.requireFresh(System.currentTimeMillis()) }.isSuccess
+                publish { it.copy(catalogGames = catalog.games, resources = emptyList(), resourcesCheckedAt = checkedAt, resourcesRemembered = true,
+                    resourceStatus = if (fresh) "上次验证的游戏目录，待检查" else "上次游戏目录已过期，请检查") }
+            }
+        } catch (error: Exception) { publish { it.copy(resourceStatus = "游戏历史提醒不可用，请联网检查；本地存档保留") } }
+    }
     private fun readLocalResources() {
         try {
             val current = runtime.store.describeAll(); val diagnostic = runtime.store.failure()

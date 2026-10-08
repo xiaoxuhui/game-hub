@@ -64,6 +64,12 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
     }
     fun failure(): String? = synchronized(lock) { stateFailure ?: renewalFailures.takeIf { it.isNotEmpty() }?.entries?.joinToString("；") { "${it.key}：${it.value}" } ?: candidateFailure }
     fun selection(id: String): ResourceSelection = synchronized(lock) { selections.getValue(id) }
+    fun rememberedCatalog(): ResourceCatalog? = synchronized(lock) {
+        require(stateFailure == null) { stateFailure ?: "Resource state invalid" }
+        journalCatalogs().maxByOrNull { it.sequence }?.also {
+            require(it.sequence == sequence && it.payloadSha256 == catalogHash) { "历史目录与可信高水位不一致" }
+        }
+    }
     fun describeAll(): Map<String, LocalResourceInfo> = synchronized(lock) {
         selections.mapValues { (id, selection) ->
             val active = if (selection.active == "builtin") null else runCatching { verifyVersion(id, selection.active) }

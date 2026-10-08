@@ -68,6 +68,7 @@ internal class ResourceDeviceFixture(val context: Context) : AutoCloseable {
         return local.toByteArray()
     }
     fun install(id: String) { store.install(catalog.games.single { it.id == id }, envelope, archives.getValue(id)) }
+    fun reopenedStore() = GameResourceStore(File(root, "store"), 3, pair.public.encoded)
     fun renewal(sequence: Int, changedId: String? = null): ByteArray {
         val payload = JSONObject(String(Base64.getDecoder().decode(JSONObject(String(envelope)).getString("payloadBase64"))))
         payload.put("catalogSequence", sequence.toString())

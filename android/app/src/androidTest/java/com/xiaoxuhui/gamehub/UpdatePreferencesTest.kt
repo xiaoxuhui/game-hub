@@ -7,6 +7,23 @@ import org.junit.Test
 import java.util.UUID
 
 class UpdatePreferencesTest {
+    @Test fun realAtomicReminderAndSignedDirectoryReopenWithOriginalCheckTime() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        ResourceDeviceFixture(context).use { fixture ->
+            val apkFile = java.io.File(fixture.root, "apk-reminder.json")
+            val resourceFile = java.io.File(fixture.root, "resource-reminder.json")
+            val first = UpdateMetadataCache(AndroidResourceStateFile(apkFile), AndroidResourceStateFile(resourceFile))
+            val time = System.currentTimeMillis()
+            val apk = ReleaseApk("0.4.0", 42, 1234, "a".repeat(64))
+            fixture.store.acceptCatalog(fixture.envelope)
+            first.saveApk(apk, time); first.saveResources(fixture.catalog, time)
+            val recreated = UpdateMetadataCache(AndroidResourceStateFile(apkFile), AndroidResourceStateFile(resourceFile))
+            assertEquals(RememberedApk(time, apk), recreated.readApk("0.3.0", time + 1000))
+            assertEquals(RememberedApk(time, null), recreated.readApk("0.4.0", time + 1000))
+            val signed = fixture.reopenedStore().rememberedCatalog()!!
+            assertEquals(fixture.catalog, signed); assertEquals(time, recreated.readResources(signed, time + 1000))
+        }
+    }
     @Test fun realPreferencesRestoreSeparateBackoffAndSettings() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val name = "update-test-${UUID.randomUUID()}"

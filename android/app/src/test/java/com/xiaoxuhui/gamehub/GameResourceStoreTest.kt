@@ -15,6 +15,18 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 class GameResourceStoreTest {
+    @Test fun rememberedDirectoryRequiresBothTrustedWatermarksAndNeverRenewsExpiry() {
+        val f = Fixture()
+        try {
+            val store = f.store; assertNull(store.rememberedCatalog())
+            val (_, envelope, _) = f.release(); val accepted = store.acceptCatalog(envelope)
+            f.time += 2 * 86400000
+            val remembered = f.store.rememberedCatalog()!!
+            assertEquals(accepted, remembered); rejected { remembered.requireFresh(f.time) }
+            File(f.root, "catalog-history/highest-b.signed.json").writeText("forged")
+            rejected { store.rememberedCatalog() }; rejected { f.store.rememberedCatalog() }
+        } finally { f.close() }
+    }
     @Test fun retainedIdentityCannotAcquireChangedMetadataOnReinstall() {
         val f = Fixture()
         try {

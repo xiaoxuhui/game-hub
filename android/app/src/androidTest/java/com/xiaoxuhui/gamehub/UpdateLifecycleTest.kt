@@ -188,6 +188,19 @@ class UpdateLifecycleTest {
                 val remote = fixture.catalog.games.map { if (it.id == "light") it.copy(version = "99.0.0", contentCode = 3) else it }
                 snapshot = snapshot.copy(localResources = fixture.store.describeAll(), catalogGames = remote)
                 scenario.onActivity { activity ->
+                    render.invoke(activity, snapshot.copy(resourcesRemembered = true))
+                    assertTrue(texts(activity.window.decorView).any { it.contains("已下载") && it.contains("上次发现更新 · 待检查") })
+                    val column = android.widget.LinearLayout(activity)
+                    val dialog = android.app.AlertDialog.Builder(activity).create()
+                    val details = MainActivity::class.java.getDeclaredMethod("renderUpdateDetails", android.widget.LinearLayout::class.java, UpdateSnapshot::class.java, android.app.AlertDialog::class.java).apply { isAccessible = true }
+                    val apk = ReleaseApk("0.4.0", 42, 1234, "a".repeat(64))
+                    details.invoke(activity, column, snapshot.copy(apk = apk, apkRemembered = true, resourcesRemembered = true), dialog)
+                    assertTrue(texts(column).any { it.contains("上次发现大厅 v0.4.0") })
+                    assertFalse(texts(column).any { it.startsWith("下载大厅") })
+                    details.invoke(activity, column, snapshot.copy(apk = apk), dialog)
+                    assertTrue(texts(column).any { it.startsWith("下载大厅 v0.4.0") })
+                }
+                scenario.onActivity { activity ->
                     render.invoke(activity, snapshot)
                     val labels = texts(activity.window.decorView)
                     assertTrue(labels.any { it.contains("已下载") && it.contains("#3 可更新") })
