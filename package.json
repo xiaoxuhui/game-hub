@@ -22,6 +22,8 @@
     "audit:storage": "node scripts/audit-storage.mjs",
     "bundle:resources": "node scripts/resource-bundle.mjs",
     "prepare:resources": "node scripts/resource-sources.mjs",
-    "verify:resources": "node scripts/resource-bundle.mjs --verify"
+    "verify:resources": "node scripts/resource-bundle.mjs --verify",
+    "prepare:dynamic": "node scripts/dynamic-resources.mjs",
+    "verify:dynamic": "node scripts/dynamic-resources.mjs --verify"
   }
 }

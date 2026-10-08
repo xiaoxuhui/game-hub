@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "sources": [{
+    "id": "memory-demo",
+    "displayName": "配对练习 · 示范",
+    "iconKind": "puzzle",
+    "available": true,
+    "repository": "https://github.com/xiaoxuhui/game-hub.git",
+    "revision": "81bdef33331fefedbb858b1ce109ebc437759bb6",
+    "directory": "examples/memory-demo",
+    "version": "1.0.0",
+    "contentCode": 1,
+    "entryPage": "index.html",
+    "storageContract": "memory-demo-dynamic-v1",
+    "files": ["LICENSE", "app.js", "core.js", "index.html", "style.css"],
+    "releaseNotes": "自有最小配对示范：可选下载，支持自动保存与JSON导入导出。"
+  }]
+}
