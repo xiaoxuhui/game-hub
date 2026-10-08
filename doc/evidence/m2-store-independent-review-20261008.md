@@ -17,3 +17,18 @@
 - `verifyInstalledProof` 用于已存在目录的完整逐文件校验；安装新包入口调用有时效的 `verifyEnvelope`。这个分界本身正确，问题在已存在目录的证明更新与损坏 ready 处理。
 
 本提交 `git diff --check` 无输出，审核时游戏大厅工作树干净。密钥、口令和四个原仓库工作树均未触碰。
+
+## 修订提交复审：`251f4b53ef5d307fba43e9e4553129e8cbc730fe`
+
+复审结论：**原三项 P1 的直接路径与 P2 不可信目录入口已修正，但新增签名历史恢复仍有两项 P1，暂缓进入 M3。** 仓库证据记录独立 JVM 28/28 与构建成功；本复审只读核对代码和测试，没有运行 Android 模拟器或访问密钥。
+
+已落实：`restore` 在全局 stateFailure 时拒绝单游戏改写；坏 ready 校验失败时清除 ready、隔离编号并继续旧版，缓存代理未解除则保留 ready、旧版可玩；同内容目录复用时使用 AtomicFile 写入新签名证明，测试强制进入复用分支并核对 sequence=3；`acceptCatalog` 改收原始 envelope，在 store 内用固定注入公钥验签及检验时效，未验签内容不更新高水位。这些更改覆盖初审的四个直接问题。
+
+剩余阻塞：
+
+1. **P1 最新高水位历史损坏/缺失可降级恢复。** `journalCatalogs()` 只读取名称匹配的 `catalog-history` 文件，忽略名称损坏或丢失的最新一期；历史保留的是最新两期不同 sequence。若 state 在 sequence 读取前损坏，最新一期历史又不可读，次新签名历史仍有效，则内存 sequence=0，`recoverAllBuiltinsFromTrustedHistory()` 可把次新记录当最高，降低目录/内容高水位。建议对历史目录中未知/损坏文件 fail closed，并保留同一最高签名证明的冗余副本或等效高水位锚；测试“state 解析前坏 + 最新历史坏/缺失 + 次新仍有效”必须拒绝联网恢复。
+2. **P1 state 文件缺失被当作首次安装。** 初始化 `stateFile.read()?.let { ... }` 在返回 null 时不置故障；即使 `catalog-history` 或已安装版本存在，`recoverWatermark` 只恢复 sequence/highestCode，active/ready/pinned 仍是默认值，允许继续更新。这会静默丢失已安装选择和固定恢复意图。仅空目录应视为首次安装；有历史或版本时缺 state 须标全局损坏并走显式可信恢复，四游戏先 pinned。加缺 state、已有历史/版本、重启负例。
+
+非阻塞后续：`catalog-history` 若出现同一 sequence 的不同有效 hash，恢复流程也应 fail closed；当前 `maxByOrNull` 未明确冲突处置。Android `AtomicFile` 的重启与进程死亡时序仍需仪器测试，不由 JVM 文件适配器证明。
+
+格式核对：修订提交 `git diff 251f4b5^ 251f4b5 --check` 报 `doc/evidence/m2-final-fixed-tests.txt:2` 一处行尾空格，来自归档构建日志；不影响代码安全结论，但提交证据副本应说明或规范化，原始输出可保留在独立检出。

@@ -23,10 +23,13 @@ internal class GameResourceStore(private val directory: File, private val hostCo
     private val references = HashMap<String, Int>()
     private var stateFailure: String? = null
     private var candidateFailure: String? = null
+    private val journalNames = listOf("highest-a.signed.json", "highest-b.signed.json")
     init {
         require(directory.isDirectory || directory.mkdirs())
         try {
-            stateFile.read()?.let { bytes ->
+            val stateBytes = stateFile.read()
+            if (stateBytes == null && (File(directory, "catalog-history").exists() || File(directory, "versions").exists())) stateFailure = "已有资源但选择状态缺失，已停止网络更新；请显式全局可信恢复"
+            stateBytes?.let { bytes ->
                 val json = StrictJson.parse(bytes, 1048576); require(ResourcePolicy.integer(json, "schemaVersion") == 1L)
                 sequence = ResourcePolicy.integer(json, "sequence", 0); catalogHash = json.getString("catalogHash")
                 val games = json.getJSONObject("games")
@@ -56,11 +59,16 @@ internal class GameResourceStore(private val directory: File, private val hostCo
     fun selection(id: String): ResourceSelection = synchronized(lock) { selections.getValue(id) }
     fun hasSessions(): Boolean = synchronized(lock) { references.values.sum() > 0 }
     private fun readProof(file: File) = proofFile(file).read() ?: error("Missing signed resource proof")
-    private fun journalCatalogs(): List<ResourceCatalog> = File(directory, "catalog-history").listFiles()?.filter { it.name.matches(Regex("[1-9][0-9]{0,18}-[0-9a-f]{64}\\.signed\\.json")) }?.map { file ->
-        val catalog = ResourcePolicy.verifyInstalledProof(readProof(file), publicKey)
-        require(file.name == "${catalog.sequence}-${catalog.payloadSha256}.signed.json")
-        catalog
-    } ?: emptyList()
+    private fun journalCatalogs(): List<ResourceCatalog> {
+        val root = File(directory, "catalog-history"); if (!root.exists()) return emptyList()
+        val permitted = journalNames.flatMap { listOf(it, "$it.new", "$it.bak") }.toSet()
+        require(root.listFiles()?.all { it.name in permitted } == true) { "Unknown or damaged watermark file" }
+        val catalogs = journalNames.map { ResourcePolicy.verifyInstalledProof(readProof(File(root, it)), publicKey) }
+        if (catalogs[0].sequence == catalogs[1].sequence) require(catalogs[0].payloadSha256 == catalogs[1].payloadSha256)
+        // Both required copies normally contain the SAME highest catalog. Interrupted replacement
+        // may contain two valid adjacent catalogs; choose the higher, never a missing/invalid copy.
+        return catalogs
+    }
     private fun recoverWatermark(catalog: ResourceCatalog) {
         if (catalog.sequence < sequence) return
         if (catalog.sequence == sequence && catalogHash.isNotEmpty()) require(catalogHash == catalog.payloadSha256)
@@ -81,12 +89,11 @@ internal class GameResourceStore(private val directory: File, private val hostCo
             require(game.contentCode >= current.highestCode && (game.contentCode != current.highestCode || current.highestHash == null || current.highestHash == game.archiveSha256)) { "Resource code rollback or conflict" }
             next[game.id] = current.copy(highestCode = game.contentCode, highestHash = game.archiveSha256)
         }
-        val journal = File(directory, "catalog-history/${catalog.sequence}-${catalog.payloadSha256}.signed.json")
-        journal.parentFile!!.mkdirs()
-        require(usedBytes(directory) + envelope.size <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size + ResourcePolicy.FREE_RESERVE) { "资源信任记录空间不足，旧版本保留" }
-        proofFile(journal).write(envelope)
+        val journalRoot = File(directory, "catalog-history")
+        require(usedBytes(directory) + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "资源信任记录空间不足，旧版本保留" }
+        require(journalRoot.isDirectory || journalRoot.mkdirs())
+        journalNames.forEach { proofFile(File(journalRoot, it)).write(envelope) }
         persist(next, catalog.sequence, catalog.payloadSha256)
-        File(directory, "catalog-history").listFiles()?.filter { it.name.endsWith(".signed.json") }?.sortedByDescending { it.name.substringBefore('-').toLongOrNull() ?: 0 }?.drop(2)?.forEach { deletePrivate(it) }
         catalog
     }
     fun isEligible(game: ResourceGame): Boolean = synchronized(lock) {

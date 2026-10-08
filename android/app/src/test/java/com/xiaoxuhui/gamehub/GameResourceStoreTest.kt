@@ -168,4 +168,29 @@ class GameResourceStoreTest {
             rejected { store.acceptCatalog(json.toString().toByteArray()) }; assertNull(f.state.bytes)
         } finally { f.close() }
     }
+    @Test fun missingOrDamagedHighestHistoryNeverFallsBackToAnOlderWatermark() {
+        for (damage in listOf("missing", "renamed", "content")) {
+            val f = Fixture(); try {
+                val store = f.store; val (_, old, _) = f.release(2, 2); store.acceptCatalog(old)
+                val (_, latest, _) = f.release(3, 3); store.acceptCatalog(latest)
+                // Simulate an interrupted history replacement with old second copy, then lose/break newest.
+                File(f.root, "catalog-history/highest-b.signed.json").writeBytes(old)
+                val newest = File(f.root, "catalog-history/highest-a.signed.json")
+                when (damage) { "missing" -> newest.delete(); "renamed" -> newest.renameTo(File(newest.parentFile, "broken-name.json")); else -> newest.writeText("broken") }
+                f.state.bytes = "{".toByteArray(); val broken = f.store
+                assertNotNull(broken.failure()); rejected { broken.recoverAllBuiltinsFromTrustedHistory() }; rejected { broken.acceptCatalog(old) }
+                assertEquals("{", String(f.state.bytes!!))
+            } finally { f.close() }
+        }
+    }
+    @Test fun missingSelectionWithExistingResourcesRequiresExplicitPinnedRecovery() {
+        val f = Fixture(); try {
+            val store = f.store; val (game, envelope, zip) = f.release(); store.install(game, envelope, zip); store.openSession("conway", true).close(); store.restore("conway", true)
+            f.state.bytes = null; val broken = f.store
+            assertNotNull(broken.failure()); rejected { broken.acceptCatalog(envelope) }; rejected { broken.restore("light", true) }
+            broken.recoverAllBuiltinsFromTrustedHistory()
+            assertTrue(listOf("conway", "eml", "light", "turing").all { broken.selection(it).pinned }); assertEquals(2, broken.selection("conway").highestCode)
+            assertFalse(broken.isEligible(game))
+        } finally { f.close() }
+    }
 }
