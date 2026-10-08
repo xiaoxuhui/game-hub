@@ -59,4 +59,4 @@ v0.3.0 的实际验证与未测边界见[测试报告](doc/测试报告-v0.3.0.m
 
 ## 协作与许可
 
-贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及 Android 运行依赖的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。该清单及 Apache 2.0 全文均内置于 APK；发行审计见 [开源就绪度审计](doc/开源就绪度审计.md)。
+贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及 Android 运行依赖的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。该清单及 Apache 2.0 全文均内置于 APK；本轮发行审计见 [v0.3.0 开源就绪度审计](doc/开源就绪度审计-v0.3.0.md)。
