@@ -61,6 +61,7 @@ export function validateCatalog(catalog, sources, now = Date.now()) {
   if (catalog.schemaVersion !== 1 || catalog.channel !== 'game-hub-resources-v1') throw new Error('Unknown catalog protocol');
   integer(catalog.releaseId, 1, Number.MAX_SAFE_INTEGER);
   if (typeof catalog.catalogSequence !== 'string' || !/^[1-9][0-9]{0,18}$/.test(catalog.catalogSequence) || BigInt(catalog.catalogSequence) > 9223372036854775807n) throw new Error('Invalid sequence');
+  for (const value of [catalog.issuedAt, catalog.expiresAt]) if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString() !== value) throw new Error('Invalid UTC timestamp');
   const issued = Date.parse(catalog.issuedAt), expires = Date.parse(catalog.expiresAt);
   if (!Number.isFinite(issued) || !Number.isFinite(expires) || expires <= issued || expires - issued > 90 * 86400000 || now < issued - 300000 || now >= expires) throw new Error('Catalog clock or expiry');
   if (!Array.isArray(catalog.games) || catalog.games.length !== 4) throw new Error('Expected four games');

@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPairSync } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { createZip, readStoredZip, inspectResources } from '../scripts/resource-bundle.mjs';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { buildManifest } from '../scripts/bundle.mjs';
+import { createZip, readStoredZip, inspectResources, buildResources, verifyResources } from '../scripts/resource-bundle.mjs';
 import { strictJson, safePath, mime, sha256, CONTRACTS, signCatalog, verifyEnvelope, validateCatalog, assetName } from '../scripts/resource-protocol.mjs';
-import { attachAssets } from '../scripts/resource-catalog.mjs';
+import { attachAssets, validateReleaseSnapshot } from '../scripts/resource-catalog.mjs';
 
 const sources = JSON.parse(readFileSync(new URL('../sources.lock.json', import.meta.url))).sources;
 const now = Date.UTC(2026, 9, 8);
@@ -56,4 +59,41 @@ test('resource release must be prerelease and uploaded assets uniquely bind dige
   assert.throws(() => attachAssets(games, { ...release, prerelease: false }, assets));
   assert.throws(() => attachAssets(games, release, [...assets, assets[0]]));
   assert.throws(() => attachAssets(games, release, assets.map(a => ({ ...a, size: 1 }))));
+});
+test('signing snapshot binds release and asset IDs with complete bounded pagination', () => {
+  const payload = catalog();
+  const assets = payload.games.map(g => ({ id: g.assetId, name: assetName(g), size: g.archiveBytes, state: 'uploaded', digest: `sha256:${g.archiveSha256}` }));
+  const snapshot = { schemaVersion: 1, pageSize: 100, release: { id: 1, tag_name: 'game-resources-v1', draft: false, prerelease: true }, assetPages: [{ page: 1, hasNext: false, assets }] };
+  assert.doesNotThrow(() => validateReleaseSnapshot(payload, snapshot));
+  assert.throws(() => validateReleaseSnapshot({ ...payload, releaseId: 2 }, snapshot));
+  const missing = structuredClone(payload); missing.games[0].assetId = 999; assert.throws(() => validateReleaseSnapshot(missing, snapshot));
+  const full = [...assets, ...Array.from({ length: 96 }, (_, i) => ({ id: i + 100, name: `retained-${i}`, size: 10 }))];
+  assert.doesNotThrow(() => validateReleaseSnapshot(payload, { ...snapshot, assetPages: [{ page: 1, hasNext: false, assets: full }] }));
+  assert.throws(() => validateReleaseSnapshot(payload, { ...snapshot, assetPages: [{ page: 1, hasNext: true, assets: full }] }));
+  assert.throws(() => validateReleaseSnapshot(payload, { ...snapshot, assetPages: [{ page: 1, hasNext: true, assets: full }, { page: 3, hasNext: false, assets: [] }] }));
+  assert.throws(() => validateReleaseSnapshot(payload, { ...snapshot, assetPages: [{ page: 1, hasNext: true, assets }, { page: 2, hasNext: false, assets: [] }] }));
+  assert.throws(() => validateReleaseSnapshot(payload, { ...snapshot, assetPages: [{ page: 1, hasNext: false, assets: [...assets, assets[0]] }] }));
+});
+test('resource generation failure preserves previous complete candidate and rejects stale commit', () => {
+  const root = mkdtempSync(join(tmpdir(), 'game-hub-resource-test-'));
+  const commit = 'c'.repeat(40);
+  try {
+    const assets = join(root, 'android/app/src/main/assets');
+    const lockBytes = readFileSync(new URL('../sources.lock.json', import.meta.url));
+    writeFileSync(join(root, 'sources.lock.json'), lockBytes);
+    writeFileSync(join(root, 'resource-releases.lock.json'), readFileSync(new URL('../resource-releases.lock.json', import.meta.url)));
+    for (const source of sources) {
+      const gameRoot = join(assets, 'games', source.id); mkdirSync(gameRoot, { recursive: true });
+      writeFileSync(join(gameRoot, source.entryPage), '<html>baseline</html>'); writeFileSync(join(gameRoot, 'LICENSE'), 'MIT License');
+      if (source.id === 'turing') { writeFileSync(join(gameRoot, 'campaign.html'), '<html>campaign</html>'); writeFileSync(join(gameRoot, 'route-worker-test.js'), 'self.onmessage = function() {}'); }
+    }
+    const identities = sources.map(s => ({ id: s.id, displayName: s.displayName, repository: s.repository, revision: s.revision, version: s.version, entryPage: s.entryPage }));
+    writeFileSync(join(assets, 'bundle-manifest.json'), JSON.stringify(buildManifest(join(assets, 'games'), identities, commit)));
+    buildResources(root, { expectedCommit: commit });
+    const output = join(root, '.build/resource-candidate'); const previous = readFileSync(join(output, 'games.unsigned.json'));
+    assert.throws(() => buildResources(root, { expectedCommit: commit, failAfterGame: 'eml' }), /Injected/);
+    assert.deepEqual(readFileSync(join(output, 'games.unsigned.json')), previous);
+    assert.doesNotThrow(() => verifyResources(output, { checkoutRoot: root, expectedCommit: commit }));
+    assert.throws(() => verifyResources(output, { checkoutRoot: root, expectedCommit: 'd'.repeat(40) }), /Stale/);
+  } finally { rmSync(root, { recursive: true, force: true }); }
 });

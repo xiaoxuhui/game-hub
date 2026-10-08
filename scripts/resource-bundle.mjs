@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, lstatSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, lstatSync, mkdtempSync, existsSync, renameSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { resolve, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LIMITS, CONTRACTS, sha256, safePath, mime, assetName } from './resource-protocol.mjs';
@@ -63,33 +64,54 @@ export function inspectResources(entries, id) {
     }
   }
 }
-export function buildResources(checkoutRoot = root) {
+const checkoutCommit = root => execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+export function buildResources(checkoutRoot = root, { expectedCommit = checkoutCommit(checkoutRoot), failAfterGame = null } = {}) {
   const assets = join(checkoutRoot, 'android/app/src/main/assets');
   const manifest = JSON.parse(readFileSync(join(assets, 'bundle-manifest.json')));
   const lock = JSON.parse(readFileSync(join(checkoutRoot, 'sources.lock.json')));
-  verifyBundle(assets, lock.sources, manifest.bundleCommit);
+  verifyBundle(assets, lock.sources, expectedCommit);
   const codes = JSON.parse(readFileSync(join(checkoutRoot, 'resource-releases.lock.json')));
-  const output = join(checkoutRoot, '.build/resource-candidate'); mkdirSync(output, { recursive: true });
+  const buildRoot = join(checkoutRoot, '.build'); mkdirSync(buildRoot, { recursive: true });
+  const output = join(buildRoot, 'resource-candidate');
+  const staging = mkdtempSync(join(buildRoot, 'resource-staging-'));
+  const backup = staging + '-previous';
+  try {
   const games = lock.sources.map(source => {
     const code = codes.games[source.id];
     if (!code || !Number.isSafeInteger(code.contentCode) || code.contentCode < 1 || code.sourceRevision !== source.revision || code.storageContract !== CONTRACTS[source.id]) throw new Error('Resource lock mismatch');
     const entries = walk(join(assets, 'games', source.id)); inspectResources(entries, source.id);
     const archive = createZip(entries);
     const game = { id: source.id, version: source.version, contentCode: code.contentCode, sourceRepository: source.repository, sourceRevision: source.revision, minHostVersionCode: 3, maxHostVersionCode: 2147483647, resourceProtocol: 1, storageContract: code.storageContract, entryPage: source.entryPage, archiveBytes: archive.length, archiveSha256: sha256(archive), files: entries.map(e => ({ path: e.path, bytes: e.data.length, sha256: sha256(e.data), mime: mime(e.path) })), releaseNotes: code.releaseNotes };
-    writeFileSync(join(output, assetName(game)), archive); return game;
+    writeFileSync(join(staging, assetName(game)), archive);
+    if (failAfterGame === source.id) throw new Error('Injected resource generation failure');
+    return game;
   });
-  writeFileSync(join(output, 'games.unsigned.json'), JSON.stringify(games, null, 2) + '\n');
-  verifyResources(output); console.log(`Built four deterministic resource ZIPs from ${manifest.bundleCommit}`); return games;
+  writeFileSync(join(staging, 'games.unsigned.json'), JSON.stringify(games, null, 2) + '\n');
+  writeFileSync(join(staging, 'candidate.json'), JSON.stringify({ schemaVersion: 1, bundleCommit: expectedCommit, sourceLockSha256: sha256(readFileSync(join(checkoutRoot, 'sources.lock.json'))) }) + '\n');
+  verifyResources(staging, { checkoutRoot, expectedCommit });
+  if (existsSync(output)) renameSync(output, backup);
+  try { renameSync(staging, output); } catch (error) { if (existsSync(backup)) renameSync(backup, output); throw error; }
+  if (existsSync(backup)) rmSync(backup, { recursive: true, force: true });
+  console.log(`Built four deterministic resource ZIPs from ${expectedCommit}`); return games;
+  } finally { if (existsSync(staging)) rmSync(staging, { recursive: true, force: true }); }
 }
-export function verifyResources(output = join(root, '.build/resource-candidate')) {
+export function verifyResources(output = join(root, '.build/resource-candidate'), { checkoutRoot = root, expectedCommit = checkoutCommit(checkoutRoot) } = {}) {
+  const candidate = JSON.parse(readFileSync(join(output, 'candidate.json')));
+  const lockBytes = readFileSync(join(checkoutRoot, 'sources.lock.json'));
+  const sources = JSON.parse(lockBytes).sources;
+  const codes = JSON.parse(readFileSync(join(checkoutRoot, 'resource-releases.lock.json'))).games;
+  if (candidate.schemaVersion !== 1 || candidate.bundleCommit !== expectedCommit || candidate.sourceLockSha256 !== sha256(lockBytes)) throw new Error('Stale candidate commit or source lock');
   const games = JSON.parse(readFileSync(join(output, 'games.unsigned.json')));
+  if (games.length !== 4 || new Set(games.map(g => g.id)).size !== 4) throw new Error('Candidate must contain four games');
   for (const game of games) {
+    const source = sources.find(s => s.id === game.id), code = codes[game.id];
+    if (!source || !code || game.sourceRevision !== source.revision || game.sourceRepository !== source.repository || game.version !== source.version || game.entryPage !== source.entryPage || game.contentCode !== code.contentCode || game.storageContract !== code.storageContract) throw new Error('Candidate source or resource lock mismatch');
     const archive = readFileSync(join(output, assetName(game))); if (sha256(archive) !== game.archiveSha256 || archive.length !== game.archiveBytes) throw new Error('Archive mismatch');
     const entries = readStoredZip(archive); inspectResources(entries, game.id);
     if (JSON.stringify(entries.map(e => ({ path: e.path, bytes: e.data.length, sha256: sha256(e.data), mime: mime(e.path) }))) !== JSON.stringify(game.files)) throw new Error('File manifest mismatch');
     if (!entries.some(e => e.path === game.entryPage) || !entries.some(e => e.path === 'LICENSE') || (game.id === 'turing' && (!entries.some(e => e.path === 'campaign.html') || !entries.some(e => /route-worker.*\.js$/.test(e.path))))) throw new Error('Required resource');
   }
-  console.log(`Verified ${games.length} resource ZIPs and complete file manifests`); return games;
+  console.log(`Verified ${games.length} resource ZIPs and complete file manifests; source commit ${candidate.bundleCommit}`); return games;
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try { if (process.argv[2] === '--verify') verifyResources(); else if (process.argv.length === 2) buildResources(); else throw new Error('Usage: resource-bundle.mjs [--verify]'); }
