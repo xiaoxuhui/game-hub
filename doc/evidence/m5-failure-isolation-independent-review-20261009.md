@@ -25,3 +25,14 @@
 ## 结论
 
 失败关闭、隔离持久化与修复队列的主路径有可核查证据；跨项目导航的故障误归因必须批改后复审。本记录位于主仓库外，主仓库受审时 `HEAD` 与 `origin/main` 均为 `fb71a451521664a1102776bf9e5b46a6bb3e0ae2`，工作树干净。
+
+## 2fe55e9 导航批改复审（2026-10-09）
+
+- 受审提交 `2fe55e9f8d99d7053a87725414803f0147db468f` 已推送，主仓库 `HEAD` 与 `origin/main` 一致，工作树干净。独立构建目录 `MainActivity.kt` 与受审提交字节摘要相同；专项设备日志显示导航拒绝与错误关闭存档 2 项通过，`BUILD SUCCESSFUL`，1 分 21 秒。本轮未重跑 JVM 全套。
+- **直接导航路径已修。** `shouldOverrideUrlLoading` 对同域未登记/跨项目主页面现在只 toast 并返回 `true`，不再关闭会话。通用 `showError` 不默认携带失败 identity；主入口/登记文件错误使用 `showResourceError`，校验失败显式传身份。新设备负例把临时签名的完整实际 Light 下载会话交给生产 `MainActivity` 的原生寻址和 WebView 导航回调，调用跨项目导航后原 WebView 与 session 仍在、无错误面板。夹具 store 与协调器 production store 是不同实例，夹具选择未变不能单独证明生产持久隔离未发生；这里可靠的回归点是本次拦截没有走关闭与失败上报路径。
+
+### 残余 P1：未登记主框架错误回调仍可能误隔离有效资源
+
+`MainActivity.kt:676-684` 的 `onReceivedError` 和 `onReceivedHttpError` 仍把 `request.isForMainFrame` 作为调用 `showResourceError` 的充分条件。若同域未登记/跨项目主框架请求未被 `shouldOverrideUrlLoading` 拦截（例如该 API 不处理的 POST 导航、应用直接加载或重定向边界），`GameContentResolver` 会拒绝该路径并给出 404/错误；错误回调却会把当前有效下载版 identity 作为加载故障并持久隔离。新设备负例只调用 `shouldOverrideUrlLoading`，未覆盖错误回调。按设计的限定，只有**当前游戏登记的主入口/必需文件**实际加载失败才应隔离。
+
+建议在两个错误回调内先判定 `resolver.allowed(request.url)`；主框架还应核对 `AssetAccessPolicy.pageAllowed(game.id, request.url.path, resolver.allowedPaths)`。未登记主框架错误仅按策略拒绝或展示非隔离提示。增加直接调用两个 WebViewClient 错误回调的跨项目主框架负例，断言旧会话仍在、没有失败上报/隔离；同时保持已登记主入口和必需子资源的正向隔离用例。**因此导航误隔离 P1 尚未完全闭合。**

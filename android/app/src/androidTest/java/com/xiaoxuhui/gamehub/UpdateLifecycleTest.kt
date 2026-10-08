@@ -12,6 +12,7 @@ import org.junit.Test
 class UpdateLifecycleTest {
     @Test fun blockedCrossGameNavigationKeepsVerifiedDownloadedSessionAndDoesNotQuarantineIt() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val networkError = captureBlockedNetworkError(context)
         ResourceDeviceFixture(context).use { fixture ->
             fixture.install("light")
             val session = fixture.store.openSession("light", true)
@@ -36,6 +37,10 @@ class UpdateLifecycleTest {
                         override fun getRequestHeaders() = emptyMap<String, String>()
                     }
                     assertTrue(view.webViewClient.shouldOverrideUrlLoading(view, request))
+                    assertSame(view, field.get(activity))
+                    view.webViewClient.onReceivedHttpError(view, request, android.webkit.WebResourceResponse("text/html", "UTF-8", 404, "Not Found", emptyMap(), java.io.ByteArrayInputStream(byteArrayOf())))
+                    assertSame(view, field.get(activity))
+                    view.webViewClient.onReceivedError(view, request, networkError)
                     assertSame(view, field.get(activity))
                     assertFalse(texts(activity.window.decorView).contains("返回大厅并管理资源"))
                 }
@@ -74,7 +79,17 @@ class UpdateLifecycleTest {
                 val type = MainActivity::class.java.declaredClasses.single { it.simpleName == "SaveBridge" }
                 bridge = type.getDeclaredConstructor(MainActivity::class.java).apply { isAccessible = true }.newInstance(activity)
                 save = type.getDeclaredMethod("saveFile", String::class.java, String::class.java).apply { isAccessible = true }
-                MainActivity::class.java.getDeclaredMethod("showError", String::class.java).apply { isAccessible = true }.invoke(activity, "Injected required resource failure")
+                val currentView = find(activity.window.decorView) { it is WebView } as WebView
+                val failedUrl = android.net.Uri.parse(currentView.url)
+                val request = object : android.webkit.WebResourceRequest {
+                    override fun getUrl() = failedUrl
+                    override fun isForMainFrame() = true
+                    override fun isRedirect() = false
+                    override fun hasGesture() = false
+                    override fun getMethod() = "GET"
+                    override fun getRequestHeaders() = emptyMap<String, String>()
+                }
+                currentView.webViewClient.onReceivedHttpError(currentView, request, android.webkit.WebResourceResponse("text/html", "UTF-8", 404, "Not Found", emptyMap(), java.io.ByteArrayInputStream(byteArrayOf())))
                 val view = MainActivity::class.java.getDeclaredField("webView").apply { isAccessible = true }
                 assertNull(view.get(activity)); assertFalse(find(activity.window.decorView) { it is WebView } != null)
                 assertTrue(texts(activity.window.decorView).contains("返回大厅并管理资源"))
@@ -245,6 +260,25 @@ class UpdateLifecycleTest {
             }
         }
     }
+    private fun captureBlockedNetworkError(context: android.content.Context): android.webkit.WebResourceError {
+        val done = java.util.concurrent.CountDownLatch(1)
+        val captured = java.util.concurrent.atomic.AtomicReference<android.webkit.WebResourceError>()
+        lateinit var probe: WebView
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation.runOnMainSync {
+            probe = WebView(context)
+            probe.settings.blockNetworkLoads = true
+            probe.webViewClient = object : android.webkit.WebViewClient() {
+                override fun onReceivedError(view: WebView, request: android.webkit.WebResourceRequest, error: android.webkit.WebResourceError) {
+                    if (request.isForMainFrame) { captured.set(error); done.countDown() }
+                }
+            }
+            probe.loadUrl("https://invalid.example/game-hub-network-block-probe")
+        }
+        try { assertTrue("Real blocked-network error must arrive", done.await(10, java.util.concurrent.TimeUnit.SECONDS)); return captured.get() }
+        finally { instrumentation.runOnMainSync { probe.destroy() } }
+    }
+
     private fun find(view: View, predicate: (View) -> Boolean): View? {
         if (predicate(view)) return view
         if (view is ViewGroup) for (i in 0 until view.childCount) find(view.getChildAt(i), predicate)?.let { return it }

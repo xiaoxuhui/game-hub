@@ -28,3 +28,12 @@
 
 新增设备负例把临时签名、完整实际光学 ZIP 的下载会话交给生产 MainActivity 原生寻址和导航回调；实际调用 shouldOverrideUrlLoading 拦截康威页面，验证原 WebView/会话仍在、没有错误面板、夹具选择未改变，退出才关闭会话。这是临时下载会话的 UI 路径测试，资源夹具与协调器的生产存储并非同一实例；不能以夹具选择未变单独证明生产存储持久隔离，关键回归证据是拦截不再调用关闭/失败上报路径，原会话保留。生产公钥在线端到端故障验收仍待 M6。
 批改专项：独立目录重新编译后设备导航拒绝和错误关闭存档两项通过，Gradle 1 分 21 秒，退出码 0；此批改只变原生界面路径，未重跑 JVM，也未把两项设备专项称为全套生命周期验证。
+
+### 复审残余回调批改
+
+`2fe55e9f8d99d7053a87725414803f0147db468f` 复审指出错误回调仍把未登记主框架的 404/网络错误误当资源损坏。已将 onReceivedError 和 onReceivedHttpError 的必需请求判定统一为：resolver.allowed 通过；若是主框架还须 pageAllowed 通过。其他主框架错误只提示版本保留，不关闭或上报失败。未登记子资源保持拒绝/日志。
+
+设备负例增加跨项目主框架的 404 与网络错误两个原生回调，每次都检查同一 WebView 保留；正例改为登记的光学入口实际调用 onReceivedHttpError 404，而非直接反射 showError，验证关闭和真实存档保留。仍是可重复原生回调注入，未冒充线上文件真实损坏。
+
+精确 push CI 已成功：74b7da326864188ad08482770ab93589681be4a3（https://github.com/xiaoxuhui/game-hub/actions/runs/37818020360）；aa5eb2bac60c01b968f4240355b864d014ebb7fe（https://github.com/xiaoxuhui/game-hub/actions/runs/37819195879）；fb71a451521664a1102776bf9e5b46a6bb3e0ae2（https://github.com/xiaoxuhui/game-hub/actions/runs/37821434447）；2fe55e9f8d99d7053a87725414803f0147db468f（https://github.com/xiaoxuhui/game-hub/actions/runs/37822172837）。
+残余批改验证：首轮仪器编译失败，原因是 WebResourceError 构造器非公开；失败输出保留。改用 blockNetworkLoads=true 的临时 WebView 获取真实原生错误对象，再调用待测回调，不削弱断言。重新编译及导航/登记入口 404 存档专项设备 2 项通过，1 分 4 秒，退出码 0。尚未重跑全套生命周期和 JVM；等待提交后复审闭环。

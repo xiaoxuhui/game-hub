@@ -674,14 +674,20 @@ class MainActivity : ComponentActivity() {
         }
 
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
-            if (view === webView && (request.isForMainFrame || resolver.allowed(request.url))) showResourceError("${game.name} 加载失败，请返回大厅后重试")
+            if (view !== webView) return
+            val essential = resolver.allowed(request.url) && (!request.isForMainFrame || AssetAccessPolicy.pageAllowed(game.id, request.url.path, resolver.allowedPaths))
+            if (essential) showResourceError("${game.name} 加载失败，请返回大厅后重试")
+            else if (request.isForMainFrame) toast("未登记页面已被阻止，当前资源版本保留")
         }
 
         override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
             if (view !== webView || response.statusCode < 400) return
             val path = request.url.path ?: "未知路径"
-            if (request.isForMainFrame || resolver.allowed(request.url)) {
+            val essential = resolver.allowed(request.url) && (!request.isForMainFrame || AssetAccessPolicy.pageAllowed(game.id, path, resolver.allowedPaths))
+            if (essential) {
                 showResourceError("${game.name} 资源缺失：$path")
+            } else if (request.isForMainFrame) {
+                toast("未登记页面已被阻止，当前资源版本保留")
             } else {
                 Log.w("GameHub", "Blocked or optional resource: $path (${response.statusCode})")
             }
