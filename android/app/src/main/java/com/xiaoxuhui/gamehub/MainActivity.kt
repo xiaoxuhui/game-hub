@@ -39,12 +39,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import org.json.JSONObject
 import java.io.File
 
 class MainActivity : ComponentActivity() {
     private data class Game(val id: String, val name: String, val version: String, val revision: String, val entry: String)
-    private data class Export(val name: String, val content: String)
 
     private lateinit var root: FrameLayout
     private lateinit var lobby: ScrollView
@@ -72,7 +72,8 @@ class MainActivity : ComponentActivity() {
     private var gameResolver: GameContentResolver? = null
     @Volatile private var navigationSerial = 0L
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-    @Volatile private var pendingExport: Export? = null
+    private val exports by lazy { ViewModelProvider(this)[DocumentExportFlow::class.java] }
+    private val pendingExport get() = exports.pending
     private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         filePathCallback?.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data))
         filePathCallback = null
@@ -80,17 +81,7 @@ class MainActivity : ComponentActivity() {
     }
     private val saveLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = if (result.resultCode == Activity.RESULT_OK) result.data?.data else null
-        val export = pendingExport
-        pendingExport = null
-        if (uri == null) {
-            toast("已取消保存")
-        } else if (export != null) {
-            runCatching {
-                contentResolver.openOutputStream(uri)?.use { it.write(export.content.toByteArray(Charsets.UTF_8)) }
-                    ?: error("无法写入所选文件")
-            }.onSuccess { toast("已保存 ${export.name}") }
-                .onFailure { toast("保存失败：${it.message ?: "未知错误"}") }
-        }
+        exports.finish(uri)
         refreshUpdatePresence()
     }
     private val installSourcesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -160,6 +151,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         activityStarted = true
+        exports.attach { exports.consumeResult()?.let { toast(it) }; refreshUpdatePresence() }
         if (::updateSummary.isInitialized) {
             updates.subscribe(updateListener)
             refreshUpdatePresence()
@@ -168,6 +160,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         activityStarted = false
+        exports.detach()
         gameDialogs.toList().forEach { it.dismiss() }
         updateDialogs.toList().forEach { it.dismiss() }
         updateDialogs.clear()
@@ -180,7 +173,7 @@ class MainActivity : ComponentActivity() {
 
     private fun refreshUpdatePresence() {
         if (::updateSummary.isInitialized) updates.presence(activityStarted, currentGame == null,
-            pendingInstallApk == null && filePathCallback == null && pendingExport == null)
+            pendingInstallApk == null && filePathCallback == null && !exports.busy)
     }
 
     private fun trackConfirmation(dialog: AlertDialog): AlertDialog {
@@ -483,7 +476,7 @@ class MainActivity : ComponentActivity() {
         }
         trackConfirmation(AlertDialog.Builder(this).setTitle("资源恢复与更新设置").setMessage(message)
             .setPositiveButton("确认") { _, _ ->
-                if (activityStarted && !isDestroyed && currentGame == null && pendingInstallApk == null && filePathCallback == null && pendingExport == null) {
+                if (activityStarted && !isDestroyed && currentGame == null && pendingInstallApk == null && filePathCallback == null && !exports.busy) {
                     if (!updates.changeLocal(id, action, retryCode)) toast("请等待当前任务结束后重试")
                 }
             }.setNegativeButton("取消", null).create())
@@ -595,7 +588,11 @@ class MainActivity : ComponentActivity() {
                     filePathCallback: ValueCallback<Array<Uri>>,
                     fileChooserParams: FileChooserParams
                 ): Boolean {
-                    this@MainActivity.filePathCallback?.onReceiveValue(null)
+                    if (webView !== this@MainActivity.webView || !activityStarted || loadFailed || exports.busy ||
+                        pendingInstallApk != null || this@MainActivity.filePathCallback != null) {
+                        filePathCallback.onReceiveValue(null)
+                        return true
+                    }
                     this@MainActivity.filePathCallback = filePathCallback
                     refreshUpdatePresence()
                     return try {
@@ -603,6 +600,7 @@ class MainActivity : ComponentActivity() {
                         true
                     } catch (error: Exception) {
                         this@MainActivity.filePathCallback = null
+                        filePathCallback.onReceiveValue(null)
                         refreshUpdatePresence()
                         toast("无法打开文件选择器")
                         false
@@ -815,26 +813,26 @@ class MainActivity : ComponentActivity() {
         @Synchronized
         fun saveFile(name: String, content: String): Boolean {
             if (!activityStarted || bridgeSerial != navigationSerial) return false
-            if (pendingExport != null || content.isEmpty()) {
+            if (exports.busy || content.isEmpty()) {
                 runOnUiThread { toast(if (content.isEmpty()) "导出内容为空" else "请先完成当前保存") }
                 return false
             }
-            val export = Export(FileNamePolicy.sanitize(name), content)
+            val export = DocumentExport(FileNamePolicy.sanitize(name), content)
             val receipt = UiRequestAcceptance()
             runOnUiThread {
                 receipt.dispatch {
-                    if (!activityStarted || isDestroyed || bridgeSerial != navigationSerial || loadFailed || pendingExport != null || filePathCallback != null || pendingInstallApk != null) {
+                    if (!activityStarted || isDestroyed || bridgeSerial != navigationSerial || loadFailed || exports.busy || filePathCallback != null || pendingInstallApk != null) {
                         if (!isDestroyed) toast("保存请求未受理，请回到游戏后重试")
                         false
                     } else {
-                        pendingExport = export
+                        if (!exports.offer(export)) return@dispatch false
                         refreshUpdatePresence()
                         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)
                             .setType(FileNamePolicy.mimeType(export.name))
                             .putExtra(Intent.EXTRA_TITLE, export.name)
                         runCatching { saveLauncher.launch(intent) }.fold({ true }, {
-                            pendingExport = null
+                            exports.cancelled()
                             refreshUpdatePresence()
                             toast("无法打开保存对话框")
                             false

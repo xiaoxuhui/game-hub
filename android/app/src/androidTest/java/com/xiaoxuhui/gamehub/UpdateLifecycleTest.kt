@@ -236,8 +236,8 @@ class UpdateLifecycleTest {
             }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
             assertEquals(false, method.invoke(bridge, "must-not-open.json", "{}"))
-            val pending = MainActivity::class.java.getDeclaredField("pendingExport").apply { isAccessible = true }
-            assertNull(pending.get(activity))
+            val pending = MainActivity::class.java.getDeclaredMethod("getPendingExport").apply { isAccessible = true }
+            assertNull(pending.invoke(activity))
         }
     }
     @Test fun settingsPersistWithoutUiThreadDiskWrites() {

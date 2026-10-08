@@ -19,3 +19,16 @@
 ## 验收边界
 
 `verifyResources()` 对下载候选的哈希与元数据是自洽检查，不能单独证明字节必来自声明的四个 Git SHA；发行前仍须按手册在干净独立检出重复构建、比较四 ZIP 哈希并做四游戏存档/桥/Worker 兼容验收。本切片不构成资源通道发行许可。
+
+## 35687d8 批改静态复审（2026-10-09，待 CLI 实测）
+
+- 受审提交：`35687d8545f23deed68ba00c8f46988815f782f7`。本轮只读检查代码和新负例；主执行端的新干净检出 CLI 尚在运行，**此时暂不标 P1 端到端闭合或放行下一切片**。
+- P1 的静态修订方向正确：`resource-sources.mjs:41` 改为调用 `prepareResources(...).catch(...)`，入口模块可先完成求值，之后动态导入静态反向引用它的 `resource-bundle.mjs`，消除前版顶层 await 形成的求值等待环。失败会打印错误并置非零退出码。旧 clean CLI exit 13 日志已归档，没有冒充其为成功。
+- P2 已从代码与负例闭合：`resource-bundle.mjs:105-106` 精确比较候选顶层为四个 `assetName(game)` ZIP 加两 JSON，逐项要求普通文件并拒绝符号链接；测试加入额外普通文件、目录、Windows junction/类 Unix 符号链接三种拒绝。Node 22 项通过；`git diff 35687d8^ 35687d8 --check` 无输出。
+- 完整闭环仍取决于在干净 `35687d8` 独立检出实际运行 `prepare:resources` 与 `verify:resources`，记录退出码、40 文件、四 ZIP 哈希及主仓库/四原仓库状态；工作流远端未运行，签名/发布亦未进行。
+
+## 35687d8 干净独立 CLI 实测闭环（2026-10-09）
+
+- 主执行端在 `D:\soft\game-hub-resource-producer-20261009` 的干净 `HEAD=35687d8545f23deed68ba00c8f46988815f782f7` 运行新 `prepare:resources` 与 `verify:resources`，报告总退出码 0。审阅端只读查看原始日志：四源构建 40 文件、四个 ZIP 完成，独立 `verify:resources` 输出 4 ZIP/完整清单成功；我又在同一独立检出**只读重跑验证命令**，退出码 0，未重新构建。审阅前后 `git status --porcelain=v1 --untracked-files=all` 为空。
+- 候选恰有 `candidate.json`、`games.unsigned.json`、四 ZIP。`candidate.json` 的 `schemaVersion=2`、`sourceMode=independent`、`bundleCommit=35687d8...` 与检出一致；其中三锁 SHA-256 与我对该检出三个锁文件的只读计算逐一相同。四 ZIP 摘要分别为 conway `77af28d46a71...ed5cc65`、eml `20205b0dfba4...b29f90e6`、light `9df0cadcfc97...30c0`、turing `e633a50595e9...339ce1`，与前次开发检出重复构建的四个摘要一致。
+- **最终判定：P1/P2 均闭合，可进入下一开发切片。** 旧失败日志保留，现有证据明确区分开发 `00b53f1` 的 API 实测与 `35687d8` 干净 CLI 实测。手动 Actions 工作流尚未远端运行、候选仍 unsigned；真实四游戏存档兼容、签署和公开发行继续作为后续门禁。

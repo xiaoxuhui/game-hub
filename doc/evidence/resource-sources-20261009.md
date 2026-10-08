@@ -17,3 +17,6 @@
 898fa6a5c6705adc0bc14fc3ddbd91d7d11c426a 准确 push CI 成功（37827361576），但不覆盖手动 prepare:resources 入口。新干净检出 D:\soft\game-hub-resource-producer-20261009 实际 CLI 四源40文件构建完成后 exit13：CLI 顶层 await 等动态导入，而资源构建模块反向静态导入当前模块，形成未解决的模块求值循环。这是本切片自验发现的 P1，失败日志完整保留。
 
 已改 CLI 为异步 Promise catch，不阻塞当前模块求值。独立审阅另外指出 P2 候选顶层额外内容未拒绝；现验证文件集合恰为四 ZIP 与两 JSON，并拒绝非普通文件和符号链接。Node22专项复验包含额外文件、目录、Windows junction 链接负例，全部通过；脏检出拒绝另有实际输出。批改提交后仍须新干净提交实际 CLI 和独立复审，未完成前不进入下一切片。
+## 批改后的真实干净命令验收
+
+新独立目录 D:\soft\game-hub-resource-producer-20261009 切到 35687d8545f23deed68ba00c8f46988815f782f7 后，实际 pnpm run prepare:resources 和 pnpm run verify:resources 均退出码 0：远端四源构建40文件、生成并验证四ZIP，前后Git工作树为空。candidate.json 的 bundleCommit 精确35687d，sourceMode independent，APK基线/资源来源锁摘要均189f9f904455ae46f3dafc7a6eabd99386fd609402a742de562b612173c1c2ac，资源编号锁摘要85728ed380a4e80ea2f64276adef13471c364a575d00ab92dfb00fea4b4faa39。执行日志另存；新目录未生成 APK 内置资产。

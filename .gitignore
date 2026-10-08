@@ -1,5 +1,6 @@
 node_modules/
 .build/
+doc/evidence/m6-actual-exports/
 android/app/src/main/assets/
 android/.gradle/
 android/build/
