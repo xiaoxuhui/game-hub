@@ -4,6 +4,27 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateTaskGateTest {
+    @Test fun failureRepairsWaitForCleanupBlockNewTasksAndCompleteEvenInBackgroundOffline() {
+        val f = Fixture(); val download = f.gate.beginDownload(UpdateDownloadKind.RESOURCE, false)!!
+        f.gate.requestRepair(); f.gate.requestRepair()
+        assertTrue(download.cancelled); assertNull(f.gate.beginRepair())
+        f.gate.finish(download)
+        assertTrue(f.gate.busy()); assertFalse(f.gate.canAutoDownload())
+        assertFalse(f.gate.beginCheck(true)); assertNull(f.gate.beginLocalChange())
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.APK, true, true))
+        val first = f.gate.beginRepair()!!
+        f.gate.setPresence(false, false, true); f.gate.setNetwork(UpdateNetwork(false, false))
+        assertTrue(f.gate.valid(first)); assertFalse(f.gate.cancel())
+        f.gate.finish(first); assertTrue(f.gate.busy())
+        val second = f.gate.beginRepair()!!; f.gate.finish(first)
+        assertTrue(f.gate.valid(second)); f.gate.finish(second)
+        assertFalse(f.gate.busy()); assertNull(f.gate.beginRepair())
+        f.gate.setPresence(true, true); f.gate.setNetwork(UpdateNetwork(true, true))
+        assertTrue(f.gate.canAutoDownload())
+        assertTrue(f.gate.beginCheck(true)); f.gate.requestRepair()
+        assertNull(f.gate.beginRepair()); f.gate.endCheck()
+        f.gate.finish(f.gate.beginRepair()!!); assertFalse(f.gate.busy())
+    }
     @Test fun offlineLocalChangeSharesMutexIgnoresNetworkAndHonorsForegroundHallCancellation() {
         val f = Fixture(); f.gate.setNetwork(UpdateNetwork(false, false))
         val local = f.gate.beginLocalChange()!!

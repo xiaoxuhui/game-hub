@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
     private val updates by lazy { UpdateCoordinator.get(applicationContext) }
     @Volatile private var activityStarted = false
     private val updateDialogs = mutableSetOf<AlertDialog>()
+    private val gameDialogs = mutableSetOf<AlertDialog>()
     private val gameVersionLabels = mutableMapOf<String, TextView>()
     private val gameCards = mutableMapOf<String, View>()
     private val hostVersionCode by lazy { packageManager.getPackageInfo(packageName, 0).let { if (Build.VERSION.SDK_INT >= 28) it.longVersionCode.toInt() else it.versionCode } }
@@ -69,7 +70,7 @@ class MainActivity : ComponentActivity() {
     private var resourceRuntime: ResourceRuntime? = null
     private var resourceSession: ResourceSession? = null
     private var gameResolver: GameContentResolver? = null
-    private var navigationSerial = 0L
+    @Volatile private var navigationSerial = 0L
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     @Volatile private var pendingExport: Export? = null
     private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -167,6 +168,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         activityStarted = false
+        gameDialogs.toList().forEach { it.dismiss() }
         updateDialogs.toList().forEach { it.dismiss() }
         updateDialogs.clear()
         if (::updateSummary.isInitialized) {
@@ -317,6 +319,7 @@ class MainActivity : ComponentActivity() {
             val code = local?.selection?.active?.substringBefore('-')?.toIntOrNull() ?: 1
             val marker = when {
                 local == null -> null
+                local.selection.active.substringBefore('-').toIntOrNull() in local.selection.quarantine -> "失败已隔离 · 待恢复"
                 local?.readyError != null -> "候选损坏，旧版保留"
                 local?.ready != null && !local.readyFresh -> "候选已过期，请检查"
                 local?.ready != null -> "#${local.ready.contentCode} 待生效"
@@ -540,9 +543,10 @@ class MainActivity : ComponentActivity() {
                         if (!assessment.canPlay) { showError(assessment.reason); return@inspectAndClear }
                         Thread {
                             val selected = runCatching { runtime.store.openSession(game.id, assessment.canActivate) }
+                            val failedIdentity = if (selected.isFailure) runtime.store.selection(game.id).active.takeIf { it != "builtin" } else null
                             runOnUiThread selectedUi@{
                                 if (isDestroyed || serial != navigationSerial) { selected.getOrNull()?.close(); return@selectedUi }
-                                selected.onFailure { showError("资源校验失败：${it.message}") }.onSuccess selectedSession@{ session ->
+                                selected.onFailure { showError("资源校验失败：${it.message}", failedIdentity) }.onSuccess selectedSession@{ session ->
                                     openGamePrepared(game, restoredState, session, runtime)
                                 }
                             }
@@ -604,12 +608,15 @@ class MainActivity : ComponentActivity() {
                 }
 
                 override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
-                    AlertDialog.Builder(this@MainActivity)
+                    if (view !== webView || loadFailed || !activityStarted) { result.cancel(); return true }
+                    var completed = false
+                    val dialog = AlertDialog.Builder(this@MainActivity)
                         .setMessage(message)
-                        .setPositiveButton("确定") { _, _ -> result.confirm() }
-                        .setNegativeButton("取消") { _, _ -> result.cancel() }
-                        .setOnCancelListener { result.cancel() }
-                        .show()
+                        .setPositiveButton("确定") { _, _ -> completed = true; if (view === webView && !loadFailed && activityStarted) result.confirm() else result.cancel() }
+                        .setNegativeButton("取消") { _, _ -> completed = true; result.cancel() }.create()
+                    gameDialogs.add(dialog)
+                    dialog.setOnDismissListener { gameDialogs.remove(dialog); if (!completed) result.cancel() }
+                    dialog.show()
                     return true
                 }
             }
@@ -636,6 +643,7 @@ class MainActivity : ComponentActivity() {
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+            if (view !== webView || currentGame?.id != game.id || loadFailed) return true
             if (!request.isForMainFrame) return !resolver.allowed(request.url)
             val uri = request.url
             val path = uri.path ?: ""
@@ -666,7 +674,7 @@ class MainActivity : ComponentActivity() {
         }
 
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
-            if (view === webView && request.isForMainFrame) showError("${game.name} 加载失败，请返回大厅后重试")
+            if (view === webView && (request.isForMainFrame || resolver.allowed(request.url))) showError("${game.name} 加载失败，请返回大厅后重试")
         }
 
         override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
@@ -693,8 +701,16 @@ class MainActivity : ComponentActivity() {
         root.addView(panel, FrameLayout.LayoutParams(-1, -1))
     }
 
-    private fun showError(message: String) {
+    private fun showError(message: String) = showError(message, resourceSession?.game?.identity)
+
+    private fun showError(message: String, failedIdentity: String?) {
+        if (loadFailed && webView == null) return
+        val failedGame = currentGame?.id
+        if (failedGame != null && failedIdentity != null) resourceRuntime?.store?.blockFailedIdentity(failedGame, failedIdentity)
+        navigationSerial++
         loadFailed = true
+        clearWebView()
+        if (failedGame != null && failedIdentity != null) updates.reportResourceFailure(failedGame, failedIdentity)
         hideOverlay()
         val panel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -706,6 +722,11 @@ class MainActivity : ComponentActivity() {
                 text = "返回大厅"
                 isAllCaps = false
                 setOnClickListener { showLobby() }
+            })
+            addView(Button(this@MainActivity).apply {
+                text = "返回大厅并管理资源"
+                isAllCaps = false
+                setOnClickListener { showLobby(); showUpdateDetails() }
             })
         }
         overlay = panel
@@ -736,14 +757,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun clearWebView() {
+        val previousView = webView
+        webView = null
+        gameDialogs.toList().forEach { it.dismiss() }
         filePathCallback?.onReceiveValue(null)
         filePathCallback = null
-        webView?.let { view ->
+        previousView?.let { view ->
             root.removeView(view)
             view.stopLoading()
             view.destroy()
         }
-        webView = null
         resourceRuntime?.unbind(gameResolver)
         gameResolver = null
         resourceSession?.close()
@@ -778,10 +801,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private inner class SaveBridge {
+        private val bridgeSerial = navigationSerial
         @JavascriptInterface
         @Synchronized
         fun saveFile(name: String, content: String): Boolean {
-            if (!activityStarted) return false
+            if (!activityStarted || bridgeSerial != navigationSerial) return false
             if (pendingExport != null || content.isEmpty()) {
                 runOnUiThread { toast(if (content.isEmpty()) "导出内容为空" else "请先完成当前保存") }
                 return false
@@ -790,7 +814,7 @@ class MainActivity : ComponentActivity() {
             val receipt = UiRequestAcceptance()
             runOnUiThread {
                 receipt.dispatch {
-                    if (!activityStarted || isDestroyed || pendingExport != null || filePathCallback != null || pendingInstallApk != null) {
+                    if (!activityStarted || isDestroyed || bridgeSerial != navigationSerial || loadFailed || pendingExport != null || filePathCallback != null || pendingInstallApk != null) {
                         if (!isDestroyed) toast("保存请求未受理，请回到游戏后重试")
                         false
                     } else {

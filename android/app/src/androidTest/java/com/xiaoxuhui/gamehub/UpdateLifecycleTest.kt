@@ -10,6 +10,46 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateLifecycleTest {
+    @Test fun loadingErrorDestroysActualViewRejectsOldBridgeAndKeepsActualLightSave() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        lateinit var bridge: Any
+        lateinit var save: java.lang.reflect.Method
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            fun openLight() = scenario.onActivity { activity ->
+                val card = find(activity.window.decorView) { it is TextView && it.text.toString() == "光学游戏" }!!
+                assertTrue((card.parent as View).performClick())
+            }
+            fun js(script: String): String {
+                var result = "null"; val done = java.util.concurrent.CountDownLatch(1)
+                scenario.onActivity { activity ->
+                    val view = find(activity.window.decorView) { it is WebView } as? WebView
+                    if (view == null) done.countDown() else view.evaluateJavascript(script) { result = it; done.countDown() }
+                }
+                assertTrue(done.await(5, java.util.concurrent.TimeUnit.SECONDS)); return result
+            }
+            fun awaitLight() {
+                val deadline = System.currentTimeMillis() + 20000
+                while (js("typeof window.LightStorage !== 'undefined'") != "true" && System.currentTimeMillis() < deadline) Thread.sleep(100)
+                assertEquals("true", js("typeof window.LightStorage !== 'undefined'"))
+            }
+            openLight(); awaitLight()
+            assertEquals("true", js("(()=>{const s=LightStorage.createStore();s.load();s.replace({schema:'light-game/save',version:1,stars:{'level-1':1},boards:{},snapshots:[]});return s.persist()})()"))
+            scenario.onActivity { activity ->
+                val type = MainActivity::class.java.declaredClasses.single { it.simpleName == "SaveBridge" }
+                bridge = type.getDeclaredConstructor(MainActivity::class.java).apply { isAccessible = true }.newInstance(activity)
+                save = type.getDeclaredMethod("saveFile", String::class.java, String::class.java).apply { isAccessible = true }
+                MainActivity::class.java.getDeclaredMethod("showError", String::class.java).apply { isAccessible = true }.invoke(activity, "Injected required resource failure")
+                val view = MainActivity::class.java.getDeclaredField("webView").apply { isAccessible = true }
+                assertNull(view.get(activity)); assertFalse(find(activity.window.decorView) { it is WebView } != null)
+                assertTrue(texts(activity.window.decorView).contains("返回大厅并管理资源"))
+            }
+            assertFalse(ResourceRuntime.get(context).store.hasSessions())
+            assertEquals(false, save.invoke(bridge, "stale-session.json", "{}"))
+            scenario.onActivity { activity -> find(activity.window.decorView) { it is TextView && it.text.toString() == "返回大厅" }!!.performClick() }
+            openLight(); awaitLight()
+            assertEquals("true", js("LightStorage.createStore().load().stars['level-1'] === 1"))
+        }
+    }
     @Test fun localRecoveryCommitsOffUiAndPersistsAcrossStoreRecreation() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val coordinator = UpdateCoordinator.get(context)
@@ -101,6 +141,12 @@ class UpdateLifecycleTest {
                     val labels = texts(activity.window.decorView)
                     assertTrue(labels.any { it.contains("已下载") && it.contains("#3 可更新") })
                     assertFalse(labels.any { it.contains("99.0.0") })
+                }
+                fixture.store.quarantineFailedIdentity("light", fixture.catalog.games.single { it.id == "light" }.identity)
+                snapshot = snapshot.copy(localResources = fixture.store.describeAll())
+                scenario.onActivity { activity ->
+                    render.invoke(activity, snapshot)
+                    assertTrue(texts(activity.window.decorView).any { it.contains("已下载") && it.contains("失败已隔离 · 待恢复") })
                 }
             }
         }

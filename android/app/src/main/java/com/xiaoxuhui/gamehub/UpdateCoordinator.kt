@@ -137,9 +137,9 @@ internal class UpdateCoordinator private constructor(context: Context) {
                             publish { it.copy(resources = available, catalogGames = next.catalog.games, resourcesCheckedAt = System.currentTimeMillis(), resourceStatus = if (available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新") }
                         }
                     } catch (error: Exception) { channelFailure("resources", error) }
-                } else if (foreground) publish { it.copy(resourceStatus = "游戏查询限流，稍后可重试") }
+                } else if (foreground) publish { it.copy(resourceStatus = if (checkCancelled) "游戏检查已取消，已安装资源保留" else "游戏查询限流，稍后可重试") }
             } finally {
-                synchronized(stateLock) { gate.endCheck(); publish { it.copy(busy = false, task = null) } }
+                synchronized(stateLock) { gate.endCheck(); publish(::idleStatus) }
                 automaticNext()
             }
         }
@@ -184,7 +184,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
                 if (token.cancelled) publish { it.copy(resourceStatus = "游戏下载已取消，原版本保留") } else channelFailure("resources", error)
             } finally {
                 archive?.delete()
-                synchronized(stateLock) { gate.finish(token); publish { it.copy(busy = false, task = null) } }
+                synchronized(stateLock) { gate.finish(token); publish(::idleStatus) }
                 automaticNext()
             }
         }
@@ -206,7 +206,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
                 if (token.cancelled) publish { it.copy(apkStatus = "大厅下载已取消") } else channelFailure("apk", error)
             } finally {
                 ready?.delete()
-                synchronized(stateLock) { gate.finish(token); publish { it.copy(busy = false, task = null) } }
+                synchronized(stateLock) { gate.finish(token); publish(::idleStatus) }
                 automaticNext()
             }
         }
@@ -221,6 +221,28 @@ internal class UpdateCoordinator private constructor(context: Context) {
         }
     }
     fun cancel() = gate.cancel()
+    private fun idleStatus(value: UpdateSnapshot): UpdateSnapshot = value.copy(busy = gate.busy(), task = if (gate.busy()) "正在隔离失败资源" else null, done = 0, total = 0)
+    fun reportResourceFailure(id: String, identity: String) = synchronized(stateLock) {
+        checkCancelled = true
+        gate.requestRepair()
+        publish { it.copy(busy = true, task = "正在隔离失败资源", done = 0, total = 0) }
+        worker.execute {
+            // The serial queue places this after cleanup of the previously reserved network/local task.
+            val token = checkNotNull(gate.beginRepair())
+            try {
+                runtime.store.quarantineFailedIdentity(id, identity)
+                publish { it.copy(resourceStatus = "$id 失败资源已隔离，请恢复版本；存档保留") }
+            } catch (error: Exception) { publish { it.copy(resourceStatus = "失败资源隔离未提交：${error.message}；请恢复版本") } }
+            finally {
+                readLocalResources()
+                synchronized(stateLock) {
+                    val available = runCatching { offer?.catalog?.games?.filter { runtime.store.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
+                    gate.finish(token); publish { idleStatus(it).copy(resources = available) }
+                }
+                automaticNext()
+            }
+        }
+    }
     fun changeLocal(id: String?, action: LocalResourceAction, retryCode: Int? = null): Boolean = synchronized(stateLock) {
         require(action == LocalResourceAction.RECOVER_ALL || id in setOf("conway", "eml", "light", "turing"))
         require(action != LocalResourceAction.RETRY || retryCode != null && retryCode > 1)
@@ -256,7 +278,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
                         attempted.removeAll { it.startsWith("$id/$retryCode-") }
                     }
                     gate.finish(token)
-                    publish { it.copy(busy = false, task = null, resources = available) }
+                    publish { idleStatus(it).copy(resources = available) }
                 }
                 automaticNext()
             }

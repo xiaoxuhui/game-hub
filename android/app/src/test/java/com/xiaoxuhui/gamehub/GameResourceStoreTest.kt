@@ -15,6 +15,69 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 class GameResourceStoreTest {
+    @Test fun retainedIdentityCannotAcquireChangedMetadataOnReinstall() {
+        val f = Fixture()
+        try {
+            val store = f.store; val (game, envelope, zip) = f.release()
+            store.install(game, envelope, zip); f.time += 2 * 86400000L
+            store.openSession("conway", true).close()
+            val state = JSONObject(String(f.state.bytes!!))
+            state.getJSONObject("games").getJSONObject("conway").put("previous", game.identity)
+            f.state.bytes = state.toString().toByteArray() // Retain a previously installed directory through GC.
+            val retained = f.store
+            val (changed, fresh, archive) = f.release(2, 3, issued = "2026-10-10T00:00:00.000Z", expires = "2026-10-11T00:00:00.000Z", version = "99.0.0", revision = "b".repeat(40))
+            val proof = File(f.root, "versions/conway/${game.identity}/catalog.signed.json")
+            val before = proof.readBytes()
+            rejected { retained.install(changed, fresh, archive) }
+            assertArrayEquals(before, proof.readBytes()); assertNull(retained.selection("conway").ready)
+            assertEquals("builtin", retained.selection("conway").active)
+        } finally { f.close() }
+    }
+    @Test fun failedActiveIsBlockedBeforePersistenceAndRemainsQuarantinedAfterRestartUntilExplicitRetry() {
+        val f = Fixture()
+        try {
+            val store = f.store; val (game, envelope, zip) = f.release()
+            store.install(game, envelope, zip)
+            val session = store.openSession("conway", true)
+            store.blockFailedIdentity("conway", game.identity)
+            rejected { store.openSession("conway", true) }
+            rejected { store.quarantineFailedIdentity("conway", game.identity) }
+            session.close()
+            store.openSession("light", true).use { store.quarantineFailedIdentity("conway", game.identity) }
+            val restarted = f.store
+            assertTrue(restarted.selection("conway").pinned); assertTrue(2 in restarted.selection("conway").quarantine)
+            rejected { restarted.openSession("conway", true) }
+            rejected { restarted.resumeAutomatic("conway", 99) }
+            restarted.restore("conway", true)
+            restarted.openSession("conway", true).use { assertNull(it.game) }
+            restarted.resumeAutomatic("conway"); assertFalse(restarted.isEligible(game))
+            restarted.resumeAutomatic("conway", 2); assertTrue(restarted.isEligible(game))
+            store.restore("conway", true); store.resumeAutomatic("conway", 2)
+            store.install(game, envelope, zip); store.openSession("conway", true).use { assertEquals(game, it.game) }
+        } finally { f.close() }
+    }
+    @Test fun sessionCloseDoesNotWaitForBackgroundFullProofVerification() {
+        val f = Fixture(); val blocked = java.util.concurrent.CountDownLatch(1); val release = java.util.concurrent.CountDownLatch(1)
+        val armed = java.util.concurrent.atomic.AtomicBoolean(false); val failure = java.util.concurrent.atomic.AtomicReference<Throwable?>()
+        var scan: Thread? = null; var closer: Thread? = null
+        try {
+            val (game, envelope, zip) = f.release(); f.store.install(game, envelope, zip)
+            val store = GameResourceStore(f.root, 3, f.pair.public.encoded, f.state, now = { f.time }, proofFile = { file ->
+                val original = f.proofFile(file)
+                object : ResourceStateFile {
+                    override fun read(): ByteArray? { if (armed.get()) { blocked.countDown(); check(release.await(5, java.util.concurrent.TimeUnit.SECONDS)) }; return original.read() }
+                    override fun write(bytes: ByteArray) = original.write(bytes)
+                }
+            })
+            val session = store.openSession("conway", true); armed.set(true)
+            scan = Thread { try { store.describeAll() } catch (error: Throwable) { failure.set(error) } }.apply { start() }
+            assertTrue(blocked.await(2, java.util.concurrent.TimeUnit.SECONDS))
+            val closed = java.util.concurrent.CountDownLatch(1)
+            closer = Thread { try { session.close(); closed.countDown() } catch (error: Throwable) { failure.set(error) } }.apply { start() }
+            assertTrue("UI session release must not wait for hashing", closed.await(1, java.util.concurrent.TimeUnit.SECONDS))
+        } finally { release.countDown(); scan?.join(5000); closer?.join(5000); f.close() }
+        assertNull(failure.get())
+    }
     @Test fun sameArchiveCannotRenewChangedVersionOrSourceAndSuccessfulRetryClearsItsDiagnostic() {
         val f = Fixture()
         try {

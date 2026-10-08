@@ -25,10 +25,11 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
     private var sequence = 0L
     private var catalogHash = ""
     private var selections = listOf("conway", "eml", "light", "turing").associateWith { ResourceSelection() }
-    private val references = HashMap<String, Int>()
+    private val references = java.util.concurrent.ConcurrentHashMap<String, Int>()
     private var stateFailure: String? = null
     private var candidateFailure: String? = null
     private val renewalFailures = mutableMapOf<String, String>()
+    private val failedIdentities = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
     private val journalNames = listOf("highest-a.signed.json", "highest-b.signed.json")
     init {
         require(directory.isDirectory || directory.mkdirs())
@@ -154,7 +155,7 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
             proofFile(File(staging, "catalog.signed.json")).write(envelope)
             val destination = version(game.id, game.identity); destination.parentFile!!.mkdirs()
             if (destination.exists()) {
-                verifyVersion(game.id, game.identity)
+                require(verifyVersion(game.id, game.identity) == game) { "Installed metadata changed under the same archive identity" }
                 proofFile(File(destination, "catalog.signed.json")).write(envelope)
                 deletePrivate(staging)
             } else require(staging.renameTo(destination)) { "Cannot commit resource directory" }
@@ -175,6 +176,7 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
     }
     fun openSession(id: String, cacheProxyCleared: Boolean): ResourceSession = synchronized(lock) {
         var selected = selections.getValue(id)
+        require("$id/${selected.active}" !in failedIdentities && selected.active.substringBefore('-').toIntOrNull() !in selected.quarantine) { "该资源加载失败并已隔离，请先在大厅恢复版本" }
         if (selected.ready != null && !selected.pinned && !hasSessions() && cacheProxyCleared && stateFailure == null) {
             val readyIdentity = selected.ready!!
             selected = try {
@@ -193,12 +195,13 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
         }
         val game = if (selected.active == "builtin") null else verifyVersion(id, selected.active)
         val reference = "$id/${selected.active}"; references[reference] = (references[reference] ?: 0) + 1
-        ResourceSession(game, game?.let { version(id, it.identity) }) { synchronized(lock) { val count = references.getValue(reference) - 1; if (count == 0) references.remove(reference) else references[reference] = count } }
+        ResourceSession(game, game?.let { version(id, it.identity) }) { references.compute(reference) { _, count -> require(count != null && count > 0); if (count == 1) null else count - 1 } }
     }
     fun restore(id: String, builtin: Boolean, failedCode: Int? = null) = synchronized(lock) {
         require(stateFailure == null) { "全局状态损坏，单游戏恢复不能覆盖其他游戏；请使用全局可信恢复" }
         require(!hasSessions()) { "Return to hall before restoring" }; val current = selections.getValue(id)
         val target = if (builtin) "builtin" else current.previous
+        require("$id/$target" !in failedIdentities && target.substringBefore('-').toIntOrNull() !in current.quarantine) { "恢复目标已隔离，请选择内置资源" }
         if (target != "builtin") verifyVersion(id, target)
         val next = current.copy(active = target, ready = null, pinned = true, quarantine = current.quarantine + listOfNotNull(failedCode))
         persist(selections + (id to next)); stateFailure = null
@@ -213,7 +216,23 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
     }
     fun resumeAutomatic(id: String, retryCode: Int? = null) = synchronized(lock) {
         require(stateFailure == null); val selected = selections.getValue(id)
+        require(retryCode == null || retryCode > 1 && retryCode in selected.quarantine) { "指定编号不在隔离列表中" }
         persist(selections + (id to selected.copy(pinned = false, quarantine = if (retryCode == null) selected.quarantine else selected.quarantine - retryCode)))
+        if (retryCode != null) failedIdentities.removeAll { it.startsWith("$id/$retryCode-") }
+    }
+    /** Nonblocking in-memory denial closes the window before the serial worker persists quarantine. */
+    fun blockFailedIdentity(id: String, identity: String) {
+        require(id in setOf("conway", "eml", "light", "turing")); validateIdentity(identity)
+        if (identity != "builtin") failedIdentities.add("$id/$identity")
+    }
+    fun quarantineFailedIdentity(id: String, identity: String) = synchronized(lock) {
+        require(stateFailure == null) { "状态损坏，失败资源保持禁止打开；请进行全局可信恢复" }
+        validateIdentity(identity); require(identity != "builtin")
+        val current = selections.getValue(id)
+        if (current.active == identity) {
+            require(references["$id/$identity"] == null) { "Close the failed session before quarantine" }
+            persist(selections + (id to current.copy(pinned = true, quarantine = current.quarantine + identity.substringBefore('-').toInt())))
+        }
     }
     private fun garbageCollect() {
         for ((id, selected) in selections) {
