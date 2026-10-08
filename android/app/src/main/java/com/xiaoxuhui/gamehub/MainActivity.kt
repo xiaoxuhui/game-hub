@@ -381,14 +381,14 @@ class MainActivity : ComponentActivity() {
                 if (isDestroyed || serial != navigationSerial) return@runOnUiThread
                 prepared.onFailure { showError("资源状态不可用：${it.message}") }.onSuccess { (runtime, paths) ->
                     runtime.prepareWorkerInterceptor()
-                    ResourceCacheGuard.inspectAndClear(this, paths) { cleared, reason ->
+                    ResourceCacheGuard.inspectAndClear(this, paths) { assessment ->
                         if (isDestroyed || serial != navigationSerial) return@inspectAndClear
+                        if (!assessment.canPlay) { showError(assessment.reason); return@inspectAndClear }
                         Thread {
-                            val selected = runCatching { runtime.store.openSession(game.id, cleared) }
+                            val selected = runCatching { runtime.store.openSession(game.id, assessment.canActivate) }
                             runOnUiThread selectedUi@{
                                 if (isDestroyed || serial != navigationSerial) { selected.getOrNull()?.close(); return@selectedUi }
                                 selected.onFailure { showError("资源校验失败：${it.message}") }.onSuccess selectedSession@{ session ->
-                                    if (!cleared && session.game != null) { session.close(); showError(reason); return@selectedSession }
                                     openGamePrepared(game, restoredState, session, runtime)
                                 }
                             }
@@ -516,7 +516,7 @@ class MainActivity : ComponentActivity() {
         override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
             if (view !== webView || response.statusCode < 400) return
             val path = request.url.path ?: "未知路径"
-            if (request.isForMainFrame || (resolver.allowed(request.url) && (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".html")))) {
+            if (request.isForMainFrame || resolver.allowed(request.url)) {
                 showError("${game.name} 资源缺失：$path")
             } else {
                 Log.w("GameHub", "Blocked or optional resource: $path (${response.statusCode})")

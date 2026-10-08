@@ -12,6 +12,9 @@ import org.junit.runner.RunWith
 import org.json.JSONObject
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.io.ByteArrayInputStream
+import androidx.webkit.ServiceWorkerClientCompat
+import androidx.webkit.ServiceWorkerControllerCompat
 
 @RunWith(AndroidJUnit4::class)
 class ResourceWebViewTest {
@@ -29,15 +32,24 @@ class ResourceWebViewTest {
         instrumentation.runOnMainSync {
             view = WebView(context).apply {
                 settings.javaScriptEnabled = true; settings.domStorageEnabled = true; settings.blockNetworkLoads = true
-                webViewClient = object : WebViewClient() { override fun onPageFinished(v: WebView, url: String) { latch.countDown() } }
-                loadDataWithBaseURL("https://appassets.androidplatform.net/runtime/test", "<!doctype html><title>Test</title>", "text/html", "UTF-8", null)
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(v: WebView, url: String) { latch.countDown() }
+                    override fun shouldInterceptRequest(v: WebView, request: WebResourceRequest): WebResourceResponse = if (request.url.toString() == "https://appassets.androidplatform.net/runtime/test") html("<!doctype html><title>Test</title>") else GameContentResolver.blocked()
+                }
+                loadUrl("https://appassets.androidplatform.net/runtime/test")
             }
         }
         await(latch); return view
     }
+    private fun html(body: String) = WebResourceResponse("text/html", "UTF-8", 200, "OK", mapOf("Cache-Control" to "no-store"), ByteArrayInputStream(body.toByteArray()))
+    private fun ready(view: WebView) {
+        val until = System.currentTimeMillis() + 10000
+        while (js(view, "window.testReady") != "true" && System.currentTimeMillis() < until) Thread.sleep(50)
+        assertEquals(js(view, "window.testError || ''"), "true", js(view, "window.testReady"))
+    }
     private fun guard(paths: Set<String>): Boolean {
         val latch = CountDownLatch(1); var ok = false
-        instrumentation.runOnMainSync { ResourceCacheGuard.inspectAndClear(context, paths) { result, reason -> ok = result; guardReason = reason; latch.countDown() } }
+        instrumentation.runOnMainSync { ResourceCacheGuard.inspectAndClear(context, paths) { result -> ok = result.canActivate; guardReason = result.reason; assertTrue(result.reason, result.canPlay); latch.countDown() } }
         await(latch); return ok
     }
     @Test fun registeredCacheIsRemovedAndActualLightSaveIsPreservedButUnknownCacheBlocks() {
@@ -83,5 +95,52 @@ class ResourceWebViewTest {
             assertEquals(404, resolver.response(android.net.Uri.parse("https://appassets.androidplatform.net/assets/games/conway/index.html")).statusCode)
             assertEquals(404, resolver.response(android.net.Uri.parse("https://example.com/index.html")).statusCode)
         } finally { instrumentation.runOnMainSync { view.destroy() }; session.close() }
+    }
+    @Test fun controllingWorkerCacheCannotSurviveFreshResolverSession() {
+        val manifest = context.assets.open("bundle-manifest.json").bufferedReader().use { JSONObject(it.readText()) }
+        val files = manifest.getJSONArray("files")
+        val paths = (0 until files.length()).map { "/assets/" + files.getJSONObject(it).getString("path") }.toSet()
+        val session = ResourceSession(null, null) {}
+        val resolver = GameContentResolver(context.assets, "light", session, paths)
+        instrumentation.runOnMainSync {
+            ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(object : ServiceWorkerClientCompat() {
+                override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse {
+                    if (request.url.toString() != "https://appassets.androidplatform.net/test-sw.js") return GameContentResolver.blocked()
+                    val source = "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));"
+                    return WebResourceResponse("application/javascript", "UTF-8", 200, "OK", mapOf("Service-Worker-Allowed" to "/", "Cache-Control" to "no-store"), ByteArrayInputStream(source.toByteArray()))
+                }
+            })
+        }
+        var setup: WebView? = page(); var gameView: WebView? = null
+        fun game(): WebView {
+            val latch = CountDownLatch(1); lateinit var view: WebView
+            instrumentation.runOnMainSync {
+                view = WebView(context).apply {
+                    settings.javaScriptEnabled = true; settings.domStorageEnabled = true; settings.blockNetworkLoads = true
+                    webViewClient = object : WebViewClient() {
+                        override fun shouldInterceptRequest(v: WebView, request: WebResourceRequest) = resolver.response(request.url)
+                        override fun onPageFinished(v: WebView, url: String) { latch.countDown() }
+                    }
+                    loadUrl("https://appassets.androidplatform.net/assets/games/light/index.html")
+                }
+            }
+            await(latch); return view
+        }
+        try {
+            js(setup!!, "window.testReady=false; caches.open('old-worker-resource').then(c=>c.put('/assets/games/light/index.html',new Response('<!doctype html><title>OLD_PROXY</title>',{headers:{'Content-Type':'text/html'}}))).then(()=>navigator.serviceWorker.register('/test-sw.js',{scope:'/'})).then(()=>navigator.serviceWorker.ready).then(()=>window.testReady=true).catch(e=>window.testError=e.message)")
+            ready(setup!!)
+            gameView = game()
+            assertEquals("\"OLD_PROXY\"", js(gameView!!, "document.title"))
+            assertEquals("true", js(gameView!!, "!!navigator.serviceWorker.controller"))
+            instrumentation.runOnMainSync { setup!!.destroy(); gameView!!.destroy() }; setup = null; gameView = null
+            val cleared = guard(paths); assertTrue(guardReason, cleared)
+            gameView = game()
+            assertEquals("null", js(gameView!!, "navigator.serviceWorker.controller"))
+            assertEquals("\"function\"", js(gameView!!, "typeof LightStorage.createStore"))
+            assertNotEquals("\"OLD_PROXY\"", js(gameView!!, "document.title"))
+        } finally {
+            instrumentation.runOnMainSync { setup?.destroy(); gameView?.destroy(); ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(object : ServiceWorkerClientCompat() { override fun shouldInterceptRequest(request: WebResourceRequest) = GameContentResolver.blocked() }) }
+            session.close()
+        }
     }
 }
