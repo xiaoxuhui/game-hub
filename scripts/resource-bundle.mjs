@@ -4,6 +4,7 @@ import { resolve, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LIMITS, CONTRACTS, sha256, safePath, mime, assetName } from './resource-protocol.mjs';
 import { verifyBundle } from './bundle.mjs';
+import { resourceInputs } from './resource-sources.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const crcTable = Array.from({ length: 256 }, (_, n) => { for (let bit = 0; bit < 8; bit++) n = (n & 1) ? (0xedb88320 ^ (n >>> 1)) : (n >>> 1); return n >>> 0; });
@@ -65,12 +66,11 @@ export function inspectResources(entries, id) {
   }
 }
 const checkoutCommit = root => execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
-export function buildResources(checkoutRoot = root, { expectedCommit = checkoutCommit(checkoutRoot), failAfterGame = null } = {}) {
-  const assets = join(checkoutRoot, 'android/app/src/main/assets');
+export function buildResources(checkoutRoot = root, { expectedCommit = checkoutCommit(checkoutRoot), failAfterGame = null, independent = false } = {}) {
+  const assets = join(checkoutRoot, independent ? '.build/resource-source-assets' : 'android/app/src/main/assets');
   const manifest = JSON.parse(readFileSync(join(assets, 'bundle-manifest.json')));
-  const lock = JSON.parse(readFileSync(join(checkoutRoot, 'sources.lock.json')));
+  const { lock, releases: codes, binding } = resourceInputs(checkoutRoot, independent);
   verifyBundle(assets, lock.sources, expectedCommit);
-  const codes = JSON.parse(readFileSync(join(checkoutRoot, 'resource-releases.lock.json')));
   const buildRoot = join(checkoutRoot, '.build'); mkdirSync(buildRoot, { recursive: true });
   const output = join(buildRoot, 'resource-candidate');
   const staging = mkdtempSync(join(buildRoot, 'resource-staging-'));
@@ -87,7 +87,7 @@ export function buildResources(checkoutRoot = root, { expectedCommit = checkoutC
     return game;
   });
   writeFileSync(join(staging, 'games.unsigned.json'), JSON.stringify(games, null, 2) + '\n');
-  writeFileSync(join(staging, 'candidate.json'), JSON.stringify({ schemaVersion: 1, bundleCommit: expectedCommit, sourceLockSha256: sha256(readFileSync(join(checkoutRoot, 'sources.lock.json'))) }) + '\n');
+  writeFileSync(join(staging, 'candidate.json'), JSON.stringify({ schemaVersion: 2, sourceMode: independent ? 'independent' : 'baseline', bundleCommit: expectedCommit, ...binding }) + '\n');
   verifyResources(staging, { checkoutRoot, expectedCommit });
   if (existsSync(output)) renameSync(output, backup);
   try { renameSync(staging, output); } catch (error) { if (existsSync(backup)) renameSync(backup, output); throw error; }
@@ -97,15 +97,16 @@ export function buildResources(checkoutRoot = root, { expectedCommit = checkoutC
 }
 export function verifyResources(output = join(root, '.build/resource-candidate'), { checkoutRoot = root, expectedCommit = checkoutCommit(checkoutRoot) } = {}) {
   const candidate = JSON.parse(readFileSync(join(output, 'candidate.json')));
-  const lockBytes = readFileSync(join(checkoutRoot, 'sources.lock.json'));
-  const sources = JSON.parse(lockBytes).sources;
-  const codes = JSON.parse(readFileSync(join(checkoutRoot, 'resource-releases.lock.json'))).games;
-  if (candidate.schemaVersion !== 1 || candidate.bundleCommit !== expectedCommit || candidate.sourceLockSha256 !== sha256(lockBytes)) throw new Error('Stale candidate commit or source lock');
+  if (!['baseline', 'independent'].includes(candidate.sourceMode)) throw new Error('Unknown candidate source mode');
+  const { lock, releases, binding } = resourceInputs(checkoutRoot, candidate.sourceMode === 'independent');
+  const sources = lock.sources, codes = releases.games;
+  if (candidate.schemaVersion !== 2 || candidate.bundleCommit !== expectedCommit || Object.keys(binding).some(key => candidate[key] !== binding[key])) throw new Error('Stale candidate commit or source lock');
   const games = JSON.parse(readFileSync(join(output, 'games.unsigned.json')));
   if (games.length !== 4 || new Set(games.map(g => g.id)).size !== 4) throw new Error('Candidate must contain four games');
   for (const game of games) {
     const source = sources.find(s => s.id === game.id), code = codes[game.id];
     if (!source || !code || game.sourceRevision !== source.revision || game.sourceRepository !== source.repository || game.version !== source.version || game.entryPage !== source.entryPage || game.contentCode !== code.contentCode || game.storageContract !== code.storageContract) throw new Error('Candidate source or resource lock mismatch');
+    if (game.minHostVersionCode !== 3 || game.maxHostVersionCode !== 2147483647 || game.resourceProtocol !== 1 || game.releaseNotes !== code.releaseNotes) throw new Error('Candidate compatibility or notes mismatch');
     const archive = readFileSync(join(output, assetName(game))); if (sha256(archive) !== game.archiveSha256 || archive.length !== game.archiveBytes) throw new Error('Archive mismatch');
     const entries = readStoredZip(archive); inspectResources(entries, game.id);
     if (JSON.stringify(entries.map(e => ({ path: e.path, bytes: e.data.length, sha256: sha256(e.data), mime: mime(e.path) }))) !== JSON.stringify(game.files)) throw new Error('File manifest mismatch');

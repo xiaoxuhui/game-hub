@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "conway",
+      "displayName": "康威生命游戏",
+      "repository": "https://github.com/xiaoxuhui/conway-life-game.git",
+      "revision": "87027a69ff93cb517c262a5010c342b7ac32b7d6",
+      "version": "0.17.0",
+      "buildKind": "static",
+      "entryPage": "index.html",
+      "files": [
+        "index.html",
+        "styles/main.css",
+        "scripts/life-engine.js",
+        "scripts/presets.js",
+        "scripts/pattern-library.js",
+        "scripts/speed-control.js",
+        "scripts/logic-parse.js",
+        "scripts/logic-expand.js",
+        "scripts/logic-layout.js",
+        "scripts/logic-compile.js",
+        "scripts/logic-safety.js",
+        "scripts/logic-code.js",
+        "scripts/logic-function-library.js",
+        "scripts/renderer.js",
+        "scripts/dialogs.js",
+        "scripts/app.js"
+      ]
+    },
+    {
+      "id": "eml",
+      "displayName": "EML 计算台",
+      "repository": "https://github.com/xiaoxuhui/EML.git",
+      "revision": "2616c9e9b081762b01599cc79da919d20340d0a2",
+      "version": "1.3.0",
+      "buildKind": "eml",
+      "entryPage": "eml-workbench.html",
+      "files": ["dist/eml-workbench.html"]
+    },
+    {
+      "id": "light",
+      "displayName": "光学游戏",
+      "repository": "https://github.com/xiaoxuhui/light_game.git",
+      "revision": "890b4661288af7bbd348fb56f8c69cfb4bc12587",
+      "version": "1.2.0",
+      "buildKind": "static",
+      "entryPage": "index.html",
+      "files": [
+        "index.html",
+        "styles/main.css",
+        "scripts/light-core.js",
+        "scripts/light-engine.js",
+        "scripts/levels.js",
+        "scripts/renderer.js",
+        "scripts/storage.js",
+        "scripts/app.js"
+      ]
+    },
+    {
+      "id": "turing",
+      "displayName": "图灵机实验台",
+      "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+      "revision": "5b9f19d37d04b2216ce63456a3b11a8e3624a4c5",
+      "version": "0.5.0",
+      "buildKind": "turing",
+      "entryPage": "index.html",
+      "files": ["dist/**"]
+    }
+  ]
+}

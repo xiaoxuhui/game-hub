@@ -1,0 +1,9 @@
+Verified 4 sources and 40 resources
+Verified 4 resource ZIPs and complete file manifests; source commit 00b53f1b401e06ec75392f8edb02efcb58143f44
+Built four deterministic resource ZIPs from 00b53f1b401e06ec75392f8edb02efcb58143f44
+{
+  "game-conway-1-77af28d46a71.zip": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65",
+  "game-eml-1-20205b0dfba4.zip": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+  "game-light-1-9df0cadcfc97.zip": "9df0cadcfc979a355df2b07e6f0d0aff5c09fd8a0669b33324eef176b42530c0",
+  "game-turing-1-e633a50595e9.zip": "e633a50595e969d6fd96b52c0d1d5380a17220b0a0acad88055549c570339ce1"
+}

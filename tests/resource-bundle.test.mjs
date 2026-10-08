@@ -1,13 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPairSync } from 'node:crypto';
-import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { buildManifest, sourceIdentity } from '../scripts/bundle.mjs';
 import { createZip, readStoredZip, inspectResources, buildResources, verifyResources } from '../scripts/resource-bundle.mjs';
 import { strictJson, safePath, mime, sha256, CONTRACTS, signCatalog, verifyEnvelope, validateCatalog, assetName } from '../scripts/resource-protocol.mjs';
 import { attachAssets, validateReleaseSnapshot } from '../scripts/resource-catalog.mjs';
+import { resourceInputs } from '../scripts/resource-sources.mjs';
 
 const sources = JSON.parse(readFileSync(new URL('../sources.lock.json', import.meta.url))).sources;
 const now = Date.UTC(2026, 9, 8);
@@ -96,5 +97,30 @@ test('resource generation failure preserves previous complete candidate and reje
     assert.deepEqual(readFileSync(join(output, 'games.unsigned.json')), previous);
     assert.doesNotThrow(() => verifyResources(output, { checkoutRoot: root, expectedCommit: commit }));
     assert.throws(() => verifyResources(output, { checkoutRoot: root, expectedCommit: 'd'.repeat(40) }), /Stale/);
+    const next = JSON.parse(lockBytes); next.sources[2].revision = 'e'.repeat(40); next.sources[2].version = '1.2.1';
+    const sourceLock = join(root, 'resource-sources.lock.json');
+    writeFileSync(sourceLock, JSON.stringify(next));
+    assert.throws(() => resourceInputs(root, true), /lock mismatch/);
+    const codes = JSON.parse(readFileSync(join(root, 'resource-releases.lock.json')));
+    codes.games.light.sourceRevision = next.sources[2].revision;
+    writeFileSync(join(root, 'resource-releases.lock.json'), JSON.stringify(codes));
+    assert.throws(() => resourceInputs(root, true), /new resource code/);
+    codes.games.light.contentCode = 2;
+    writeFileSync(join(root, 'resource-releases.lock.json'), JSON.stringify(codes));
+    const separate = join(root, '.build/resource-source-assets'); cpSync(assets, separate, { recursive: true });
+    writeFileSync(join(separate, 'games/light/index.html'), '<html>new independent light</html>');
+    writeFileSync(join(separate, 'bundle-manifest.json'), JSON.stringify(buildManifest(join(separate, 'games'), next.sources.map(sourceIdentity), commit)));
+    buildResources(root, { expectedCommit: commit, independent: true });
+    assert.equal(verifyResources(output, { checkoutRoot: root, expectedCommit: commit }).find(g => g.id === 'light').sourceRevision, 'e'.repeat(40));
+    assert.deepEqual(readFileSync(join(root, 'sources.lock.json')), lockBytes);
+    assert.equal(readFileSync(join(assets, 'games/light/index.html'), 'utf8'), '<html>baseline</html>');
+    const validSources = JSON.stringify(next);
+    next.sources[2].repository = 'https://github.com/xiaoxuhui/other.git';
+    writeFileSync(sourceLock, JSON.stringify(next));
+    assert.throws(() => resourceInputs(root, true), /contract mismatch/);
+    writeFileSync(sourceLock, validSources);
+    codes.games.light.releaseNotes = 'Changed metadata after candidate';
+    writeFileSync(join(root, 'resource-releases.lock.json'), JSON.stringify(codes));
+    assert.throws(() => verifyResources(output, { checkoutRoot: root, expectedCommit: commit }), /Stale/);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

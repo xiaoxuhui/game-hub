@@ -21,6 +21,7 @@
     "verify:bundle": "node scripts/bundle.mjs --verify",
     "audit:storage": "node scripts/audit-storage.mjs",
     "bundle:resources": "node scripts/resource-bundle.mjs",
+    "prepare:resources": "node scripts/resource-sources.mjs",
     "verify:resources": "node scripts/resource-bundle.mjs --verify"
   }
 }

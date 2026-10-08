@@ -1,0 +1,40 @@
+Built dist/eml-workbench.html (105046 bytes)
+✓ Lockfile passes supply-chain policies (verified 51d ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +52
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: D:\.pnpm-store\v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 52, reused 52, downloaded 0, added 52, done
+
+devDependencies:
++ typescript 5.9.3
++ vite 7.3.6
++ vitest 3.2.7
+
+Done in 1.2s using pnpm v11.19.0
+$ tsc -b
+$ vite build --base=./
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 22 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        0.58 kB │ gzip:  0.38 kB
+dist/campaign.html                     0.59 kB │ gzip:  0.39 kB
+dist/assets/route-worker--cIr4Dp-.js   2.82 kB
+dist/assets/campaign-Qcp10PZC.css      7.92 kB │ gzip:  2.37 kB
+dist/assets/main-BJgtYmnF.css          9.75 kB │ gzip:  2.94 kB
+dist/assets/core-BmS44wlX.js           3.57 kB │ gzip:  1.58 kB
+dist/assets/campaign-DqPQaVHE.js      25.85 kB │ gzip:  9.12 kB
+dist/assets/main-Cq8er0ZM.js          30.14 kB │ gzip: 11.22 kB
+✓ built in 276ms
+Bundled 4 sources, 40 files, commit 00b53f1b401e06ec75392f8edb02efcb58143f44
+Manifest SHA-256: e45ffb37f01161b9049a31128a8d490e7306c0798cb637d71b78243c71ae2c94
+Verified 4 sources and 40 resources
+Verified 4 resource ZIPs and complete file manifests; source commit 00b53f1b401e06ec75392f8edb02efcb58143f44
+Built four deterministic resource ZIPs from 00b53f1b401e06ec75392f8edb02efcb58143f44
+(node:26264) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)

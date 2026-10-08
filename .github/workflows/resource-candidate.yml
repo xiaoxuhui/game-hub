@@ -1,0 +1,30 @@
+name: Prepare unsigned game resources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+          run_install: false
+      - run: pnpm run check
+      - run: pnpm run prepare:resources
+      - run: pnpm run verify:resources
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-resource-candidate-${{ github.sha }}
+          path: .build/resource-candidate/
+          if-no-files-found: error
+          retention-days: 14
