@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createPublicKey } from 'node:crypto';
 import { assetName, signCatalog, verifyEnvelope, validateCatalog, strictJson } from './resource-protocol.mjs';
 
 export function attachAssets(games, release, assets) {
@@ -60,11 +61,14 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     } else if (mode === 'sign' && outputPath && snapshotPath) {
       const payload = strictJson(readFileSync(payloadPath)); validateCatalog(payload, sources);
       validateReleaseSnapshot(payload, strictJson(readFileSync(snapshotPath), 4 * 1048576));
-      const signed = signCatalog(payload, readFileSync(keyPath), keyId);
-      const checked = verifyEnvelope(signed, readFileSync(keyPath), keyId); validateCatalog(checked.catalog, sources);
+      const key = readFileSync(keyPath === '-' ? 0 : keyPath);
+      const signed = signCatalog(payload, key, keyId);
+      const checked = verifyEnvelope(signed, key, keyId); validateCatalog(checked.catalog, sources);
       writeFileSync(outputPath, signed, { flag: 'wx' }); console.log(`Signed catalog sequence ${payload.catalogSequence}; ${checked.payloadSha256}`);
     } else if (mode === 'verify' && !outputPath) {
-      const checked = verifyEnvelope(readFileSync(payloadPath), readFileSync(keyPath), keyId); validateCatalog(checked.catalog, sources);
+      const keyBytes = readFileSync(keyPath);
+      const key = keyPath.endsWith('.der') ? createPublicKey({ key: keyBytes, format: 'der', type: 'spki' }) : keyBytes;
+      const checked = verifyEnvelope(readFileSync(payloadPath), key, keyId); validateCatalog(checked.catalog, sources);
       console.log(`Verified catalog sequence ${checked.catalog.catalogSequence}; ${checked.payloadSha256}`);
     } else throw new Error('Usage: resource-catalog.mjs sign payload.json private-key-path key-id output.json release-snapshot.json | verify envelope.json public-key-path key-id');
   } catch (error) { console.error(error.message); process.exitCode = 1; }

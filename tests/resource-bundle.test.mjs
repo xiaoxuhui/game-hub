@@ -46,6 +46,7 @@ test('RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate en
   const pub = keys.publicKey.export({ type: 'spki', format: 'pem' });
   const envelope = signCatalog(catalog(), keys.privateKey, 'test');
   const verified = verifyEnvelope(envelope, pub, 'test'); assert.equal(verified.catalog.catalogSequence, '1');
+  assert.equal(verifyEnvelope(envelope, keys.publicKey, 'test').catalog.catalogSequence, '1');
   const altered = JSON.parse(envelope); altered.payloadBase64 = Buffer.from('{}').toString('base64');
   assert.throws(() => verifyEnvelope(Buffer.from(JSON.stringify(altered)), pub, 'test'));
   assert.throws(() => verifyEnvelope(envelope, pub, 'unknown'));

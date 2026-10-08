@@ -46,7 +46,7 @@ export function strictJson(bytes, max = LIMITS.payload) {
 }
 
 export function safePath(path) {
-  if (typeof path !== 'string' || path.length > 240 || !path || /[\\\x00-\x1f:]/.test(path) || path.startsWith('/') || path.split('/').length > 16 || path.split('/').some(p => !p || p === '.' || p === '..')) throw new Error('Unsafe resource path');
+  if (typeof path !== 'string' || path.length > 240 || !path || /[\\\x00-\x1f:%]/.test(path) || path.startsWith('/') || path.split('/').length > 16 || path.split('/').some(p => !p || p === '.' || p === '..')) throw new Error('Unsafe resource path');
   if (/\.(?:dex|jar|so|class|apk)$/i.test(path)) throw new Error('Executable native resource');
   return path;
 }
@@ -88,7 +88,7 @@ export function validateCatalog(catalog, sources, now = Date.now()) {
   return catalog;
 }
 export function assetName(game) { return `game-${game.id}-${game.contentCode}-${game.archiveSha256.slice(0, 12)}.zip`; }
-function rsaKey(key) { const pub = createPublicKey(key); if (pub.asymmetricKeyType !== 'rsa' || pub.asymmetricKeyDetails.modulusLength !== 3072) throw new Error('Expected RSA3072'); return pub; }
+function rsaKey(key) { const pub = key?.type === 'public' ? key : createPublicKey(key); if (pub.asymmetricKeyType !== 'rsa' || pub.asymmetricKeyDetails.modulusLength !== 3072) throw new Error('Expected RSA3072'); return pub; }
 export function signCatalog(payload, privateKey, keyId) {
   rsaKey(privateKey); text(keyId, 64); const bytes = Buffer.from(JSON.stringify(payload)); if (bytes.length > LIMITS.payload) throw new Error('Payload limit');
   return Buffer.from(JSON.stringify({ envelopeVersion: 1, keyId, payloadBase64: bytes.toString('base64'), signatureBase64: sign('RSA-SHA256', bytes, privateKey).toString('base64') }) + '\n');
