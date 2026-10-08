@@ -4,7 +4,16 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 
-internal data class ResourceOffer(val catalog: ResourceCatalog, val envelope: ByteArray)
+internal data class ResourceOffer(val catalog: ResourceCatalog, val envelope: ByteArray) {
+    fun requireDownload(game: ResourceGame, now: Long = System.currentTimeMillis()) {
+        catalog.requireFresh(now)
+        require(catalog.games.singleOrNull { it.id == game.id } == game) { "待下载游戏不属于已验签目录，请重新检查" }
+    }
+    fun reserveDownload(game: ResourceGame, gate: UpdateTaskGate, manual: Boolean, meteredConfirmed: Boolean, now: Long = System.currentTimeMillis()): UpdateDownloadToken? {
+        requireDownload(game, now)
+        return gate.beginDownload(UpdateDownloadKind.RESOURCE, manual, meteredConfirmed)
+    }
+}
 
 internal class ResourceCatalogClient(private val publicKey: ByteArray, private val http: PublicReleaseHttp = PublicReleaseHttp(),
     private val now: () -> Long = System::currentTimeMillis) {

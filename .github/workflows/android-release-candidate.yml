@@ -53,6 +53,7 @@ jobs:
           "$AAPT" dump badging "$APK" | grep -E "^package: name='com\.xiaoxuhui\.gamehub' versionCode='3' versionName='0\.3\.0'([[:space:]]|$)"
           "$AAPT" dump permissions "$APK" > "$RUNNER_TEMP/apk-permissions.txt"
           grep -Fx "uses-permission: name='android.permission.INTERNET'" "$RUNNER_TEMP/apk-permissions.txt"
+          grep -Fx "uses-permission: name='android.permission.ACCESS_NETWORK_STATE'" "$RUNNER_TEMP/apk-permissions.txt"
           grep -Fx "uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'" "$RUNNER_TEMP/apk-permissions.txt"
           grep '^uses-permission' "$RUNNER_TEMP/apk-permissions.txt" | \
             grep -v -E "^uses-permission: name='(com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION|android.permission.INTERNET|android.permission.ACCESS_NETWORK_STATE|android.permission.REQUEST_INSTALL_PACKAGES)'$" \

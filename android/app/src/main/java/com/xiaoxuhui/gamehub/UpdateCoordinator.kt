@@ -139,7 +139,9 @@ internal class UpdateCoordinator private constructor(context: Context) {
         startResource(current, game, true, meteredConfirmed)
     }
     private fun startResource(current: ResourceOffer, game: ResourceGame, manual: Boolean, meteredConfirmed: Boolean): Boolean {
-        val token = gate.beginDownload(UpdateDownloadKind.RESOURCE, manual, meteredConfirmed) ?: return false
+        val token = try { current.reserveDownload(game, gate, manual, meteredConfirmed) }
+        catch (error: Exception) { publish { it.copy(resourceStatus = "${error.message}；请重新检查更新") }; return false }
+        if (token == null) return false
         attempted.add("${game.id}/${game.identity}")
         publish { it.copy(busy = true, task = "下载 ${game.id}", done = 0, total = game.archiveBytes) }
         worker.execute {

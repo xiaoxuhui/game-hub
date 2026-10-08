@@ -24,6 +24,25 @@ class ResourcePolicyTest {
             }))
     }
     private fun rejected(block: () -> Unit) { try { block(); fail("Expected rejection") } catch (error: Exception) { assertNotNull(error) } }
+    @Test fun pendingOfferRejectsExpiryAndChangedAssetBeforeDownloadSlotOrNetwork() {
+        val catalog = ResourcePolicy.parseCatalog(payload(), "d".repeat(64))
+        val offer = ResourceOffer(catalog, byteArrayOf())
+        val game = catalog.games.first()
+        offer.requireDownload(game, catalog.expiresAt - 1)
+        rejected { offer.requireDownload(game, catalog.expiresAt) }
+        rejected { offer.requireDownload(game, catalog.issuedAt - 300001) }
+        rejected { offer.requireDownload(game.copy(assetId = game.assetId + 1000), catalog.issuedAt) }
+        for (manual in listOf(false, true)) {
+            val gate = UpdateTaskGate({ 0 }, { catalog.issuedAt }, { _, _ -> })
+            gate.setPresence(true, true); gate.setNetwork(UpdateNetwork(true, true))
+            rejected { offer.reserveDownload(game, gate, manual, false, catalog.expiresAt) }
+            assertFalse("Expired automatic/manual offer must not reserve a network task", gate.busy())
+            val valid = offer.reserveDownload(game, gate, manual, false, catalog.issuedAt)!!
+            assertTrue(gate.valid(valid)); gate.finish(valid)
+        }
+        // Rechecking can refresh the proof without moving the installed resource identity.
+        offer.copy(catalog = catalog.copy(expiresAt = catalog.expiresAt + 1000)).requireDownload(game, catalog.expiresAt)
+    }
     @Test fun strictJsonRejectsDuplicatesInvalidUtf8AndCoercion() {
         for (text in listOf("{\"a\":1,\"a\":2}", "{\"a\":1,\"\\u0061\":2}", "{\"a\":1,}", "{\"a\":01}", "{}{}", "\uFEFF{}")) rejected { StrictJson.parse(text.toByteArray()) }
         rejected { StrictJson.parse(byteArrayOf(0xff.toByte())) }
