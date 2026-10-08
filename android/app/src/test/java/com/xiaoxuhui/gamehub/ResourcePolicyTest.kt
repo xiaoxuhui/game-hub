@@ -46,10 +46,20 @@ class ResourcePolicyTest {
         val bytes = payload().toString().toByteArray()
         val signature = Signature.getInstance("SHA256withRSA").run { initSign(pair.private); update(bytes); sign() }
         val envelope = JSONObject().put("envelopeVersion", 1).put("keyId", "test").put("payloadBase64", Base64.getEncoder().encodeToString(bytes)).put("signatureBase64", Base64.getEncoder().encodeToString(signature))
-        assertEquals(1L, ResourcePolicy.verifyEnvelope(envelope.toString().toByteArray(), pair.public.encoded, "test").sequence)
+        val now = 1791417600000L // 2026-10-08T00:00:00Z; deterministic fixture clock.
+        assertEquals(1L, ResourcePolicy.verifyEnvelope(envelope.toString().toByteArray(), pair.public.encoded, "test", now).sequence)
+        rejected { ResourcePolicy.verifyEnvelope(envelope.toString().toByteArray(), pair.public.encoded, "test", now - 300001) }
+        rejected { ResourcePolicy.verifyEnvelope(envelope.toString().toByteArray(), pair.public.encoded, "test", now + 86400000) }
         rejected { ResourcePolicy.verifyEnvelope(envelope.toString().toByteArray(), pair.public.encoded, "other") }
         envelope.put("payloadBase64", Base64.getEncoder().encodeToString("{}".toByteArray()))
         rejected { ResourcePolicy.verifyEnvelope(envelope.toString().toByteArray(), pair.public.encoded, "test") }
+    }
+    @Test fun catalogFreshnessBlocksExpiryAndClockAnomalyWithoutChangingInstalledProofPolicy() {
+        val catalog = ResourcePolicy.parseCatalog(payload(), "d".repeat(64))
+        catalog.requireFresh(catalog.issuedAt)
+        catalog.requireFresh(catalog.issuedAt - 300000)
+        rejected { catalog.requireFresh(catalog.issuedAt - 300001) }
+        rejected { catalog.requireFresh(catalog.expiresAt) }
     }
     @Test fun pathsBudgetsAndTimestampAreStrict() {
         for (path in listOf("../x", "/x", "a\\b", "a//b", "C:x", "a%2fb", "plugin.dex", "plugin.so")) rejected { ResourcePolicy.safePath(path) }

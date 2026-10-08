@@ -18,7 +18,9 @@ internal data class ResourceGame(val id: String, val version: String, val conten
     val identity get() = "$contentCode-$archiveSha256"
     fun compatible(host: Int, contract: String) = host in minHost..maxHost && storageContract == contract
 }
-internal data class ResourceCatalog(val sequence: Long, val payloadSha256: String, val releaseId: Long, val issuedAt: Long, val expiresAt: Long, val games: List<ResourceGame>)
+internal data class ResourceCatalog(val sequence: Long, val payloadSha256: String, val releaseId: Long, val issuedAt: Long, val expiresAt: Long, val games: List<ResourceGame>) {
+    fun requireFresh(now: Long) { require(now >= issuedAt - 300000 && now < expiresAt) { "资源目录过期或设备时间异常，停止下载；已安装游戏仍可离线使用" } }
+}
 
 internal object ResourcePolicy {
     const val MAX_ARCHIVE = 25L * 1024 * 1024
@@ -49,7 +51,11 @@ internal object ResourcePolicy {
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT).apply { timeZone = TimeZone.getTimeZone("UTC"); isLenient = false }
         val date = format.parse(text) ?: error("Invalid time"); require(format.format(date) == text); return date.time
     }
-    fun verifyEnvelope(bytes: ByteArray, publicKeyDer: ByteArray, keyId: String = KEY_ID): ResourceCatalog {
+    fun verifyEnvelope(bytes: ByteArray, publicKeyDer: ByteArray, keyId: String = KEY_ID, now: Long = System.currentTimeMillis()): ResourceCatalog =
+        verifySignature(bytes, publicKeyDer, keyId).also { it.requireFresh(now) }
+    /** Only an already installed complete version may use an expired proof for offline play. */
+    fun verifyInstalledProof(bytes: ByteArray, publicKeyDer: ByteArray): ResourceCatalog = verifySignature(bytes, publicKeyDer, KEY_ID)
+    private fun verifySignature(bytes: ByteArray, publicKeyDer: ByteArray, keyId: String): ResourceCatalog {
         val envelope = StrictJson.parse(bytes, 1048576)
         require(envelope.keys().asSequence().toSet() == setOf("envelopeVersion", "keyId", "payloadBase64", "signatureBase64"))
         require(integer(envelope, "envelopeVersion") == 1L && string(envelope, "keyId", 64) == keyId) { "Unknown signing key or envelope" }
