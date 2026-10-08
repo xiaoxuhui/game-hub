@@ -13,10 +13,13 @@ import java.util.TimeZone
 internal data class ResourceFile(val path: String, val bytes: Long, val sha256: String, val mime: String)
 internal data class ResourceGame(val id: String, val version: String, val contentCode: Int, val sourceRepository: String,
     val sourceRevision: String, val minHost: Int, val maxHost: Int, val storageContract: String, val entry: String,
-    val assetId: Long, val archiveBytes: Long, val archiveSha256: String, val files: List<ResourceFile>, val notes: String) {
+    val assetId: Long, val archiveBytes: Long, val archiveSha256: String, val files: List<ResourceFile>, val notes: String,
+    val resourceProtocol: Int = 1, val bridgeProtocol: Int = 0, val displayName: String = id,
+    val iconKind: String = "generic", val available: Boolean = true) {
     val assetName get() = "game-$id-$contentCode-${archiveSha256.take(12)}.zip"
     val identity get() = "$contentCode-$archiveSha256"
-    fun compatible(host: Int, contract: String) = host in minHost..maxHost && storageContract == contract
+    fun compatible(host: Int, contract: String) = host in minHost..maxHost && storageContract == contract &&
+        (resourceProtocol == 1 && bridgeProtocol == 0 || resourceProtocol == 2 && bridgeProtocol == 1)
 }
 internal data class ResourceCatalog(val sequence: Long, val payloadSha256: String, val releaseId: Long, val issuedAt: Long, val expiresAt: Long, val games: List<ResourceGame>) {
     fun requireFresh(now: Long) { require(now >= issuedAt - 300000 && now < expiresAt) { "资源目录过期或设备时间异常，停止下载；已安装游戏仍可离线使用" } }
@@ -46,7 +49,7 @@ internal object ResourcePolicy {
     fun integer(json: JSONObject, key: String, min: Long = 1, max: Long = Long.MAX_VALUE): Long {
         val value = json.get(key); require(value is Int || value is Long) { "Invalid integer $key" }; val number = (value as Number).toLong(); require(number in min..max) { "Invalid range $key" }; return number
     }
-    private fun timestamp(json: JSONObject, key: String): Long {
+    fun timestamp(json: JSONObject, key: String): Long {
         val text = string(json, key, 24); require(Regex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z").matches(text))
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT).apply { timeZone = TimeZone.getTimeZone("UTC"); isLenient = false }
         val date = format.parse(text) ?: error("Invalid time"); require(format.format(date) == text); return date.time
@@ -56,6 +59,10 @@ internal object ResourcePolicy {
     /** Only an already installed complete version may use an expired proof for offline play. */
     fun verifyInstalledProof(bytes: ByteArray, publicKeyDer: ByteArray): ResourceCatalog = verifySignature(bytes, publicKeyDer, KEY_ID)
     private fun verifySignature(bytes: ByteArray, publicKeyDer: ByteArray, keyId: String): ResourceCatalog {
+        val (json, digest) = signedPayload(bytes, publicKeyDer, keyId)
+        return parseCatalog(json, digest)
+    }
+    fun signedPayload(bytes: ByteArray, publicKeyDer: ByteArray, keyId: String = KEY_ID): Pair<JSONObject, String> {
         val envelope = StrictJson.parse(bytes, 1048576)
         require(envelope.keys().asSequence().toSet() == setOf("envelopeVersion", "keyId", "payloadBase64", "signatureBase64"))
         require(integer(envelope, "envelopeVersion") == 1L && string(envelope, "keyId", 64) == keyId) { "Unknown signing key or envelope" }
@@ -64,7 +71,7 @@ internal object ResourcePolicy {
         val key = KeyFactory.getInstance("RSA").generatePublic(X509EncodedKeySpec(publicKeyDer)) as RSAPublicKey
         require(key.modulus.bitLength() == 3072)
         require(Signature.getInstance("SHA256withRSA").run { initVerify(key); update(payload); verify(signatureBytes) }) { "Resource catalog signature invalid" }
-        return parseCatalog(StrictJson.parse(payload), sha256(payload))
+        return StrictJson.parse(payload) to sha256(payload)
     }
     fun parseCatalog(json: JSONObject, digest: String): ResourceCatalog {
         require(integer(json, "schemaVersion") == 1L && string(json, "channel", 64) == "game-hub-resources-v1")
@@ -82,6 +89,14 @@ internal object ResourcePolicy {
         require(integer(json, "resourceProtocol") == 1L)
         val storage = string(json, "storageContract", 100); require(storage == contract(id))
         val entry = safePath(string(json, "entryPage", 240)); require(entry == if (id == "eml") "eml-workbench.html" else "index.html")
+        val files = parseFiles(json, entry)
+        val minHost = integer(json, "minHostVersionCode", 3, Int.MAX_VALUE.toLong()).toInt()
+        val archiveHash = string(json, "archiveSha256", 64); require(Regex("[0-9a-f]{64}").matches(archiveHash))
+        return ResourceGame(id, string(json, "version", 64), integer(json, "contentCode", max = Int.MAX_VALUE.toLong()).toInt(), repository, revision,
+            minHost, integer(json, "maxHostVersionCode", minHost.toLong(), Int.MAX_VALUE.toLong()).toInt(), storage, entry,
+            integer(json, "assetId", max = 9007199254740991), integer(json, "archiveBytes", max = MAX_ARCHIVE), archiveHash, files, string(json, "releaseNotes", 2000))
+    }
+    fun parseFiles(json: JSONObject, entry: String): List<ResourceFile> {
         val array = json.getJSONArray("files"); require(array.length() in 1..2000)
         val seen = HashSet<String>(); var total = 0L
         val files = (0 until array.length()).map { index ->
@@ -94,11 +109,7 @@ internal object ResourcePolicy {
             ResourceFile(path, size, hash, type)
         }
         require(files.any { it.path == entry } && files.any { it.path == "LICENSE" })
-        val minHost = integer(json, "minHostVersionCode", 3, Int.MAX_VALUE.toLong()).toInt()
-        val archiveHash = string(json, "archiveSha256", 64); require(Regex("[0-9a-f]{64}").matches(archiveHash))
-        return ResourceGame(id, string(json, "version", 64), integer(json, "contentCode", max = Int.MAX_VALUE.toLong()).toInt(), repository, revision,
-            minHost, integer(json, "maxHostVersionCode", minHost.toLong(), Int.MAX_VALUE.toLong()).toInt(), storage, entry,
-            integer(json, "assetId", max = 9007199254740991), integer(json, "archiveBytes", max = MAX_ARCHIVE), archiveHash, files, string(json, "releaseNotes", 2000))
+        return files
     }
     private const val ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     private fun decodeBase64(text: String): ByteArray {
