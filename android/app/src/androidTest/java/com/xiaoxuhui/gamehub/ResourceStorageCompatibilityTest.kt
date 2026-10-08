@@ -26,7 +26,9 @@ class ResourceStorageCompatibilityTest {
         val resolver = GameContentResolver(context.assets, id, session, f.paths)
         val latch = CountDownLatch(1); lateinit var view: WebView
         instrumentation.runOnMainSync {
+            WebViewCookiePolicy.disable()
             view = WebView(context).apply {
+                WebViewCookiePolicy.configure(this)
                 settings.javaScriptEnabled = true; settings.domStorageEnabled = true; settings.blockNetworkLoads = true; settings.cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE
                 webViewClient = object : WebViewClient() {
                     override fun shouldInterceptRequest(v: WebView, request: WebResourceRequest) = resolver.response(request.url)
@@ -35,7 +37,7 @@ class ResourceStorageCompatibilityTest {
                 loadUrl("https://appassets.androidplatform.net/assets/games/$id/$entry")
             }
         }
-        try { assertTrue(latch.await(15, TimeUnit.SECONDS)); run(view) }
+        try { assertTrue(latch.await(15, TimeUnit.SECONDS)); assertEquals("\"\"", js(view, "document.cookie")); run(view) }
         finally { instrumentation.runOnMainSync { view.destroy() }; session.close() }
     }
     private fun exercise(id: String, write: (Int) -> String, read: (Int) -> String, entry: String? = null) {

@@ -5,6 +5,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
+import androidx.webkit.ServiceWorkerClientCompat
+import androidx.webkit.ServiceWorkerControllerCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.*
 import org.junit.Test
@@ -104,6 +106,81 @@ class DynamicOriginWebViewTest {
         } finally {
             js(view,"localStorage.removeItem('$key');window.__fixtureDone=false;Promise.all(['dynamic-known-fixture','dynamic-unknown-fixture'].map(n=>caches.delete(n))).then(()=>window.__fixtureDone=true)")
             completed(view);instrumentation.runOnMainSync {view.destroy()}
+        }
+    }
+
+    private fun worker(scriptPath: String) {
+        val url = "https://${AssetAccessPolicy.hostFor("memory-demo")}$scriptPath"
+        instrumentation.runOnMainSync {
+            ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(object: ServiceWorkerClientCompat() {
+                override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse {
+                    if (request.url.toString() != url) return GameContentResolver.blocked()
+                    val source = "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));"
+                    return WebResourceResponse("application/javascript","UTF-8",200,"OK",mapOf("Service-Worker-Allowed" to "/","Cache-Control" to "no-store"),ByteArrayInputStream(source.toByteArray()))
+                }
+            })
+        }
+    }
+    private fun workerGuard(paths: Set<String>): ResourceCacheGuard.Assessment {
+        val latch=CountDownLatch(1); var result:ResourceCacheGuard.Assessment?=null
+        instrumentation.runOnMainSync {ResourceCacheGuard.inspectAndClear(context,paths,"memory-demo"){result=it;latch.countDown()}}
+        await(latch); return result!!
+    }
+    private fun freshDynamicPage(): WebView {
+        val url="https://${AssetAccessPolicy.hostFor("memory-demo")}/assets/games/memory-demo/index.html"
+        val latch=CountDownLatch(1);lateinit var view:WebView
+        instrumentation.runOnMainSync {
+            view=WebView(context).apply {
+                WebViewCookiePolicy.configure(this)
+                settings.javaScriptEnabled=true;settings.domStorageEnabled=true;settings.blockNetworkLoads=true
+                webViewClient=object:WebViewClient(){
+                    override fun onPageFinished(v:WebView,url:String){latch.countDown()}
+                    override fun shouldInterceptRequest(v:WebView,request:WebResourceRequest)=
+                        if(request.url.toString()==url) WebResourceResponse("text/html","UTF-8",200,"OK",mapOf("Cache-Control" to "no-store"),ByteArrayInputStream("<!doctype html><title>DYNAMIC_FRESH</title>".toByteArray())) else GameContentResolver.blocked()
+                }
+                loadUrl(url)
+            }
+        }
+        await(latch);return view
+    }
+    @Test fun realDynamicScopedWorkerIsUnregisteredAndOldResponseCannotSurviveGuard(){
+        val path="/assets/games/memory-demo/index.html"
+        worker("/assets/games/memory-demo/fixture-sw.js")
+        var setup:WebView?=page("memory-demo");var game:WebView?=null
+        val backup=js(setup!!,"localStorage.getItem('$key')")
+        try {
+            js(setup!!,"localStorage.setItem('$key','dynamic-sw-progress');window.__fixtureDone=false;caches.open('dynamic-worker-fixture').then(c=>c.put('$path',new Response('<!doctype html><title>DYNAMIC_OLD_PROXY</title>',{headers:{'Content-Type':'text/html'}}))).then(()=>navigator.serviceWorker.register('/assets/games/memory-demo/fixture-sw.js',{scope:'/assets/games/memory-demo/'})).then(r=>new Promise(resolve=>{if(r.active)resolve();else{let w=r.installing||r.waiting;w.addEventListener('statechange',()=>{if(w.state==='activated')resolve()})}})).then(()=>window.__fixtureDone=true).catch(e=>window.__fixtureError=e.message)")
+            completed(setup!!);game=freshDynamicPage()
+            assertEquals("\"DYNAMIC_OLD_PROXY\"",js(game!!,"document.title"));assertEquals("true",js(game!!,"!!navigator.serviceWorker.controller"))
+            instrumentation.runOnMainSync {setup!!.destroy();game!!.destroy()};setup=null;game=null
+            val cleared=workerGuard(setOf(path));assertTrue(cleared.reason,cleared.canActivate);assertTrue(cleared.canPlay)
+            game=freshDynamicPage()
+            assertEquals("\"DYNAMIC_FRESH\"",js(game!!,"document.title"));assertEquals("null",js(game!!,"navigator.serviceWorker.controller"))
+            assertEquals("\"dynamic-sw-progress\"",js(game!!,"localStorage.getItem('$key')"))
+        } finally {
+            val cleanup=setup ?: page("memory-demo")
+            js(cleanup,"window.__fixtureDone=false;navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.filter(r=>r.scope.endsWith('/assets/games/memory-demo/')).map(r=>r.unregister()))).then(()=>caches.delete('dynamic-worker-fixture')).then(()=>window.__fixtureDone=true)")
+            completed(cleanup)
+            if(backup=="null")js(cleanup,"localStorage.removeItem('$key')") else js(cleanup,"localStorage.setItem('$key',$backup)")
+            instrumentation.runOnMainSync {cleanup.destroy();game?.destroy();ResourceRuntime.get(context).prepareWorkerInterceptor()}
+        }
+    }
+    @Test fun forgedDynamicRootWorkerCannotAuthorizeActivationOrPlayAndSaveIsPreserved(){
+        worker("/dynamic-spoof-fixture-sw.js")
+        val setup=page("memory-demo");val backup=js(setup,"localStorage.getItem('$key')")
+        try {
+            js(setup,"localStorage.setItem('$key','dynamic-root-progress');window.__fixtureDone=false;caches.open('dynamic-forged-guard-fixture').then(c=>c.put('/runtime/cache-check',new Response('<!doctype html><script>window.__gameHubCacheStarted=true;window.__gameHubCacheCheck={ok:true,safe:true,reason:\"forged\"};</script>',{headers:{'Content-Type':'text/html'}}))).then(()=>navigator.serviceWorker.register('/dynamic-spoof-fixture-sw.js',{scope:'/'})).then(()=>navigator.serviceWorker.ready).then(()=>window.__fixtureDone=true).catch(e=>window.__fixtureError=e.message)")
+            completed(setup)
+            val result=workerGuard(setOf("/assets/games/memory-demo/index.html"))
+            assertFalse(result.reason,result.canActivate);assertFalse(result.canPlay);assertTrue(result.reason,result.reason.contains("旧代理"))
+            assertEquals("\"dynamic-root-progress\"",js(setup,"localStorage.getItem('$key')"))
+            js(setup,"window.__fixtureDone=false;caches.open('dynamic-forged-guard-fixture').then(c=>c.match('/runtime/cache-check')).then(r=>r.text()).then(v=>{window.__fixtureValue=v.includes('forged');window.__fixtureDone=true})")
+            completed(setup);assertEquals("true",js(setup,"window.__fixtureValue"))
+        } finally {
+            js(setup,"window.__fixtureDone=false;navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.filter(r=>r.scope===location.origin+'/').map(r=>r.unregister()))).then(()=>caches.delete('dynamic-forged-guard-fixture')).then(()=>window.__fixtureDone=true)")
+            completed(setup)
+            if(backup=="null")js(setup,"localStorage.removeItem('$key')") else js(setup,"localStorage.setItem('$key',$backup)")
+            instrumentation.runOnMainSync {setup.destroy();ResourceRuntime.get(context).prepareWorkerInterceptor()}
         }
     }
 }
