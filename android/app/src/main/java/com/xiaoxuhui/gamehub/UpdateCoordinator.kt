@@ -13,6 +13,8 @@ import java.util.concurrent.Executors
 
 internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: List<ResourceGame> = emptyList(),
     val catalogGames: List<ResourceGame> = emptyList(), val apkCheckedAt: Long? = null, val resourcesCheckedAt: Long? = null,
+    val localResources: Map<String, LocalResourceInfo> = emptyMap(),
+    val localDiagnostic: String? = null,
     val apkStatus: String = "尚未检查大厅更新", val resourceStatus: String = "尚未检查游戏更新",
     val busy: Boolean = false, val task: String? = null, val done: Long = 0, val total: Long = 0,
     val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false,
@@ -46,6 +48,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
         worker.execute {
             val directory = File(app.cacheDir, "resource-updates")
             directory.listFiles()?.filter { Regex("resource-(conway|eml|light|turing)-[0-9a-f-]{36}\\.part").matches(it.name) && it.canonicalFile.parentFile == directory.canonicalFile }?.forEach { it.delete() }
+            readLocalResources()
         }
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) = refreshNetwork()
@@ -124,7 +127,9 @@ internal class UpdateCoordinator private constructor(context: Context) {
                         val next = resourceClient.query { checkCancelled || !foreground }
                         check(!checkCancelled && foreground) { "检查已取消" }
                         runtime.store.acceptCatalog(next.envelope)
+                        runtime.store.refreshReadyProof(next.envelope)
                         val available = next.catalog.games.filter { runtime.store.isEligible(it) }
+                        readLocalResources()
                         synchronized(stateLock) {
                             attempted.clear(); offer = next
                             publish { it.copy(resources = available, catalogGames = next.catalog.games, resourcesCheckedAt = System.currentTimeMillis(), resourceStatus = if (available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新") }
@@ -171,6 +176,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
                 archive = resourceClient.download(game, File(app.cacheDir, "resource-updates"), { !gate.valid(token) }, progressReporter())
                 check(gate.valid(token)) { "更新已取消" }
                 runtime.store.install(game, current.envelope, archive, { !gate.valid(token) })
+                readLocalResources()
                 publish { it.copy(resources = it.resources.filterNot { candidate -> candidate.id == game.id }, resourceStatus = "${game.id} 更新已就绪，下次进入生效") }
             } catch (error: Exception) {
                 if (token.cancelled) publish { it.copy(resourceStatus = "游戏下载已取消，原版本保留") } else channelFailure("resources", error)
@@ -213,6 +219,14 @@ internal class UpdateCoordinator private constructor(context: Context) {
         }
     }
     fun cancel() = gate.cancel()
+    fun reloadLocalResources() { worker.execute { readLocalResources() } }
+    private fun readLocalResources() {
+        try {
+            val current = runtime.store.describeAll(); val diagnostic = runtime.store.failure()
+            publish { it.copy(localResources = current, localDiagnostic = diagnostic) }
+        }
+        catch (error: Exception) { publish { it.copy(resourceStatus = "本地资源状态不可用：${error.message}；存档保留") } }
+    }
     fun unmeteredWifi(): Boolean {
         val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork) ?: return false
         return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)

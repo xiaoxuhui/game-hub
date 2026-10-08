@@ -10,6 +10,30 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateLifecycleTest {
+    @Test fun cardsDisplayActualCandidateAndActiveVersionsWithoutPromotingRemoteVersion() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        ResourceDeviceFixture(context).use { fixture ->
+            fixture.install("light")
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                val render = MainActivity::class.java.getDeclaredMethod("renderUpdates", UpdateSnapshot::class.java).apply { isAccessible = true }
+                var snapshot = UpdateCoordinator.get(context).snapshot().copy(localResources = fixture.store.describeAll(), catalogGames = fixture.catalog.games)
+                scenario.onActivity { activity ->
+                    render.invoke(activity, snapshot)
+                    assertTrue(texts(activity.window.decorView).any { it.contains("#2 待生效") })
+                    assertTrue(texts(activity.window.decorView).any { it.contains("内置") })
+                }
+                fixture.store.openSession("light", true).close()
+                val remote = fixture.catalog.games.map { if (it.id == "light") it.copy(version = "99.0.0", contentCode = 3) else it }
+                snapshot = snapshot.copy(localResources = fixture.store.describeAll(), catalogGames = remote)
+                scenario.onActivity { activity ->
+                    render.invoke(activity, snapshot)
+                    val labels = texts(activity.window.decorView)
+                    assertTrue(labels.any { it.contains("已下载") && it.contains("#3 可更新") })
+                    assertFalse(labels.any { it.contains("99.0.0") })
+                }
+            }
+        }
+    }
     @Test fun stoppedActivitySaveBridgeRejectsBeforeOpeningExternalFlow() {
         lateinit var bridge: Any
         lateinit var activity: MainActivity

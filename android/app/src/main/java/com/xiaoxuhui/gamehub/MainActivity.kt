@@ -53,6 +53,9 @@ class MainActivity : ComponentActivity() {
     private val updates by lazy { UpdateCoordinator.get(applicationContext) }
     @Volatile private var activityStarted = false
     private val updateDialogs = mutableSetOf<AlertDialog>()
+    private val gameVersionLabels = mutableMapOf<String, TextView>()
+    private val gameCards = mutableMapOf<String, View>()
+    private val hostVersionCode by lazy { packageManager.getPackageInfo(packageName, 0).let { if (Build.VERSION.SDK_INT >= 28) it.longVersionCode.toInt() else it.versionCode } }
     private val updateListener: (UpdateSnapshot) -> Unit = { state -> renderUpdates(state) }
     private val updateManager by lazy { ApkUpdateManager(this) }
     private var pendingInstallApk: File? = null
@@ -257,6 +260,7 @@ class MainActivity : ComponentActivity() {
                     setOnClickListener { openGame(game) }
                 }
                 row.addView(card, LinearLayout.LayoutParams(0, -1, 1f).apply { setMargins(dp(4), dp(4), dp(4), dp(4)) })
+                gameCards[game.id] = card
                 card.addView(ImageView(this).apply {
                     setImageResource(iconFor(game.id))
                     scaleType = ImageView.ScaleType.CENTER_CROP
@@ -270,6 +274,7 @@ class MainActivity : ComponentActivity() {
                     setPadding(0, dp(9), 0, 0)
                 })
                 card.addView(label("v${game.version}  ·  ${game.revision.take(6)}", 9.5f, MUTED, false).apply {
+                    gameVersionLabels[game.id] = this
                     gravity = Gravity.CENTER
                     maxLines = 2
                     setPadding(0, dp(4), 0, 0)
@@ -300,6 +305,27 @@ class MainActivity : ComponentActivity() {
             "${state.task} · ${if (state.total > 0) "${state.done * 100 / state.total}%" else "查询中"} · 点击查看"
         } else "${state.apkStatus}\n${state.resourceStatus} · 点击查看"
         updateSummary.contentDescription = "更新状态：${state.apkStatus}；${state.resourceStatus}；点击查看详情"
+        for (game in games) {
+            val local = state.localResources[game.id]
+            val actual = when {
+                local?.selection?.active == "builtin" || local == null -> "v${game.version} · ${game.revision.take(6)} · 内置"
+                local.active != null -> "v${local.active.version} · ${local.active.sourceRevision.take(6)} · 已下载"
+                else -> "资源校验失败 · 待恢复"
+            }
+            val remote = state.catalogGames.singleOrNull { it.id == game.id }
+            val code = local?.selection?.active?.substringBefore('-')?.toIntOrNull() ?: 1
+            val marker = when {
+                local?.readyError != null -> "候选损坏，旧版保留"
+                local?.ready != null && !local.readyFresh -> "候选已过期，请检查"
+                local?.ready != null -> "#${local.ready.contentCode} 待生效"
+                remote != null && remote.contentCode > code && !remote.compatible(hostVersionCode, ResourcePolicy.contract(game.id)) -> "更新与此大厅不兼容"
+                remote != null && remote.contentCode > code -> if (local?.selection?.pinned == true) "有更新 · 固定版本" else "#${remote.contentCode} 可更新"
+                local?.selection?.pinned == true -> "固定版本"
+                else -> null
+            }
+            gameVersionLabels[game.id]?.text = actual + (marker?.let { "\n$it" } ?: "")
+            gameCards[game.id]?.contentDescription = "${game.name}，$actual，${marker ?: "打开"}"
+        }
     }
 
     private fun checkedTime(value: Long?): String = value?.let {
@@ -342,6 +368,7 @@ class MainActivity : ComponentActivity() {
         fun description(text: String) { column.addView(label(text, 13f, Color.WHITE, false).apply { setPadding(0, dp(8), 0, dp(4)) }) }
         description("大厅：${state.apkStatus}\n最后成功检查：${checkedTime(state.apkCheckedAt)}")
         description("游戏：${state.resourceStatus}\n最后成功检查：${checkedTime(state.resourcesCheckedAt)}")
+        state.localDiagnostic?.let { description("本地资源诊断：$it；存档未删除") }
         if (state.task != null) {
             column.addView(label("${state.task}：${state.done / 1024} / ${state.total / 1024} KiB", 13f, Color.WHITE, false).apply { tag = "update-progress" })
             detailButton(column, "取消本次下载", state.total > 0) { updates.cancel() }
@@ -362,9 +389,25 @@ class MainActivity : ComponentActivity() {
             }
         }
         for (game in games) {
+            val local = state.localResources[game.id]
+            if (local != null) {
+                val active = local.active
+                description("${game.name} · 实际版本：" + when {
+                    local.selection.active == "builtin" -> "内置 v${game.version} / 资源 #1\n来源 ${game.revision}"
+                    active != null -> "已下载 v${active.version} / 资源 #${active.contentCode}\n来源 ${active.sourceRevision}"
+                    else -> "校验失败，尚未恢复"
+                })
+                local.ready?.let { description("候选：v${it.version} / 资源 #${it.contentCode}" + if (local.readyFresh) "（下次进入，校验通过后生效）" else "（目录已过期，暂不生效，请检查更新）") }
+                local.activeError?.let { description("当前资源错误：$it；存档未删除") }
+                local.readyError?.let { description("候选资源错误：$it；旧版本保留") }
+                local.stateError?.let { description("状态异常：$it") }
+                if (local.selection.pinned) description("当前固定版本；自动检查不会改变选择")
+                if (local.selection.quarantine.isNotEmpty()) description("已隔离失败编号：${local.selection.quarantine.sorted().joinToString()}")
+            }
             val remote = state.catalogGames.singleOrNull { it.id == game.id }
             if (remote != null) {
                 description("${game.name} · 远端 v${remote.version} / 资源 #${remote.contentCode}\n${remote.archiveBytes / 1024} KiB · 来源 ${remote.sourceRevision.take(10)}\n${remote.notes}")
+                if (!remote.compatible(hostVersionCode, ResourcePolicy.contract(game.id))) description("不兼容：需要大厅资源协议/存档合同一致，版本编号位于 ${remote.minHost}–${remote.maxHost}；当前大厅编号 $hostVersionCode")
                 if (state.resources.any { it.id == game.id }) detailButton(column, "下载${game.name}更新", !state.busy) {
                     confirmDownload { allowed -> if (!updates.downloadResource(game.id, allowed)) toast("下载未开始，请检查网络或重新查询") }
                 }
@@ -660,6 +703,7 @@ class MainActivity : ComponentActivity() {
         currentGame = null
         loadFailed = false
         lobby.visibility = View.VISIBLE
+        updates.reloadLocalResources()
         updates.presence(activityStarted, true, pendingInstallApk == null)
     }
 

@@ -7,6 +7,8 @@ import java.util.UUID
 
 internal data class ResourceSelection(val active: String = "builtin", val previous: String = "builtin", val ready: String? = null,
     val pinned: Boolean = false, val highestCode: Int = 1, val highestHash: String? = null, val quarantine: Set<Int> = emptySet())
+internal data class LocalResourceInfo(val selection: ResourceSelection, val active: ResourceGame?, val ready: ResourceGame?,
+    val activeError: String? = null, val readyError: String? = null, val stateError: String? = null, val readyFresh: Boolean = true)
 internal class ResourceSession(val game: ResourceGame?, val root: File?, private val release: () -> Unit) : AutoCloseable {
     private var closed = false
     @Synchronized override fun close() { if (!closed) { closed = true; release() } }
@@ -60,6 +62,17 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
     }
     fun failure(): String? = synchronized(lock) { stateFailure ?: candidateFailure }
     fun selection(id: String): ResourceSelection = synchronized(lock) { selections.getValue(id) }
+    fun describeAll(): Map<String, LocalResourceInfo> = synchronized(lock) {
+        selections.mapValues { (id, selection) ->
+            val active = if (selection.active == "builtin") null else runCatching { verifyVersion(id, selection.active) }
+            val ready = selection.ready?.let { identity -> runCatching { verifyVersion(id, identity) } }
+            val fresh = selection.ready?.let { identity -> ready?.isSuccess == true && runCatching {
+                ResourcePolicy.verifyInstalledProof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).requireFresh(now()); true
+            }.getOrDefault(false) } ?: true
+            LocalResourceInfo(selection, active?.getOrNull(), ready?.getOrNull(),
+                active?.exceptionOrNull()?.message, ready?.exceptionOrNull()?.message, stateFailure, fresh)
+        }
+    }
     fun hasSessions(): Boolean = synchronized(lock) { references.values.sum() > 0 }
     fun knownResourcePaths(): Set<String> = synchronized(lock) {
         selections.flatMap { (id, selected) -> setOfNotNull(selected.active, selected.previous, selected.ready).filter { it != "builtin" }.flatMap { identity ->
@@ -107,6 +120,21 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
     fun isEligible(game: ResourceGame): Boolean = synchronized(lock) {
         val selected = selections.getValue(game.id)
         stateFailure == null && !selected.pinned && game.contentCode !in selected.quarantine && game.compatible(hostCode, ResourcePolicy.contract(game.id)) && game.contentCode > selected.active.substringBefore('-').toIntOrNull().let { it ?: 1 } && selected.ready != game.identity
+    }
+    fun refreshReadyProof(envelope: ByteArray) = synchronized(lock) {
+        require(stateFailure == null)
+        val catalog = ResourcePolicy.verifyEnvelope(envelope, publicKey, now = now())
+        require(catalog.sequence == sequence && catalog.payloadSha256 == catalogHash) { "Accept the fresh catalog before renewing candidates" }
+        for (game in catalog.games) {
+            val current = selections.getValue(game.id)
+            if (current.ready != game.identity || current.active == game.identity || game.contentCode in current.quarantine || !game.compatible(hostCode, ResourcePolicy.contract(game.id))) continue
+            try {
+                val verified = verifyVersion(game.id, game.identity)
+                require(verified.files == game.files && verified.entry == game.entry && verified.storageContract == game.storageContract) { "Candidate manifest changed under the same archive identity" }
+                require(usedBytes(directory) + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "候选证明续期空间不足" }
+                proofFile(File(version(game.id, game.identity), "catalog.signed.json")).write(envelope)
+            } catch (error: Exception) { candidateFailure = "候选证明续期失败，原版本保留：${error.message}" }
+        }
     }
     fun install(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean = { false }) = synchronized(lock) {
         require(stateFailure == null && !hasSessions()) { "Install only while hall is idle" }

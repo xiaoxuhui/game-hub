@@ -15,6 +15,50 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 class GameResourceStoreTest {
+    @Test fun renewedSignedCatalogRefreshesCompleteReadyProofWithoutDownloadingOrActivating() {
+        val f = Fixture()
+        try {
+            val store = f.store; val (game, envelope, zip) = f.release()
+            store.install(game, envelope, zip)
+            f.time += 86400000
+            assertFalse(store.describeAll().getValue("conway").readyFresh)
+            val (_, fresh, _) = f.release(2, 3, issued = "2026-10-09T00:00:00.000Z", expires = "2026-10-10T00:00:00.000Z")
+            rejected { store.refreshReadyProof(fresh) } // Cannot bypass catalog acceptance and watermark.
+            store.acceptCatalog(fresh); store.refreshReadyProof(fresh)
+            val renewed = store.describeAll().getValue("conway")
+            assertTrue(renewed.readyFresh); assertEquals(game.identity, renewed.selection.ready)
+            assertEquals("builtin", renewed.selection.active)
+            store.openSession("conway", true).use { assertEquals(game.identity, it.game!!.identity) }
+        } finally { f.close() }
+    }
+    @Test fun localDescriptionDistinguishesBuiltinReadyActiveCorruptAndRestoredWithoutRemotePromotion() {
+        val f = Fixture()
+        try {
+            val store = f.store
+            assertEquals("builtin", store.describeAll().getValue("conway").selection.active)
+            val (game, envelope, zip) = f.release()
+            store.install(game, envelope, zip)
+            val pending = store.describeAll().getValue("conway")
+            assertNull(pending.active); assertEquals(game, pending.ready)
+            assertTrue(pending.readyFresh)
+            assertEquals("builtin", pending.selection.active)
+            f.time += 86400000
+            assertFalse(store.describeAll().getValue("conway").readyFresh)
+            f.time -= 86400000
+            store.openSession("conway", true).close()
+            f.time += 172800000 // Activated resources remain identifiable offline after proof expiration.
+            val active = store.describeAll().getValue("conway")
+            assertEquals(game, active.active); assertNull(active.ready); assertNull(active.activeError)
+            File(f.root, "versions/conway/${game.identity}/index.html").writeText("corrupt")
+            val damaged = store.describeAll().getValue("conway")
+            assertNull(damaged.active); assertNotNull(damaged.activeError)
+            assertEquals(game.identity, damaged.selection.active) // Never pretend a bad active pointer is builtin.
+            store.restore("conway", true, 2)
+            val restored = store.describeAll().getValue("conway")
+            assertEquals("builtin", restored.selection.active); assertTrue(restored.selection.pinned)
+            assertTrue(2 in restored.selection.quarantine); assertNull(restored.activeError)
+        } finally { f.close() }
+    }
     private class MemoryState : ResourceStateFile {
         var bytes: ByteArray? = null; var writes = 0; var failAtWrite: Int? = null
         override fun read() = bytes

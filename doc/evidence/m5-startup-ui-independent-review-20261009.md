@@ -47,3 +47,10 @@
 ### 新发现的残余 P2：保存桥晚回调可能报告成功却不启动保存
 
 `MainActivity.kt:711-732` 中 `SaveBridge.saveFile()` 在 WebView 线程把 `pendingExport` 设为非空并立即返回 `true`。如果 `runOnUiThread` 里的任务轮到执行时 Activity 已停止或销毁，`:719` 将它清空后直接返回。网页已经得到 `true`（光学游戏按此判断保存请求已受理），但 SAF 没打开、文件没写入，也没有失败反馈。可通过在桥调用后、UI runnable 执行前切后台/切游戏来触发。建议桥入口用线程安全的活动状态先拒绝并返回 `false`；更稳妥的是等主线程确认已成功发起 SAF 后再向 WebView 返回受理结果，同时保留晚回调防护。这个问题应在声明保存桥生命周期闭环前批改；真实文件选择/安装的组合测试仍可保留给 M6。
+
+## 6638bd4 保存桥批改复审（2026-10-09）
+
+- 受审提交 `6638bd443510bf1869f19dc75ad22a703536f358` 已推送，`HEAD` 与 `origin/main` 一致，主仓库工作树干净。只读检查代码、日志、JVM XML；独立构建目录的 `MainActivity`、`UiRequestAcceptance` 及两份相关测试与受审提交的文件 SHA-256 全部一致。
+- **原残余 P2 已闭合。** `MainActivity.kt:711-746` 在桥入口读取 volatile `activityStarted`，停止时立即返回 `false`。主线程受理时再次检查前台、销毁和待处理流程；只有 `saveLauncher.launch()` 成功才通过 `UiRequestAcceptance` 回传 `true`。启动失败清空 pending、恢复更新门禁并提示；队列等待超时会 CAS 取消，晚到 UI dispatch 不能再打开窗口。主线程已 claim 的 action 必须等实际结果，避免 `false` 回执后仍启动 SAF。这里 `true` 仅代表系统保存请求已受理，文件写入成功仍由结果回调决定。
+- `UiRequestAcceptanceTest.kt` 的 3 项并发负例覆盖排队超时、真实接受/拒绝及 claim 后超时竞争。新增设备测试在生产 `SaveBridge` 实例上停止 Activity 后调用桥，返回 `false` 且未建立 `pendingExport`。独立构建 JVM XML 合计 46 项、0 失败/错误；`m5-save-acceptance-final-tests.txt` 记录生命周期类 5 项、0 失败及 `BUILD SUCCESSFUL`。`git diff 797eac9 6638bd4 --check` 无输出。
+- 未发现本提交带来的新阻塞。实际 SAF 写入、旋转期间文件回调、系统安装与计费网络端到端仍待 M6；M4/M5 的完整验收继续 `PENDING`。可进入下一切片。
