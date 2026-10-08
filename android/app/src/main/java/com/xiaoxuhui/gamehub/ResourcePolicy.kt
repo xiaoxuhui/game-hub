@@ -86,6 +86,7 @@ internal object ResourcePolicy {
         val seen = HashSet<String>(); var total = 0L
         val files = (0 until array.length()).map { index ->
             val file = array.getJSONObject(index); val path = safePath(string(file, "path", 240)); val lower = path.lowercase(Locale.ROOT)
+            require(lower != "catalog.signed.json") { "Reserved installation metadata path" }
             require(seen.none { lower == it || lower.startsWith("$it/") || it.startsWith("$lower/") }) { "Duplicate or conflicting path" }; seen.add(lower)
             val size = integer(file, "bytes", 0, MAX_FILE); total += size; require(total <= MAX_UNPACKED)
             val hash = string(file, "sha256", 64); require(Regex("[0-9a-f]{64}").matches(hash))

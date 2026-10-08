@@ -79,6 +79,7 @@ export function validateCatalog(catalog, sources, now = Date.now()) {
     const paths = new Set(); let total = 0;
     for (const file of game.files) {
       safePath(file.path); const key = file.path.toLowerCase();
+      if (key === 'catalog.signed.json') throw new Error('Reserved installation metadata path');
       if (paths.has(key) || [...paths].some(p => key.startsWith(p + '/') || p.startsWith(key + '/'))) throw new Error('Conflicting path'); paths.add(key);
       integer(file.bytes, 0, LIMITS.file); total += file.bytes;
       if (total > LIMITS.unpacked || !/^[0-9a-f]{64}$/.test(file.sha256) || file.mime !== mime(file.path)) throw new Error('Invalid file manifest');

@@ -16,3 +16,9 @@
 - JSON 解析先限制字节、严格 UTF-8 和深度，拒绝重复键、非法转义/尾部；字段解析限制四个固定 ID、仓库 URL、SHA、合同、路径、MIME、大小和编号。签名校验以原始 payload 字节进行，强制 RSA3072 和 384 字节签名，拒绝未知 keyId。
 - 新版 Node 与 Android 路径均拒绝 `%`，避免 WebView URL 编码层绕过；UTC 时间采用规范毫秒 `Z` 格式。公钥 DER 文件 SHA-256 独立核对为 `649107df10ad8f48e8da1d4f992fe652a63fea448fa17dce081b87333a892673`，与证据一致。
 - 本提交的 `git diff --check` 无输出，审阅时工作树干净。仓库证据记录独立 Gradle BUILD SUCCESSFUL、17/17 JVM、22/22 Node；本审核为只读静态复核和公钥摘要核对，未重新构建、访问私钥或执行异机恢复。证据明确本机 DPAPI 恢复不等于异机备份。
+
+## 时效批改复审：`cc0122725ad8d1f8d19bb85ceb9dbe16b89231c5`
+
+**结论：上述 P2 目录时效缺口已闭合，可继续 M2。** `ResourceCatalog.requireFresh(now)` 与 Node 的未来容差 5 分钟、到期即失效规则一致；`verifyEnvelope` 默认使用当前时间，并允许测试注入确定性时钟。`verifyInstalledProof` 明确分离已安装完整副本的离线历史验签，避免目录到期让旧游戏无法离线使用。新增边界测试覆盖未来超限、容差端点和到期端点；仓库证据记录 JVM 18/18、BUILD SUCCESSFUL 23 秒。本次复审仅核对提交与证据文字，未重新构建。
+
+仍需在 M2 接入时保证 `verifyInstalledProof` **仅在已核实完整且已安装的本地版本**上调用，不能作为新下载或 ready 候选的安装放行路径；正常安装必须走 `verifyEnvelope`。正式适配器仍须将 APK `res/raw` 公钥与固定 KEY_ID 绑定，不能接受远端提供的公钥。此为后续接入门禁，当前协议切片无阻塞。`git diff --check` 无输出，审阅时工作树干净。
