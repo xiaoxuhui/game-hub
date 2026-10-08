@@ -1,0 +1,49 @@
+{
+  "latest": "v0.3.0",
+  "formalReleaseId": 407294713,
+  "resourceReleaseId": 407293817,
+  "assets": [
+    {
+      "name": "game-hub.apk",
+      "assetId": 623113303,
+      "bytes": 2621167,
+      "sha256": "61751251fa878523186a879c3c73ae9fef722a163cbf1e00f343c6c17736d73d",
+      "anonymous": true
+    },
+    {
+      "name": "catalog.signed.json",
+      "assetId": 623110620,
+      "bytes": 10907,
+      "sha256": "e7f017b35cbb2fad04f5a521c47508f3616fea0ef471f4bd7245f42cd02f7d62",
+      "anonymous": true
+    },
+    {
+      "name": "game-conway-1-77af28d46a71.zip",
+      "assetId": 623110366,
+      "bytes": 269135,
+      "sha256": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65",
+      "anonymous": true
+    },
+    {
+      "name": "game-eml-1-20205b0dfba4.zip",
+      "assetId": 623110443,
+      "bytes": 106336,
+      "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+      "anonymous": true
+    },
+    {
+      "name": "game-light-1-9df0cadcfc97.zip",
+      "assetId": 623110476,
+      "bytes": 114919,
+      "sha256": "9df0cadcfc979a355df2b07e6f0d0aff5c09fd8a0669b33324eef176b42530c0",
+      "anonymous": true
+    },
+    {
+      "name": "game-turing-1-e633a50595e9.zip",
+      "assetId": 623110526,
+      "bytes": 83347,
+      "sha256": "e633a50595e969d6fd96b52c0d1d5380a17220b0a0acad88055549c570339ce1",
+      "anonymous": true
+    }
+  ]
+}

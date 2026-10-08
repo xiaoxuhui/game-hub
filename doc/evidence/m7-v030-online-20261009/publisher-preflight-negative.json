@@ -1,0 +1,10 @@
+[
+  {
+    "commit": "main",
+    "rejection": "Full immutable commit required"
+  },
+  {
+    "commit": "dbcb8b3d3ae737eb62014361ccf257fc1eb3b3b2",
+    "rejection": "Commit does not match pushed main"
+  }
+]

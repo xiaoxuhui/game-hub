@@ -1,0 +1,12 @@
+[
+  {
+    "name": "game-hub.apk",
+    "bytes": 2621167,
+    "sha256": "61751251fa878523186a879c3c73ae9fef722a163cbf1e00f343c6c17736d73d"
+  },
+  {
+    "name": "final-release-test.apk",
+    "bytes": 377437,
+    "sha256": "f79a085a27bc8b8972ce0050f5b4a7444e541c98e0b4e306cfd428388b986b2b"
+  }
+]

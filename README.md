@@ -1,8 +1,8 @@
 # 游戏大厅
 
-一个离线 Android 应用，把康威生命游戏、EML 计算台、光学游戏和图灵机实验台装进同一个 APK。Android 原生首页显示四个项目及实际资源版本；游戏网页资源内置，离线可用。当前 v0.3.0 候选已实现启动更新提醒与四游戏独立资源更新，正式线上状态以 Releases 为准。
+一个离线 Android 应用，把康威生命游戏、EML 计算台、光学游戏和图灵机实验台装进同一个 APK。Android 原生首页显示四个项目及实际资源版本；游戏网页资源内置，离线可用。v0.3.0 支持启动更新提醒与四游戏独立资源更新。
 
-**v0.2.0 已发布。** 从 [GitHub Releases](https://github.com/xiaoxuhui/game-hub/releases/latest) 下载正式签名的 `game-hub.apk`。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。v0.2.0 已通过 Android CI、模拟器四入口与同发行证书升级检查；真机安装、文件操作及真实游戏存档由使用者在发布后验收。发行密钥目前只有同一台电脑上的副本，异机备份仍待完成。
+**v0.3.0 已发布。** 从 [GitHub Releases](https://github.com/xiaoxuhui/game-hub/releases/latest) 下载正式签名的 `game-hub.apk`。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。最终同证书覆盖升级、四游戏真实测试存档及旧/新客户端公开通道查询已在任务模拟器验证；匿名六资产和目录验签通过，见[发行记录](doc/evidence/m7-v030-release-20261009.md)。真机由用户发行后安装验收，两类签名密钥异机备份按授权列入待办。
 
 ![Android 模拟器中的游戏大厅](doc/screenshots/lobby.png)
 
