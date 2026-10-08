@@ -58,6 +58,11 @@ internal class GameResourceStore(private val directory: File, private val hostCo
     fun failure(): String? = synchronized(lock) { stateFailure ?: candidateFailure }
     fun selection(id: String): ResourceSelection = synchronized(lock) { selections.getValue(id) }
     fun hasSessions(): Boolean = synchronized(lock) { references.values.sum() > 0 }
+    fun knownResourcePaths(): Set<String> = synchronized(lock) {
+        selections.flatMap { (id, selected) -> setOfNotNull(selected.active, selected.previous, selected.ready).filter { it != "builtin" }.flatMap { identity ->
+            runCatching { ResourcePolicy.verifyInstalledProof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).games.single { it.id == id }.files.map { "/assets/games/$id/${it.path}" } }.getOrDefault(emptyList())
+        } }.toSet()
+    }
     private fun readProof(file: File) = proofFile(file).read() ?: error("Missing signed resource proof")
     private fun journalCatalogs(): List<ResourceCatalog> {
         val root = File(directory, "catalog-history"); if (!root.exists()) return emptyList()

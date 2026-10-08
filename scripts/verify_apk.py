@@ -24,6 +24,8 @@ def main(apk_path: Path, commit: str) -> None:
             raise ValueError("Bundle commit differs from the workflow checkout")
         fields = ("id", "displayName", "repository", "revision", "version", "entryPage")
         expected_sources = [{field: item[field] for field in fields} for item in lock["sources"]]
+        for source in expected_sources:
+            source.update(contentCode=1, resourceProtocol=1, storageContract=f"{source['id']}-baseline-v1")
         if len(expected_sources) != 4 or manifest["sources"] != expected_sources:
             raise ValueError("Source list differs from the lock")
         source_ids = {item["id"] for item in expected_sources}

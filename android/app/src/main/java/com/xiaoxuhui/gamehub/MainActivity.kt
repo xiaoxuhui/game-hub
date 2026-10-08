@@ -38,9 +38,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.webkit.WebViewAssetLoader
 import org.json.JSONObject
-import java.io.ByteArrayInputStream
 import java.io.File
 
 class MainActivity : ComponentActivity() {
@@ -60,6 +58,10 @@ class MainActivity : ComponentActivity() {
     private var games: List<Game> = emptyList()
     private var assetPaths: Set<String> = emptySet()
     private var bundleCommit = ""
+    private var resourceRuntime: ResourceRuntime? = null
+    private var resourceSession: ResourceSession? = null
+    private var gameResolver: GameContentResolver? = null
+    private var navigationSerial = 0L
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     @Volatile private var pendingExport: Export? = null
     private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -106,13 +108,6 @@ class MainActivity : ComponentActivity() {
         "turing" to 0xFFD3A3FF.toInt()
     )
 
-    private val assetLoader by lazy {
-        WebViewAssetLoader.Builder()
-            .setDomain(ASSET_DOMAIN)
-            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
-            .build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         root = FrameLayout(this).apply { setBackgroundColor(BACKGROUND) }
@@ -138,6 +133,7 @@ class MainActivity : ComponentActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val view = webView
+                if (view == null && currentGame != null) { showLobby(); return }
                 if (view != null) {
                     if (view.canGoBack()) view.goBack() else showLobby()
                 } else {
@@ -157,6 +153,7 @@ class MainActivity : ComponentActivity() {
         if (sources.length() != 4 || files.length() == 0) error("来源或资源数量错误")
         games = (0 until sources.length()).map { index ->
             val item = sources.getJSONObject(index)
+            require(item.getInt("contentCode") == 1 && item.getInt("resourceProtocol") == 1 && item.getString("storageContract") == ResourcePolicy.contract(item.getString("id"))) { "内置资源合同不匹配" }
             Game(item.getString("id"), item.getString("displayName"), item.getString("version"), item.getString("revision"), item.getString("entryPage"))
         }
         if (games.map { it.id }.toSet() != setOf("conway", "eml", "light", "turing")) error("项目清单不完整")
@@ -370,9 +367,45 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     private fun openGame(game: Game, restoredState: Bundle? = null) {
+        val serial = ++navigationSerial
+        downloadCancelled = true
         clearWebView()
+        currentGame = game
+        showLoading("正在校验${game.name}资源…")
+        Thread {
+            val prepared = runCatching {
+                ResourceRuntime.get(this).also { resourceRuntime = it }.let { it to (assetPaths + it.store.knownResourcePaths()) }
+            }
+            runOnUiThread {
+                if (isDestroyed || serial != navigationSerial) return@runOnUiThread
+                prepared.onFailure { showError("资源状态不可用：${it.message}") }.onSuccess { (runtime, paths) ->
+                    runtime.prepareWorkerInterceptor()
+                    ResourceCacheGuard.inspectAndClear(this, paths) { cleared, reason ->
+                        if (isDestroyed || serial != navigationSerial) return@inspectAndClear
+                        Thread {
+                            val selected = runCatching { runtime.store.openSession(game.id, cleared) }
+                            runOnUiThread selectedUi@{
+                                if (isDestroyed || serial != navigationSerial) { selected.getOrNull()?.close(); return@selectedUi }
+                                selected.onFailure { showError("资源校验失败：${it.message}") }.onSuccess selectedSession@{ session ->
+                                    if (!cleared && session.game != null) { session.close(); showError(reason); return@selectedSession }
+                                    openGamePrepared(game, restoredState, session, runtime)
+                                }
+                            }
+                        }.start()
+                    }
+                }
+            }
+        }.start()
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun openGamePrepared(game: Game, restoredState: Bundle?, session: ResourceSession, runtime: ResourceRuntime) {
+        clearWebView()
+        resourceSession = session
+        val resolver = GameContentResolver(assets, game.id, session, assetPaths)
+        gameResolver = resolver
+        runtime.bind(resolver)
         currentGame = game
         loadFailed = false
         lobby.visibility = View.GONE
@@ -392,8 +425,10 @@ class MainActivity : ComponentActivity() {
                 mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
                 blockNetworkLoads = true
                 textZoom = 100
+                cacheMode = WebSettings.LOAD_NO_CACHE
             }
-            webViewClient = gameClient(game)
+            clearCache(true)
+            webViewClient = gameClient(game, resolver)
             webChromeClient = object : WebChromeClient() {
                 override fun onShowFileChooser(
                     webView: WebView,
@@ -431,9 +466,9 @@ class MainActivity : ComponentActivity() {
         if (restored == null) view.loadUrl(gameUrl(game))
     }
 
-    private fun gameClient(game: Game): WebViewClient = object : WebViewClient() {
+    private fun gameClient(game: Game, resolver: GameContentResolver): WebViewClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-            if (view === webView && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, assetPaths)) {
+            if (view === webView && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, resolver.allowedPaths)) {
                 loadFailed = false
                 showLoading("正在打开${game.name}…")
             }
@@ -441,15 +476,14 @@ class MainActivity : ComponentActivity() {
 
         override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse {
             val uri = request.url
-            if (!isAllowedAsset(uri)) return blockedResponse()
-            return assetLoader.shouldInterceptRequest(uri) ?: blockedResponse()
+            return resolver.response(uri)
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            if (!request.isForMainFrame) return !isAllowedAsset(request.url)
+            if (!request.isForMainFrame) return !resolver.allowed(request.url)
             val uri = request.url
             val path = uri.path ?: ""
-            val ownPage = isAllowedAsset(uri) && AssetAccessPolicy.pageAllowed(game.id, path, assetPaths)
+            val ownPage = resolver.allowed(uri) && AssetAccessPolicy.pageAllowed(game.id, path, resolver.allowedPaths)
             if (ownPage) return false
             if (uri.scheme == "https" || uri.scheme == "http") {
                 if (uri.host != ASSET_DOMAIN) runCatching {
@@ -462,7 +496,7 @@ class MainActivity : ComponentActivity() {
 
         override fun onPageFinished(view: WebView, url: String) {
             if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) {
-                if (game.id != "light" && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, assetPaths)) {
+                if (game.id != "light" && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, resolver.allowedPaths)) {
                     view.evaluateJavascript(exportBridgeJs(bridgeName(game.id)), null)
                 }
                 if (game.id == "turing" && Uri.parse(url).path?.endsWith("/campaign.html") == true) {
@@ -482,21 +516,12 @@ class MainActivity : ComponentActivity() {
         override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
             if (view !== webView || response.statusCode < 400) return
             val path = request.url.path ?: "未知路径"
-            if (request.isForMainFrame || (isAllowedAsset(request.url) && (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".html")))) {
+            if (request.isForMainFrame || (resolver.allowed(request.url) && (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".html")))) {
                 showError("${game.name} 资源缺失：$path")
             } else {
                 Log.w("GameHub", "Blocked or optional resource: $path (${response.statusCode})")
             }
         }
-    }
-
-    private fun isAllowedAsset(uri: Uri): Boolean {
-        return AssetAccessPolicy.resourceAllowed(uri.scheme, uri.host, uri.port, uri.encodedPath, uri.path, assetPaths)
-    }
-
-    private fun blockedResponse(): WebResourceResponse {
-        val body = "Blocked unregistered resource".toByteArray(Charsets.UTF_8)
-        return WebResourceResponse("text/plain", "UTF-8", 404, "Not Found", mapOf("Cache-Control" to "no-store"), ByteArrayInputStream(body))
     }
 
     private fun showLoading(message: String) {
@@ -544,6 +569,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showLobby() {
+        navigationSerial++
         hideOverlay()
         clearWebView()
         currentGame = null
@@ -560,6 +586,10 @@ class MainActivity : ComponentActivity() {
             view.destroy()
         }
         webView = null
+        resourceRuntime?.unbind(gameResolver)
+        gameResolver = null
+        resourceSession?.close()
+        resourceSession = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -570,6 +600,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        navigationSerial++
         downloadCancelled = true
         clearWebView()
         super.onDestroy()

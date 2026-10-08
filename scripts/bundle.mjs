@@ -110,6 +110,10 @@ function sourceCloneUrl(source) {
   return local;
 }
 
+function sourceIdentity(source) {
+  return { id: source.id, displayName: source.displayName, repository: source.repository, revision: source.revision, version: source.version, entryPage: source.entryPage, contentCode: 1, resourceProtocol: 1, storageContract: `${source.id}-baseline-v1` };
+}
+
 function stageSource(source, staging, gamesDir, root = repoRoot) {
   const checkout = join(staging, 'sources', source.id);
   const origin = sourceCloneUrl(source);
@@ -152,7 +156,7 @@ function stageSource(source, staging, gamesDir, root = repoRoot) {
   }
   assertReferences(gameDir);
   if (process.env.GAME_HUB_LOCAL_SOURCES) sourceCloneUrl(source);
-  return { id: source.id, displayName: source.displayName, repository: source.repository, revision: source.revision, version: source.version, entryPage: source.entryPage };
+  return sourceIdentity(source);
 }
 
 function buildManifest(gamesDir, sources, bundleCommit) {
@@ -167,7 +171,7 @@ function verifyBundle(output, sources, bundleCommit) {
   const manifestFile = join(output, 'bundle-manifest.json');
   if (!existsSync(manifestFile)) throw new Error('Missing bundle-manifest.json');
   const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'));
-  const expectedSources = sources.map((source) => ({ id: source.id, displayName: source.displayName, repository: source.repository, revision: source.revision, version: source.version, entryPage: source.entryPage }));
+  const expectedSources = sources.map(sourceIdentity);
   if (manifest.schemaVersion !== 1 || manifest.bundleCommit !== bundleCommit || JSON.stringify(manifest.sources) !== JSON.stringify(expectedSources)) {
     throw new Error('Bundle manifest does not match this checkout and source lock');
   }
@@ -246,4 +250,4 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
 
-export { safeRelative, validateLock, collectReferences, assertReferences, buildManifest, verifyBundle, stageSource, assemble, bundle };
+export { safeRelative, validateLock, collectReferences, assertReferences, buildManifest, verifyBundle, sourceIdentity, stageSource, assemble, bundle };

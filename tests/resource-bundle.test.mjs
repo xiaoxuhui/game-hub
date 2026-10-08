@@ -4,7 +4,7 @@ import { generateKeyPairSync } from 'node:crypto';
 import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { buildManifest } from '../scripts/bundle.mjs';
+import { buildManifest, sourceIdentity } from '../scripts/bundle.mjs';
 import { createZip, readStoredZip, inspectResources, buildResources, verifyResources } from '../scripts/resource-bundle.mjs';
 import { strictJson, safePath, mime, sha256, CONTRACTS, signCatalog, verifyEnvelope, validateCatalog, assetName } from '../scripts/resource-protocol.mjs';
 import { attachAssets, validateReleaseSnapshot } from '../scripts/resource-catalog.mjs';
@@ -88,7 +88,7 @@ test('resource generation failure preserves previous complete candidate and reje
       writeFileSync(join(gameRoot, source.entryPage), '<html>baseline</html>'); writeFileSync(join(gameRoot, 'LICENSE'), 'MIT License');
       if (source.id === 'turing') { writeFileSync(join(gameRoot, 'campaign.html'), '<html>campaign</html>'); writeFileSync(join(gameRoot, 'route-worker-test.js'), 'self.onmessage = function() {}'); }
     }
-    const identities = sources.map(s => ({ id: s.id, displayName: s.displayName, repository: s.repository, revision: s.revision, version: s.version, entryPage: s.entryPage }));
+    const identities = sources.map(sourceIdentity);
     writeFileSync(join(assets, 'bundle-manifest.json'), JSON.stringify(buildManifest(join(assets, 'games'), identities, commit)));
     buildResources(root, { expectedCommit: commit });
     const output = join(root, '.build/resource-candidate'); const previous = readFileSync(join(output, 'games.unsigned.json'));

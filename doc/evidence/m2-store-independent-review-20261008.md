@@ -32,3 +32,13 @@
 非阻塞后续：`catalog-history` 若出现同一 sequence 的不同有效 hash，恢复流程也应 fail closed；当前 `maxByOrNull` 未明确冲突处置。Android `AtomicFile` 的重启与进程死亡时序仍需仪器测试，不由 JVM 文件适配器证明。
 
 格式核对：修订提交 `git diff 251f4b5^ 251f4b5 --check` 报 `doc/evidence/m2-final-fixed-tests.txt:2` 一处行尾空格，来自归档构建日志；不影响代码安全结论，但提交证据副本应说明或规范化，原始输出可保留在独立检出。
+
+## 高水位复审：`d9b8de904cb48b5144b39066e1ebba8777679a6a`
+
+**结论：两项剩余 P1 已闭合，可进入 M3；M2 的真实 Android 故障注入和存档验收尚未完成。**
+
+- `catalog-history` 改成 `highest-a`、`highest-b` 两份固定 AtomicFile 签名证明。两份均须存在且可验签，目录中未知文件名、坏证明或缺副本均使恢复 fail closed。同序号不同 payload hash 拒绝；写入中断留下有效新旧序号时取较高者。此设计消除了“最新坏后默用次新”的直接路径。测试覆盖最新文件删除、改名、内容损坏且旧副本仍有效的情形。
+- state 缺失但 `catalog-history` 或 `versions` 已存在时现在标记全局故障，禁止自动接收目录及单游戏 restore；显式全局可信恢复将四游戏 pinned，并保留验证过的最高编号。纯新目录仍可作为首次安装。新增缺 state + 已装资源的负例。
+- 证据记录首轮 30 项有 3 项失败并据此修正初始化顺序与低空间检查前的空 history 副作用；最终归档 BUILD SUCCESSFUL in 36s，JVM 30/30。归档日志的行尾空格已清理，`git diff d9b8de9^ d9b8de9 --check` 无输出。审阅时工作树干净。
+
+剩余非阻塞边界：两份证明同属应用私有存储，若二者和选择状态同时丢失，无法离线证明曾接受的最高序号，应继续停止更新并要求可信备份/人工恢复；真实 Android AtomicFile 的进程死亡、目录同步及四游戏真实存档仍必须按 M3/M6 测试。静态/JVM 复审不能替代设备证据。
