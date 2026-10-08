@@ -103,6 +103,8 @@ export function verifyResources(output = join(root, '.build/resource-candidate')
   if (candidate.schemaVersion !== 2 || candidate.bundleCommit !== expectedCommit || Object.keys(binding).some(key => candidate[key] !== binding[key])) throw new Error('Stale candidate commit or source lock');
   const games = JSON.parse(readFileSync(join(output, 'games.unsigned.json')));
   if (games.length !== 4 || new Set(games.map(g => g.id)).size !== 4) throw new Error('Candidate must contain four games');
+  const expectedFiles = [...games.map(assetName), 'games.unsigned.json', 'candidate.json'].sort();
+  if (JSON.stringify(readdirSync(output).sort()) !== JSON.stringify(expectedFiles) || expectedFiles.some(name => !lstatSync(join(output, name)).isFile() || lstatSync(join(output, name)).isSymbolicLink())) throw new Error('Unexpected candidate file');
   for (const game of games) {
     const source = sources.find(s => s.id === game.id), code = codes[game.id];
     if (!source || !code || game.sourceRevision !== source.revision || game.sourceRepository !== source.repository || game.version !== source.version || game.entryPage !== source.entryPage || game.contentCode !== code.contentCode || game.storageContract !== code.storageContract) throw new Error('Candidate source or resource lock mismatch');

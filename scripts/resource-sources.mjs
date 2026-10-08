@@ -38,6 +38,6 @@ export async function prepareResources(root) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     if (process.argv.length !== 2) throw new Error('Usage: node scripts/resource-sources.mjs');
-    await prepareResources(fileURLToPath(new URL('../', import.meta.url)));
+    prepareResources(fileURLToPath(new URL('../', import.meta.url))).catch(error => { console.error(error.message); process.exitCode = 1; });
   } catch (error) { console.error(error.message); process.exitCode = 1; }
 }

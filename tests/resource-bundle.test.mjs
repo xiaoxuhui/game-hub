@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPairSync } from 'node:crypto';
-import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, symlinkSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { buildManifest, sourceIdentity } from '../scripts/bundle.mjs';
@@ -114,6 +114,15 @@ test('resource generation failure preserves previous complete candidate and reje
     assert.equal(verifyResources(output, { checkoutRoot: root, expectedCommit: commit }).find(g => g.id === 'light').sourceRevision, 'e'.repeat(40));
     assert.deepEqual(readFileSync(join(root, 'sources.lock.json')), lockBytes);
     assert.equal(readFileSync(join(assets, 'games/light/index.html'), 'utf8'), '<html>baseline</html>');
+    writeFileSync(join(output, 'unreviewed.txt'), 'must not become part of the candidate artifact');
+    assert.throws(() => verifyResources(output, { checkoutRoot: root, expectedCommit: commit }), /Unexpected candidate file/);
+    rmSync(join(output, 'unreviewed.txt'));
+    mkdirSync(join(output, 'unreviewed-directory'));
+    assert.throws(() => verifyResources(output, { checkoutRoot: root, expectedCommit: commit }), /Unexpected candidate file/);
+    rmSync(join(output, 'unreviewed-directory'), { recursive: true });
+    symlinkSync(output, join(output, 'linked-content'), process.platform === 'win32' ? 'junction' : 'dir');
+    try { assert.throws(() => verifyResources(output, { checkoutRoot: root, expectedCommit: commit }), /Unexpected candidate file/); }
+    finally { unlinkSync(join(output, 'linked-content')); }
     const validSources = JSON.stringify(next);
     next.sources[2].repository = 'https://github.com/xiaoxuhui/other.git';
     writeFileSync(sourceLock, JSON.stringify(next));
