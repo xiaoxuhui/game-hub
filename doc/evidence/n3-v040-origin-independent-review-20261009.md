@@ -21,3 +21,10 @@
 ## 下一切片边界
 
 完整示范游戏 UI、SAF 导出导入、动态 Service Worker 故障、移除重装、旧四五页实际存档回归，以及动态发现/注册 UI 仍待后续 N3/N4；本审阅没有把这些未实现事项当作当前基础切片的阻塞。用户新增两游戏打包与发布后临时目录清理待办已记录，不应在本切片提前清理。
+
+## P1 批改后独立复审闭环
+
+- 批改提交：`01d7478a84c787f31efad642614fabca7160c7df`；核查时 `HEAD=origin/main`，主仓库干净。`MainActivity.kt:724` 现在同步调用 `resourceRuntime.storeFor(failedGame).blockFailedIdentity`；`UpdateCoordinator.kt:248-249` 对合法动态 ID 用 `runtime.dynamicStore`，四旧 ID 仍用原 `resourceStore`，保留旧测试注入语义。串行 gate 的预约、finally 释放和旧四本地操作路径未改变。
+- 新真实设备负例 `DynamicErrorDeviceTest` 用仅测试的合成会话模拟验证后入口文件丢失，经过生产 MainActivity、resolver、真实 WebView HTTP 错误回调。未修复同证书候选的归档日志出现 `GameResourceStore.blockFailedIdentity → MainActivity.showError` 崩溃；尽管 `INSTRUMENTATION_CODE: 0`，审阅按 `Process crashed` 判失败。修复候选同一用例确认 session 关闭、`webView=null`、`loadFailed=true`、错误面板存在；加两项动态 origin 与四项旧 WebView 共 7 项通过（7.99 秒）。
+- JVM 新用例以即时签名 ZIP 测试首个动态 code1：同步阻止及持久隔离后重建 store 仍 pinned/quarantine1，拒绝打开；明确恢复/重试1后重装并安全打开。全量强制构建 78 项通过、0 失败/错误/跳过，98 Gradle 任务实际执行、55 秒，lint 0 错误（16 告警）；`git diff --check` 通过。修复开发 APK/仪器包签名日志为固定发行证书，均是独立检出中间候选。
+- **结论：本切片 P1 已闭环，N3 origin/统一桥基础切片放行进入后续 N3。** 设备负例使用合成会话，不证明真实签名 ZIP 安装；协调器对真实动态安装状态的异步持久提交、完整示范游戏、SAF、动态注册 UI 等仍须后续切片实际验证。未把本次中间 APK 作为最终发行候选。
