@@ -8,10 +8,14 @@ import java.nio.charset.CodingErrorAction
 /** Parse before org.json can discard duplicate keys or coerce field types. */
 internal object StrictJson {
     fun parse(bytes: ByteArray, limit: Int = 524288): JSONObject {
+        return parseValue(bytes, limit) as? JSONObject ?: error("Expected JSON object")
+    }
+    fun parseArray(bytes: ByteArray, limit: Int = 4194304): JSONArray = parseValue(bytes, limit) as? JSONArray ?: error("Expected JSON array")
+    private fun parseValue(bytes: ByteArray, limit: Int): Any {
         require(bytes.size <= limit) { "JSON exceeds byte budget" }
         val text = Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
             .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString()
-        return Parser(text).parse() as? JSONObject ?: error("Expected JSON object")
+        return Parser(text).parse()
     }
     private class Parser(private val text: String) {
         private var at = 0

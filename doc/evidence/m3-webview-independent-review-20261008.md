@@ -32,3 +32,11 @@
 - 原 P1：`MainActivity.kt:384-386` 现在按 `canPlay` 拦截全部游戏，`ResourceCacheGuard.kt:63-73` 先注销相关注册并检查 controller；首次受控时销毁检查视图，重建后仍受控或超时会停止。未知缓存仅在这一路径确认无代理后返回 `canActivate=false, canPlay=true`，旧资源可用且不删除未知数据。真实 SW 夹具先证明 `OLD_PROXY` 命中，再在新 WebView 断言 controller 为 null 和实际 LightStorage 函数。
 - 原 P2：`MainActivity.kt:516-523` 对所有已登记资源 4xx 统一显示加载错误，已去掉扩展名限制。
 - 设备证据 `m3-final-device-tests.txt` 显示 connectedDebugAndroidTest 9/9、零失败/跳过及 BUILD SUCCESSFUL；文档将完整恢复 UI、桥接和进程死亡留待后续，没有把临时测试签名候选当作发行。该成功日志不证明上述伪检查页场景安全。
+
+## 9a42d2a 可信检查页复审（2026-10-08）
+
+- 受审提交：`9a42d2a9742415fe73fee99f389224e44d455f2d`。只读检查提交代码、真实 SW 测试及 `doc/evidence/m3-trusted-guard-final-tests.txt`；本轮未独立重跑模拟器。
+- **判定：上一轮 P1 已闭合，可进入 M4 代码切片。** `ResourceCacheGuard.kt:46-55` 仅对精确检查 URL 且 `request.isForMainFrame` 的主文档请求设置原生 `AtomicBoolean`；没有该可信响应时，在执行或采信页面 JS 前返回 `canActivate=false, canPlay=false`。Worker 子请求与 iframe 即使请求相同 URL 也不能置位。
+- `ResourceWebViewTest.kt:147-169` 用根 scope 的真实 SW 缓存伪造检查页，预置 `ok:true,safe:true`；测试确认激活和游玩均拒绝且原因指向旧代理。游戏 scope 的正例仍先命中 `OLD_PROXY`，之后新视图无 controller，实际 LightStorage 可用。设备日志显示 10/10、零失败/跳过、BUILD SUCCESSFUL in 1m 11s；`git diff 9a42d2a^ 9a42d2a --check` 无输出。
+- 后续硬化建议（不阻挡 M4 切片）：可信标记目前按整个检查 WebView 保存；若出现第二次主框架导航，可在 `onPageStarted` 重置，并在 `onPageFinished` 校验精确 URL，使证明与当前导航周期绑定。现有伪页负例已覆盖本次 P1 的直接攻击路径。
+- 本结论仅批准继续切片开发，不表示完整 M3/M6 或发行验收：恢复 UI、原生文件导入导出、进程死亡和同证书完整验证仍待执行。未修改主仓库、四原仓库或密钥。
