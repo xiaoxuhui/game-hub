@@ -4,6 +4,21 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateTaskGateTest {
+    @Test fun offlineLocalChangeSharesMutexIgnoresNetworkAndHonorsForegroundHallCancellation() {
+        val f = Fixture(); f.gate.setNetwork(UpdateNetwork(false, false))
+        val local = f.gate.beginLocalChange()!!
+        assertTrue(f.gate.valid(local)); assertTrue(f.gate.busy())
+        assertNull(f.gate.beginLocalChange()); assertFalse(f.gate.beginCheck(true))
+        f.gate.setNetwork(UpdateNetwork(true, true)); assertTrue(f.gate.valid(local))
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.APK, true, true))
+        f.gate.setPresence(true, true, true); assertFalse(f.gate.valid(local))
+        f.gate.setPresence(true, true); assertFalse(f.gate.valid(local))
+        f.gate.finish(local); assertFalse(f.gate.busy())
+        val next = f.gate.beginLocalChange()!!; f.gate.finish(local)
+        assertTrue(f.gate.valid(next)); f.gate.setPresence(false, true)
+        assertFalse(f.gate.valid(next)); f.gate.finish(next)
+        assertNull(f.gate.beginLocalChange())
+    }
     @Test fun externalResultPendingRevokesDownloadUntilCallbackReleasesGate() {
         val f = Fixture()
         val active = f.gate.beginDownload(UpdateDownloadKind.RESOURCE, false)!!

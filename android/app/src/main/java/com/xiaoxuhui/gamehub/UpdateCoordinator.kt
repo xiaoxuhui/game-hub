@@ -11,6 +11,7 @@ import android.os.SystemClock
 import java.io.File
 import java.util.concurrent.Executors
 
+internal enum class LocalResourceAction { RESTORE_PREVIOUS, RESTORE_BUILTIN, RESUME, RETRY, RECOVER_ALL }
 internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: List<ResourceGame> = emptyList(),
     val catalogGames: List<ResourceGame> = emptyList(), val apkCheckedAt: Long? = null, val resourcesCheckedAt: Long? = null,
     val localResources: Map<String, LocalResourceInfo> = emptyMap(),
@@ -220,6 +221,48 @@ internal class UpdateCoordinator private constructor(context: Context) {
         }
     }
     fun cancel() = gate.cancel()
+    fun changeLocal(id: String?, action: LocalResourceAction, retryCode: Int? = null): Boolean = synchronized(stateLock) {
+        require(action == LocalResourceAction.RECOVER_ALL || id in setOf("conway", "eml", "light", "turing"))
+        require(action != LocalResourceAction.RETRY || retryCode != null && retryCode > 1)
+        val token = gate.beginLocalChange() ?: return false
+        publish { it.copy(busy = true, task = "正在处理本地资源", done = 0, total = 0) }
+        worker.execute {
+            var changed = false
+            try {
+                require(gate.valid(token)) { "本地操作已取消，请回到大厅重试" }
+                // Once the store starts its atomic transaction, cancellation cannot undo a committed choice.
+                val store = runtime.store
+                when (action) {
+                    LocalResourceAction.RECOVER_ALL -> store.recoverAllBuiltinsFromTrustedHistory()
+                    LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> {
+                        val code = store.selection(id!!).active.substringBefore('-').toIntOrNull()?.takeIf { it > 1 }
+                        store.restore(id, action == LocalResourceAction.RESTORE_BUILTIN, code)
+                    }
+                    LocalResourceAction.RESUME -> store.resumeAutomatic(id!!)
+                    LocalResourceAction.RETRY -> store.resumeAutomatic(id!!, retryCode)
+                }
+                changed = true
+                publish { it.copy(resourceStatus = when (action) {
+                    LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN, LocalResourceAction.RECOVER_ALL -> "已恢复并固定资源；存档保留"
+                    LocalResourceAction.RESUME -> "已解除固定；失败编号仍隔离"
+                    LocalResourceAction.RETRY -> "已允许重试指定编号；存档保留"
+                }) }
+            } catch (error: Exception) { publish { it.copy(resourceStatus = "本地操作失败：${error.message}；存档保留") } }
+            finally {
+                readLocalResources()
+                synchronized(stateLock) {
+                    val available = runCatching { offer?.catalog?.games?.filter { runtime.store.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
+                    if (changed && action == LocalResourceAction.RETRY) {
+                        attempted.removeAll { it.startsWith("$id/$retryCode-") }
+                    }
+                    gate.finish(token)
+                    publish { it.copy(busy = false, task = null, resources = available) }
+                }
+                automaticNext()
+            }
+        }
+        true
+    }
     fun reloadLocalResources() { worker.execute { readLocalResources() } }
     private fun readLocalResources() {
         try {

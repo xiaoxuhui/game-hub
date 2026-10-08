@@ -19,3 +19,12 @@
 - 卡片与详情把远端候选和已核验本地版本分开；临时候选 UI 用例只证明状态映射。真实在线目录、生产公钥、文件选择/导出、系统安装及全阶段 M4/M5 验收继续 `PENDING`。
 
 以上两项 P1 建议批改并补针对性测试后再进入下一切片；本文件保留提交后独立审阅痕迹。
+
+## 74b7da3 批改独立复审（2026-10-09）
+
+- 批改提交 `74b7da326864188ad08482770ab93589681be4a3` 已推送；本地 `HEAD` 与远端 `main` 相同，主仓库工作树为空。只读核对完整差异、相关生产控制流、测试夹具和归档输出；`git diff 70d90d3 74b7da3 --check` 无输出。未在主仓库构建，也未修改四个原游戏仓库。当前 EML 原仓库有 22 条工作树状态输出，其余三仓库为 0；这些是只读快照，本次复审没有清理或归因。
+- **原 P1“未知误报内置”已闭合。** `MainActivity.kt:254-278` 初始卡片和无障碍文案使用“本地资源核验中”；`:310-326` 仅在非空 `LocalResourceInfo` 明确选择 builtin 后显示内置。`UpdateCoordinator.kt:224-229` 成功时置 `localLoaded=true` 并清空读取错误，失败时清空旧本地映射、置错误，避免旧版本继续冒充实际状态。设备 `unknownAndFailedLocalScanNeverClaimBuiltinOrRemoteUpdates` 经过空快照、失败、已核验三次真实渲染，失败和未知状态均无“内置/可更新”文字。
+- **原 P1“续期改写版本来源”已闭合。** `GameResourceStore.kt:132-136` 先 `verifyVersion` 全文件哈希，再要求已安装 `ResourceGame` 与新签名目录的 `ResourceGame` 完全相等，之后才检查空间并写 AtomicFile；完整相等覆盖版本、源仓库、完整提交、兼容范围、入口、文件表及其他元数据。JVM 新用例使用同 archive 身份但更改版本或来源 SHA 的有效签名目录，证明旧 ready 说明保持，随后有效目录才可续期。`refreshReadyProof` 未修改 active/previous/ready 或会话引用。
+- **原 P2“诊断成功后不清除”已闭合。** `renewalFailures` 按游戏 ID 保留续期错误；成功写入证明后只清除该游戏记录，当前目录不再对应 ready 时剔除过期记录。原候选激活错误仍由单独 `candidateFailure` 保留。设备夹具先对四个真实完整候选中的 light 注入签名元数据差异，其余三份续期成功；下一次有效目录让 light 成功并清空诊断。测试使用临时 RSA 密钥和独立候选，不代表生产公钥下的联网发行。
+- 验证证据：独立检出目录 JVM XML 共 49 项、0 失败、0 错误；归档日志显示 `UpdateLifecycleTest` 设备 8 项通过、`BUILD SUCCESSFUL`（2 分 42 秒）；Node 22 项通过。对应 `doc/evidence/m5-local-version-review-fixed-tests.txt`、`m5-local-version-review-fixed-node.txt`。本次为只读复审，未另起构建。
+- **结论：本轮三条意见均已批改，未发现阻止进入恢复切片的新问题。** 全阶段 M4/M5 仍为 `PENDING`；真实联网、生产资源公钥、断电/跨进程恢复、错误态布局专项和发布验收仍需按后续计划验证，不因本次夹具通过而标完成。

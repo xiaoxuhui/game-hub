@@ -10,6 +10,37 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateLifecycleTest {
+    @Test fun localRecoveryCommitsOffUiAndPersistsAcrossStoreRecreation() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val coordinator = UpdateCoordinator.get(context)
+        val runtime = ResourceRuntime.get(context)
+        val original = runtime.store.selection("light")
+        val violations = java.util.concurrent.CopyOnWriteArrayList<android.os.strictmode.Violation>()
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            val deadline = System.currentTimeMillis() + 45000
+            while (coordinator.snapshot().busy && System.currentTimeMillis() < deadline) Thread.sleep(50)
+            assertFalse(coordinator.snapshot().busy)
+            scenario.onActivity {
+                val gate = UpdateCoordinator::class.java.getDeclaredField("gate").apply { isAccessible = true }.get(coordinator) as UpdateTaskGate
+                gate.setNetwork(UpdateNetwork(false, false))
+                val previous = android.os.StrictMode.getThreadPolicy()
+                if (android.os.Build.VERSION.SDK_INT >= 28) android.os.StrictMode.setThreadPolicy(android.os.StrictMode.ThreadPolicy.Builder().detectDiskWrites()
+                    .penaltyListener(java.util.concurrent.Executor { task -> task.run() }) { violations.add(it) }.build())
+                try { assertTrue(coordinator.changeLocal("light", LocalResourceAction.RESTORE_BUILTIN)) }
+                finally { android.os.StrictMode.setThreadPolicy(previous) }
+            }
+            while (coordinator.snapshot().busy && System.currentTimeMillis() < deadline) Thread.sleep(50)
+            assertFalse(coordinator.snapshot().busy); assertTrue(violations.isEmpty())
+            val reopened = GameResourceStore(java.io.File(context.filesDir, "game-resources"), runtime.hostCode, runtime.publicKey)
+            assertEquals("builtin", reopened.selection("light").active); assertTrue(reopened.selection("light").pinned)
+            assertTrue(coordinator.snapshot().resourceStatus.contains("已恢复并固定"))
+            if (!original.pinned) {
+                scenario.onActivity { assertTrue(coordinator.changeLocal("light", LocalResourceAction.RESUME)) }
+                while (coordinator.snapshot().busy && System.currentTimeMillis() < deadline) Thread.sleep(50)
+                assertFalse(coordinator.snapshot().busy); assertFalse(runtime.store.selection("light").pinned)
+            }
+        }
+    }
     @Test fun unknownAndFailedLocalScanNeverClaimBuiltinOrRemoteUpdates() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         ResourceDeviceFixture(context).use { fixture ->

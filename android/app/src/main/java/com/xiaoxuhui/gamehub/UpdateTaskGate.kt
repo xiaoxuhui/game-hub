@@ -1,7 +1,7 @@
 package com.xiaoxuhui.gamehub
 
 internal data class UpdateNetwork(val online: Boolean, val unmeteredWifi: Boolean)
-internal enum class UpdateDownloadKind { APK, RESOURCE }
+internal enum class UpdateDownloadKind { APK, RESOURCE, LOCAL }
 internal class UpdateDownloadToken(val serial: Long, val kind: UpdateDownloadKind, val mayUseMetered: Boolean) {
     @Volatile var cancelled = false
         internal set
@@ -28,7 +28,7 @@ internal class UpdateTaskGate(private val elapsed: () -> Long, private val epoch
     }
     @Synchronized fun setNetwork(value: UpdateNetwork) {
         network = value
-        active?.let { if (!network.online || !it.mayUseMetered && !network.unmeteredWifi) it.cancelled = true }
+        active?.let { if (it.kind != UpdateDownloadKind.LOCAL && (!network.online || !it.mayUseMetered && !network.unmeteredWifi)) it.cancelled = true }
     }
     @Synchronized fun settings(automatic: Boolean, metered: Boolean) {
         automaticResources = automatic; automaticMetered = metered
@@ -51,6 +51,7 @@ internal class UpdateTaskGate(private val elapsed: () -> Long, private val epoch
     }
     @Synchronized fun canAutoDownload(): Boolean = foreground && inHall && network.online && automaticResources && (network.unmeteredWifi || automaticMetered) && channelAllowed("resources") && !checking && active == null
     @Synchronized fun beginDownload(kind: UpdateDownloadKind, manual: Boolean, meteredConfirmed: Boolean = false): UpdateDownloadToken? {
+        require(kind != UpdateDownloadKind.LOCAL)
         if (checking || active != null || !foreground || !inHall || !network.online) return null
         if (kind == UpdateDownloadKind.RESOURCE && !channelAllowed("resources") || kind == UpdateDownloadKind.APK && !channelAllowed("apk")) return null
         val mayUseMetered = if (manual) meteredConfirmed else automaticMetered
@@ -59,8 +60,13 @@ internal class UpdateTaskGate(private val elapsed: () -> Long, private val epoch
         automaticTask = !manual
         return UpdateDownloadToken(++serial, kind, mayUseMetered).also { active = it }
     }
+    @Synchronized fun beginLocalChange(): UpdateDownloadToken? {
+        if (checking || active != null || !foreground || !inHall) return null
+        automaticTask = false
+        return UpdateDownloadToken(++serial, UpdateDownloadKind.LOCAL, false).also { active = it }
+    }
     @Synchronized fun cancel(): Boolean { val token = active ?: return false; token.cancelled = true; return true }
-    @Synchronized fun valid(token: UpdateDownloadToken): Boolean = active === token && !token.cancelled && foreground && inHall && network.online && (token.mayUseMetered || network.unmeteredWifi)
+    @Synchronized fun valid(token: UpdateDownloadToken): Boolean = active === token && !token.cancelled && foreground && inHall && (token.kind == UpdateDownloadKind.LOCAL || network.online && (token.mayUseMetered || network.unmeteredWifi))
     @Synchronized fun finish(token: UpdateDownloadToken) { if (active === token) { active = null; automaticTask = false } }
     @Synchronized fun busy(): Boolean = active != null || checking
 }
