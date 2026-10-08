@@ -1,0 +1,42 @@
+{
+  "sources": [
+    {
+      "file": "android/app/build.gradle.kts",
+      "sha256": "5205e06147efa18ecd0b2467dca74928206278e9bb40012d6296160bdc7143f0"
+    },
+    {
+      "file": "android/app/src/androidTest/java/com/xiaoxuhui/gamehub/UpgradeSaveDeviceTest.kt",
+      "sha256": "1163d903583218f1fab0604637bbe267e2b9f76aad36e72c03b81a44f681d401"
+    },
+    {
+      "file": "android/app/src/androidTest/java/com/xiaoxuhui/gamehub/UpgradeFixtureStageTest.kt",
+      "sha256": "30243931154debd40d7f0da8238f8c2f6129c6e1c797d3378b28d061cbb2f4de"
+    },
+    {
+      "file": "scripts/update_upgrade_smoke.sh",
+      "sha256": "72c20a25f892ced424c1567c07cf43a63ae76299c1046106e9cf56c966cff76a"
+    }
+  ],
+  "localArtifacts": [
+    {
+      "name": "v0.2.0-public.apk",
+      "bytes": 2526679,
+      "sha256": "2a7c61881b22af64aae16c06bfa250d958a7d6b7bd30bec9a44fe06b38a161e4"
+    },
+    {
+      "name": "v0.3.0-upgrade-candidate.apk",
+      "bytes": 2621167,
+      "sha256": "5a6b9b612c397f7e4b8d0914a58ab050c2b57e4072556023b9a53e5a71a37a4f"
+    },
+    {
+      "name": "v0.3.1-newer-fixture.apk",
+      "bytes": 2621167,
+      "sha256": "f24d26519f520ffa9713ffeaf4c4a9a507d6b559364d6badbb2da9fe184ecfec"
+    },
+    {
+      "name": "upgrade-release-variant-test-signed.apk",
+      "bytes": 2937507,
+      "sha256": "cf153c9b4d4fad2e7d97237e3426db92e42e19f2d2bffcfbbb1f6aa5552ffd54"
+    }
+  ]
+}

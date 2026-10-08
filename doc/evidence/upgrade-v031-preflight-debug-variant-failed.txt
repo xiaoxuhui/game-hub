@@ -1,0 +1,15 @@
+
+com.xiaoxuhui.gamehub.UpdateFixtureTest:
+Error in newerSameSignerApkPassesPreflightAndProducesSystemInstallerIntent(com.xiaoxuhui.gamehub.UpdateFixtureTest):
+java.lang.NoSuchMethodError: No virtual method verifyArchive$app_debug(Ljava/io/File;Lcom/xiaoxuhui/gamehub/ReleaseApk;JLjava/lang/String;)V in class Lcom/xiaoxuhui/gamehub/ApkUpdateManager; or its super classes (declaration of 'com.xiaoxuhui.gamehub.ApkUpdateManager' appears in /data/app/~~y-zspiVRXCXQiWk6FPVo8g==/com.xiaoxuhui.gamehub-AuYfFUQJ2P8pSs9UP5J14g==/base.apk)
+	at com.xiaoxuhui.gamehub.UpdateFixtureTest.newerSameSignerApkPassesPreflightAndProducesSystemInstallerIntent(UpdateFixtureTest.kt:23)
+
+
+Time: 0.018
+There was 1 failure:
+1) newerSameSignerApkPassesPreflightAndProducesSystemInstallerIntent(com.xiaoxuhui.gamehub.UpdateFixtureTest)
+java.lang.NoSuchMethodError: No virtual method verifyArchive$app_debug(Ljava/io/File;Lcom/xiaoxuhui/gamehub/ReleaseApk;JLjava/lang/String;)V in class Lcom/xiaoxuhui/gamehub/ApkUpdateManager; or its super classes (declaration of 'com.xiaoxuhui.gamehub.ApkUpdateManager' appears in /data/app/~~y-zspiVRXCXQiWk6FPVo8g==/com.xiaoxuhui.gamehub-AuYfFUQJ2P8pSs9UP5J14g==/base.apk)
+	at com.xiaoxuhui.gamehub.UpdateFixtureTest.newerSameSignerApkPassesPreflightAndProducesSystemInstallerIntent(UpdateFixtureTest.kt:23)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

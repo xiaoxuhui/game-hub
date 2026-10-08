@@ -6,6 +6,10 @@ plugins {
 android {
     namespace = "com.xiaoxuhui.gamehub"
     compileSdk = 34
+    // Match Kotlin friend-module names when manually verifying signed release APKs.
+    testBuildType = providers.gradleProperty("gameHubTestBuildType").orElse("debug").get().also {
+        require(it == "debug" || it == "release") { "gameHubTestBuildType must be debug or release" }
+    }
 
     defaultConfig {
         applicationId = "com.xiaoxuhui.gamehub"

@@ -20,7 +20,7 @@
 | state-after | 19724→19781 | 原子ready状态已提交、旧进程未更新内存；重启校验并激活code2，读取完整实际Light入口 |
 | journal-half | 19828→19886 | 第一签名日志seq3/第二seq2；重启恢复seq3，拒绝seq2回退 |
 
-所有场景内置active在恢复开始保持不变（只有state-after后显式打开才激活）。隔离存档哨兵SHA-256均为46c18bce99f54fe9919e4979928787096ffd8327d4cce73c437ba63dd61000f9，未删除或改写。完整marker、恢复输出与结果JSON见m6-process-fixed；首次失败输出见m6-process-first。源码与独立构建文件逐字节一致，摘要见m6-process-source-hashes.json。
+所有场景内置active在恢复开始保持不变（只有state-after后显式打开才激活）。隔离存档哨兵SHA-256均为46c18bce99f54fe9919e4979928787096ffd8327d4cce73c437ba63dd61000f9，未删除或改写。完整marker、恢复输出与结果JSON见m6-process-fixed；首次失败输出见m6-process-first。三份受审源码与独立构建文件逐字节一致，摘要见m6-process-source-hashes.json。
 
 ## 限定
 

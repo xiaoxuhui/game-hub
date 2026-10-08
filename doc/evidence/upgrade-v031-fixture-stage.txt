@@ -1,0 +1,6 @@
+
+com.xiaoxuhui.gamehub.UpgradeFixtureStageTest:.
+
+Time: 0.027
+
+OK (1 test)
