@@ -1,0 +1,10 @@
+10-08 23:40:32.447 11307 11327 I System.out: Dynamic demo actual SAF export: /sdcard/Download/gamehub-dynamic-first-d8e58049-75c8-4075-9fde-f1e2fd9d9a49.json SHA256=ecbc5ad6192ceb659a066d96366509914af24c3f726c450252c1e2d97fa73027
+10-08 23:40:36.301 11307 11327 I System.out: Private dynamic device fixture: /data/data/com.xiaoxuhui.gamehub/files/dynamic-demo-verification-a5091630-6cce-430f-86f1-4649eda6d191
+10-08 23:41:19.734 11531 11550 I System.out: Dynamic demo actual SAF export: /sdcard/Download/gamehub-dynamic-first-b3448a34-0bda-4bf7-adca-4edd7fac496c.json SHA256=51100967b0d672c9ad959cd35afde976720ae133dcf01b82e31f3f67ab8a66aa
+10-08 23:41:26.772 11531 11550 I System.out: Dynamic demo actual SAF export: /sdcard/Download/gamehub-dynamic-second-0ccc8737-ed62-4606-bfd3-b231ef7b2874.json SHA256=51100967b0d672c9ad959cd35afde976720ae133dcf01b82e31f3f67ab8a66aa
+10-08 23:41:32.697 11531 11550 I System.out: Dynamic demo actual touch/keyboard/SAF/remove-reinstall verified; saved-state SHA256=6d248d353422aeb72df9f6af81f174fcaad2c0126c4c10251775822664425090
+10-08 23:41:33.699 11531 11550 I System.out: Private dynamic device fixture: /data/data/com.xiaoxuhui.gamehub/files/dynamic-demo-verification-2c5e844b-23bc-4cde-ac75-833576406678
+10-08 23:42:24.385 11791 11810 I System.out: Dynamic demo actual SAF export: /sdcard/Download/gamehub-dynamic-first-69ef9128-3bac-48da-844b-f45fb460d575.json SHA256=51100967b0d672c9ad959cd35afde976720ae133dcf01b82e31f3f67ab8a66aa
+10-08 23:42:31.597 11791 11810 I System.out: Dynamic demo actual SAF export: /sdcard/Download/gamehub-dynamic-second-e5ef2a4f-ba01-417c-a9f8-c0a62957ec0e.json SHA256=51100967b0d672c9ad959cd35afde976720ae133dcf01b82e31f3f67ab8a66aa
+10-08 23:42:35.721 11791 11810 I System.out: Dynamic demo actual touch/keyboard/SAF/remove-reinstall verified; saved-state SHA256=6d248d353422aeb72df9f6af81f174fcaad2c0126c4c10251775822664425090
+10-08 23:42:40.380 11791 11810 I System.out: Private dynamic device fixture: /data/data/com.xiaoxuhui.gamehub/files/dynamic-demo-verification-9b9e50d1-8ee8-402a-b798-0fc262f8ba44

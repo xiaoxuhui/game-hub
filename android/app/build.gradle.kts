@@ -34,6 +34,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+    // Optional independently produced demo fixture is packaged only in the instrumentation APK.
+    sourceSets.getByName("androidTest").assets.srcDir("build/generated/dynamic-device-assets")
 }
 
 dependencies {

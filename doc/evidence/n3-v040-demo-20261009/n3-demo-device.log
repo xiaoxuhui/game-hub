@@ -1,0 +1,21 @@
+
+com.xiaoxuhui.gamehub.DynamicDemoDeviceTest:
+Error in actualPinnedDemoTouchesKeyboardSafAndResourceRemovalPreserveProgress(com.xiaoxuhui.gamehub.DynamicDemoDeviceTest):
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.DynamicDemoDeviceTest.actualPinnedDemoTouchesKeyboardSafAndResourceRemovalPreserveProgress(DynamicDemoDeviceTest.kt:149)
+
+
+Time: 12.635
+There was 1 failure:
+1) actualPinnedDemoTouchesKeyboardSafAndResourceRemovalPreserveProgress(com.xiaoxuhui.gamehub.DynamicDemoDeviceTest)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.DynamicDemoDeviceTest.actualPinnedDemoTouchesKeyboardSafAndResourceRemovalPreserveProgress(DynamicDemoDeviceTest.kt:149)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

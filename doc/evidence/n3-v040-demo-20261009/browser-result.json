@@ -1,0 +1,15 @@
+{
+  "browser": "151.0.7922.34",
+  "origin": "http://127.0.0.1:18404",
+  "checks": [
+    "Actual pointer mismatch increments one move without matching",
+    "Actual Enter key activates focused card; post-render focus continuity remains N6 work",
+    "Three actual pairs complete one win and disable all matched cards",
+    "Actual browser Blob download and file-input import round-trip the game save",
+    "Invalid actual file import preserves previous state and clears file input",
+    "Fresh document restores the actual completed localStorage save"
+  ],
+  "pageErrors": [],
+  "saveSha256": "ecbc5ad6192ceb659a066d96366509914af24c3f726c450252c1e2d97fa73027",
+  "boundary": "Fresh standalone Chromium; Android production SAF is verified separately. Keyboard focus continuity is not claimed."
+}
