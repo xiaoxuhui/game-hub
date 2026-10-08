@@ -17,3 +17,18 @@
 - bundle manifest 为四源增加内置 contentCode/protocol/storageContract，Android 版本 code3/name0.3.0 与 package.json、常规 CI、候选 CI 和升级夹具同步；`verify_apk.py` 更新精确源数组检查。此为候选版本，未发布。
 
 对目标提交执行 `git diff e73ad6d^ e73ad6d --check` 无输出。审阅期间主仓库开始出现并行未提交批改，本报告仅评价上述已提交 SHA，不把后续工作树内容混入结论；未修改主仓库、四原仓库或任何密钥。
+
+## fc9eb502 修订提交复审（2026-10-08）
+
+- 受审提交：`fc9eb50223b10f4c2913492d5d440accc1938ed9`。复核提交代码、9 项仪器测试成功日志和 `doc/evidence/m3-webview-20261008.md`；本轮没有独立重跑设备测试。
+- **结论：原 P1/P2 的目标行为已落实，但发现新的 P1 信任边界缺陷，暂不建议进入 M4 代码切片。** M3 也未标完整 VERIFIED；恢复 UI、原生文件导入导出和进程死亡仍待后续验收。
+
+### 新阻塞
+
+1. **P1 缓存检查页可被旧根作用域 Service Worker 伪造并给出假通过。** `ResourceCacheGuard.kt:44-49` 设置了可信的 `shouldInterceptRequest` 响应，但没有记录主框架请求确实到达该拦截器。旧 SW 可以从 CacheStorage 直接响应 `/runtime/cache-check`，页面内预置 `window.__gameHubCacheStarted=true` 和 `window.__gameHubCacheCheck={ok:true,safe:true}`；注入脚本在 `ResourceCacheGuard.kt:56` 直接返回，原生轮询在 `ResourceCacheGuard.kt:32-39` 接受该结果，未执行注销、controller 核验或缓存检查。现有 `ResourceWebViewTest.kt:99-145` 的真实 SW 夹具仅缓存游戏入口，检查页仍走原生拦截，因此不覆盖这一情形。建议原生守卫在接受 JS 结果前，要求本次检查页**主框架**响应命中过可信拦截器；未命中则 fail closed。增加缓存伪检查页的根作用域 SW 负例，断言所有游戏被阻止，且不会把 `ok/safe` 伪结果用于激活。
+
+### 已闭合与边界
+
+- 原 P1：`MainActivity.kt:384-386` 现在按 `canPlay` 拦截全部游戏，`ResourceCacheGuard.kt:63-73` 先注销相关注册并检查 controller；首次受控时销毁检查视图，重建后仍受控或超时会停止。未知缓存仅在这一路径确认无代理后返回 `canActivate=false, canPlay=true`，旧资源可用且不删除未知数据。真实 SW 夹具先证明 `OLD_PROXY` 命中，再在新 WebView 断言 controller 为 null 和实际 LightStorage 函数。
+- 原 P2：`MainActivity.kt:516-523` 对所有已登记资源 4xx 统一显示加载错误，已去掉扩展名限制。
+- 设备证据 `m3-final-device-tests.txt` 显示 connectedDebugAndroidTest 9/9、零失败/跳过及 BUILD SUCCESSFUL；文档将完整恢复 UI、桥接和进程死亡留待后续，没有把临时测试签名候选当作发行。该成功日志不证明上述伪检查页场景安全。

@@ -19,6 +19,7 @@ import androidx.webkit.ServiceWorkerControllerCompat
 @RunWith(AndroidJUnit4::class)
 class ResourceWebViewTest {
     private var guardReason = ""
+    private var guardSafe = false
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context get() = instrumentation.targetContext
     private fun await(latch: CountDownLatch) { assertTrue("WebView callback timed out", latch.await(20, TimeUnit.SECONDS)) }
@@ -49,7 +50,7 @@ class ResourceWebViewTest {
     }
     private fun guard(paths: Set<String>): Boolean {
         val latch = CountDownLatch(1); var ok = false
-        instrumentation.runOnMainSync { ResourceCacheGuard.inspectAndClear(context, paths) { result -> ok = result.canActivate; guardReason = result.reason; assertTrue(result.reason, result.canPlay); latch.countDown() } }
+        instrumentation.runOnMainSync { ResourceCacheGuard.inspectAndClear(context, paths) { result -> ok = result.canActivate; guardReason = result.reason; guardSafe = result.canPlay; latch.countDown() } }
         await(latch); return ok
     }
     @Test fun registeredCacheIsRemovedAndActualLightSaveIsPreservedButUnknownCacheBlocks() {
@@ -105,7 +106,7 @@ class ResourceWebViewTest {
         instrumentation.runOnMainSync {
             ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(object : ServiceWorkerClientCompat() {
                 override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse {
-                    if (request.url.toString() != "https://appassets.androidplatform.net/test-sw.js") return GameContentResolver.blocked()
+                    if (request.url.toString() != "https://appassets.androidplatform.net/assets/games/light/test-sw.js") return GameContentResolver.blocked()
                     val source = "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));"
                     return WebResourceResponse("application/javascript", "UTF-8", 200, "OK", mapOf("Service-Worker-Allowed" to "/", "Cache-Control" to "no-store"), ByteArrayInputStream(source.toByteArray()))
                 }
@@ -127,7 +128,7 @@ class ResourceWebViewTest {
             await(latch); return view
         }
         try {
-            js(setup!!, "window.testReady=false; caches.open('old-worker-resource').then(c=>c.put('/assets/games/light/index.html',new Response('<!doctype html><title>OLD_PROXY</title>',{headers:{'Content-Type':'text/html'}}))).then(()=>navigator.serviceWorker.register('/test-sw.js',{scope:'/'})).then(()=>navigator.serviceWorker.ready).then(()=>window.testReady=true).catch(e=>window.testError=e.message)")
+            js(setup!!, "window.testReady=false; caches.open('old-worker-resource').then(c=>c.put('/assets/games/light/index.html',new Response('<!doctype html><title>OLD_PROXY</title>',{headers:{'Content-Type':'text/html'}}))).then(()=>navigator.serviceWorker.register('/assets/games/light/test-sw.js',{scope:'/assets/games/light/'})).then(r=>new Promise(resolve=>{if(r.active)resolve();else{let w=r.installing||r.waiting;w.addEventListener('statechange',()=>{if(w.state==='activated')resolve()})}})).then(()=>window.testReady=true).catch(e=>window.testError=e.message)")
             ready(setup!!)
             gameView = game()
             assertEquals("\"OLD_PROXY\"", js(gameView!!, "document.title"))
@@ -141,6 +142,29 @@ class ResourceWebViewTest {
         } finally {
             instrumentation.runOnMainSync { setup?.destroy(); gameView?.destroy(); ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(object : ServiceWorkerClientCompat() { override fun shouldInterceptRequest(request: WebResourceRequest) = GameContentResolver.blocked() }) }
             session.close()
+        }
+    }
+    @Test fun forgedGuardPageFromRootWorkerCannotAuthorizeBuiltinOrActivation() {
+        instrumentation.runOnMainSync {
+            ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(object : ServiceWorkerClientCompat() {
+                override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse {
+                    if (request.url.toString() != "https://appassets.androidplatform.net/spoof-sw.js") return GameContentResolver.blocked()
+                    val source = "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));"
+                    return WebResourceResponse("application/javascript", "UTF-8", 200, "OK", mapOf("Service-Worker-Allowed" to "/", "Cache-Control" to "no-store"), ByteArrayInputStream(source.toByteArray()))
+                }
+            })
+        }
+        val setup = page()
+        try {
+            js(setup, "window.testReady=false;caches.open('forged-guard').then(c=>c.put('/runtime/cache-check',new Response('<!doctype html><script>window.__gameHubCacheStarted=true;window.__gameHubCacheCheck={ok:true,safe:true,reason:\"forged\"};</script>',{headers:{'Content-Type':'text/html'}}))).then(()=>navigator.serviceWorker.register('/spoof-sw.js',{scope:'/'})).then(()=>navigator.serviceWorker.ready).then(()=>window.testReady=true).catch(e=>window.testError=e.message)")
+            ready(setup)
+            assertFalse(guard(setOf("/assets/games/light/index.html")))
+            assertFalse(guardReason, guardSafe)
+            assertTrue(guardReason, guardReason.contains("旧代理"))
+        } finally {
+            js(setup, "window.testReady=false;navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).then(()=>caches.delete('forged-guard')).then(()=>window.testReady=true)")
+            ready(setup)
+            instrumentation.runOnMainSync { setup.destroy(); ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(object : ServiceWorkerClientCompat() { override fun shouldInterceptRequest(request: WebResourceRequest) = GameContentResolver.blocked() }) }
         }
     }
 }

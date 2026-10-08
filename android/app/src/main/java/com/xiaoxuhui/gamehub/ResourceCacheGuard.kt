@@ -22,6 +22,7 @@ internal object ResourceCacheGuard {
     @SuppressLint("SetJavaScriptEnabled")
     private fun inspect(context: Context, registeredPaths: Set<String>, mayRecreate: Boolean, result: (Assessment) -> Unit) {
         val handler = Handler(Looper.getMainLooper()); val view = WebView(context)
+        val trustedMainResponse = java.util.concurrent.atomic.AtomicBoolean(false)
         var finished = false; val deadline = android.os.SystemClock.elapsedRealtime() + 10000
         fun finish(ok: Boolean, safe: Boolean, message: String) { if (finished) return; finished = true; view.stopLoading(); view.destroy(); result(Assessment(ok, safe, message)) }
         val paths = JSONArray(registeredPaths.sorted().map { "https://appassets.androidplatform.net$it" }).toString()
@@ -44,9 +45,15 @@ internal object ResourceCacheGuard {
         view.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(webView: WebView, request: WebResourceRequest): WebResourceResponse {
                 if (request.url.toString() != "https://appassets.androidplatform.net/runtime/cache-check") return GameContentResolver.blocked()
+                if (!request.isForMainFrame) return GameContentResolver.blocked()
+                trustedMainResponse.set(true)
                 return WebResourceResponse("text/html", "UTF-8", 200, "OK", mapOf("Cache-Control" to "no-store"), ByteArrayInputStream("<!doctype html><meta charset=utf-8><title>缓存检查</title>".toByteArray()))
             }
-            override fun onPageFinished(webView: WebView, url: String) { if (!finished) view.evaluateJavascript(script) { poll() } }
+            override fun onPageFinished(webView: WebView, url: String) {
+                if (finished) return
+                if (!trustedMainResponse.get()) { finish(false, false, "检查页面受到旧代理控制，未启动游戏；存档和缓存保留"); return }
+                view.evaluateJavascript(script) { poll() }
+            }
         }
         handler.postDelayed({ if (!finished) finish(false, false, "缓存检查超时，未启动游戏；资源和存档保留") }, 10000)
         view.loadUrl("https://appassets.androidplatform.net/runtime/cache-check")
