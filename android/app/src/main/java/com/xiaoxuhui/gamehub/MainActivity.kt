@@ -205,7 +205,7 @@ class MainActivity : ComponentActivity() {
 
     private fun buildLobby(): ScrollView {
         val scroll = ScrollView(this).apply { isFillViewport = true; isVerticalScrollBarEnabled = false }
-        val cardMinDp = 176 + ((resources.configuration.fontScale - 1f).coerceAtLeast(0f) * 72).toInt()
+        val cardMinDp = 192 + ((resources.configuration.fontScale - 1f).coerceAtLeast(0f) * 160).toInt()
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val side = if (resources.configuration.screenWidthDp >= 600) dp(48) else dp(14)
@@ -217,7 +217,7 @@ class MainActivity : ComponentActivity() {
         })
         val headerRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         column.addView(headerRow, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
-        headerRow.addView(label("合集 v${installedVersionName()}  ·  ${bundleCommit.take(10)}", 11f, MUTED, false).apply {
+        headerRow.addView(label("合集 v${installedVersionName()}", 11f, MUTED, false).apply {
             setPadding(dp(6), 0, 0, 0)
         }, LinearLayout.LayoutParams(0, -2, 1f))
         updateLink = label("检查更新", 13f, 0xFF8AB7FF.toInt(), true).apply {
@@ -271,7 +271,6 @@ class MainActivity : ComponentActivity() {
                 card.addView(label("本地资源核验中", 9.5f, MUTED, false).apply {
                     gameVersionLabels[game.id] = this
                     gravity = Gravity.CENTER
-                    maxLines = 2
                     setPadding(0, dp(4), 0, 0)
                 })
             }
@@ -304,8 +303,8 @@ class MainActivity : ComponentActivity() {
             val local = state.localResources[game.id]
             val actual = when {
                 local == null -> if (state.localReadError != null || state.localLoaded) "本地状态不可用 · 待恢复" else "本地资源核验中"
-                local.selection.active == "builtin" -> "v${game.version} · ${game.revision.take(6)} · 内置"
-                local.active != null -> "v${local.active.version} · ${local.active.sourceRevision.take(6)} · 已下载"
+                local.selection.active == "builtin" -> "v${game.version} · 内置"
+                local.active != null -> "v${local.active.version} · 已下载"
                 else -> "资源校验失败 · 待恢复"
             }
             val remote = state.catalogGames.singleOrNull { it.id == game.id }

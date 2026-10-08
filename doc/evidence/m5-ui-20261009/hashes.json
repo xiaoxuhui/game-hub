@@ -1,0 +1,107 @@
+[
+  {
+    "path": "android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt",
+    "isolatedSha256": "b627c063f553c950d5c2bb3fd2e053c6fc79948d778f17718fd0afc0e53fa285",
+    "mainSha256": "b627c063f553c950d5c2bb3fd2e053c6fc79948d778f17718fd0afc0e53fa285"
+  },
+  {
+    "path": "android/app/src/androidTest/java/com/xiaoxuhui/gamehub/LobbyAccessibilityDeviceTest.kt",
+    "isolatedSha256": "78ef887fbccd7dd216fbb236b7eccc1a5af907306807e63a6513fe7a29fe434d",
+    "mainSha256": "78ef887fbccd7dd216fbb236b7eccc1a5af907306807e63a6513fe7a29fe434d"
+  },
+  {
+    "path": "m5-large-final-20261009-details-cancel.png",
+    "bytes": 92196,
+    "sha256": "529d8250f97d1446d1e946400a64c1e7833ced1f1789741e2c58ed80f5a59b60"
+  },
+  {
+    "path": "m5-large-final-20261009-lobby-bottom.png",
+    "bytes": 133684,
+    "sha256": "f5108a50a3a8ce4787a2a65cbcccf5d0f90db11ece91bcd288da5a7822102ae1"
+  },
+  {
+    "path": "m5-large-final-20261009-lobby-top.png",
+    "bytes": 132867,
+    "sha256": "7f4466113c5bcd718a1f9d6ff94f6f476ba1c4caf40b4b60349f744b7361a386"
+  },
+  {
+    "path": "m5-large-frame-20261009-lobby-bottom.png",
+    "bytes": 170690,
+    "sha256": "382a03d5d721574d44c16a181c81fa2e2e79126e049bdfb218177ca96e69c479"
+  },
+  {
+    "path": "m5-phone-final-20261009-details-cancel.png",
+    "bytes": 200540,
+    "sha256": "d12c744717d747ba7e91d04c274142ba01c57be8bc0e24edb502329d238ed95b"
+  },
+  {
+    "path": "m5-phone-final-20261009-lobby-bottom.png",
+    "bytes": 256120,
+    "sha256": "160e81f1cc57763dac640b0bee0b7039c8446b9d872edddfac8cbb8fe5b14a8c"
+  },
+  {
+    "path": "m5-phone-final-20261009-lobby-top.png",
+    "bytes": 255745,
+    "sha256": "3b74a3ed007f3c2fe3b4eebafcf9a2f6b0ccd64090cf66c18de0a1681cd67df4"
+  },
+  {
+    "path": "m5-tablet-final-20261009-details-cancel.png",
+    "bytes": 135829,
+    "sha256": "7b27fe6bbc515ed5701b2438ed0e0ddc5094786be333ef8b84a0ec28864d5022"
+  },
+  {
+    "path": "m5-tablet-final-20261009-lobby-bottom.png",
+    "bytes": 109408,
+    "sha256": "2c4ba54d8cc62517dd3f1438db520fd0a8c3b22593bbd1b0521d66262dedd9da"
+  },
+  {
+    "path": "m5-tablet-final-20261009-lobby-top.png",
+    "bytes": 109172,
+    "sha256": "f623b1d3ee5a33770aaeca4164d41d50917940a4ae8c214a8ebb269d4ba7315b"
+  },
+  {
+    "path": "m5-ui-large-final.txt",
+    "bytes": 235,
+    "sha256": "885eb0792cf4e5120f3257e0bea2e28943468b031d01ba6f51b6b493fac173cf"
+  },
+  {
+    "path": "m5-ui-large-frame.txt",
+    "bytes": 235,
+    "sha256": "a9169f3193104c40099663e8ce4d6dae2d4f23ef3bc7bb4ab5d1f376ad8ecc14"
+  },
+  {
+    "path": "m5-ui-phone-final.txt",
+    "bytes": 235,
+    "sha256": "b71103f12ce9cdfba8ad9629a19c6115ec44e171126b76a1f10ef9fe4a4bcff4"
+  },
+  {
+    "path": "m5-ui-phone-focus.txt",
+    "bytes": 235,
+    "sha256": "813c573465a7226d221a48b25e086328362bada51a45bb87cb5122e47baad636"
+  },
+  {
+    "path": "m5-ui-phone-frame.txt",
+    "bytes": 235,
+    "sha256": "3c8604fc9bc44e75a400bb33d28fc6c65c190d51b5fd36510a4343dac67e8ecb"
+  },
+  {
+    "path": "m5-ui-phone.txt",
+    "bytes": 1215,
+    "sha256": "1b52a5c07f6d32e098ac891809e72c42e17c45e9f40f6cb60639c6bbc7d84cc6"
+  },
+  {
+    "path": "m5-ui-production-compile.txt",
+    "bytes": 7916,
+    "sha256": "b82af361280e826a605d1ab3cd4b347ad5bc5e2070451375b35e5629417d6d07"
+  },
+  {
+    "path": "m5-ui-tablet-final.txt",
+    "bytes": 235,
+    "sha256": "af8fab99ae96cf3d2f4a94d211f3f776dffa7de6913004a8006881682b603ec3"
+  },
+  {
+    "path": "m5-ui-tablet-frame.txt",
+    "bytes": 235,
+    "sha256": "7f7e428afdf291a8cfc2e72dd9206d5a49de6a126842f670a1fccdbe5800f3fd"
+  }
+]

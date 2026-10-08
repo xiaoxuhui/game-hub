@@ -1,0 +1,24 @@
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name color
+s_glBindAttribLocation: bind attrib 2 name localCoord
+com.xiaoxuhui.gamehub.LobbyAccessibilityDeviceTest:
+Error in realLobbyAndUpdateDetailsRemainReachableAndCancellationActionReachesTaskGate(com.xiaoxuhui.gamehub.LobbyAccessibilityDeviceTest):
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.LobbyAccessibilityDeviceTest.realLobbyAndUpdateDetailsRemainReachableAndCancellationActionReachesTaskGate(LobbyAccessibilityDeviceTest.kt:97)
+
+
+Time: 1.97
+There was 1 failure:
+1) realLobbyAndUpdateDetailsRemainReachableAndCancellationActionReachesTaskGate(com.xiaoxuhui.gamehub.LobbyAccessibilityDeviceTest)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.LobbyAccessibilityDeviceTest.realLobbyAndUpdateDetailsRemainReachableAndCancellationActionReachesTaskGate(LobbyAccessibilityDeviceTest.kt:97)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
