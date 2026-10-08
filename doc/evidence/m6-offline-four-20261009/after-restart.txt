@@ -1,0 +1,6 @@
+
+com.xiaoxuhui.gamehub.ResourceOfflineRestartDeviceTest:.
+
+Time: 21.274
+
+OK (1 test)

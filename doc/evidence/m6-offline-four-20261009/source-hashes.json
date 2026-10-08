@@ -1,0 +1,12 @@
+[
+  {
+    "isolatedSha256": "0b875b2f49be3f2d5cb85551d2b177c59bc491f99a6cc346a0f79ddceb75f013",
+    "mainSha256": "0b875b2f49be3f2d5cb85551d2b177c59bc491f99a6cc346a0f79ddceb75f013",
+    "path": "android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceOfflineRestartDeviceTest.kt"
+  },
+  {
+    "isolatedSha256": "a77eb839ce3252d38aca1015b2217e73c98e119cac9cbd62d2bfa25415089baa",
+    "mainSha256": "a77eb839ce3252d38aca1015b2217e73c98e119cac9cbd62d2bfa25415089baa",
+    "path": "scripts/resource_offline_restart_smoke.ps1"
+  }
+]
