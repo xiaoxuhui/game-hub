@@ -114,9 +114,14 @@ class DownloadedDocumentBridgeTest {
                     val original = export(scenario, actions.first, "$prefix-before.json")
                     val incoming = JSONObject(original.toString()).apply {
                         when (id) {
-                            "conway" -> put("generation", 1234)
+                            "conway" -> put("generation", if (original.getInt("generation") == 1234) 1235 else 1234)
+                            "eml" -> {
+                                val first = getJSONArray("valueOrder").getString(0)
+                                put("selectedValueId", if (original.isNull("selectedValueId")) first else JSONObject.NULL)
+                                put("inputXId", if (original.isNull("inputXId")) first else JSONObject.NULL)
+                            }
                             "light" -> { put("id", "qa-downloaded-${UUID.randomUUID()}"); put("title", "下载资源文件桥验收") }
-                            "turing" -> put("input", "10100110")
+                            "turing" -> put("input", if (original.getString("input") == "10100110") "11001001" else "10100110")
                         }
                     }
                     val importName = "$prefix-import.json"
@@ -140,21 +145,47 @@ class DownloadedDocumentBridgeTest {
                         assertTrue(document.performAction(AccessibilityNodeInfo.ACTION_CLICK))
                         val check = when (id) {
                             "conway" -> "document.getElementById('toastMessage').textContent.includes('导入成功')"
-                            "eml" -> "document.getElementById('notice').textContent.includes('导入成功')"
+                            "eml" -> {
+                                val selected = incoming.optString("selectedValueId", "")
+                                val ui = if (incoming.isNull("selectedValueId")) "document.querySelectorAll('.value-button[aria-pressed=\"true\"]').length === 0"
+                                    else "document.querySelector('.value-button[aria-pressed=\"true\"]')?.parentElement.dataset.valueId === ${JSONObject.quote(selected)}"
+                                "document.getElementById('notice').textContent.includes('导入成功') && ($ui)"
+                            }
                             "light" -> "document.getElementById('level-title').textContent === '下载资源文件桥验收'"
-                            else -> "document.getElementById('input').value === '10100110'"
+                            else -> "document.getElementById('input').value === ${JSONObject.quote(incoming.getString("input"))}"
                         }
                         awaitJs(scenario, check)
                         val restored = export(scenario, actions.first, "$prefix-after.json")
                         when (id) {
-                            "conway" -> { assertEquals(1234, restored.getInt("generation")); assertEquals(original.getJSONArray("alive").toString(), restored.getJSONArray("alive").toString()) }
-                            "eml" -> assertEquals(original.toString(), restored.toString())
+                            "conway" -> {
+                                assertNotEquals(original.getInt("generation"), incoming.getInt("generation"))
+                                assertEquals(incoming.getInt("generation"), restored.getInt("generation"))
+                                assertEquals(original.getJSONArray("alive").toString(), restored.getJSONArray("alive").toString())
+                            }
+                            "eml" -> {
+                                for (field in listOf("selectedValueId", "inputXId")) {
+                                    assertNotEquals("Import must change $field", original.get(field), incoming.get(field))
+                                    assertEquals(incoming.get(field), restored.get(field))
+                                    val expected = if (incoming.isNull(field)) "null" else JSONObject.quote(incoming.getString(field))
+                                    assertEquals("true", js(scenario, "const r=EMLPersistence.loadFromCache(localStorage);return r.ok && r.state.$field === $expected"))
+                                }
+                            }
                             "light" -> { assertEquals(incoming.getString("id"), restored.getString("id")); assertEquals(incoming.getString("title"), restored.getString("title")) }
-                            "turing" -> assertEquals("10100110", restored.getString("input"))
+                            "turing" -> {
+                                assertNotEquals(original.getString("input"), incoming.getString("input"))
+                                assertEquals(incoming.getString("input"), restored.getString("input"))
+                            }
                         }
                         val bytes = restored.toString().toByteArray(Charsets.UTF_8)
                         System.out.println("Downloaded resource $id code2 actual SAF import/export: ${bytes.size} bytes, SHA256 ${ResourcePolicy.sha256(bytes)}")
-                    } finally { resolver.delete(uri, null, null) }
+                    } finally {
+                        resolver.delete(uri, null, null)
+                        require(Regex("gamehub-downloaded-(conway|eml|light|turing)-[a-f0-9-]{36}").matches(prefix))
+                        // Exact UUID names created by this test; never enumerate or remove user downloads.
+                        ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
+                            "rm -f /sdcard/Download/$prefix-before.json /sdcard/Download/$prefix-after.json"))
+                            .use { assertTrue(it.bufferedReader().readText().isBlank()) }
+                    }
                 }
                 assertFalse(fixture.store.hasSessions())
             }

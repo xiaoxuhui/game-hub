@@ -1,0 +1,4 @@
+10-08 21:04:46.767  7703  7723 I System.out: Downloaded resource conway code2 actual SAF import/export: 5167 bytes, SHA256 fa130fcf1563d8d63b4e9ce10e542c541ba5440f8b4792ca4f7bbc1998b14bfe
+10-08 21:05:00.264  7703  7723 I System.out: Downloaded resource eml code2 actual SAF import/export: 409 bytes, SHA256 563cd92913d61994e3d53499241b4441440efeef7dd77fcb92e0e9c4fdf58701
+10-08 21:05:12.669  7703  7723 I System.out: Downloaded resource light code2 actual SAF import/export: 454 bytes, SHA256 ba0fe6a0812f6956b8dbb1575dd248d551a2eb6db927551512a469e84fa6988f
+10-08 21:05:26.973  7703  7723 I System.out: Downloaded resource turing code2 actual SAF import/export: 311 bytes, SHA256 1a28f6797a19878a0a2cdbc89aa1ba1caa03169c3822846c33f03d34d2e26b22

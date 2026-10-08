@@ -1,0 +1,5 @@
+{
+  "isolatedSha256": "2a26ebb09f509bf0e5861461cd31b129a2e4bc3874b58c28116b5749c56bfbf9",
+  "mainSha256": "2a26ebb09f509bf0e5861461cd31b129a2e4bc3874b58c28116b5749c56bfbf9",
+  "path": "android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DownloadedDocumentBridgeTest.kt"
+}

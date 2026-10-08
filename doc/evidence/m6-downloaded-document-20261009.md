@@ -26,4 +26,16 @@
 3. 第二次文件名TextView ACTION_CLICK返回false；DocumentsUI名称节点本身不可点击。改为向上寻找可点击的真实文档行，再执行CLICK，没有把返回false忽略。
 4. 第三次完整四游戏通过，未改生产功能以适应测试。最终日志/源码哈希与失败记录一并归档。
 
-同提交补归档完整升级CI审阅、实际成功任务37842381018（63b9c1d，步骤全绿），普通CI37842157028亦成功。该CI使用调试证书/code3→4和私有文件标记，不代替先前发行证书v02→v03真实四存档证据。真机文件选择器、正式在线签名资源及最终clean SHA发行候选仍属后续，未测不标完成。提交后独立审阅再进入下一切片。
+同提交补归档完整升级CI审阅、实际成功任务37842381018（63b9c1d，步骤全绿），普通CI37842157028亦成功。该CI使用调试证书/code3→4和私有文件标记，不代替先前发行证书v02→v03真实四存档证据。真机文件选择器、正式在线签名资源及最终clean SHA发行候选仍属后续，未测不标完成。提交后独立审阅再进入下一切片。首审发现EML原样导入不能证明恢复，见下文；此前OK结果不表示EML差异状态已验证。
+
+## 提交后独立首审与批改
+
+受审提交7aa34ce；独立首审P1：EML原样导入并再次导出相等，可能在没有恢复状态时误通过。初版四桥结果中EML仅证明成功路径提示和JSON重复输出，未证明不同状态恢复，首审未放行后续切片。
+
+批改构造有效且与首次不同的 selectedValueId 和 inputXId（null与valueOrder[0]之间切换），导入后实际页面.value-button的aria-pressed选中态必须匹配，真实EMLPersistence缓存字段和再导出字段必须匹配，且与首次字段不同。Conway generation和Turing input同样保证重复执行时与首次值不同，避免测试存档遗留导致弱断言。Light每次唯一UUID。测试清理限定自身UUID前缀的before/after文件和自产MediaStore导入URI，禁止枚举删除其他Downloads。
+
+EML第一轮批改（仍固定Turing目标值）实际四游戏重跑通过，62.157秒；最终增加Conway/Turing差异断言后另外重跑，结果待下文归档。初版instrument副本因新编译已被覆盖，原2287d2da仪器摘要只是当时记录，当前新副本摘要另列；不能以当前副本冒称可复算旧仪器字节。
+
+最终批改版实际四游戏 `OK (1 test)`，57.091秒（final-device.txt）。EML每个selectedValueId/inputXId均有原值与输入值不相等、实际页面选中态、持久缓存字段及再导出字段断言；Conway/Turing也与原值明确不同。新仪器副本SHA-256 `523eebf2cefa45dcc5a21b018192aa1db217c6fd3bf2083cc221271dff3e4afb`。最终四条规范化JSON结果见final-outcomes.txt；此次EML两次翻转后回到原始初始选择状态，所以最终摘要可以与最初相同，不代表未执行改变。
+
+四原仓库用GIT_OPTIONAL_LOCKS=0及`status --porcelain=v1 --untracked-files=all`只读重查，与20261008快照精确相同。初次重查未指定all，Git把src/tests未跟踪目录折叠成一行导致文本比较失败；随后完整枚举确认不是原仓库变化。记录m6-original-source-state-20261009.txt。批改提交后需独立复审闭环。
