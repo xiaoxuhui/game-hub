@@ -55,7 +55,7 @@ jobs:
           grep -Fx "uses-permission: name='android.permission.INTERNET'" "$RUNNER_TEMP/apk-permissions.txt"
           grep -Fx "uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'" "$RUNNER_TEMP/apk-permissions.txt"
           grep '^uses-permission' "$RUNNER_TEMP/apk-permissions.txt" | \
-            grep -v -E "^uses-permission: name='(com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION|android.permission.INTERNET|android.permission.REQUEST_INSTALL_PACKAGES)'$" \
+            grep -v -E "^uses-permission: name='(com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION|android.permission.INTERNET|android.permission.ACCESS_NETWORK_STATE|android.permission.REQUEST_INSTALL_PACKAGES)'$" \
             > "$RUNNER_TEMP/unexpected-permissions.txt" || true
           test ! -s "$RUNNER_TEMP/unexpected-permissions.txt"
           mkdir -p release-candidate

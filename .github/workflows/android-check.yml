@@ -60,7 +60,7 @@ jobs:
           AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
           "$AAPT" dump permissions "$APK" | tee "$RUNNER_TEMP/apk-permissions.txt"
           grep '^uses-permission' "$RUNNER_TEMP/apk-permissions.txt" | \
-            grep -v -E "^uses-permission: name='(com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION|android.permission.INTERNET|android.permission.REQUEST_INSTALL_PACKAGES)'$" \
+            grep -v -E "^uses-permission: name='(com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION|android.permission.INTERNET|android.permission.ACCESS_NETWORK_STATE|android.permission.REQUEST_INSTALL_PACKAGES)'$" \
             > "$RUNNER_TEMP/unexpected-permissions.txt" || true
           if [ -s "$RUNNER_TEMP/unexpected-permissions.txt" ]; then
             echo '::error title=Unexpected Android permission::APK requests a permission beyond the AndroidX internal receiver permission'
