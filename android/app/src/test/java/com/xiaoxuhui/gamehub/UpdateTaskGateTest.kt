@@ -4,6 +4,19 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateTaskGateTest {
+    @Test fun externalResultPendingRevokesDownloadUntilCallbackReleasesGate() {
+        val f = Fixture()
+        val active = f.gate.beginDownload(UpdateDownloadKind.RESOURCE, false)!!
+        f.gate.setPresence(true, true, true)
+        assertFalse(f.gate.valid(active)); f.gate.finish(active)
+        assertFalse(f.gate.canAutoDownload())
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.RESOURCE, false))
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.RESOURCE, true, true))
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.APK, true, true))
+        f.gate.setPresence(true, true, false)
+        assertTrue(f.gate.canAutoDownload())
+        assertNotNull(f.gate.beginDownload(UpdateDownloadKind.RESOURCE, false))
+    }
     private class Fixture {
         var elapsed = 0L; var epoch = 100000L
         val saved = mutableMapOf<String, Long>()

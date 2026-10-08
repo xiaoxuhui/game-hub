@@ -72,6 +72,7 @@ class MainActivity : ComponentActivity() {
     private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         filePathCallback?.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data))
         filePathCallback = null
+        refreshUpdatePresence()
     }
     private val saveLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = if (result.resultCode == Activity.RESULT_OK) result.data?.data else null
@@ -86,6 +87,7 @@ class MainActivity : ComponentActivity() {
             }.onSuccess { toast("已保存 ${export.name}") }
                 .onFailure { toast("保存失败：${it.message ?: "未知错误"}") }
         }
+        refreshUpdatePresence()
     }
     private val installSourcesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val apk = pendingInstallApk
@@ -98,6 +100,7 @@ class MainActivity : ComponentActivity() {
             updateLink.text = "检查更新"
             toast("未授权安装，更新已取消")
         }
+        refreshUpdatePresence()
     }
     private val installerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         discardInstallFile(pendingInstallApk)
@@ -105,6 +108,7 @@ class MainActivity : ComponentActivity() {
         updateLink.isEnabled = true
         updateLink.text = "检查更新"
         if (result.resultCode != Activity.RESULT_OK) toast("安装未完成，下载缓存已清理")
+        refreshUpdatePresence()
     }
     private val accents = mapOf(
         "conway" to 0xFF6EE7B7.toInt(),
@@ -154,7 +158,7 @@ class MainActivity : ComponentActivity() {
         activityStarted = true
         if (::updateSummary.isInitialized) {
             updates.subscribe(updateListener)
-            updates.presence(true, currentGame == null, pendingInstallApk == null && filePathCallback == null && pendingExport == null)
+            refreshUpdatePresence()
         }
     }
 
@@ -167,6 +171,17 @@ class MainActivity : ComponentActivity() {
             if (!isChangingConfigurations) updates.presence(false, currentGame == null, false)
         }
         super.onStop()
+    }
+
+    private fun refreshUpdatePresence() {
+        if (::updateSummary.isInitialized) updates.presence(activityStarted, currentGame == null,
+            pendingInstallApk == null && filePathCallback == null && pendingExport == null)
+    }
+
+    private fun trackConfirmation(dialog: AlertDialog): AlertDialog {
+        updateDialogs.add(dialog)
+        dialog.setOnDismissListener { updateDialogs.remove(dialog) }
+        return dialog.apply { show() }
     }
 
     private fun loadBundleManifest() {
@@ -335,10 +350,12 @@ class MainActivity : ComponentActivity() {
         val apk = state.readyApk?.takeIf { it.isFile }
         if (apk != null) detailButton(column, "安装已验证的大厅 APK", !state.busy && pendingInstallApk == null) {
             dialog.dismiss()
-            AlertDialog.Builder(this).setTitle("安装大厅更新")
+            trackConfirmation(AlertDialog.Builder(this).setTitle("安装大厅更新")
                 .setMessage("安装包的摘要、包名、版本及签名已验证。继续将打开 Android 系统安装界面。")
-                .setPositiveButton("继续安装") { _, _ -> requestSystemInstall(apk) }
-                .setNegativeButton("稍后", null).show()
+                .setPositiveButton("继续安装") { _, _ ->
+                    if (activityStarted && !isDestroyed && updates.snapshot().readyApk == apk && apk.isFile) requestSystemInstall(apk)
+                }
+                .setNegativeButton("稍后", null).create())
         } else state.apk?.let { release ->
             detailButton(column, "下载大厅 v${release.version}（${release.size / 1024} KiB）", !state.busy) {
                 confirmDownload { allowed -> if (!updates.downloadApk(allowed)) toast("下载未开始，请检查网络或等待当前任务结束") }
@@ -355,24 +372,30 @@ class MainActivity : ComponentActivity() {
         }
         column.addView(CheckBox(this).apply {
             text = "自动更新子游戏（默认仅非计费 Wi-Fi）"; setTextColor(Color.WHITE); isChecked = state.automatic
+            isEnabled = !state.settingsSaving
             setOnCheckedChangeListener { _, checked -> if (!updates.settings(checked, state.metered)) toast("设置未保存，请重试") }
         })
         column.addView(CheckBox(this).apply {
             text = "允许计费网络自动下载（可能产生流量费用）"; setTextColor(Color.WHITE); isChecked = state.metered
+            isEnabled = !state.settingsSaving
             setOnCheckedChangeListener { _, checked -> if (!updates.settings(state.automatic, checked)) toast("设置未保存，请重试") }
         })
+        state.settingsStatus?.let { description(it) }
     }
 
     private fun confirmDownload(action: (Boolean) -> Unit) {
+        if (!activityStarted || isDestroyed) return
         if (updates.unmeteredWifi()) { action(false); return }
-        AlertDialog.Builder(this).setTitle("确认本次使用计费网络")
+        trackConfirmation(AlertDialog.Builder(this).setTitle("确认本次使用计费网络")
             .setMessage("当前不是非计费 Wi-Fi。仅允许本次下载使用移动或计费网络，不更改自动更新设置。")
-            .setPositiveButton("允许本次下载") { _, _ -> action(true) }.setNegativeButton("取消", null).show()
+            .setPositiveButton("允许本次下载") { _, _ -> if (activityStarted && !isDestroyed) action(true) }
+            .setNegativeButton("取消", null).create())
     }
 
     private fun requestSystemInstall(apk: File) {
         if (Build.VERSION.SDK_INT >= 26 && !packageManager.canRequestPackageInstalls()) {
             pendingInstallApk = apk
+            refreshUpdatePresence()
             updateLink.isEnabled = false
             updateLink.text = "安装处理中…"
             val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName"))
@@ -383,6 +406,7 @@ class MainActivity : ComponentActivity() {
                     updateLink.isEnabled = true
                     updateLink.text = "检查更新"
                     toast("无法打开安装授权设置")
+                    refreshUpdatePresence()
                 }
         } else {
             openSystemInstaller(apk)
@@ -391,6 +415,7 @@ class MainActivity : ComponentActivity() {
 
     private fun openSystemInstaller(apk: File) {
         pendingInstallApk = apk
+        refreshUpdatePresence()
         updateLink.isEnabled = false
         updateLink.text = "安装处理中…"
         runCatching { installerLauncher.launch(updateManager.installationIntent(apk)) }
@@ -400,6 +425,7 @@ class MainActivity : ComponentActivity() {
                 updateLink.isEnabled = true
                 updateLink.text = "检查更新"
                 toast("无法打开系统安装界面")
+                refreshUpdatePresence()
             }
     }
 
@@ -494,11 +520,13 @@ class MainActivity : ComponentActivity() {
                 ): Boolean {
                     this@MainActivity.filePathCallback?.onReceiveValue(null)
                     this@MainActivity.filePathCallback = filePathCallback
+                    refreshUpdatePresence()
                     return try {
                         fileChooserLauncher.launch(fileChooserParams.createIntent())
                         true
                     } catch (error: Exception) {
                         this@MainActivity.filePathCallback = null
+                        refreshUpdatePresence()
                         toast("无法打开文件选择器")
                         false
                     }
@@ -688,6 +716,8 @@ class MainActivity : ComponentActivity() {
             val export = Export(FileNamePolicy.sanitize(name), content)
             pendingExport = export
             runOnUiThread {
+                if (!activityStarted || isDestroyed) { pendingExport = null; return@runOnUiThread }
+                refreshUpdatePresence()
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                     .addCategory(Intent.CATEGORY_OPENABLE)
                     .setType(FileNamePolicy.mimeType(export.name))
@@ -695,6 +725,7 @@ class MainActivity : ComponentActivity() {
                 runCatching { saveLauncher.launch(intent) }
                     .onFailure {
                         pendingExport = null
+                        refreshUpdatePresence()
                         toast("无法打开保存对话框")
                     }
             }

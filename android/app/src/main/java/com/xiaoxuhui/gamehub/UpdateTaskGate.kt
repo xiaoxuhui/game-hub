@@ -22,9 +22,9 @@ internal class UpdateTaskGate(private val elapsed: () -> Long, private val epoch
         private set
     var automaticMetered = false
         private set
-    @Synchronized fun setPresence(isForeground: Boolean, hall: Boolean) {
-        foreground = isForeground; inHall = hall
-        if (!isForeground || !hall) active?.cancelled = true
+    @Synchronized fun setPresence(isForeground: Boolean, hall: Boolean, externalFlowPending: Boolean = false) {
+        foreground = isForeground; inHall = hall && !externalFlowPending
+        if (!isForeground || !inHall) active?.cancelled = true
     }
     @Synchronized fun setNetwork(value: UpdateNetwork) {
         network = value

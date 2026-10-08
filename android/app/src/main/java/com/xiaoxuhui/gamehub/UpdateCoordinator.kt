@@ -15,7 +15,8 @@ internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: L
     val catalogGames: List<ResourceGame> = emptyList(), val apkCheckedAt: Long? = null, val resourcesCheckedAt: Long? = null,
     val apkStatus: String = "尚未检查大厅更新", val resourceStatus: String = "尚未检查游戏更新",
     val busy: Boolean = false, val task: String? = null, val done: Long = 0, val total: Long = 0,
-    val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false)
+    val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false,
+    val settingsSaving: Boolean = false, val settingsStatus: String? = null)
 
 /** One process instance owns connections, queue, settings and cancellation across Activity recreation. */
 internal class UpdateCoordinator private constructor(context: Context) {
@@ -69,10 +70,10 @@ internal class UpdateCoordinator private constructor(context: Context) {
     fun presence(active: Boolean, inHall: Boolean, allowCheck: Boolean = true) {
         foreground = active; hall = inHall; checkEligible = allowCheck
         if (!active) checkCancelled = true
-        gate.setPresence(active, inHall)
+        gate.setPresence(active, hall, !allowCheck)
         refreshNetwork()
         if (active && allowCheck) check(false)
-        if (active && inHall) automaticNext()
+        if (active && hall && allowCheck) automaticNext()
     }
     private fun refreshNetwork() {
         val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
@@ -85,10 +86,23 @@ internal class UpdateCoordinator private constructor(context: Context) {
         // Reconnection may start a due check; existing cancelled attempts are never restarted this round.
         if (foreground) { if (checkEligible) check(false); if (hall) automaticNext() }
     }
-    fun settings(automatic: Boolean, metered: Boolean): Boolean {
-        if (!preferences.settings(automatic, metered)) return false
-        gate.settings(automatic, metered); publish { it.copy(automatic = automatic, metered = metered) }
-        automaticNext(); return true
+    fun settings(automatic: Boolean, metered: Boolean): Boolean = synchronized(stateLock) {
+        if (state.settingsSaving) return false
+        val previous = state
+        // Revoke immediately; granting permission waits for durable success on the worker.
+        gate.settings(previous.automatic && automatic, previous.metered && metered)
+        publish { it.copy(automatic = automatic, metered = metered, settingsSaving = true, settingsStatus = "正在保存设置…") }
+        worker.execute {
+            val success = runCatching { preferences.settings(automatic, metered) }.getOrDefault(false)
+            synchronized(stateLock) {
+                gate.settings(if (success) automatic else previous.automatic, if (success) metered else previous.metered)
+                publish { it.copy(automatic = if (success) automatic else previous.automatic,
+                    metered = if (success) metered else previous.metered, settingsSaving = false,
+                    settingsStatus = if (success) "设置已保存" else "设置保存失败，已恢复原设置") }
+            }
+            automaticNext()
+        }
+        true
     }
     fun check(manual: Boolean): Boolean = synchronized(stateLock) {
         if (!manual && !checkEligible) return false

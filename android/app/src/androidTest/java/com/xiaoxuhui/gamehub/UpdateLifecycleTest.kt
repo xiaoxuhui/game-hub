@@ -10,6 +10,47 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateLifecycleTest {
+    @Test fun settingsPersistWithoutUiThreadDiskWrites() {
+        if (android.os.Build.VERSION.SDK_INT < 28) return
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val coordinator = UpdateCoordinator.get(instrumentation.targetContext)
+        val original = coordinator.snapshot()
+        val violations = java.util.concurrent.CopyOnWriteArrayList<android.os.strictmode.Violation>()
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity {
+                val previous = android.os.StrictMode.getThreadPolicy()
+                android.os.StrictMode.setThreadPolicy(android.os.StrictMode.ThreadPolicy.Builder().detectDiskWrites()
+                    .penaltyListener(java.util.concurrent.Executor { task -> task.run() }) { violations.add(it) }.build())
+                try { assertTrue(coordinator.settings(!original.automatic, original.metered)) }
+                finally { android.os.StrictMode.setThreadPolicy(previous) }
+            }
+            val deadline = System.currentTimeMillis() + 10000
+            while (coordinator.snapshot().settingsSaving && System.currentTimeMillis() < deadline) Thread.sleep(50)
+            assertFalse(coordinator.snapshot().settingsSaving)
+            assertEquals(!original.automatic, coordinator.snapshot().automatic)
+            assertTrue("No synchronous UI disk writes allowed: $violations", violations.isEmpty())
+            assertTrue(coordinator.settings(original.automatic, original.metered))
+            while (coordinator.snapshot().settingsSaving && System.currentTimeMillis() < deadline) Thread.sleep(50)
+            assertFalse(coordinator.snapshot().settingsSaving)
+        }
+    }
+    @Test fun trackedConfirmationIsDismissedOnStopAndDoesNotReopenOnRotation() {
+        lateinit var dialog: android.app.AlertDialog
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                dialog = android.app.AlertDialog.Builder(activity).setTitle("测试更新确认").setPositiveButton("继续", null).create()
+                val track = MainActivity::class.java.getDeclaredMethod("trackConfirmation", android.app.AlertDialog::class.java)
+                track.isAccessible = true; track.invoke(activity, dialog)
+                assertTrue(dialog.isShowing)
+            }
+            scenario.recreate()
+            assertFalse(dialog.isShowing)
+            scenario.onActivity { activity ->
+                val field = MainActivity::class.java.getDeclaredField("updateDialogs").apply { isAccessible = true }
+                assertTrue((field.get(activity) as Set<*>).isEmpty())
+            }
+        }
+    }
     private fun find(view: View, predicate: (View) -> Boolean): View? {
         if (predicate(view)) return view
         if (view is ViewGroup) for (i in 0 until view.childCount) find(view.getChildAt(i), predicate)?.let { return it }
