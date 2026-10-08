@@ -15,12 +15,12 @@ internal class ResourceSession(val game: ResourceGame?, val root: File?, private
 }
 
 /** One lock protects all pointer changes and session references. UI never hashes through this class. */
-internal class GameResourceStore(directory: File, private val hostCode: Int, private val publicKey: ByteArray,
-    private val stateFile: ResourceStateFile = AndroidResourceStateFile(File(directory, "state.json")), private val now: () -> Long = System::currentTimeMillis,
-    private val freeSpace: () -> Long = { directory.usableSpace }, private val proofFile: (File) -> ResourceStateFile = { AndroidResourceStateFile(it) }) {
+internal class GameResourceStore(trustedDirectory: File, private val hostCode: Int, private val publicKey: ByteArray,
+    private val stateFile: ResourceStateFile = AndroidResourceStateFile(File(trustedDirectory, "state.json")), private val now: () -> Long = System::currentTimeMillis,
+    private val freeSpace: () -> Long = { trustedDirectory.usableSpace }, private val proofFile: (File) -> ResourceStateFile = { AndroidResourceStateFile(it) }) {
     // Android may expose filesDir through /data/user/0 while its canonical spelling is /data/data.
     // Normalize the trusted root once; child links remain forbidden by the checks below.
-    private val directory = directory.canonicalFile
+    private val directory = trustedDirectory.canonicalFile
     private val lock = Any()
     private var sequence = 0L
     private var catalogHash = ""

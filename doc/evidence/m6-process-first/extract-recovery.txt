@@ -1,0 +1,21 @@
+
+com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest:
+Error in verifyAfterActualProcessRestart(com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest):
+java.lang.IllegalArgumentException: Failed requirement.
+	at com.xiaoxuhui.gamehub.GameResourceStore.deletePrivate(GameResourceStore.kt:251)
+	at com.xiaoxuhui.gamehub.GameResourceStore.<init>(GameResourceStore.kt:55)
+	at com.xiaoxuhui.gamehub.GameResourceStore.<init>(GameResourceStore.kt:18)
+	at com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest.verifyAfterActualProcessRestart(ResourceProcessRecoveryTest.kt:134)
+
+
+Time: 0.412
+There was 1 failure:
+1) verifyAfterActualProcessRestart(com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest)
+java.lang.IllegalArgumentException: Failed requirement.
+	at com.xiaoxuhui.gamehub.GameResourceStore.deletePrivate(GameResourceStore.kt:251)
+	at com.xiaoxuhui.gamehub.GameResourceStore.<init>(GameResourceStore.kt:55)
+	at com.xiaoxuhui.gamehub.GameResourceStore.<init>(GameResourceStore.kt:18)
+	at com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest.verifyAfterActualProcessRestart(ResourceProcessRecoveryTest.kt:134)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

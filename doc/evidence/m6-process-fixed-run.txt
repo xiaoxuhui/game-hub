@@ -1,0 +1,6 @@
+PASS download previousPid=19415 newPid=19472 sequence=2
+PASS extract previousPid=19518 newPid=19575 sequence=2
+PASS state-before previousPid=19621 newPid=19677 sequence=2
+PASS state-after previousPid=19724 newPid=19781 sequence=2
+PASS journal-half previousPid=19828 newPid=19886 sequence=3
+PASS five actual process terminations and five recovery tests

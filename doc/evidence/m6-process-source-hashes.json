@@ -1,0 +1,14 @@
+[
+  {
+    "file": "android/app/src/main/java/com/xiaoxuhui/gamehub/GameResourceStore.kt",
+    "sha256": "88068e7951e24d7663a7ffd2db08675288b8d7dfa826a3629340a5b23bf926ae"
+  },
+  {
+    "file": "android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceProcessRecoveryTest.kt",
+    "sha256": "9139eb4d438e78897f5a4dcabb9d2b927f8590906ccc030e57f784bcaec44795"
+  },
+  {
+    "file": "scripts/resource_process_smoke.ps1",
+    "sha256": "09bc2424bd6924fe5a3f26f3f106caa442bcd1d0b1041bb8e0628845b8c45f57"
+  }
+]

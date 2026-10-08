@@ -1,0 +1,6 @@
+
+com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest:.
+
+Time: 0.501
+
+OK (1 test)
