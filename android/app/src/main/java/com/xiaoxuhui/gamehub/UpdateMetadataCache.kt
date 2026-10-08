@@ -46,6 +46,9 @@ internal class UpdateMetadataCache(private val apkFile: ResourceStateFile, priva
         require(json.keys().asSequence().toSet() == setOf("schemaVersion", "checkedAt", "catalogSequence", "payloadSha256"))
         val time = checked(json, now)
         require(json.get("catalogSequence") is String && json.get("payloadSha256") is String)
+        val sequence = json.getString("catalogSequence")
+        require(Regex("[1-9][0-9]{0,18}").matches(sequence) && sequence.toLongOrNull() != null)
+        require(Regex("[0-9a-f]{64}").matches(json.getString("payloadSha256")))
         return time.takeIf { json.getString("catalogSequence") == catalog.sequence.toString() && json.getString("payloadSha256") == catalog.payloadSha256 }
     }
 }

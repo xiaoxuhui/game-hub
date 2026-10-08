@@ -50,4 +50,19 @@ class UpdateMetadataCacheTest {
         assertThrows(IllegalStateException::class.java) { cache.saveApk(apk.copy(version = "0.5.0"), 200) }
         assertEquals(RememberedApk(100, apk), UpdateMetadataCache(file, Memory()).readApk("0.3.0", 500))
     }
+    @Test fun malformedResourceReferenceIsRejectedInsteadOfLosingItsTimeSilently() {
+        val file = Memory(); val cache = UpdateMetadataCache(Memory(), file)
+        val catalog = ResourceCatalog(2, "a".repeat(64), 10, 1, 200, emptyList())
+        cache.saveResources(catalog, 100); val original = String(file.bytes!!)
+        for (sequence in listOf("0", "02", "-2", "9223372036854775808", "bad")) {
+            file.bytes = original.replace("\"catalogSequence\":\"2\"", "\"catalogSequence\":\"$sequence\"").toByteArray()
+            assertThrows(IllegalArgumentException::class.java) { cache.readResources(catalog, 500) }
+        }
+        for (digest in listOf("bad", "A".repeat(64), "g".repeat(64))) {
+            file.bytes = original.replace("a".repeat(64), digest).toByteArray()
+            assertThrows(IllegalArgumentException::class.java) { cache.readResources(catalog, 500) }
+        }
+        file.bytes = original.replace("\"catalogSequence\":\"2\"", "\"catalogSequence\":\"2\",\"catalogSequence\":\"2\"").toByteArray()
+        assertThrows(Exception::class.java) { cache.readResources(catalog, 500) }
+    }
 }

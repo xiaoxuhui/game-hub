@@ -18,3 +18,11 @@
 ## 执行结果
 
 独立目录首轮 JVM 59 项失败/错误 0，设备缓存/订阅/策略及历史→新结果渲染共 4 项通过，1 分 41 秒。最后缓存适配器后台延迟初始化和时间上界修订后，JVM 59 项失败/错误 0，设备 UpdatePreferencesTest 3 项通过，1 分 13 秒；最后专项不含重复执行版本渲染。输出另存，提交后独立审阅待执行。
+
+## 提交后审阅与批改
+
+受审提交 938dff39002147a3cccc1ff98bc61af4debb1fc9，准确 push CI 成功：https://github.com/xiaoxuhui/game-hub/actions/runs/37824876660 。独立意见原件归档 m5-reminder-cache-independent-review-20261009.md。
+
+两项 P2 已批改：历史标记保留固定模式，先显示不兼容；资源缓存序号须规范正整数且不超 Long，摘要须 64 位小写十六进制。新增畸形序号/摘要/重复键负例，设备用例补历史目录与 pinned/不兼容同时出现的渲染断言。
+
+首轮新增设备夹具误用 minHostVersionCode 参数，编译失败；已改为真实模型 minHost，失败输出保留。批改最终复验 JVM 60 项失败/错误 0，专项设备实际 1 项通过，Gradle 25 秒退出码 0。JVM 在第一次运行已完成，第二次为 UP-TO-DATE，数字取实际 XML。构建只在 D:\soft\game-hub-build-resources-20261008，资产仍为开发验证基线，不是最终发行候选。待批改提交后的独立复审闭环。

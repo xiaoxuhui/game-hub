@@ -190,6 +190,14 @@ class UpdateLifecycleTest {
                 scenario.onActivity { activity ->
                     render.invoke(activity, snapshot.copy(resourcesRemembered = true))
                     assertTrue(texts(activity.window.decorView).any { it.contains("已下载") && it.contains("上次发现更新 · 待检查") })
+                    val local = snapshot.localResources.getValue("light")
+                    render.invoke(activity, snapshot.copy(resourcesRemembered = true, localResources = snapshot.localResources +
+                        ("light" to local.copy(selection = local.selection.copy(pinned = true)))))
+                    assertTrue(texts(activity.window.decorView).any { it.contains("固定版本 · 上次发现更新 · 待检查") })
+                    render.invoke(activity, snapshot.copy(resourcesRemembered = true, catalogGames = remote.map {
+                        if (it.id == "light") it.copy(minHost = 999) else it
+                    }))
+                    assertTrue(texts(activity.window.decorView).any { it.contains("更新与此大厅不兼容") })
                     val column = android.widget.LinearLayout(activity)
                     val dialog = android.app.AlertDialog.Builder(activity).create()
                     val details = MainActivity::class.java.getDeclaredMethod("renderUpdateDetails", android.widget.LinearLayout::class.java, UpdateSnapshot::class.java, android.app.AlertDialog::class.java).apply { isAccessible = true }
