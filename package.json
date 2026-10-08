@@ -19,6 +19,8 @@
     "check": "node --check scripts/bundle.mjs && node --test",
     "bundle": "node scripts/bundle.mjs",
     "verify:bundle": "node scripts/bundle.mjs --verify",
-    "audit:storage": "node scripts/audit-storage.mjs"
+    "audit:storage": "node scripts/audit-storage.mjs",
+    "bundle:resources": "node scripts/resource-bundle.mjs",
+    "verify:resources": "node scripts/resource-bundle.mjs --verify"
   }
 }
