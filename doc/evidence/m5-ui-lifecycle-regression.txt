@@ -1,0 +1,6 @@
+
+com.xiaoxuhui.gamehub.UpdateLifecycleTest:...........
+
+Time: 73.962
+
+OK (11 tests)
