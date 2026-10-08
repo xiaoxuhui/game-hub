@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, lstatSync, realpat
 import { execFileSync } from 'node:child_process';
 import { join, resolve, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { strictJson, safePath, sha256, mime, assetName } from './resource-protocol.mjs';
+import { strictJson, safePath, sha256, mime, assetName, LIMITS } from './resource-protocol.mjs';
 import { dynamicId, validateDynamicCatalog } from './dynamic-protocol.mjs';
 import { createZip, readStoredZip, inspectResources } from './resource-bundle.mjs';
 
@@ -40,7 +40,27 @@ function walk(directory, base=directory) {
     return [{path:relative(base,file).split(sep).join('/'),data:readFileSync(file)}];
   });
 }
+function lockedSourceEntries(checkout, source) {
+  const sources=join(checkout,'.build/dynamic-sources'),directory=join(sources,source.id);
+  if(realpathSync(sources)!==resolve(sources) || realpathSync(directory)!==resolve(directory) ||
+    git(directory,['remote','get-url','origin'])!==source.repository || git(directory,['rev-parse','HEAD'])!==source.revision ||
+    git(directory,['status','--porcelain=v1','--untracked-files=all'])) throw new Error('Dynamic source proof missing, moved or dirty');
+  const content=join(directory,source.directory);if(realpathSync(content)!==resolve(content)) throw new Error('Dynamic directory link');
+  const entries=walk(content);
+  for(const entry of entries) {
+    const committed=execFileSync('git',['show',`${source.revision}:${source.directory}/${entry.path}`],{cwd:directory,maxBuffer:LIMITS.file+1,env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_TERMINAL_PROMPT:'0'}});
+    if(!entry.data.equals(committed)) throw new Error('Dynamic working file differs from committed blob bytes');
+  }
+  if(!entries.some(e=>e.path==='LICENSE' && /^MIT License\r?\n/.test(e.data.toString('utf8')))) throw new Error('Dynamic MIT license');
+  return entries;
+}
+export function verifyPackedDynamic(source, sourceEntries, game, archive) {
+  const actual=packDynamic(source,readStoredZip(archive)),expected=packDynamic(source,sourceEntries);
+  if(!actual.archive.equals(archive) || JSON.stringify(actual.game)!==JSON.stringify(game) ||
+    !expected.archive.equals(archive) || JSON.stringify(expected.game)!==JSON.stringify(game)) throw new Error('Dynamic candidate differs from immutable source bytes');
+}
 export function verifyDynamicResources(output=join(root,'.build/dynamic-candidate'), checkout=root) {
+  if(!lstatSync(output).isDirectory() || lstatSync(output).isSymbolicLink() || realpathSync(output)!==resolve(output)) throw new Error('Dynamic candidate root link');
   const bytes=readFileSync(join(checkout,'dynamic-sources.lock.json')),lock=dynamicSources(bytes),candidate=strictJson(readFileSync(join(output,'candidate.json')));
   if(candidate.schemaVersion!==1 || candidate.sourceLockSha256!==sha256(bytes) || candidate.bundleCommit!==git(checkout,['rev-parse','HEAD'])) throw new Error('Stale dynamic candidate');
   const games=strictJson(readFileSync(join(output,'games.unsigned.json')));
@@ -49,8 +69,8 @@ export function verifyDynamicResources(output=join(root,'.build/dynamic-candidat
   if(JSON.stringify(readdirSync(output).sort())!==JSON.stringify(expected) || expected.some(name=>!lstatSync(join(output,name)).isFile() || lstatSync(join(output,name)).isSymbolicLink())) throw new Error('Unexpected dynamic candidate file');
   for(const game of games) {
     const source=lock.sources.find(s=>s.id===game.id);if(!source) throw new Error('Unknown dynamic candidate');
-    const archive=readFileSync(join(output,assetName(game))),packed=packDynamic(source,readStoredZip(archive));
-    if(!packed.archive.equals(archive) || JSON.stringify(packed.game)!==JSON.stringify(game)) throw new Error('Dynamic candidate metadata mismatch');
+    const archive=readFileSync(join(output,assetName(game)));
+    verifyPackedDynamic(source,lockedSourceEntries(checkout,source),game,archive);
   }
   console.log(`Verified ${games.length} dynamic resource ZIPs; ${candidate.bundleCommit}`);return games;
 }
@@ -69,8 +89,7 @@ export function prepareDynamicResources(checkout=root) {
       if(realpathSync(directory)!==resolve(directory) || git(directory,['remote','get-url','origin'])!==source.repository || !fresh && git(directory,['status','--porcelain=v1','--untracked-files=all'])) throw new Error('Dynamic checkout identity or dirty tree');
       git(directory,['config','core.autocrlf','false']);git(directory,['fetch','--quiet','origin',source.revision]);git(directory,['checkout','--quiet','--detach',source.revision]);
       if(git(directory,['rev-parse','HEAD'])!==source.revision || git(directory,['status','--porcelain=v1','--untracked-files=all'])) throw new Error('Dynamic immutable checkout');
-      const content=join(directory,source.directory);if(realpathSync(content)!==resolve(content)) throw new Error('Dynamic directory link');
-      const entries=walk(content);if(!entries.some(e=>e.path==='LICENSE' && /^MIT License\r?\n/.test(e.data.toString('utf8')))) throw new Error('Dynamic MIT license');
+      const entries=lockedSourceEntries(checkout,source);
       const packed=packDynamic(source,entries);writeFileSync(join(staging,assetName(packed.game)),packed.archive);return packed.game;
     });
     writeFileSync(join(staging,'games.unsigned.json'),JSON.stringify(games,null,2)+'\n');

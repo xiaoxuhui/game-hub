@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {dynamicSources,packDynamic} from '../scripts/dynamic-resources.mjs';
+import {dynamicSources,packDynamic,verifyPackedDynamic} from '../scripts/dynamic-resources.mjs';
 import {attachAssets,validateReleaseSnapshot} from '../scripts/resource-catalog.mjs';
 import {assetName} from '../scripts/resource-protocol.mjs';
 const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
@@ -12,6 +12,13 @@ test('dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable'
   assert.throws(()=>packDynamic(source,entries.slice(1)));assert.throws(()=>packDynamic(source,[...entries,{path:'extra.txt',data:Buffer.from('x')}]));
   assert.throws(()=>packDynamic({...source,storageContract:'other'},entries));
   const invalid=JSON.parse(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url)));invalid.sources[0].revision='main';assert.throws(()=>dynamicSources(Buffer.from(JSON.stringify(invalid))));
+});
+test('synchronously forged ZIP and candidate metadata cannot claim locked source bytes',()=>{
+  const first=packDynamic(source,entries);
+  assert.doesNotThrow(()=>verifyPackedDynamic(source,entries,first.game,first.archive));
+  const changed=entries.map(e=>e.path==='app.js'?{...e,data:Buffer.concat([e.data,Buffer.from('\n// forged candidate\n')])}:e);
+  const forged=packDynamic(source,changed);
+  assert.throws(()=>verifyPackedDynamic(source,entries,forged.game,forged.archive),/immutable source bytes/);
 });
 test('v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse',()=>{
   const {game}=packDynamic(source,entries),release={tag_name:'game-resources-v2',draft:false,prerelease:true,id:10};

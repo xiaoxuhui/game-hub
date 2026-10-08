@@ -1,0 +1,5 @@
+SYNCHRONIZED FORGERY REJECTED: Dynamic candidate differs from immutable source bytes
+Verified 1 dynamic resource ZIPs; dc46646dcbb687f308d0f4a2f297d36bd9bd2c5c
+CRLF source status: "M examples/memory-demo/app.js"
+NONBLOB WORKING BYTES REJECTED: Dynamic source proof missing, moved or dirty
+Verified 1 dynamic resource ZIPs; dc46646dcbb687f308d0f4a2f297d36bd9bd2c5c

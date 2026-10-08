@@ -1,0 +1,52 @@
+✔ Android application identity and minimum API stay independent of source APKs (1.2595ms)
+✔ Manifest has one launcher and only the planned update permission (1.1556ms)
+✔ compact lobby uses four fixed source icons and clickable cards (0.7025ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.2607ms)
+✔ four original export bridge names and a file chooser are wired (0.4815ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: 6d7f9811d2e834d4eba16656e5ca206938b0dbb209e01d2234b6daa31a8ac0f4
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.1144ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (0.6172ms)
+✔ HTML references exclude external and fragment links while preserving local assets (0.9341ms)
+✔ missing local HTML reference stops bundling (15.6891ms)
+✔ manifest hashes are stable and change when a resource changes (8.0867ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (3650.3966ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (205.304ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (1.4299ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (152.1378ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (11.5092ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (4.2847ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (1.4454ms)
+✔ detached programmatic Blob click saves content before immediate revoke (6.7301ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (2.0145ms)
+✔ demo preserves progress, counts wins once and validates imported state (2.5033ms)
+✔ actual import handler never claims durable success after storage write failure (3.8703ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.2604ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (1.7748ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (0.7215ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (1.175ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.4934ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (3.201ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (132.1745ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.4212ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.7594ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (148.9119ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4351.8515
