@@ -19,7 +19,7 @@ App APK SHA256：41f2effea39770684c95e3b7c706cec9c63cfb5aba1bfe05574b8e89d4cc45d
 
 | 场景 | 中断 PID | 恢复 PID | 结果 |
 |---|---:|---:|---|
-| state-before | 10244 | 10296 | AtomicFile.new已写且sync，外部force-stop；旧完整选择保留，ready为空、首次打开拒绝。 |
+| state-before | 10244 | 10296 | AtomicFile.new已写且sync，外部force-stop；已接受的内容水位1保留，active=builtin、ready为空、installed=false，首次打开拒绝；此夹具没有已激活旧资源。 |
 | state-after | 10340 | 10390 | 已提交ready后force-stop；完整签名资源可在安全会话激活，读取实际HTML。 |
 | retirement-half | 10435 | 10484 | 两份签名历史分别seq2/seq1时force-stop；恢复采用seq2退役状态，撤销ready，拒绝旧目录和首次激活。 |
 

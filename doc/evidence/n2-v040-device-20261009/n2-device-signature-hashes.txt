@@ -1,0 +1,14 @@
+APK n2-v040-development.apk
+Signer #1 certificate DN: CN=Game Hub Release, O=xiaoxuhui
+Signer #1 certificate SHA-256 digest: 44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2
+Signer #1 certificate SHA-1 digest: e6b87129d152dc21f392c93716075b02d4508181
+Signer #1 certificate MD5 digest: e05421084f9fc7508d79a6e918d9dc89
+package: name='com.xiaoxuhui.gamehub' versionCode='4' versionName='0.4.0' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+SHA256 41f2effea39770684c95e3b7c706cec9c63cfb5aba1bfe05574b8e89d4cc45dd
+APK n2-v040-development-test.apk
+Signer #1 certificate DN: CN=Game Hub Release, O=xiaoxuhui
+Signer #1 certificate SHA-256 digest: 44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2
+Signer #1 certificate SHA-1 digest: e6b87129d152dc21f392c93716075b02d4508181
+Signer #1 certificate MD5 digest: e05421084f9fc7508d79a6e918d9dc89
+package: name='com.xiaoxuhui.gamehub.test' versionCode='' versionName='' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+SHA256 2dd2f43a9ebdb2d7a0e6487591ff38901294283ff6a9a27722e02285f989690f
