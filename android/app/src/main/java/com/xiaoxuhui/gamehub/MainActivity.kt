@@ -25,6 +25,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -48,8 +49,12 @@ class MainActivity : ComponentActivity() {
     private lateinit var root: FrameLayout
     private lateinit var lobby: ScrollView
     private lateinit var updateLink: TextView
+    private lateinit var updateSummary: TextView
+    private val updates by lazy { UpdateCoordinator.get(applicationContext) }
+    private var activityStarted = false
+    private val updateDialogs = mutableSetOf<AlertDialog>()
+    private val updateListener: (UpdateSnapshot) -> Unit = { state -> renderUpdates(state) }
     private val updateManager by lazy { ApkUpdateManager(this) }
-    @Volatile private var downloadCancelled = false
     private var pendingInstallApk: File? = null
     private var webView: WebView? = null
     private var overlay: View? = null
@@ -88,14 +93,14 @@ class MainActivity : ComponentActivity() {
             openSystemInstaller(apk)
         } else {
             pendingInstallApk = null
-            apk?.delete()
+            discardInstallFile(apk)
             updateLink.isEnabled = true
             updateLink.text = "检查更新"
             toast("未授权安装，更新已取消")
         }
     }
     private val installerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        pendingInstallApk?.delete()
+        discardInstallFile(pendingInstallApk)
         pendingInstallApk = null
         updateLink.isEnabled = true
         updateLink.text = "检查更新"
@@ -144,6 +149,26 @@ class MainActivity : ComponentActivity() {
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+        activityStarted = true
+        if (::updateSummary.isInitialized) {
+            updates.subscribe(updateListener)
+            updates.presence(true, currentGame == null, pendingInstallApk == null && filePathCallback == null && pendingExport == null)
+        }
+    }
+
+    override fun onStop() {
+        activityStarted = false
+        updateDialogs.toList().forEach { it.dismiss() }
+        updateDialogs.clear()
+        if (::updateSummary.isInitialized) {
+            updates.unsubscribe(updateListener)
+            if (!isChangingConfigurations) updates.presence(false, currentGame == null, false)
+        }
+        super.onStop()
+    }
+
     private fun loadBundleManifest() {
         val raw = assets.open("bundle-manifest.json").bufferedReader().use { it.readText() }
         val manifest = JSONObject(raw)
@@ -189,6 +214,13 @@ class MainActivity : ComponentActivity() {
             setOnClickListener { checkUpdates() }
         }
         headerRow.addView(updateLink)
+        updateSummary = label("更新尚未检查 · 点击查看", 11f, MUTED, false).apply {
+            setPadding(dp(6), dp(3), dp(6), dp(6))
+            maxLines = 2
+            isClickable = true; isFocusable = true
+            setOnClickListener { showUpdateDetails() }
+        }
+        column.addView(updateSummary, LinearLayout.LayoutParams(-1, -2))
         for (rowIndex in 0..1) {
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -241,80 +273,101 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkUpdates() {
-        if (!updateLink.isEnabled) return
-        updateLink.isEnabled = false
-        updateLink.text = "查询中…"
-        Thread {
-            val result = runCatching {
-                ReleaseClient.latest(installedVersionName())
-            }
-            runOnUiThread {
-                if (isDestroyed) return@runOnUiThread
-                updateLink.isEnabled = true
-                updateLink.text = "检查更新"
-                result.onSuccess { release ->
-                    if (release == null) {
-                        AlertDialog.Builder(this).setMessage("当前已是最新公开版本").setPositiveButton("确定", null).show()
-                    } else {
-                        AlertDialog.Builder(this).setTitle("发现新版本 v${release.version}")
-                            .setMessage("安装包大小约 ${release.size / (1024 * 1024) + 1} MB。下载并校验后，将交给 Android 系统确认安装。")
-                            .setPositiveButton("下载更新") { _, _ -> downloadUpdate(release) }
-                            .setNegativeButton("稍后", null).show()
-                    }
-                }.onFailure { error ->
-                    val message = if (error is java.io.IOException) "网络连接失败，请检查网络后重试" else error.message ?: "查询失败，请稍后重试"
-                    AlertDialog.Builder(this).setMessage(message)
-                        .setPositiveButton("确定", null).show()
-                }
-            }
-        }.start()
+        if (!updates.check(true)) toast("已有任务正在进行，或网络不可用")
+        showUpdateDetails()
     }
 
-    private fun downloadUpdate(release: ReleaseApk) {
-        downloadCancelled = false
-        updateLink.isEnabled = false
-        updateLink.text = "下载中…"
-        val status = label("已下载 0%", 15f, Color.WHITE, false).apply { setPadding(dp(24), dp(16), dp(24), dp(16)) }
-        val dialog = AlertDialog.Builder(this).setTitle("下载 v${release.version}").setView(status)
-            .setNegativeButton("取消") { _, _ -> downloadCancelled = true }.create()
-        dialog.setOnCancelListener { downloadCancelled = true }
+    private fun renderUpdates(state: UpdateSnapshot) {
+        if (!activityStarted || isDestroyed || !::updateSummary.isInitialized) return
+        updateLink.isEnabled = pendingInstallApk == null
+        updateLink.text = if (state.busy) "更新详情" else "检查更新"
+        updateSummary.text = if (state.task != null) {
+            "${state.task} · ${if (state.total > 0) "${state.done * 100 / state.total}%" else "查询中"} · 点击查看"
+        } else "${state.apkStatus}\n${state.resourceStatus} · 点击查看"
+        updateSummary.contentDescription = "更新状态：${state.apkStatus}；${state.resourceStatus}；点击查看详情"
+    }
+
+    private fun checkedTime(value: Long?): String = value?.let {
+        java.text.SimpleDateFormat("MM-dd HH:mm", java.util.Locale.CHINA).format(java.util.Date(it))
+    } ?: "尚无成功检查"
+
+    private fun showUpdateDetails() {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(18), dp(8), dp(18), dp(8))
+        }
+        val scroll = ScrollView(this).apply { addView(content) }
+        val dialog = AlertDialog.Builder(this).setTitle("更新与资源管理").setView(scroll)
+            .setPositiveButton("关闭", null).create()
+        val detailListener: (UpdateSnapshot) -> Unit = { state ->
+            if (!isDestroyed && dialog.isShowing) renderUpdateDetails(content, state, dialog)
+        }
+        dialog.setOnDismissListener { updates.unsubscribe(detailListener); updateDialogs.remove(dialog) }
+        updateDialogs.add(dialog)
         dialog.show()
-        Thread {
-            var lastPercent = -1
-            val result = runCatching {
-                updateManager.downloadAndVerify(release, { downloadCancelled }) { done, total ->
-                    val percent = (done * 100 / total).toInt()
-                    if (percent != lastPercent) {
-                        lastPercent = percent
-                        runOnUiThread { if (!isDestroyed) status.text = "已下载 $percent%" }
-                    }
+        renderUpdateDetails(content, updates.snapshot(), dialog)
+        updates.subscribe(detailListener)
+    }
+
+    private fun detailButton(column: LinearLayout, title: String, enabled: Boolean = true, action: () -> Unit) {
+        column.addView(Button(this).apply {
+            text = title; isAllCaps = false; isEnabled = enabled
+            setOnClickListener { action() }
+        }, LinearLayout.LayoutParams(-1, -2))
+    }
+
+    private fun renderUpdateDetails(column: LinearLayout, state: UpdateSnapshot, dialog: AlertDialog) {
+        val previous = column.tag as? UpdateSnapshot
+        column.tag = state
+        if (previous?.copy(done = 0) == state.copy(done = 0)) {
+            column.findViewWithTag<TextView>("update-progress")?.text = "${state.task}：${state.done / 1024} / ${state.total / 1024} KiB"
+            return
+        }
+        column.removeAllViews()
+        fun description(text: String) { column.addView(label(text, 13f, Color.WHITE, false).apply { setPadding(0, dp(8), 0, dp(4)) }) }
+        description("大厅：${state.apkStatus}\n最后成功检查：${checkedTime(state.apkCheckedAt)}")
+        description("游戏：${state.resourceStatus}\n最后成功检查：${checkedTime(state.resourcesCheckedAt)}")
+        if (state.task != null) {
+            column.addView(label("${state.task}：${state.done / 1024} / ${state.total / 1024} KiB", 13f, Color.WHITE, false).apply { tag = "update-progress" })
+            detailButton(column, "取消本次下载", state.total > 0) { updates.cancel() }
+        }
+        detailButton(column, "立即检查", !state.busy) { if (!updates.check(true)) toast("当前无可用网络或任务尚未结束") }
+        val apk = state.readyApk?.takeIf { it.isFile }
+        if (apk != null) detailButton(column, "安装已验证的大厅 APK", !state.busy && pendingInstallApk == null) {
+            dialog.dismiss()
+            AlertDialog.Builder(this).setTitle("安装大厅更新")
+                .setMessage("安装包的摘要、包名、版本及签名已验证。继续将打开 Android 系统安装界面。")
+                .setPositiveButton("继续安装") { _, _ -> requestSystemInstall(apk) }
+                .setNegativeButton("稍后", null).show()
+        } else state.apk?.let { release ->
+            detailButton(column, "下载大厅 v${release.version}（${release.size / 1024} KiB）", !state.busy) {
+                confirmDownload { allowed -> if (!updates.downloadApk(allowed)) toast("下载未开始，请检查网络或等待当前任务结束") }
+            }
+        }
+        for (game in games) {
+            val remote = state.catalogGames.singleOrNull { it.id == game.id }
+            if (remote != null) {
+                description("${game.name} · 远端 v${remote.version} / 资源 #${remote.contentCode}\n${remote.archiveBytes / 1024} KiB · 来源 ${remote.sourceRevision.take(10)}\n${remote.notes}")
+                if (state.resources.any { it.id == game.id }) detailButton(column, "下载${game.name}更新", !state.busy) {
+                    confirmDownload { allowed -> if (!updates.downloadResource(game.id, allowed)) toast("下载未开始，请检查网络或重新查询") }
                 }
             }
-            runOnUiThread {
-                if (isDestroyed) {
-                    result.getOrNull()?.delete()
-                    return@runOnUiThread
-                }
-                dialog.dismiss()
-                updateLink.isEnabled = true
-                updateLink.text = "检查更新"
-                if (downloadCancelled) {
-                    result.getOrNull()?.delete()
-                    return@runOnUiThread
-                }
-                result.onSuccess { apk ->
-                    AlertDialog.Builder(this).setTitle("APK 校验通过")
-                        .setMessage("即将打开 Android 系统安装界面，请确认更新。")
-                        .setPositiveButton("继续安装") { _, _ -> requestSystemInstall(apk) }
-                        .setNegativeButton("取消") { _, _ -> apk.delete() }
-                        .setOnCancelListener { apk.delete() }.show()
-                }.onFailure { error ->
-                    if (!downloadCancelled) AlertDialog.Builder(this)
-                        .setMessage(error.message ?: "下载或校验失败，请重试")
-                        .setPositiveButton("确定", null).show()
-                }
-            }
-        }.start()
+        }
+        column.addView(CheckBox(this).apply {
+            text = "自动更新子游戏（默认仅非计费 Wi-Fi）"; setTextColor(Color.WHITE); isChecked = state.automatic
+            setOnCheckedChangeListener { _, checked -> if (!updates.settings(checked, state.metered)) toast("设置未保存，请重试") }
+        })
+        column.addView(CheckBox(this).apply {
+            text = "允许计费网络自动下载（可能产生流量费用）"; setTextColor(Color.WHITE); isChecked = state.metered
+            setOnCheckedChangeListener { _, checked -> if (!updates.settings(state.automatic, checked)) toast("设置未保存，请重试") }
+        })
+    }
+
+    private fun confirmDownload(action: (Boolean) -> Unit) {
+        if (updates.unmeteredWifi()) { action(false); return }
+        AlertDialog.Builder(this).setTitle("确认本次使用计费网络")
+            .setMessage("当前不是非计费 Wi-Fi。仅允许本次下载使用移动或计费网络，不更改自动更新设置。")
+            .setPositiveButton("允许本次下载") { _, _ -> action(true) }.setNegativeButton("取消", null).show()
     }
 
     private fun requestSystemInstall(apk: File) {
@@ -326,7 +379,7 @@ class MainActivity : ComponentActivity() {
             runCatching { installSourcesLauncher.launch(intent) }
                 .onFailure {
                     pendingInstallApk = null
-                    apk.delete()
+                    discardInstallFile(apk)
                     updateLink.isEnabled = true
                     updateLink.text = "检查更新"
                     toast("无法打开安装授权设置")
@@ -343,7 +396,7 @@ class MainActivity : ComponentActivity() {
         runCatching { installerLauncher.launch(updateManager.installationIntent(apk)) }
             .onFailure {
                 pendingInstallApk = null
-                apk.delete()
+                discardInstallFile(apk)
                 updateLink.isEnabled = true
                 updateLink.text = "检查更新"
                 toast("无法打开系统安装界面")
@@ -363,13 +416,17 @@ class MainActivity : ComponentActivity() {
     private fun cleanStaleUpdateFiles() {
         val cutoff = System.currentTimeMillis() - 24L * 60 * 60 * 1000
         File(cacheDir, "updates").listFiles()?.forEach { file ->
-            if (file.isFile && file != pendingInstallApk && file.lastModified() < cutoff) file.delete()
+            if (file.isFile && file != pendingInstallApk && file != updates.snapshot().readyApk && file.lastModified() < cutoff) file.delete()
         }
+    }
+
+    private fun discardInstallFile(file: File?) {
+        if (file != null) { file.delete(); updates.forgetApk(file) }
     }
 
     private fun openGame(game: Game, restoredState: Bundle? = null) {
         val serial = ++navigationSerial
-        downloadCancelled = true
+        updates.presence(activityStarted, false, false)
         clearWebView()
         currentGame = game
         showLoading("正在校验${game.name}资源…")
@@ -575,6 +632,7 @@ class MainActivity : ComponentActivity() {
         currentGame = null
         loadFailed = false
         lobby.visibility = View.VISIBLE
+        updates.presence(activityStarted, true, pendingInstallApk == null)
     }
 
     private fun clearWebView() {
@@ -601,7 +659,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         navigationSerial++
-        downloadCancelled = true
         clearWebView()
         super.onDestroy()
     }

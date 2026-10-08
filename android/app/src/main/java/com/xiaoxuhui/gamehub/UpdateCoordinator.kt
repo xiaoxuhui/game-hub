@@ -12,6 +12,7 @@ import java.io.File
 import java.util.concurrent.Executors
 
 internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: List<ResourceGame> = emptyList(),
+    val catalogGames: List<ResourceGame> = emptyList(), val apkCheckedAt: Long? = null, val resourcesCheckedAt: Long? = null,
     val apkStatus: String = "尚未检查大厅更新", val resourceStatus: String = "尚未检查游戏更新",
     val busy: Boolean = false, val task: String? = null, val done: Long = 0, val total: Long = 0,
     val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false)
@@ -77,6 +78,9 @@ internal class UpdateCoordinator private constructor(context: Context) {
         val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
         val online = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         if (!online) checkCancelled = true
+        if (!online) publish { it.copy(
+            apkStatus = if (it.apkCheckedAt == null) "大厅未检查：离线" else it.apkStatus,
+            resourceStatus = if (it.resourcesCheckedAt == null) "游戏未检查：离线" else it.resourceStatus) }
         gate.setNetwork(UpdateNetwork(online, online && capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)))
         // Reconnection may start a due check; existing cancelled attempts are never restarted this round.
         if (foreground) { if (checkEligible) check(false); if (hall) automaticNext() }
@@ -98,7 +102,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
                         val version = app.packageManager.getPackageInfo(app.packageName, 0).versionName ?: ""
                         val response = http.metadata("${PublicReleaseHttp.API_ROOT}/releases/latest", 1000000, PublicReleaseHttp.deadline(), { checkCancelled || !foreground })
                         val release = UpdatePolicy.parseLatest(response.bytes.toString(Charsets.UTF_8), version)
-                        publish { it.copy(apk = release, apkStatus = if (release == null) "大厅已是最新版本" else "大厅 ${release.version} 可更新") }
+                        publish { it.copy(apk = release, apkCheckedAt = System.currentTimeMillis(), apkStatus = if (release == null) "大厅已是最新版本" else "大厅 ${release.version} 可更新") }
                     } catch (error: Exception) { channelFailure("apk", error) }
                 } else publish { it.copy(apkStatus = "大厅查询限流，稍后可重试") }
                 if (!checkCancelled && foreground && gate.channelAllowed("resources")) {
@@ -107,8 +111,10 @@ internal class UpdateCoordinator private constructor(context: Context) {
                         check(!checkCancelled && foreground) { "检查已取消" }
                         runtime.store.acceptCatalog(next.envelope)
                         val available = next.catalog.games.filter { runtime.store.isEligible(it) }
-                        synchronized(stateLock) { attempted.clear(); offer = next }
-                        publish { it.copy(resources = available, resourceStatus = if (available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新") }
+                        synchronized(stateLock) {
+                            attempted.clear(); offer = next
+                            publish { it.copy(resources = available, catalogGames = next.catalog.games, resourcesCheckedAt = System.currentTimeMillis(), resourceStatus = if (available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新") }
+                        }
                     } catch (error: Exception) { channelFailure("resources", error) }
                 } else if (foreground) publish { it.copy(resourceStatus = "游戏查询限流，稍后可重试") }
             } finally {
@@ -147,6 +153,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
         worker.execute {
             var archive: File? = null
             try {
+                current.requireDownload(game)
                 archive = resourceClient.download(game, File(app.cacheDir, "resource-updates"), { !gate.valid(token) }, progressReporter())
                 check(gate.valid(token)) { "更新已取消" }
                 runtime.store.install(game, current.envelope, archive, { !gate.valid(token) })
@@ -183,7 +190,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
         }
         true
     }
-    fun forgetApk(file: File) { publish { if (it.readyApk == file) it.copy(readyApk = null) else it } }
+    fun forgetApk(file: File) { publish { if (it.readyApk == file) it.copy(readyApk = null, apkStatus = "安装流程已结束，仍可检查更新") else it } }
     private fun progressReporter(): (Long, Long) -> Unit {
         var lastPercent = -1L
         return { done, total ->
@@ -192,6 +199,10 @@ internal class UpdateCoordinator private constructor(context: Context) {
         }
     }
     fun cancel() = gate.cancel()
+    fun unmeteredWifi(): Boolean {
+        val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork) ?: return false
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    }
     companion object {
         @Volatile private var instance: UpdateCoordinator? = null
         fun get(context: Context): UpdateCoordinator = instance ?: synchronized(this) { instance ?: UpdateCoordinator(context).also { instance = it } }

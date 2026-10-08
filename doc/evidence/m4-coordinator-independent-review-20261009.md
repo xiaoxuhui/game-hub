@@ -20,3 +20,11 @@
 - `UpdateCoordinator.kt:64-65` 在持有 `stateLock` 时调用外部订阅者。当前测试仅用轻量回调；接入 Activity 时宜先确认订阅有效，再在锁外调用，避免 UI 回调阻塞工作线程状态发布。Activity 实际解绑和旋转需设备测试。
 - CI 的权限白名单已加入 `ACCESS_NETWORK_STATE`，Manifest 也已声明；发行候选 CI 目前仅正向要求 `INTERNET`/`REQUEST_INSTALL_PACKAGES`，可增加 `ACCESS_NETWORK_STATE` 必备断言，防止未来误删导致运行时网络状态读取失败。
 - `git diff a83e77b^ a83e77b --check` 对归档的 `doc/evidence/m4-coordinator-final-tests.txt:2` 报一处行尾空格；仅证据格式问题，不影响代码或测试结论。仓库文档如实保持 M4 PENDING。
+
+## 0527517 批改复审（2026-10-09）
+
+- 受审提交：`052751740055f0d32e4d5a7f92b0e5aa4586b750`。只读检查新门禁、JVM 负例、权限断言和构建日志；未独立重跑构建。
+- **结论：原 P2 已闭合，当前协调器切片无阻塞，可以接入 MainActivity。** `ResourceOffer.requireDownload()` 在占用下载槽之前检查目录时效与游戏完整身份；`UpdateCoordinator.startResource()` 是自动、手动两路的共同入口，拒绝时不占用门禁并提示重查。`GameResourceStore.install` 仍在安装时重新验签和检查时效，作为后续防线。
+- 新测试用可控时间覆盖到期前、到期点、异常时钟、资产 ID 改变，以及自动/手动拒绝后 `gate.busy()==false`；日志记录 JVM 42 项、失败/错误 0，`assembleDebug` 成功。候选 CI 和 Node 清单测试已正向要求 `ACCESS_NETWORK_STATE`；旧日志行尾空格已清理，`git diff 0527517^ 0527517 --check` 无输出。
+- 非阻塞精度提醒：测试里通过 `offer.copy(catalog=...)` 模拟“新证明”只验证纯门禁接受新时效，不是签名目录重新验签的证据；真实查询与安装的签名验证由既有路径覆盖。工作线程若在预留后排队至目录到期，可能仍读取 ZIP，但安装时的时效复核会拒绝；若要严格避免这部分流量，可在工作线程发起 HTTP 前再调用 `requireDownload()`。
+- M4 的 MainActivity 接线、真实旋转/后台/网络变化、进程死亡、自动提醒与安装确认仍待后续验收；本结论不标整个阶段 VERIFIED。
