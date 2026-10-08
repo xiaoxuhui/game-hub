@@ -1,0 +1,6 @@
+
+com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest:.
+
+Time: 0.057
+
+OK (1 test)

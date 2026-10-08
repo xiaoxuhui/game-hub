@@ -1,0 +1,21 @@
+
+com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest:
+Error in prepareInterruptedOperation(com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest):
+java.lang.IllegalArgumentException: Unsupported ZIP flags, compression or extra fields
+	at com.xiaoxuhui.gamehub.ResourceArchive.extract(ResourceArchive.kt:25)
+	at com.xiaoxuhui.gamehub.GameResourceStore.install(GameResourceStore.kt:195)
+	at com.xiaoxuhui.gamehub.GameResourceStore.install$default(GameResourceStore.kt:185)
+	at com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest.prepareInterruptedOperation(DynamicResourceProcessRecoveryTest.kt:102)
+
+
+Time: 0.297
+There was 1 failure:
+1) prepareInterruptedOperation(com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest)
+java.lang.IllegalArgumentException: Unsupported ZIP flags, compression or extra fields
+	at com.xiaoxuhui.gamehub.ResourceArchive.extract(ResourceArchive.kt:25)
+	at com.xiaoxuhui.gamehub.GameResourceStore.install(GameResourceStore.kt:195)
+	at com.xiaoxuhui.gamehub.GameResourceStore.install$default(GameResourceStore.kt:185)
+	at com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest.prepareInterruptedOperation(DynamicResourceProcessRecoveryTest.kt:102)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

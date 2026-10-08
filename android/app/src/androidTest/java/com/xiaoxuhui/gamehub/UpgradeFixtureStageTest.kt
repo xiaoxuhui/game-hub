@@ -14,7 +14,7 @@ class UpgradeFixtureStageTest {
         org.junit.Assume.assumeTrue("Requires signed fixture controller", arguments.getString("stageFixture") == "true")
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
-        assertEquals("0.3.0", context.packageManager.getPackageInfo(context.packageName, 0).versionName)
+        assertEquals("0.4.0", context.packageManager.getPackageInfo(context.packageName, 0).versionName)
         val target = File(context.cacheDir, "updates/fixture.apk")
         assertTrue(target.parentFile!!.isDirectory || target.parentFile!!.mkdirs())
         instrumentation.context.assets.open("newer-fixture.apk").use { input -> FileOutputStream(target).use { output -> input.copyTo(output); output.fd.sync() } }

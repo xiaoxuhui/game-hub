@@ -17,5 +17,5 @@ grep -q 'OK (1 test)' "$evidence/instrumentation.txt"
 
 adb install -r emulator-fixtures/fixture.apk | tee "$evidence/upgrade-install.txt"
 adb shell dumpsys package "$package" > "$evidence/package-after-upgrade.txt"
-grep 'versionCode=4' "$evidence/package-after-upgrade.txt"
+grep 'versionCode=5' "$evidence/package-after-upgrade.txt"
 adb shell run-as "$package" ls files/upgrade-marker.txt | tee "$evidence/preserved-data.txt"

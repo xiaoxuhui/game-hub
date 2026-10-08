@@ -1,0 +1,4 @@
+PASS state-before previousPid=10244 newPid=10296 sequence=1
+PASS state-after previousPid=10340 newPid=10390 sequence=1
+PASS retirement-half previousPid=10435 newPid=10484 sequence=2
+PASS three actual dynamic-resource process terminations and recovery assertions
