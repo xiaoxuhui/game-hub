@@ -2,7 +2,7 @@
 
 ## 范围
 
-PublicReleaseHttp 使用匿名 HTTPS、固定仓库 API、禁止自动重定向；下载逐跳复用既有 APK 的 HTTPS 主机白名单，不带凭据。连接10秒、单次读取15秒；元数据整轮总时限120秒、单资源下载300秒，实际读字节仍受预算约束。ETag/304 缓存仅在进程内，最多8条/8MiB；304无缓存不能显示最新。403/429保留Retry-After/RateLimit-Reset退避时间，默认15分钟，范围1分钟至24小时。
+PublicReleaseHttp 使用匿名 HTTPS、固定仓库 API、禁止自动重定向；下载逐跳复用既有 APK 的 HTTPS 主机白名单，不带凭据。连接10秒、元数据单次读取15秒、资源读取无进展30秒；元数据每通道总时限30秒、单资源下载600秒，实际读字节仍受预算约束。ETag/304 缓存仅在进程内，最多8条/8MiB；304无缓存不能显示最新。403/429保留Retry-After/RateLimit-Reset退避时间，无有效头默认1小时，范围1分钟至24小时。
 
 ResourceCatalogClient 查询固定非draft且prerelease的game-resources-v1，严格JSON分页资产全表（累计4MiB、每页100、最多100页）；验证分页固定路径/页号、重复资产id/name、唯一catalog.signed.json、实际大小/摘要、RSA签名和时效、payload所属releaseId、每个ZIP的id/name/size/digest/state全匹配。仅通过上述检查才返回ResourceOffer。
 
@@ -29,3 +29,9 @@ ResourceCatalogClient 查询固定非draft且prerelease的game-resources-v1，�
 9a42d2a9742415fe73fee99f389224e44d455f2d 提交后的独立复审已闭合缓存检查页伪造P1，允许进入M4。最终审阅意见归档于m3-webview-independent-review-20261008.md，真实设备10/10通过；M3完整恢复/导入导出等仍待后续。
 
 最终分页修订后 testDebugUnitTest/assembleDebug 通过，BUILD SUCCESSFUL in 40s；实际JVM35项，失败0、错误0。测试与构建日志副本附 m4-client-final-tests.txt，原始输出保留独立检出 .build。
+
+## 提交后审阅与批改
+
+35307cac50c9fcfcae0e8529cecf7a8759269fed 独立审阅确认签名/归属未见P1，但实现默认时限/退避与设计§3.7不一致，且304返回前未复核等待期间取消。已按设计改为每通道30秒、资源600秒/无进展30秒、默认退避1小时；所有responseCode等待之后再复核取消/总deadline，新增模拟等待中取消的304回归。另满100条无Link会主动读取固定下一页直到短页，实际证明完整表，合法100条末页+空页通过、隐藏重复资产拒绝。
+
+修订后JVM36项、0失败/0错误；testDebugUnitTest/assembleDebug成功。原始日志留独立检出 .build\m4-client-review-fixed-tests.txt 及 m4-client-complete-pages-tests.txt。归档副本规范化行尾，不修改实际原始输出。

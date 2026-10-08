@@ -26,7 +26,12 @@ internal class ResourceCatalogClient(private val publicKey: ByteArray, private v
                 if (parsed.groupValues[2] == "next") parsed.groupValues[1] else null
             } ?: emptyList()
             require(next.size <= 1) { "重复分页链接" }
-            if (next.isEmpty()) break
+            if (next.isEmpty()) {
+                if (items.length() < 100) break
+                // A full last page can legitimately have no next Link. Probe the fixed next page
+                // instead of claiming completeness while hidden duplicate names could remain.
+                page++; continue
+            }
             val target = java.net.URI(next.single()); val query = target.rawQuery?.split('&') ?: emptyList()
             require(items.length() == 100 && target.scheme == "https" && target.host == "api.github.com" && target.port == -1 && target.userInfo == null && target.fragment == null &&
                 target.rawPath == "/repos/xiaoxuhui/game-hub/releases/$releaseId/assets" && query.size == 2 && query.toSet() == setOf("per_page=100", "page=${page + 1}")) { "资产分页地址不可信" }
@@ -53,7 +58,7 @@ internal class ResourceCatalogClient(private val publicKey: ByteArray, private v
         val root = directory.canonicalFile; require(root.isDirectory || root.mkdirs())
         require(root.usableSpace >= game.archiveBytes + ResourcePolicy.FREE_RESERVE) { "下载空间不足" }
         val file = File(root, "resource-${game.id}-${java.util.UUID.randomUUID()}.part")
-        val deadline = PublicReleaseHttp.deadline(300)
+        val deadline = PublicReleaseHttp.deadline(600)
         try {
             http.asset(game.assetId, game.archiveBytes, deadline, cancelled) { input ->
                 val copied = FileOutputStream(file).use { output -> DownloadPayload.copy(input, output, game.archiveBytes, cancelled, progress).also { output.fd.sync() } }

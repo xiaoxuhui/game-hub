@@ -13,13 +13,13 @@ import java.security.Signature
 import java.util.Base64
 
 class ResourceCatalogClientTest {
-    private data class Reply(val body: ByteArray = byteArrayOf(), val status: Int = 200, val headers: Map<String, String> = emptyMap())
+    private data class Reply(val body: ByteArray = byteArrayOf(), val status: Int = 200, val headers: Map<String, String> = emptyMap(), val beforeStatus: () -> Unit = {})
     private class Fake(private val address: String, private val reply: Reply) : HttpURLConnection(URL(address)) {
         var closed = false
         override fun connect() {}
         override fun disconnect() { closed = true }
         override fun usingProxy() = false
-        override fun getResponseCode() = reply.status
+        override fun getResponseCode(): Int { reply.beforeStatus(); return reply.status }
         override fun getInputStream() = ByteArrayInputStream(reply.body)
         override fun getHeaderField(name: String) = reply.headers[name]
         override fun getContentLengthLong() = -1L // actual byte budget must still apply.
@@ -88,6 +88,9 @@ class ResourceCatalogClientTest {
         assertEquals(4, f.client().query().catalog.games.size)
         f.network.replies[f.pageUrl] = f.network.replies[f.pageUrl]!!.copy(headers = mapOf("Link" to "<https://evil.example/assets>; rel=\"next\"")); rejected { f.client().query() }
         f.network.replies[f.pageUrl] = f.network.replies[f.pageUrl]!!.copy(headers = mapOf("Link" to "not-a-valid-next-link")); rejected { f.client().query() }
+        f.network.replies[f.pageUrl] = Reply(JSONArray(f.assets + fillers.take(95)).toString().toByteArray())
+        f.network.replies[next] = Reply("[]".toByteArray()); assertEquals(4, f.client().query().catalog.games.size)
+        f.network.replies[next] = Reply(JSONArray(listOf(f.assets.last())).toString().toByteArray()); rejected { f.client().query() }
     }
     @Test fun actualByteBudget304WithoutCacheAndRateLimitAreExplicitFailures() {
         val network = Network(); val url = "${PublicReleaseHttp.API_ROOT}/releases/latest"; val http = PublicReleaseHttp(network::open, now = { 100000L })
@@ -96,6 +99,17 @@ class ResourceCatalogClientTest {
         network.replies[url] = Reply(status = 429, headers = mapOf("Retry-After" to "120"))
         try { http.metadata(url, 10, PublicReleaseHttp.deadline()); fail() } catch (e: UpdateRateLimited) { assertEquals(220000L, e.until) }
         network.replies[url] = Reply(status = 404); try { http.metadata(url, 10, PublicReleaseHttp.deadline()); fail() } catch (e: PublicReleaseMissing) { assertNotNull(e) }
+        network.replies[url] = Reply(status = 403)
+        try { http.metadata(url, 10, PublicReleaseHttp.deadline()); fail() } catch (e: UpdateRateLimited) { assertEquals(3700000L, e.until) }
+        assertTrue(network.calls.all { it.closed })
+    }
+    @Test fun cancellationWhileResponseCodeWaitsCannotReturnCached304() {
+        val network = Network(); val url = "${PublicReleaseHttp.API_ROOT}/releases/latest"; val http = PublicReleaseHttp(network::open)
+        network.replies[url] = Reply("{}".toByteArray(), headers = mapOf("ETag" to "cached"))
+        http.metadata(url, 10, PublicReleaseHttp.deadline())
+        var cancelled = false
+        network.replies[url] = Reply(status = 304, beforeStatus = { cancelled = true })
+        rejected { http.metadata(url, 10, PublicReleaseHttp.deadline()) { cancelled } }
         assertTrue(network.calls.all { it.closed })
     }
     @Test fun resourceDownloadChecksActualHashSizeCancellationAndCleansPartial() {

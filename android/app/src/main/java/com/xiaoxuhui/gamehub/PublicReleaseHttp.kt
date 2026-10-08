@@ -24,7 +24,9 @@ internal class PublicReleaseHttp(private val connections: (String) -> HttpURLCon
         val connection = open(url, "application/vnd.github+json", cached?.etag)
         try {
             check(deadline, cancelled)
-            when (val status = connection.responseCode) {
+            val status = connection.responseCode
+            check(deadline, cancelled)
+            when (status) {
                 304 -> return cached?.let { require(it.bytes.size <= limit); PublicBytes(it.bytes.clone(), it.link) } ?: error("304 没有可用缓存，不能判断最新")
                 200 -> {
                     require(connection.contentLengthLong <= limit || connection.contentLengthLong == -1L) { "发布信息过大" }
@@ -50,7 +52,9 @@ internal class PublicReleaseHttp(private val connections: (String) -> HttpURLCon
             check(deadline, cancelled); require(UpdatePolicy.allowDownloadUrl(url))
             val connection = open(url, "application/octet-stream", null)
             try {
-                when (val status = connection.responseCode) {
+                val status = connection.responseCode
+                check(deadline, cancelled)
+                when (status) {
                     200 -> {
                         require(connection.contentLengthLong <= expectedBytes || connection.contentLengthLong == -1L) { "资源超过签名声明的大小" }
                         connection.inputStream.use { raw ->
@@ -73,7 +77,7 @@ internal class PublicReleaseHttp(private val connections: (String) -> HttpURLCon
         error("资源下载未完成")
     }
     private fun open(url: String, accept: String, etag: String?) = connections(url).apply {
-        connectTimeout = 10000; readTimeout = 15000; instanceFollowRedirects = false
+        connectTimeout = 10000; readTimeout = if (accept == "application/octet-stream") 30000 else 15000; instanceFollowRedirects = false
         setRequestProperty("Accept", accept); setRequestProperty("User-Agent", "game-hub-android")
         if (etag != null) setRequestProperty("If-None-Match", etag)
     }
@@ -84,11 +88,11 @@ internal class PublicReleaseHttp(private val connections: (String) -> HttpURLCon
                 ?: runCatching { SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US).apply { timeZone = TimeZone.getTimeZone("GMT"); isLenient = false }.parse(value)?.time }.getOrNull()
         }
         val reset = connection.getHeaderField("X-RateLimit-Reset")?.toLongOrNull()?.takeIf { it in 1..Long.MAX_VALUE / 1000 }?.times(1000)
-        return maxOf(retry ?: 0, reset ?: 0).takeIf { it > time }?.coerceIn(time + 60000, time + 86400000) ?: time + 900000
+        return maxOf(retry ?: 0, reset ?: 0).takeIf { it > time }?.coerceIn(time + 60000, time + 86400000) ?: time + 3600000
     }
     companion object {
         const val API_ROOT = "https://api.github.com/repos/xiaoxuhui/game-hub"
-        fun deadline(seconds: Long = 120) = System.nanoTime() + seconds * 1000000000
+        fun deadline(seconds: Long = 30) = System.nanoTime() + seconds * 1000000000
         fun check(deadline: Long, cancelled: () -> Boolean) { require(!cancelled()) { "已取消更新任务" }; require(System.nanoTime() < deadline) { "更新请求超过总时限" } }
         fun bounded(input: InputStream, limit: Int, deadline: Long, cancelled: () -> Boolean): ByteArray {
             val output = ByteArrayOutputStream(); val buffer = ByteArray(8192)
