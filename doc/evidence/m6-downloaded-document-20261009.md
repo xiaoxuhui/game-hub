@@ -4,11 +4,11 @@
 - 临时RSA资源夹具使用四个真实内置基线文件构建带入口注释的code2 ZIP，生产GameResourceStore验签/安装/激活并openSession；断网会话contentCode=2。通过现有MainActivity.openGamePrepared与实际GameContentResolver/WebChromeClient/SaveBridge，四游戏原有页面按钮及真实DocumentsUI路径操作。此夹具会话不经过启动缓存迁移门禁，该门禁另见已闭环WebView/生命周期测试；不把此称为生产公钥或线上资源发行。
 - `assembleReleaseAndroidTest -PgameHubTestBuildType=release`退出0，仪器以同发行证书签署（2287d2da6dc0e7a067ea8770abd0b479f22cdb49ec345217e9f50345cca5b383）。测试源码主仓库/独立检出摘要一致，见source-hash.json。
 
-## 实际验证
+## 7aa34ce历史首轮验证（EML差异断言未闭环）
 
-命令：`adb -s emulator-5564 shell am instrument -w -e class com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest -e downloadedDocuments true com.xiaoxuhui.gamehub.test/androidx.test.runner.AndroidJUnitRunner`。最终 `OK (1 test)`，40.946秒。单用例循环包含四游戏、每次实际导出→系统选取自产JSON导入→再次导出；每游戏结束检查无会话泄漏。
+命令：`adb -s emulator-5564 shell am instrument -w -e class com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest -e downloadedDocuments true com.xiaoxuhui.gamehub.test/androidx.test.runner.AndroidJUnitRunner`。首轮 `OK (1 test)`，40.946秒；这是批改前历史结果，EML原样导入的差异恢复证据不足，不作为最终四桥闭环。最终批改版57.091秒见后文final-device/outcomes。单用例循环包含四游戏、每次实际导出→系统选取自产JSON导入→再次导出；每游戏结束检查无会话泄漏。
 
-| 下载会话 | 实际游戏结果 | 再导出规范化JSON字节数 / SHA-256 |
+| 历史首轮下载会话 | 当时游戏结果（EML弱断言） | 历史再导出规范化JSON字节数 / SHA-256 |
 |---|---|---|
 | Conway #2 | 导入generation1234，真实toast成功；再导出generation1234、alive数组与首次完全一致 | 5018 / b1e9750247b4c66f7af63be706d68fb8f91fd307c62e2dfde4e978d47a559da9 |
 | EML #2 | 文件Reader真实加载首次导出列表，清空旧notice后出现“导入成功”；再导出JSON与首次逐值一致 | 409 / 563cd92913d61994e3d53499241b4441440efeef7dd77fcb92e0e9c4fdf58701 |
