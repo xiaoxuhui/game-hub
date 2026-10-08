@@ -654,7 +654,7 @@ class MainActivity : ComponentActivity() {
                     startActivity(Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE))
                 }.onFailure { toast("无法打开外部链接") }
             }
-            if (uri.host == ASSET_DOMAIN) showError("已阻止未登记或跨项目的页面跳转")
+            if (uri.host == ASSET_DOMAIN) toast("已阻止未登记或跨项目的页面跳转")
             return true
         }
 
@@ -674,14 +674,14 @@ class MainActivity : ComponentActivity() {
         }
 
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
-            if (view === webView && (request.isForMainFrame || resolver.allowed(request.url))) showError("${game.name} 加载失败，请返回大厅后重试")
+            if (view === webView && (request.isForMainFrame || resolver.allowed(request.url))) showResourceError("${game.name} 加载失败，请返回大厅后重试")
         }
 
         override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
             if (view !== webView || response.statusCode < 400) return
             val path = request.url.path ?: "未知路径"
             if (request.isForMainFrame || resolver.allowed(request.url)) {
-                showError("${game.name} 资源缺失：$path")
+                showResourceError("${game.name} 资源缺失：$path")
             } else {
                 Log.w("GameHub", "Blocked or optional resource: $path (${response.statusCode})")
             }
@@ -701,7 +701,8 @@ class MainActivity : ComponentActivity() {
         root.addView(panel, FrameLayout.LayoutParams(-1, -1))
     }
 
-    private fun showError(message: String) = showError(message, resourceSession?.game?.identity)
+    private fun showResourceError(message: String) = showError(message, resourceSession?.game?.identity)
+    private fun showError(message: String) = showError(message, null)
 
     private fun showError(message: String, failedIdentity: String?) {
         if (loadFailed && webView == null) return

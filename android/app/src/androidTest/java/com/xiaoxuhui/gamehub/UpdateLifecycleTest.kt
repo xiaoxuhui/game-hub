@@ -10,6 +10,42 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateLifecycleTest {
+    @Test fun blockedCrossGameNavigationKeepsVerifiedDownloadedSessionAndDoesNotQuarantineIt() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        ResourceDeviceFixture(context).use { fixture ->
+            fixture.install("light")
+            val session = fixture.store.openSession("light", true)
+            val before = fixture.store.selection("light")
+            val runtime = ResourceRuntime.get(context)
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                scenario.onActivity { activity ->
+                    UpdateCoordinator.get(context).presence(true, false, false)
+                    MainActivity::class.java.getDeclaredField("resourceRuntime").apply { isAccessible = true }.set(activity, runtime)
+                    val games = MainActivity::class.java.getDeclaredField("games").apply { isAccessible = true }.get(activity) as List<*>
+                    val game = games.first { item -> item!!.javaClass.getDeclaredField("id").apply { isAccessible = true }.get(item) == "light" }!!
+                    MainActivity::class.java.getDeclaredMethod("openGamePrepared", game.javaClass, android.os.Bundle::class.java, ResourceSession::class.java, ResourceRuntime::class.java)
+                        .apply { isAccessible = true }.invoke(activity, game, null, session, runtime)
+                    val field = MainActivity::class.java.getDeclaredField("webView").apply { isAccessible = true }
+                    val view = field.get(activity) as WebView
+                    val request = object : android.webkit.WebResourceRequest {
+                        override fun getUrl() = android.net.Uri.parse("https://appassets.androidplatform.net/assets/games/conway/index.html")
+                        override fun isForMainFrame() = true
+                        override fun isRedirect() = false
+                        override fun hasGesture() = true
+                        override fun getMethod() = "GET"
+                        override fun getRequestHeaders() = emptyMap<String, String>()
+                    }
+                    assertTrue(view.webViewClient.shouldOverrideUrlLoading(view, request))
+                    assertSame(view, field.get(activity))
+                    assertFalse(texts(activity.window.decorView).contains("返回大厅并管理资源"))
+                }
+                assertTrue(fixture.store.hasSessions())
+                assertEquals(before, fixture.store.selection("light"))
+            }
+            assertFalse(fixture.store.hasSessions())
+            assertEquals(before, fixture.store.selection("light"))
+        }
+    }
     @Test fun loadingErrorDestroysActualViewRejectsOldBridgeAndKeepsActualLightSave() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         lateinit var bridge: Any
