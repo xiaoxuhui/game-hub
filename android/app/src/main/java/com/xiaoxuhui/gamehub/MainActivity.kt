@@ -254,7 +254,7 @@ class MainActivity : ComponentActivity() {
                     minimumHeight = dp(cardMinDp)
                     setPadding(dp(8), dp(12), dp(8), dp(12))
                     background = rounded(0xFF1B2330.toInt(), dp(16)).apply { setStroke(dp(1), accent) }
-                    contentDescription = "${game.name}，版本 ${game.version}，提交 ${game.revision.take(10)}，打开"
+                    contentDescription = "${game.name}，本地资源核验中，打开"
                     isClickable = true
                     isFocusable = true
                     setOnClickListener { openGame(game) }
@@ -273,7 +273,7 @@ class MainActivity : ComponentActivity() {
                     maxLines = 2
                     setPadding(0, dp(9), 0, 0)
                 })
-                card.addView(label("v${game.version}  ·  ${game.revision.take(6)}", 9.5f, MUTED, false).apply {
+                card.addView(label("本地资源核验中", 9.5f, MUTED, false).apply {
                     gameVersionLabels[game.id] = this
                     gravity = Gravity.CENTER
                     maxLines = 2
@@ -308,13 +308,15 @@ class MainActivity : ComponentActivity() {
         for (game in games) {
             val local = state.localResources[game.id]
             val actual = when {
-                local?.selection?.active == "builtin" || local == null -> "v${game.version} · ${game.revision.take(6)} · 内置"
+                local == null -> if (state.localReadError != null || state.localLoaded) "本地状态不可用 · 待恢复" else "本地资源核验中"
+                local.selection.active == "builtin" -> "v${game.version} · ${game.revision.take(6)} · 内置"
                 local.active != null -> "v${local.active.version} · ${local.active.sourceRevision.take(6)} · 已下载"
                 else -> "资源校验失败 · 待恢复"
             }
             val remote = state.catalogGames.singleOrNull { it.id == game.id }
             val code = local?.selection?.active?.substringBefore('-')?.toIntOrNull() ?: 1
             val marker = when {
+                local == null -> null
                 local?.readyError != null -> "候选损坏，旧版保留"
                 local?.ready != null && !local.readyFresh -> "候选已过期，请检查"
                 local?.ready != null -> "#${local.ready.contentCode} 待生效"
@@ -369,6 +371,7 @@ class MainActivity : ComponentActivity() {
         description("大厅：${state.apkStatus}\n最后成功检查：${checkedTime(state.apkCheckedAt)}")
         description("游戏：${state.resourceStatus}\n最后成功检查：${checkedTime(state.resourcesCheckedAt)}")
         state.localDiagnostic?.let { description("本地资源诊断：$it；存档未删除") }
+        state.localReadError?.let { description("本地资源读取失败：$it；存档未删除") }
         if (state.task != null) {
             column.addView(label("${state.task}：${state.done / 1024} / ${state.total / 1024} KiB", 13f, Color.WHITE, false).apply { tag = "update-progress" })
             detailButton(column, "取消本次下载", state.total > 0) { updates.cancel() }
@@ -390,6 +393,7 @@ class MainActivity : ComponentActivity() {
         }
         for (game in games) {
             val local = state.localResources[game.id]
+            if (local == null) description("${game.name}：" + if (state.localReadError != null || state.localLoaded) "本地状态不可用，待恢复" else "本地资源核验中")
             if (local != null) {
                 val active = local.active
                 description("${game.name} · 实际版本：" + when {

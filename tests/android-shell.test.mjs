@@ -35,7 +35,7 @@ test('compact lobby uses four fixed source icons and clickable cards', () => {
     assert.ok(existsSync(join(root, `android/app/src/main/res/drawable-nodpi/game_${id}.png`)));
     assert.match(activity, new RegExp(`R\\.drawable\\.game_${id}`));
   }
-  assert.match(activity, /contentDescription = "\$\{game\.name\}，版本/);
+  assert.match(activity, /contentDescription = "\$\{game\.name\}，本地资源核验中/);
   assert.doesNotMatch(activity, /"进入项目"/);
   assert.match(activity, /blockNetworkLoads\s*=\s*true/);
 });

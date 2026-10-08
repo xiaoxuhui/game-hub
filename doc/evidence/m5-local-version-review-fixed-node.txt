@@ -1,0 +1,39 @@
+✔ Android application identity and minimum API stay independent of source APKs (3.6496ms)
+✔ Manifest has one launcher and only the planned update permission (3.501ms)
+✔ compact lobby uses four fixed source icons and clickable cards (2.0041ms)
+✔ CI builds pinned sources and checks APK without a publish step (1.3968ms)
+✔ four original export bridge names and a file chooser are wired (0.9844ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: d0fc248126cf1e017cf0b1771a42bceb7e1d5acfc543bcbfb8a535ceb076f438
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.998ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (2.8633ms)
+✔ HTML references exclude external and fragment links while preserving local assets (2.8834ms)
+✔ missing local HTML reference stops bundling (28.2252ms)
+✔ manifest hashes are stable and change when a resource changes (16.2538ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (7199.2726ms)
+✔ detached programmatic Blob click saves content before immediate revoke (8.6762ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (2.5214ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (3.5838ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (2.3865ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (2.3628ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.9748ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (7.4762ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (188.2535ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (4.4126ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (5.0421ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (155.084ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7551.5564

@@ -68,5 +68,14 @@ internal class ResourceDeviceFixture(val context: Context) : AutoCloseable {
         return local.toByteArray()
     }
     fun install(id: String) { store.install(catalog.games.single { it.id == id }, envelope, archives.getValue(id)) }
+    fun renewal(sequence: Int, changedId: String? = null): ByteArray {
+        val payload = JSONObject(String(Base64.getDecoder().decode(JSONObject(String(envelope)).getString("payloadBase64"))))
+        payload.put("catalogSequence", sequence.toString())
+        val games = payload.getJSONArray("games")
+        for (i in 0 until games.length()) if (games.getJSONObject(i).getString("id") == changedId) games.getJSONObject(i).put("version", "99.0.0")
+        val bytes = payload.toString().toByteArray()
+        val signature = Signature.getInstance("SHA256withRSA").run { initSign(pair.private); update(bytes); sign() }
+        return JSONObject().put("envelopeVersion", 1).put("keyId", ResourcePolicy.KEY_ID).put("payloadBase64", Base64.getEncoder().encodeToString(bytes)).put("signatureBase64", Base64.getEncoder().encodeToString(signature)).toString().toByteArray()
+    }
     override fun close() { require(root.canonicalFile.parentFile == context.cacheDir.canonicalFile); root.deleteRecursively() }
 }

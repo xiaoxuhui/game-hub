@@ -15,6 +15,7 @@ internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: L
     val catalogGames: List<ResourceGame> = emptyList(), val apkCheckedAt: Long? = null, val resourcesCheckedAt: Long? = null,
     val localResources: Map<String, LocalResourceInfo> = emptyMap(),
     val localDiagnostic: String? = null,
+    val localLoaded: Boolean = false, val localReadError: String? = null,
     val apkStatus: String = "尚未检查大厅更新", val resourceStatus: String = "尚未检查游戏更新",
     val busy: Boolean = false, val task: String? = null, val done: Long = 0, val total: Long = 0,
     val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false,
@@ -223,9 +224,9 @@ internal class UpdateCoordinator private constructor(context: Context) {
     private fun readLocalResources() {
         try {
             val current = runtime.store.describeAll(); val diagnostic = runtime.store.failure()
-            publish { it.copy(localResources = current, localDiagnostic = diagnostic) }
+            publish { it.copy(localResources = current, localDiagnostic = diagnostic, localLoaded = true, localReadError = null) }
         }
-        catch (error: Exception) { publish { it.copy(resourceStatus = "本地资源状态不可用：${error.message}；存档保留") } }
+        catch (error: Exception) { publish { it.copy(localResources = emptyMap(), localLoaded = true, localReadError = error.message ?: "读取失败", resourceStatus = "本地资源状态不可用：${error.message}；存档保留") } }
     }
     fun unmeteredWifi(): Boolean {
         val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork) ?: return false

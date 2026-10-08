@@ -10,6 +10,46 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateLifecycleTest {
+    @Test fun unknownAndFailedLocalScanNeverClaimBuiltinOrRemoteUpdates() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        ResourceDeviceFixture(context).use { fixture ->
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                val render = MainActivity::class.java.getDeclaredMethod("renderUpdates", UpdateSnapshot::class.java).apply { isAccessible = true }
+                scenario.onActivity { activity ->
+                    render.invoke(activity, UpdateSnapshot(catalogGames = fixture.catalog.games))
+                    var labels = texts(activity.window.decorView)
+                    assertEquals(4, labels.count { it == "本地资源核验中" })
+                    assertFalse(labels.any { it.contains("内置") || it.contains("可更新") })
+                    render.invoke(activity, UpdateSnapshot(localLoaded = true, localReadError = "Injected scan failure", catalogGames = fixture.catalog.games))
+                    labels = texts(activity.window.decorView)
+                    assertEquals(4, labels.count { it == "本地状态不可用 · 待恢复" })
+                    assertFalse(labels.any { it.contains("内置") || it.contains("可更新") })
+                    render.invoke(activity, UpdateSnapshot(localResources = fixture.store.describeAll(), localLoaded = true))
+                    assertEquals(4, texts(activity.window.decorView).count { it.contains("内置") })
+                }
+            }
+        }
+    }
+    @Test fun oneOfFourRenewalFailuresDoesNotPreventOthersAndClearsAfterItsSuccess() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        ResourceDeviceFixture(context).use { fixture ->
+            fixture.catalog.games.forEach { fixture.install(it.id) }
+            val changed = fixture.renewal(3, "light")
+            fixture.store.acceptCatalog(changed); fixture.store.refreshReadyProof(changed)
+            assertTrue(fixture.store.failure()!!.startsWith("light："))
+            fixture.catalog.games.forEach { game ->
+                val proof = java.io.File(fixture.root, "store/versions/${game.id}/${game.identity}/catalog.signed.json").readBytes()
+                assertArrayEquals(if (game.id == "light") fixture.envelope else changed, proof)
+                assertEquals(game, fixture.store.describeAll().getValue(game.id).ready)
+            }
+            val valid = fixture.renewal(4)
+            fixture.store.acceptCatalog(valid); fixture.store.refreshReadyProof(valid)
+            assertNull(fixture.store.failure())
+            fixture.catalog.games.forEach { game ->
+                assertArrayEquals(valid, java.io.File(fixture.root, "store/versions/${game.id}/${game.identity}/catalog.signed.json").readBytes())
+            }
+        }
+    }
     @Test fun cardsDisplayActualCandidateAndActiveVersionsWithoutPromotingRemoteVersion() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         ResourceDeviceFixture(context).use { fixture ->

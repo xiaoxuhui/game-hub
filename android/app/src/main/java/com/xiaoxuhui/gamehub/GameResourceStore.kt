@@ -28,6 +28,7 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
     private val references = HashMap<String, Int>()
     private var stateFailure: String? = null
     private var candidateFailure: String? = null
+    private val renewalFailures = mutableMapOf<String, String>()
     private val journalNames = listOf("highest-a.signed.json", "highest-b.signed.json")
     init {
         require(directory.isDirectory || directory.mkdirs())
@@ -60,7 +61,7 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
         stateFile.write(JSONObject().put("schemaVersion", 1).put("sequence", nextSequence).put("catalogHash", nextHash).put("games", games).toString().toByteArray())
         selections = next; sequence = nextSequence; catalogHash = nextHash
     }
-    fun failure(): String? = synchronized(lock) { stateFailure ?: candidateFailure }
+    fun failure(): String? = synchronized(lock) { stateFailure ?: renewalFailures.takeIf { it.isNotEmpty() }?.entries?.joinToString("；") { "${it.key}：${it.value}" } ?: candidateFailure }
     fun selection(id: String): ResourceSelection = synchronized(lock) { selections.getValue(id) }
     fun describeAll(): Map<String, LocalResourceInfo> = synchronized(lock) {
         selections.mapValues { (id, selection) ->
@@ -125,15 +126,17 @@ internal class GameResourceStore(directory: File, private val hostCode: Int, pri
         require(stateFailure == null)
         val catalog = ResourcePolicy.verifyEnvelope(envelope, publicKey, now = now())
         require(catalog.sequence == sequence && catalog.payloadSha256 == catalogHash) { "Accept the fresh catalog before renewing candidates" }
+        renewalFailures.keys.retainAll(catalog.games.filter { selections.getValue(it.id).ready == it.identity }.map { it.id }.toSet())
         for (game in catalog.games) {
             val current = selections.getValue(game.id)
             if (current.ready != game.identity || current.active == game.identity || game.contentCode in current.quarantine || !game.compatible(hostCode, ResourcePolicy.contract(game.id))) continue
             try {
                 val verified = verifyVersion(game.id, game.identity)
-                require(verified.files == game.files && verified.entry == game.entry && verified.storageContract == game.storageContract) { "Candidate manifest changed under the same archive identity" }
+                require(verified == game) { "Candidate metadata changed under the same archive identity" }
                 require(usedBytes(directory) + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "候选证明续期空间不足" }
                 proofFile(File(version(game.id, game.identity), "catalog.signed.json")).write(envelope)
-            } catch (error: Exception) { candidateFailure = "候选证明续期失败，原版本保留：${error.message}" }
+                renewalFailures.remove(game.id)
+            } catch (error: Exception) { renewalFailures[game.id] = "候选证明续期失败，原版本保留：${error.message}" }
         }
     }
     fun install(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean = { false }) = synchronized(lock) {
