@@ -3,6 +3,9 @@ package com.xiaoxuhui.gamehub
 /** Only these two application-defined trust policies may interpret installation proofs. */
 internal enum class ResourceStorePolicy {
     BUILTIN, DYNAMIC;
+    val releaseTag get() = if (this == BUILTIN) "game-resources-v1" else "game-resources-v2"
+    val updateChannel get() = if (this == BUILTIN) "resources" else "dynamic"
+    val downloadKind get() = if (this == BUILTIN) UpdateDownloadKind.RESOURCE else UpdateDownloadKind.DYNAMIC
     val baselineCode get() = if (this == BUILTIN) 1 else 0
     val initialIds get() = if (this == BUILTIN) setOf("conway", "eml", "light", "turing") else emptySet()
     fun validId(id: String) = if (this == BUILTIN) id in initialIds else DynamicGamePolicy.validId(id)

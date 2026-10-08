@@ -28,40 +28,64 @@ class ResourceCatalogClientTest {
         val replies = mutableMapOf<String, Reply>(); val calls = mutableListOf<Fake>()
         fun open(url: String): HttpURLConnection = Fake(url, replies[url] ?: error("Unexpected endpoint: $url")).also { calls.add(it) }
     }
-    private class Fixture {
+    private class Fixture(val policy: ResourceStorePolicy = ResourceStorePolicy.BUILTIN, available: Boolean = true) {
         val now = 1791417600000L
         val pair = KeyPairGenerator.getInstance("RSA").apply { initialize(3072) }.generateKeyPair()
         val network = Network()
         val root = PublicReleaseHttp.API_ROOT
-        val releaseUrl = "$root/releases/tags/game-resources-v1"
+        val releaseUrl = "$root/releases/tags/${policy.releaseTag}"
         val pageUrl = "$root/releases/10/assets?per_page=100&page=1"
         val envelope: ByteArray
         val catalog: ResourceCatalog
         val assets: List<JSONObject>
         init {
-            val repos = mapOf("conway" to "conway-life-game", "eml" to "EML", "light" to "light_game", "turing" to "turing-machine-simulator")
+            val dynamic = policy == ResourceStorePolicy.DYNAMIC
+            val repos = if(dynamic) mapOf("memory-demo" to "game-hub") else mapOf("conway" to "conway-life-game", "eml" to "EML", "light" to "light_game", "turing" to "turing-machine-simulator")
             val games = repos.entries.mapIndexed { index, (id, repo) ->
                 val entry = if (id == "eml") "eml-workbench.html" else "index.html"
                 JSONObject().put("id", id).put("version", "1.0.0").put("contentCode", 2).put("sourceRepository", "https://github.com/xiaoxuhui/$repo.git").put("sourceRevision", "a".repeat(40))
-                    .put("minHostVersionCode", 3).put("maxHostVersionCode", 100).put("resourceProtocol", 1).put("storageContract", ResourcePolicy.contract(id)).put("entryPage", entry)
+                    .put("minHostVersionCode", if(dynamic) 4 else 3).put("maxHostVersionCode", 100).put("resourceProtocol", if(dynamic) 2 else 1).put("storageContract", policy.contract(id)).put("entryPage", entry)
                     .put("assetId", index + 100).put("archiveBytes", 100).put("archiveSha256", "b".repeat(64)).put("releaseNotes", "fixture")
                     .put("files", JSONArray(listOf(entry, "LICENSE").map { path -> JSONObject().put("path", path).put("bytes", 10).put("sha256", "c".repeat(64)).put("mime", ResourcePolicy.mime(path)) }))
+                    .also { if(dynamic) it.put("bridgeProtocol",1).put("displayName","Memory fixture").put("iconKind","puzzle").put("available",available) }
             }
-            val payload = JSONObject().put("schemaVersion", 1).put("channel", "game-hub-resources-v1").put("releaseId", 10).put("catalogSequence", "2")
+            val payload = JSONObject().put("schemaVersion", if(dynamic) 2 else 1).put("channel", if(dynamic) DynamicGamePolicy.CHANNEL else "game-hub-resources-v1").put("releaseId", 10).put("catalogSequence", "2")
                 .put("issuedAt", "2026-10-08T00:00:00.000Z").put("expiresAt", "2026-10-09T00:00:00.000Z").put("games", JSONArray(games)).toString().toByteArray()
             val signature = Signature.getInstance("SHA256withRSA").run { initSign(pair.private); update(payload); sign() }
             envelope = JSONObject().put("envelopeVersion", 1).put("keyId", ResourcePolicy.KEY_ID).put("payloadBase64", Base64.getEncoder().encodeToString(payload)).put("signatureBase64", Base64.getEncoder().encodeToString(signature)).toString().toByteArray()
-            catalog = ResourcePolicy.verifyEnvelope(envelope, pair.public.encoded, now = now)
+            catalog = policy.fresh(envelope, pair.public.encoded, now)
             assets = listOf(asset(50, "catalog.signed.json", envelope.size.toLong(), ResourcePolicy.sha256(envelope))) + catalog.games.map { asset(it.assetId, it.assetName, it.archiveBytes, it.archiveSha256) }
-            network.replies[releaseUrl] = Reply(JSONObject().put("id", 10).put("draft", false).put("prerelease", true).put("tag_name", "game-resources-v1").toString().toByteArray(), headers = mapOf("ETag" to "release"))
+            network.replies[releaseUrl] = Reply(JSONObject().put("id", 10).put("draft", false).put("prerelease", true).put("tag_name", policy.releaseTag).toString().toByteArray(), headers = mapOf("ETag" to "release"))
             network.replies[pageUrl] = Reply(JSONArray(assets).toString().toByteArray(), headers = mapOf("ETag" to "assets"))
             network.replies["$root/releases/assets/50"] = Reply(envelope)
         }
         fun http() = PublicReleaseHttp(network::open, now = { now })
-        fun client(http: PublicReleaseHttp = http(), clock: () -> Long = { now }) = ResourceCatalogClient(pair.public.encoded, http, clock)
+        fun client(http: PublicReleaseHttp = http(), clock: () -> Long = { now }) = ResourceCatalogClient(pair.public.encoded, http, clock, policy)
         fun asset(id: Long, name: String, size: Long, hash: String) = JSONObject().put("id", id).put("name", name).put("size", size).put("digest", "sha256:$hash").put("state", "uploaded")
     }
     private fun rejected(block: () -> Unit) { try { block(); fail("Expected rejection") } catch (error: Exception) { assertNotNull(error) } }
+    @Test fun dynamicCatalogHasFixedSeparateChannelAndCannotBeParsedByDefaultV1Client() {
+        val f=Fixture(ResourceStorePolicy.DYNAMIC)
+        val offer=f.client().query();assertEquals(ResourceStorePolicy.DYNAMIC,offer.policy);assertEquals("memory-demo",offer.catalog.games.single().id)
+        val gate=UpdateTaskGate({0},{f.now},{_,_->}).apply {setPresence(true,true);setNetwork(UpdateNetwork(true,true))}
+        val token=offer.reserveDownload(offer.catalog.games.single(),gate,true,false,f.now)!!
+        assertEquals(UpdateDownloadKind.DYNAMIC,token.kind);gate.finish(token)
+        val v1Url="${f.root}/releases/tags/game-resources-v1"
+        // Even when a v1 endpoint returns correctly tagged metadata for v2 bytes, the v1 verifier rejects it.
+        f.network.replies[v1Url]=Reply(JSONObject().put("id",10).put("draft",false).put("prerelease",true).put("tag_name","game-resources-v1").toString().toByteArray())
+        rejected {ResourceCatalogClient(f.pair.public.encoded,f.http(),{f.now}).query()}
+        f.network.replies[f.releaseUrl]=Reply(JSONObject().put("id",10).put("draft",false).put("prerelease",true).put("tag_name","game-resources-v1").toString().toByteArray())
+        rejected {f.client().query()}
+        assertTrue(f.network.calls.all {it.closed})
+    }
+    @Test fun retiredDynamicAssetsMustRemainBoundButCannotReserveDownload() {
+        val f=Fixture(ResourceStorePolicy.DYNAMIC,available=false);val offer=f.client().query();val game=offer.catalog.games.single()
+        assertFalse(game.available)
+        val gate=UpdateTaskGate({0},{f.now},{_,_->}).apply {setPresence(true,true);setNetwork(UpdateNetwork(true,true))}
+        rejected {offer.reserveDownload(game,gate,true,true,f.now)};assertFalse(gate.busy())
+        f.network.replies[f.pageUrl]=Reply(JSONArray(f.assets.take(1)).toString().toByteArray())
+        rejected {f.client().query()}
+    }
     @Test fun signedCatalogBindsCompleteReleaseAssetsAndRevalidatesCachedMetadata() {
         val f = Fixture(); val http = f.http(); var clock = f.now; val client = f.client(http) { clock }
         assertEquals(4, client.query().catalog.games.size)

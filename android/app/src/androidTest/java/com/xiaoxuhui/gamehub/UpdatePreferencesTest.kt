@@ -38,14 +38,19 @@ class UpdatePreferencesTest {
             assertTrue(first.settings(false, true))
             val recreated = UpdatePreferences(context.getSharedPreferences(name, Context.MODE_PRIVATE))
             assertFalse(recreated.automatic()); assertTrue(recreated.metered())
+            assertEquals("Old preferences have no dynamic backoff", 0L, recreated.backoff().getValue("dynamic"))
+            recreated.saveBackoff("dynamic", 1200)
             val restored = UpdateTaskGate({ 0 }, { clock }, recreated::saveBackoff, recreated.backoff())
             restored.setPresence(true, true); restored.setNetwork(UpdateNetwork(true, true))
             assertFalse(restored.channelAllowed("apk")); assertFalse(restored.channelAllowed("resources"))
+            assertFalse(restored.channelAllowed("dynamic")); assertEquals(1200L, restored.channelBlockedUntil("dynamic"))
             assertNull(restored.beginDownload(UpdateDownloadKind.APK, true))
             assertNull(restored.beginDownload(UpdateDownloadKind.RESOURCE, true))
+            assertNull(restored.beginDownload(UpdateDownloadKind.DYNAMIC, true))
             clock = 501
             assertTrue(restored.channelAllowed("resources")); assertFalse(restored.channelAllowed("apk"))
-            clock = 901; assertTrue(restored.channelAllowed("apk"))
+            clock = 901; assertTrue(restored.channelAllowed("apk")); assertFalse(restored.channelAllowed("dynamic"))
+            clock = 1201; assertTrue(restored.channelAllowed("dynamic"))
         } finally { assertTrue(shared.edit().clear().commit()); context.deleteSharedPreferences(name) }
     }
     @Test fun coordinatorSubscriptionsDoNotRetainDetachedActivityCallbacks() {

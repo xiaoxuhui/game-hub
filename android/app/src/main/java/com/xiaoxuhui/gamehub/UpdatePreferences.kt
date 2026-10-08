@@ -3,9 +3,9 @@ package com.xiaoxuhui.gamehub
 import android.content.SharedPreferences
 
 internal class UpdatePreferences(private val values: SharedPreferences) {
-    fun backoff(): Map<String, Long> = listOf("apk", "resources").associateWith { values.getLong("backoff-$it", 0) }
+    fun backoff(): Map<String, Long> = UpdateTaskGate.channels.associateWith { values.getLong("backoff-$it", 0) }
     fun saveBackoff(channel: String, until: Long) {
-        require(channel in setOf("apk", "resources"))
+        require(channel in UpdateTaskGate.channels)
         check(values.edit().putLong("backoff-$channel", until).commit()) { "无法保存查询退避；本次仍暂停查询" }
     }
     fun automatic() = values.getBoolean("automatic", true)

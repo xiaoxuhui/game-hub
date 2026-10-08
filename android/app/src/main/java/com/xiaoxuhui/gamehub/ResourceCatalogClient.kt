@@ -4,23 +4,24 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 
-internal data class ResourceOffer(val catalog: ResourceCatalog, val envelope: ByteArray) {
+internal data class ResourceOffer(val catalog: ResourceCatalog, val envelope: ByteArray, val policy: ResourceStorePolicy = ResourceStorePolicy.BUILTIN) {
     fun requireDownload(game: ResourceGame, now: Long = System.currentTimeMillis()) {
         catalog.requireFresh(now)
         require(catalog.games.singleOrNull { it.id == game.id } == game) { "待下载游戏不属于已验签目录，请重新检查" }
+        require(policy.validId(game.id) && game.available) { "游戏已退役或不属于当前通道，停止下载" }
     }
     fun reserveDownload(game: ResourceGame, gate: UpdateTaskGate, manual: Boolean, meteredConfirmed: Boolean, now: Long = System.currentTimeMillis()): UpdateDownloadToken? {
         requireDownload(game, now)
-        return gate.beginDownload(UpdateDownloadKind.RESOURCE, manual, meteredConfirmed)
+        return gate.beginDownload(policy.downloadKind, manual, meteredConfirmed)
     }
 }
 
 internal class ResourceCatalogClient(private val publicKey: ByteArray, private val http: PublicReleaseHttp = PublicReleaseHttp(),
-    private val now: () -> Long = System::currentTimeMillis) {
+    private val now: () -> Long = System::currentTimeMillis, private val policy: ResourceStorePolicy = ResourceStorePolicy.BUILTIN) {
     fun query(cancelled: () -> Boolean = { false }): ResourceOffer {
         val deadline = PublicReleaseHttp.deadline()
-        val release = StrictJson.parse(http.metadata("${PublicReleaseHttp.API_ROOT}/releases/tags/game-resources-v1", 4194304, deadline, cancelled).bytes, 4194304)
-        require(release.get("draft") == false && release.get("prerelease") == true && release.getString("tag_name") == "game-resources-v1") { "资源通道身份错误" }
+        val release = StrictJson.parse(http.metadata("${PublicReleaseHttp.API_ROOT}/releases/tags/${policy.releaseTag}", 4194304, deadline, cancelled).bytes, 4194304)
+        require(release.get("draft") == false && release.get("prerelease") == true && release.getString("tag_name") == policy.releaseTag) { "资源通道身份错误" }
         val releaseId = ResourcePolicy.integer(release, "id", 1)
         val assets = mutableListOf<JSONObject>(); var page = 1; var remaining = 4194304
         while (true) {
@@ -54,13 +55,13 @@ internal class ResourceCatalogClient(private val publicKey: ByteArray, private v
         var envelope = byteArrayOf()
         http.asset(ResourcePolicy.integer(signed, "id", 1), size.toLong(), deadline, cancelled) { envelope = PublicReleaseHttp.bounded(it, size, deadline, cancelled) }
         require(envelope.size == size && ResourcePolicy.sha256(envelope) == catalogDigest) { "签名目录资产大小或摘要错误" }
-        val catalog = ResourcePolicy.verifyEnvelope(envelope, publicKey, now = now())
+        val catalog = policy.fresh(envelope, publicKey, now())
         require(catalog.releaseId == releaseId) { "签名目录所属Release不一致" }
         catalog.games.forEach { game ->
             val asset = assets.singleOrNull { ResourcePolicy.integer(it, "id", 1) == game.assetId } ?: error("资源ZIP不属于发行通道")
             require(asset.getString("name") == game.assetName && asset.getString("state") == "uploaded" && ResourcePolicy.integer(asset, "size", 1) == game.archiveBytes && digest(asset) == game.archiveSha256) { "资源ZIP身份或摘要错误" }
         }
-        catalog.requireFresh(now()); return ResourceOffer(catalog, envelope)
+        catalog.requireFresh(now()); return ResourceOffer(catalog, envelope, policy)
     }
     fun download(game: ResourceGame, directory: File, cancelled: () -> Boolean, progress: (Long, Long) -> Unit): File {
         require(game.archiveBytes in 1..ResourcePolicy.MAX_ARCHIVE)

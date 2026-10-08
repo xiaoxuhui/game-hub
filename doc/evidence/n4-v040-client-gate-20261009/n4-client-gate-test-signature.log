@@ -1,0 +1,9 @@
+Signer #1 certificate DN: CN=Game Hub Release, O=xiaoxuhui
+Signer #1 certificate SHA-256 digest: 44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2
+Signer #1 certificate SHA-1 digest: e6b87129d152dc21f392c93716075b02d4508181
+Signer #1 certificate MD5 digest: e05421084f9fc7508d79a6e918d9dc89
+package: name='com.xiaoxuhui.gamehub.test' versionCode='' versionName='' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+
+Hash
+----
+E5B0E04E38493A84BFC1ED50FEF007866096694EED3C8019787D95847D355090

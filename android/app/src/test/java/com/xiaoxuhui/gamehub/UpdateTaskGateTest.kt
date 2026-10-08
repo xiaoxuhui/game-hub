@@ -4,6 +4,31 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UpdateTaskGateTest {
+    @Test fun dynamicAndBuiltinBackoffAreIndependentButAllTasksShareOneBusySlot() {
+        val f=Fixture();f.gate.rateLimited("resources",f.epoch+3600000)
+        assertFalse(f.gate.canAutoDownload());assertTrue(f.gate.canAutoDownload("dynamic"))
+        val dynamic=f.gate.beginDownload(UpdateDownloadKind.DYNAMIC,false)!!
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.APK,true,true));assertNull(f.gate.beginLocalChange());assertFalse(f.gate.beginCheck(true))
+        f.gate.setNetwork(UpdateNetwork(true,false));assertTrue(dynamic.cancelled);assertTrue(f.gate.busy())
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.APK,true,true));f.gate.finish(dynamic)
+        f.gate.setNetwork(UpdateNetwork(true,true));f.gate.rateLimited("dynamic",f.epoch+7200000)
+        assertFalse(f.gate.canAutoDownload("dynamic"));assertNull(f.gate.beginDownload(UpdateDownloadKind.DYNAMIC,true,true))
+        assertNotNull(f.gate.beginDownload(UpdateDownloadKind.APK,true,true))
+        val restarted=UpdateTaskGate({f.elapsed},{f.epoch},{_,_->},f.saved)
+        assertFalse(restarted.channelAllowed("dynamic"));assertTrue(restarted.channelAllowed("apk"))
+        assertEquals(f.epoch+7200000,restarted.channelBlockedUntil("dynamic"))
+    }
+    @Test fun automaticDynamicDownloadsRevokeOnSettingsAndRepairWaitsForTheirCleanup() {
+        val f=Fixture();val token=f.gate.beginDownload(UpdateDownloadKind.DYNAMIC,false)!!
+        f.gate.settings(false,false);assertTrue(token.cancelled);assertTrue(f.gate.busy())
+        f.gate.requestRepair();assertNull(f.gate.beginRepair());f.gate.finish(token)
+        val repair=f.gate.beginRepair()!!;f.gate.setPresence(false,false);f.gate.setNetwork(UpdateNetwork(false,false))
+        assertTrue(f.gate.valid(repair));f.gate.finish(repair);assertFalse(f.gate.busy())
+        f.gate.settings(true,true);f.gate.setPresence(true,true);f.gate.setNetwork(UpdateNetwork(true,false))
+        val manual=f.gate.beginDownload(UpdateDownloadKind.DYNAMIC,true,true)!!
+        f.gate.settings(false,false);assertTrue(f.gate.valid(manual));f.gate.finish(manual)
+        assertNull(f.gate.beginDownload(UpdateDownloadKind.APK,false,true))
+    }
     @Test fun failureRepairsWaitForCleanupBlockNewTasksAndCompleteEvenInBackgroundOffline() {
         val f = Fixture(); val download = f.gate.beginDownload(UpdateDownloadKind.RESOURCE, false)!!
         f.gate.requestRepair(); f.gate.requestRepair()
