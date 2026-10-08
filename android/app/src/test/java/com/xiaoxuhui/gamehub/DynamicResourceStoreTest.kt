@@ -193,4 +193,16 @@ class DynamicResourceStoreTest {
             assertFalse(store.isEligible(DynamicGamePolicy.verifyEnvelope(old,f.pair.public.encoded,f.now).games.single()))
         }
     }
+    @Test fun firstDynamicCodeCanBeQuarantinedAcrossRestartAndExplicitlyRetried() {
+        Fixture().use {f ->
+            val (catalog,envelope,archive)=f.release();val game=catalog.games.single();val store=f.store()
+            store.acceptCatalog(envelope);store.install(game,envelope,archive);store.openSession(game.id,true).close()
+            store.blockFailedIdentity(game.id,game.identity);store.quarantineFailedIdentity(game.id,game.identity)
+            val restarted=f.store();assertTrue(restarted.selection(game.id).pinned);assertEquals(setOf(1),restarted.selection(game.id).quarantine)
+            rejected {restarted.openSession(game.id,true)}
+            restarted.restore(game.id,true,1);restarted.resumeAutomatic(game.id,1)
+            assertTrue(restarted.isEligible(game));restarted.install(game,envelope,archive)
+            restarted.openSession(game.id,true).use {assertEquals(game.identity,it.game!!.identity)}
+        }
+    }
 }

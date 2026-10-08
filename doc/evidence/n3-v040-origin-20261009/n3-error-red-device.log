@@ -1,0 +1,20 @@
+
+com.xiaoxuhui.gamehub.DynamicErrorDeviceTest:
+Process crashed while executing missingDynamicEntryShowsErrorAndClosesSessionWithoutBuiltinIdCrash(com.xiaoxuhui.gamehub.DynamicErrorDeviceTest):
+java.lang.IllegalArgumentException: Failed requirement.
+	at com.xiaoxuhui.gamehub.GameResourceStore.blockFailedIdentity(GameResourceStore.kt:269)
+	at com.xiaoxuhui.gamehub.MainActivity.showError(MainActivity.kt:724)
+	at com.xiaoxuhui.gamehub.MainActivity.showResourceError(MainActivity.kt:718)
+	at com.xiaoxuhui.gamehub.MainActivity.access$showResourceError(MainActivity.kt:46)
+	at com.xiaoxuhui.gamehub.MainActivity$gameClient$1.onReceivedHttpError(MainActivity.kt:696)
+	at Lw0.d(chromium-SystemWebView.apk-default-567263606:96)
+	at oa.handleMessage(chromium-SystemWebView.apk-default-567263606:361)
+	at android.os.Handler.dispatchMessage(Handler.java:106)
+	at android.os.Looper.loopOnce(Looper.java:205)
+	at android.os.Looper.loop(Looper.java:294)
+	at android.app.ActivityThread.main(ActivityThread.java:8177)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:552)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:971)
+INSTRUMENTATION_RESULT: shortMsg=Process crashed.
+INSTRUMENTATION_CODE: 0

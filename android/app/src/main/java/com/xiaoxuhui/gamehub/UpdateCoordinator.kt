@@ -245,7 +245,8 @@ internal class UpdateCoordinator private constructor(context: Context, private v
             // The serial queue places this after cleanup of the previously reserved network/local task.
             val token = checkNotNull(gate.beginRepair())
             try {
-                resourceStore.quarantineFailedIdentity(id, identity)
+                val failedStore = if (DynamicGamePolicy.validId(id)) runtime.dynamicStore else resourceStore
+                failedStore.quarantineFailedIdentity(id, identity)
                 publish { it.copy(resourceStatus = "$id 失败资源已隔离，请恢复版本；存档保留") }
             } catch (error: Exception) { publish { it.copy(resourceStatus = "失败资源隔离未提交：${error.message}；请恢复版本") } }
             finally {

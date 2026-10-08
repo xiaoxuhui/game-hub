@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-08T23:29:49" hostname="LAPTOP-JC51L3U6" time="13.768">
+  <properties/>
+  <testcase name="signedJournalLinksAreRejectedBeforeProofAdapterReadsOutsideRoot" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="2.318"/>
+  <testcase name="retirementRevokesReadyInLiveProcessAndAfterRestartButKeepsActiveOffline" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="4.26"/>
+  <testcase name="sharedBudgetIncludesOtherStoreAndNeverSelectsPartialResources" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="1.001"/>
+  <testcase name="cumulativeIdsRetirementAndCodeSequenceReplayAreFailClosed" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="1.564"/>
+  <testcase name="firstDynamicCodeCanBeQuarantinedAcrossRestartAndExplicitlyRetried" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.724"/>
+  <testcase name="collectionRejectsLinkedParentWithoutTouchingItsTarget" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.612"/>
+  <testcase name="unsupportedBridgeAndOversizedCumulativeDirectoryNeverInstall" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.603"/>
+  <testcase name="damagedStateAndWrongChannelCannotAuthorizeNewInstall" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.476"/>
+  <testcase name="expiredReadyCannotFirstActivateButPreviouslyActiveProofWorksOffline" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="1.07"/>
+  <testcase name="failedStateAfterNewSignedJournalsCannotOverwriteHighWatermarkInLiveProcess" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.184"/>
+  <testcase name="firstInstallRemovalReinstallRetainsWatermarksAndSeparateSaveFiles" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.953"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

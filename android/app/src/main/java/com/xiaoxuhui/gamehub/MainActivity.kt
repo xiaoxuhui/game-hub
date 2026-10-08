@@ -721,7 +721,7 @@ class MainActivity : ComponentActivity() {
     private fun showError(message: String, failedIdentity: String?) {
         if (loadFailed && webView == null) return
         val failedGame = currentGame?.id
-        if (failedGame != null && failedIdentity != null) resourceRuntime?.store?.blockFailedIdentity(failedGame, failedIdentity)
+        if (failedGame != null && failedIdentity != null) resourceRuntime?.storeFor(failedGame)?.blockFailedIdentity(failedGame, failedIdentity)
         navigationSerial++
         loadFailed = true
         clearWebView()

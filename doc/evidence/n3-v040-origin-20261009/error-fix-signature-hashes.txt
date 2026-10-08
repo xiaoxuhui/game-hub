@@ -1,0 +1,14 @@
+APK n3-error-fixed.apk
+Signer #1 certificate DN: CN=Game Hub Release, O=xiaoxuhui
+Signer #1 certificate SHA-256 digest: 44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2
+Signer #1 certificate SHA-1 digest: e6b87129d152dc21f392c93716075b02d4508181
+Signer #1 certificate MD5 digest: e05421084f9fc7508d79a6e918d9dc89
+package: name='com.xiaoxuhui.gamehub' versionCode='4' versionName='0.4.0' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+SHA256 64c1e3a0fa61bc1480fb53cf770f43036166da026a1827a976eb97f73bfe0d13
+APK n3-error-fixed-test.apk
+Signer #1 certificate DN: CN=Game Hub Release, O=xiaoxuhui
+Signer #1 certificate SHA-256 digest: 44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2
+Signer #1 certificate SHA-1 digest: e6b87129d152dc21f392c93716075b02d4508181
+Signer #1 certificate MD5 digest: e05421084f9fc7508d79a6e918d9dc89
+package: name='com.xiaoxuhui.gamehub.test' versionCode='' versionName='' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+SHA256 682427cc77d3f13bcfbb465943bb51895c58c6af667b573c72778afcc1948776
