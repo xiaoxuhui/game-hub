@@ -76,6 +76,41 @@ class DynamicResourceStoreTest {
             assertEquals(setOf("memory-demo","other-demo"),f.store().describeAll().keys)
         }
     }
+    @Test fun retirementRevokesReadyInLiveProcessAndAfterRestartButKeepsActiveOffline() {
+        Fixture().use { f ->
+            val store = f.store(); val (first, initial, archive) = f.release()
+            store.acceptCatalog(initial); store.install(first.games.single(), initial, archive)
+            val (_, retired, _) = f.release(2, available = false)
+            store.acceptCatalog(retired)
+            assertNull("Retirement must revoke first activation", store.selection("memory-demo").ready)
+            assertFalse(store.installed("memory-demo"))
+            rejected { store.openSession("memory-demo", true) }
+            val restarted = f.store()
+            assertNull(restarted.selection("memory-demo").ready)
+            rejected { restarted.openSession("memory-demo", true) }
+            assertFalse(restarted.isEligible(first.games.single()))
+        }
+        Fixture().use { f ->
+            val store = f.store(); val (first, initial, archive) = f.release()
+            store.acceptCatalog(initial); store.install(first.games.single(), initial, archive)
+            store.openSession("memory-demo", true).close()
+            val (second, update, nextArchive) = f.release(2, 2)
+            store.acceptCatalog(update); store.install(second.games.single(), update, nextArchive)
+            val (_, retired, _) = f.release(3, 2, available = false)
+            store.acceptCatalog(retired)
+            assertNull(store.selection("memory-demo").ready)
+            store.openSession("memory-demo", true).use { assertEquals(1, it.game!!.contentCode) }
+            val restarted = f.store()
+            restarted.openSession("memory-demo", true).use { assertEquals(1, it.game!!.contentCode) }
+            assertFalse(restarted.isEligible(second.games.single()))
+            // Explicit republishing with a new signed sequence may reuse identical content;
+            // the previous revoked candidate is not silently reinstated.
+            val (_, offeredAgain, _) = f.release(4, 2)
+            restarted.acceptCatalog(offeredAgain)
+            assertNull(restarted.selection("memory-demo").ready)
+            assertTrue(restarted.isEligible(second.games.single()))
+        }
+    }
     @Test fun sharedBudgetIncludesOtherStoreAndNeverSelectsPartialResources() {
         Fixture().use {f->val store=f.store();val (catalog,envelope,archive)=f.release(body="<html>${"x".repeat(20000)}</html>");val game=catalog.games.single();store.acceptCatalog(envelope)
             f.otherBytes=ResourcePolicy.MAX_STORE-ResourceDiskBudget.usedBytes(f.root)-envelope.size*2L-1
@@ -115,6 +150,36 @@ class DynamicResourceStoreTest {
             } else Files.createSymbolicLink(link.toPath(),external.toPath())
             try {val failure=runCatching {store.removeResources("memory-demo")}.exceptionOrNull();assertTrue("Linked target save must remain",sentinel.isFile);assertEquals("retain fixture save",sentinel.readText());assertNotNull(failure)}
             finally {assertTrue(link.delete())}
+        }
+    }
+    @Test fun signedJournalLinksAreRejectedBeforeProofAdapterReadsOutsideRoot() {
+        for (backupOnly in listOf(false, true)) Fixture().use { f ->
+            var reads = 0
+            fun counted(file: File) = object : ResourceStateFile {
+                val delegate = f.disk(file)
+                override fun read(): ByteArray? { reads++; return delegate.read() }
+                override fun write(bytes: ByteArray) = delegate.write(bytes)
+            }
+            val store = GameResourceStore(f.root,4,f.pair.public.encoded,f.disk(File(f.root,"state.json")),
+                {f.now},{Long.MAX_VALUE},::counted,ResourceStorePolicy.DYNAMIC)
+            val (_, envelope, _) = f.release(); store.acceptCatalog(envelope)
+            val history = File(f.root,"catalog-history")
+            val external = File(f.parent,"external-signed-proofs")
+            val link = if (backupOnly) {
+                external.mkdirs(); File(history,"highest-a.signed.json.bak")
+            } else {
+                assertTrue(history.renameTo(external)); history
+            }
+            val sentinel = File(external,"private-save").apply { writeText("unchanged external data") }
+            if (System.getProperty("os.name").orEmpty().startsWith("Windows")) {
+                val process = ProcessBuilder("cmd.exe","/c","mklink","/J",link.absolutePath,external.absolutePath).redirectErrorStream(true).start()
+                val output = process.inputStream.bufferedReader().readText(); assertEquals(output,0,process.waitFor())
+            } else Files.createSymbolicLink(link.toPath(),external.toPath())
+            try {
+                reads = 0; rejected { store.rememberedCatalog() }
+                assertEquals("No linked proof may reach the read adapter",0,reads)
+                assertEquals("unchanged external data",sentinel.readText())
+            } finally { assertTrue(link.delete()) }
         }
     }
     @Test fun failedStateAfterNewSignedJournalsCannotOverwriteHighWatermarkInLiveProcess() {

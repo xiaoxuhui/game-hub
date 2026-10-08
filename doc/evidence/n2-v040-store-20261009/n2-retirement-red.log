@@ -1,0 +1,59 @@
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugResValues
+> Task :app:mapDebugSourceSetPaths
+> Task :app:checkDebugAarMetadata
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:processDebugManifestForPackage
+> Task :app:processDebugResources
+
+> Task :app:compileDebugKotlin
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/ApkUpdateManager.kt:53:114 'GET_SIGNATURES: Int' is deprecated. Deprecated in Java
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/ApkUpdateManager.kt:56:97 'versionCode: Int' is deprecated. Deprecated in Java
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/ApkUpdateManager.kt:57:103 'versionCode: Int' is deprecated. Deprecated in Java
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/ApkUpdateManager.kt:77:30 'ACTION_INSTALL_PACKAGE: String' is deprecated. Deprecated in Java
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt:59:163 'versionCode: Int' is deprecated. Deprecated in Java
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt:315:22 Unnecessary safe call on a non-null receiver of type LocalResourceInfo?
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt:316:22 Unnecessary safe call on a non-null receiver of type LocalResourceInfo?
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt:317:22 Unnecessary safe call on a non-null receiver of type LocalResourceInfo?
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt:320:73 Unnecessary safe call on a non-null receiver of type LocalResourceInfo?
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt:321:22 Unnecessary safe call on a non-null receiver of type LocalResourceInfo?
+w: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/src/main/java/com/xiaoxuhui/gamehub/ResourceRuntime.kt:17:106 'versionCode: Int' is deprecated. Deprecated in Java
+
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+
+> Task :app:testDebugUnitTest FAILED
+
+com.xiaoxuhui.gamehub.DynamicResourceStoreTest > retirementRevokesReadyInLiveProcessAndAfterRestartButKeepsActiveOffline FAILED
+
+1 test completed, 1 failed
+    java.lang.AssertionError at DynamicResourceStoreTest.kt:85
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///D:/soft/.ci-tmp/game-hub-work/v030-final/android/app/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 14s
+23 actionable tasks: 23 executed

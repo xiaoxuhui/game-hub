@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-08T23:02:40" hostname="LAPTOP-JC51L3U6" time="6.434">
+  <properties/>
+  <testcase name="signedJournalLinksAreRejectedBeforeProofAdapterReadsOutsideRoot" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="1.397"/>
+  <testcase name="retirementRevokesReadyInLiveProcessAndAfterRestartButKeepsActiveOffline" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.967"/>
+  <testcase name="sharedBudgetIncludesOtherStoreAndNeverSelectsPartialResources" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.406"/>
+  <testcase name="cumulativeIdsRetirementAndCodeSequenceReplayAreFailClosed" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.363"/>
+  <testcase name="collectionRejectsLinkedParentWithoutTouchingItsTarget" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.558"/>
+  <testcase name="unsupportedBridgeAndOversizedCumulativeDirectoryNeverInstall" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.169"/>
+  <testcase name="damagedStateAndWrongChannelCannotAuthorizeNewInstall" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.346"/>
+  <testcase name="expiredReadyCannotFirstActivateButPreviouslyActiveProofWorksOffline" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.788"/>
+  <testcase name="failedStateAfterNewSignedJournalsCannotOverwriteHighWatermarkInLiveProcess" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.617"/>
+  <testcase name="firstInstallRemovalReinstallRetainsWatermarksAndSeparateSaveFiles" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.822"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

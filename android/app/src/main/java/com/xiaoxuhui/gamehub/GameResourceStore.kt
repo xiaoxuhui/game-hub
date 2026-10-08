@@ -6,7 +6,8 @@ import java.io.File
 import java.util.UUID
 
 internal data class ResourceSelection(val active: String = "builtin", val previous: String = "builtin", val ready: String? = null,
-    val pinned: Boolean = false, val highestCode: Int = 1, val highestHash: String? = null, val quarantine: Set<Int> = emptySet())
+    val pinned: Boolean = false, val highestCode: Int = 1, val highestHash: String? = null, val quarantine: Set<Int> = emptySet(),
+    val available: Boolean = true)
 internal data class LocalResourceInfo(val selection: ResourceSelection, val active: ResourceGame?, val ready: ResourceGame?,
     val activeError: String? = null, val readyError: String? = null, val stateError: String? = null, val readyFresh: Boolean = true)
 internal class ResourceSession(val game: ResourceGame?, val root: File?, private val release: () -> Unit) : AutoCloseable {
@@ -51,7 +52,8 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
                     fun identity(key: String) = item.getString(key).also { validateIdentity(it) }
                     val ready = if (item.isNull("ready")) null else identity("ready")
                     val quarantine = item.getJSONArray("quarantine")
-                    ResourceSelection(identity("active"), identity("previous"), ready, item.getBoolean("pinned"), ResourcePolicy.integer(item, "highestCode", policy.baselineCode.toLong(), Int.MAX_VALUE.toLong()).toInt(), if (item.isNull("highestHash")) null else item.getString("highestHash"), (0 until quarantine.length()).map { quarantine.getInt(it) }.toSet())
+                    ResourceSelection(identity("active"), identity("previous"), ready, item.getBoolean("pinned"), ResourcePolicy.integer(item, "highestCode", policy.baselineCode.toLong(), Int.MAX_VALUE.toLong()).toInt(), if (item.isNull("highestHash")) null else item.getString("highestHash"), (0 until quarantine.length()).map { quarantine.getInt(it) }.toSet(),
+                        if (item.has("available")) item.getBoolean("available") else true)
                 }
             }
         } catch (error: Exception) { stateFailure = "资源状态损坏，请显式恢复内置资源；存档未删除" }
@@ -66,7 +68,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     private fun version(id: String, identity: String): File { require(id in selections); validateIdentity(identity); require(identity != "builtin"); return File(directory, "versions/$id/$identity") }
     private fun persist(next: Map<String, ResourceSelection> = selections, nextSequence: Long = sequence, nextHash: String = catalogHash) {
         val games = JSONObject()
-        next.forEach { (id, item) -> games.put(id, JSONObject().put("active", item.active).put("previous", item.previous).put("ready", item.ready ?: JSONObject.NULL).put("pinned", item.pinned).put("highestCode", item.highestCode).put("highestHash", item.highestHash ?: JSONObject.NULL).put("quarantine", JSONArray(item.quarantine.sorted()))) }
+        next.forEach { (id, item) -> games.put(id, JSONObject().put("active", item.active).put("previous", item.previous).put("ready", item.ready ?: JSONObject.NULL).put("pinned", item.pinned).put("highestCode", item.highestCode).put("highestHash", item.highestHash ?: JSONObject.NULL).put("quarantine", JSONArray(item.quarantine.sorted())).put("available", item.available)) }
         stateFile.write(JSONObject().put("schemaVersion", if (policy == ResourceStorePolicy.BUILTIN) 1 else 2).put("sequence", nextSequence).put("catalogHash", nextHash).put("games", games).toString().toByteArray())
         selections = next; sequence = nextSequence; catalogHash = nextHash
     }
@@ -103,9 +105,13 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             runCatching { policy.proof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).games.single { it.id == id }.files.map { "/assets/games/$id/${it.path}" } }.getOrDefault(emptyList())
         } }.toSet()
     }
-    private fun readProof(file: File) = proofFile(file).read() ?: error("Missing signed resource proof")
+    private fun readProof(file: File): ByteArray {
+        // AtomicFile can restore a backup before reading; guard every possible source first.
+        listOf(file, File(file.path + ".bak"), File(file.path + ".new")).forEach(ResourcePathGuard::requireUnlinked)
+        return proofFile(file).read() ?: error("Missing signed resource proof")
+    }
     private fun journalCatalogs(): List<ResourceCatalog> {
-        val root = File(directory, "catalog-history"); if (!root.exists()) return emptyList()
+        val root = File(directory, "catalog-history"); ResourcePathGuard.requireUnlinked(root); if (!root.exists()) return emptyList()
         val permitted = journalNames.flatMap { listOf(it, "$it.new", "$it.bak") }.toSet()
         require(root.listFiles()?.all { it.name in permitted } == true) { "Unknown or damaged watermark file" }
         val catalogs = journalNames.map { policy.proof(readProof(File(root, it)), publicKey) }
@@ -123,7 +129,8 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         selections = selections.mapValues { (id, current) ->
             val game = catalog.games.single { it.id == id }
             require(game.contentCode >= current.highestCode && (game.contentCode != current.highestCode || current.highestHash == null || game.archiveSha256 == current.highestHash))
-            current.copy(highestCode = game.contentCode, highestHash = game.archiveSha256)
+            current.copy(highestCode = game.contentCode, highestHash = game.archiveSha256,
+                available = game.available, ready = if (game.available) current.ready else null)
         }
     }
     fun acceptCatalog(envelope: ByteArray): ResourceCatalog = synchronized(lock) {
@@ -135,7 +142,8 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         for (game in catalog.games) {
             val current = next[game.id] ?: ResourceSelection(highestCode = policy.baselineCode)
             require(game.contentCode >= current.highestCode && (game.contentCode != current.highestCode || current.highestHash == null || current.highestHash == game.archiveSha256)) { "Resource code rollback or conflict" }
-            next[game.id] = current.copy(highestCode = game.contentCode, highestHash = game.archiveSha256)
+            next[game.id] = current.copy(highestCode = game.contentCode, highestHash = game.archiveSha256,
+                available = game.available, ready = if (game.available) current.ready else null)
         }
         val journalRoot = File(directory, "catalog-history")
         require(usedBytes(directory) + otherResourceBytes() + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "资源信任记录空间不足，旧版本保留" }
@@ -153,7 +161,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     }
     fun isEligible(game: ResourceGame): Boolean = synchronized(lock) {
         val selected = selections[game.id] ?: return@synchronized false
-        stateFailure == null && game.available && game.contentCode >= selected.highestCode &&
+        stateFailure == null && selected.available && game.available && game.contentCode >= selected.highestCode &&
             (game.contentCode != selected.highestCode || selected.highestHash == null || game.archiveSha256 == selected.highestHash) &&
             !selected.pinned && game.contentCode !in selected.quarantine && game.compatible(hostCode, policy.contract(game.id)) && game.contentCode > selected.active.substringBefore('-').toIntOrNull().let { it ?: policy.baselineCode } && selected.ready != game.identity
     }
@@ -164,7 +172,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         renewalFailures.keys.retainAll(catalog.games.filter { selections.getValue(it.id).ready == it.identity }.map { it.id }.toSet())
         for (game in catalog.games) {
             val current = selections.getValue(game.id)
-            if (current.ready != game.identity || current.active == game.identity || game.contentCode in current.quarantine || !game.compatible(hostCode, policy.contract(game.id))) continue
+            if (!current.available || !game.available || current.ready != game.identity || current.active == game.identity || game.contentCode in current.quarantine || !game.compatible(hostCode, policy.contract(game.id))) continue
             try {
                 val verified = verifyVersion(game.id, game.identity)
                 require(verified == game) { "Candidate metadata changed under the same archive identity" }
@@ -211,7 +219,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     fun openSession(id: String, cacheProxyCleared: Boolean): ResourceSession = synchronized(lock) {
         var selected = selections.getValue(id)
         require("$id/${selected.active}" !in failedIdentities && selected.active.substringBefore('-').toIntOrNull() !in selected.quarantine) { "该资源加载失败并已隔离，请先在大厅恢复版本" }
-        if (selected.ready != null && !selected.pinned && !hasSessions() && cacheProxyCleared && stateFailure == null) {
+        if (selected.available && selected.ready != null && !selected.pinned && !hasSessions() && cacheProxyCleared && stateFailure == null) {
             val readyIdentity = selected.ready!!
             selected = try {
                 val game = verifyVersion(id, readyIdentity)
@@ -247,7 +255,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         val newest = catalogs.maxByOrNull { it.sequence }!!
         require(newest.sequence >= sequence) { "可信记录不足以恢复最高序号，自动更新保持停止" }
         policy.requireIds(selections.keys, newest)
-        val next = newest.games.associate { game -> game.id to ResourceSelection(pinned = true, highestCode = game.contentCode, highestHash = game.archiveSha256, quarantine = if (game.contentCode > policy.baselineCode) setOf(game.contentCode) else emptySet()) }
+        val next = newest.games.associate { game -> game.id to ResourceSelection(pinned = true, highestCode = game.contentCode, highestHash = game.archiveSha256, quarantine = if (game.contentCode > policy.baselineCode) setOf(game.contentCode) else emptySet(), available = game.available) }
         persist(next, newest.sequence, newest.payloadSha256); stateFailure = null
     }
     fun resumeAutomatic(id: String, retryCode: Int? = null) = synchronized(lock) {
