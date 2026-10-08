@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-08T22:53:38" hostname="LAPTOP-JC51L3U6" time="6.419">
+  <properties/>
+  <testcase name="sharedBudgetIncludesOtherStoreAndNeverSelectsPartialResources" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.387"/>
+  <testcase name="cumulativeIdsRetirementAndCodeSequenceReplayAreFailClosed" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.929"/>
+  <testcase name="collectionRejectsLinkedParentWithoutTouchingItsTarget" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.337"/>
+  <testcase name="unsupportedBridgeAndOversizedCumulativeDirectoryNeverInstall" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.161"/>
+  <testcase name="damagedStateAndWrongChannelCannotAuthorizeNewInstall" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.536"/>
+  <testcase name="expiredReadyCannotFirstActivateButPreviouslyActiveProofWorksOffline" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="2.399"/>
+  <testcase name="failedStateAfterNewSignedJournalsCannotOverwriteHighWatermarkInLiveProcess" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="1.101"/>
+  <testcase name="firstInstallRemovalReinstallRetainsWatermarksAndSeparateSaveFiles" classname="com.xiaoxuhui.gamehub.DynamicResourceStoreTest" time="0.569"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

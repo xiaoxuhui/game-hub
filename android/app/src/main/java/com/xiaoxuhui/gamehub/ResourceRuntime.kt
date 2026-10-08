@@ -15,7 +15,17 @@ internal class ResourceRuntime private constructor(context: Context) {
     val publicKey = app.resources.openRawResource(R.raw.resource_public_key).use { ResourceIo.readBounded(it, 4096) }
     private val packageInfo = app.packageManager.getPackageInfo(app.packageName, 0)
     val hostCode = if (Build.VERSION.SDK_INT >= 28) packageInfo.longVersionCode.toInt() else packageInfo.versionCode
-    val store = GameResourceStore(File(app.filesDir, "game-resources"), hostCode, publicKey)
+    private val builtinDirectory = File(app.filesDir.canonicalFile, "game-resources")
+    private val dynamicDirectory = File(app.filesDir.canonicalFile, "dynamic-game-resources")
+    init {
+        ResourcePathGuard.requireUnlinked(builtinDirectory)
+        ResourcePathGuard.requireUnlinked(dynamicDirectory)
+    }
+    val store = GameResourceStore(builtinDirectory, hostCode, publicKey,
+        otherResourceBytes = { ResourceDiskBudget.usedBytes(dynamicDirectory) })
+    val dynamicStore = GameResourceStore(dynamicDirectory, hostCode, publicKey, policy = ResourceStorePolicy.DYNAMIC,
+        otherResourceBytes = { ResourceDiskBudget.usedBytes(builtinDirectory) })
+    fun storeFor(id: String) = if (DynamicGamePolicy.validId(id)) dynamicStore else store
     private val resolver = AtomicReference<GameContentResolver?>(null)
     fun bind(content: GameContentResolver?) { resolver.set(content) }
     fun unbind(content: GameContentResolver?) { if (content != null) resolver.compareAndSet(content, null) }

@@ -17,14 +17,15 @@ internal class ResourceSession(val game: ResourceGame?, val root: File?, private
 /** One lock protects all pointer changes and session references. UI never hashes through this class. */
 internal class GameResourceStore(trustedDirectory: File, private val hostCode: Int, private val publicKey: ByteArray,
     private val stateFile: ResourceStateFile = AndroidResourceStateFile(File(trustedDirectory, "state.json")), private val now: () -> Long = System::currentTimeMillis,
-    private val freeSpace: () -> Long = { trustedDirectory.usableSpace }, private val proofFile: (File) -> ResourceStateFile = { AndroidResourceStateFile(it) }) {
+    private val freeSpace: () -> Long = { trustedDirectory.usableSpace }, private val proofFile: (File) -> ResourceStateFile = { AndroidResourceStateFile(it) },
+    private val policy: ResourceStorePolicy = ResourceStorePolicy.BUILTIN, private val otherResourceBytes: () -> Long = { 0 }) {
     // Android may expose filesDir through /data/user/0 while its canonical spelling is /data/data.
     // Normalize the trusted root once; child links remain forbidden by the checks below.
     private val directory = trustedDirectory.canonicalFile
     private val lock = Any()
     private var sequence = 0L
     private var catalogHash = ""
-    private var selections = listOf("conway", "eml", "light", "turing").associateWith { ResourceSelection() }
+    private var selections = policy.initialIds.associateWith { ResourceSelection(highestCode = policy.baselineCode) }
     private val references = java.util.concurrent.ConcurrentHashMap<String, Int>()
     private var stateFailure: String? = null
     private var candidateFailure: String? = null
@@ -37,33 +38,48 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             val stateBytes = stateFile.read()
             if (stateBytes == null && (File(directory, "catalog-history").exists() || File(directory, "versions").exists())) stateFailure = "已有资源但选择状态缺失，已停止网络更新；请显式全局可信恢复"
             stateBytes?.let { bytes ->
-                val json = StrictJson.parse(bytes, 1048576); require(ResourcePolicy.integer(json, "schemaVersion") == 1L)
+                val json = StrictJson.parse(bytes, 1048576); require(ResourcePolicy.integer(json, "schemaVersion") == if (policy == ResourceStorePolicy.BUILTIN) 1L else 2L)
                 sequence = ResourcePolicy.integer(json, "sequence", 0); catalogHash = json.getString("catalogHash")
                 val games = json.getJSONObject("games")
+                val ids = games.keys().asSequence().toSet()
+                if (policy == ResourceStorePolicy.DYNAMIC) {
+                    require(ids.size <= DynamicGamePolicy.MAX_GAMES && ids.all(policy::validId))
+                    selections = ids.associateWith { ResourceSelection(highestCode = 0) }
+                }
                 selections = selections.mapValues { (id, _) ->
                     val item = games.getJSONObject(id)
                     fun identity(key: String) = item.getString(key).also { validateIdentity(it) }
                     val ready = if (item.isNull("ready")) null else identity("ready")
                     val quarantine = item.getJSONArray("quarantine")
-                    ResourceSelection(identity("active"), identity("previous"), ready, item.getBoolean("pinned"), ResourcePolicy.integer(item, "highestCode", 1, Int.MAX_VALUE.toLong()).toInt(), if (item.isNull("highestHash")) null else item.getString("highestHash"), (0 until quarantine.length()).map { quarantine.getInt(it) }.toSet())
+                    ResourceSelection(identity("active"), identity("previous"), ready, item.getBoolean("pinned"), ResourcePolicy.integer(item, "highestCode", policy.baselineCode.toLong(), Int.MAX_VALUE.toLong()).toInt(), if (item.isNull("highestHash")) null else item.getString("highestHash"), (0 until quarantine.length()).map { quarantine.getInt(it) }.toSet())
                 }
             }
         } catch (error: Exception) { stateFailure = "资源状态损坏，请显式恢复内置资源；存档未删除" }
         try { journalCatalogs().maxByOrNull { it.sequence }?.let { recoverWatermark(it) } }
         catch (error: Exception) { stateFailure = "资源信任记录损坏，已停止网络更新；内置游戏和存档仍保留" }
         // Uncommitted staging is never a version. Private children only; never follow links.
-        File(directory, "staging").listFiles()?.forEach { deletePrivate(it) }
+        val stagingRoot = File(directory, "staging")
+        ResourcePathGuard.requireUnlinked(stagingRoot)
+        stagingRoot.listFiles()?.forEach { deletePrivate(it) }
     }
     private fun validateIdentity(identity: String) { require(identity == "builtin" || Regex("[1-9][0-9]{0,9}-[0-9a-f]{64}").matches(identity)) }
     private fun version(id: String, identity: String): File { require(id in selections); validateIdentity(identity); require(identity != "builtin"); return File(directory, "versions/$id/$identity") }
     private fun persist(next: Map<String, ResourceSelection> = selections, nextSequence: Long = sequence, nextHash: String = catalogHash) {
         val games = JSONObject()
         next.forEach { (id, item) -> games.put(id, JSONObject().put("active", item.active).put("previous", item.previous).put("ready", item.ready ?: JSONObject.NULL).put("pinned", item.pinned).put("highestCode", item.highestCode).put("highestHash", item.highestHash ?: JSONObject.NULL).put("quarantine", JSONArray(item.quarantine.sorted()))) }
-        stateFile.write(JSONObject().put("schemaVersion", 1).put("sequence", nextSequence).put("catalogHash", nextHash).put("games", games).toString().toByteArray())
+        stateFile.write(JSONObject().put("schemaVersion", if (policy == ResourceStorePolicy.BUILTIN) 1 else 2).put("sequence", nextSequence).put("catalogHash", nextHash).put("games", games).toString().toByteArray())
         selections = next; sequence = nextSequence; catalogHash = nextHash
     }
     fun failure(): String? = synchronized(lock) { stateFailure ?: renewalFailures.takeIf { it.isNotEmpty() }?.entries?.joinToString("；") { "${it.key}：${it.value}" } ?: candidateFailure }
     fun selection(id: String): ResourceSelection = synchronized(lock) { selections.getValue(id) }
+    fun installed(id: String): Boolean = synchronized(lock) { selections[id]?.let { it.active != "builtin" || it.ready != null } ?: false }
+    fun removeResources(id: String) = synchronized(lock) {
+        require(policy == ResourceStorePolicy.DYNAMIC && stateFailure == null && !hasSessions()) { "仅能在空闲大厅移除动态资源；存档保留" }
+        val current = selections.getValue(id)
+        persist(selections + (id to current.copy(active = "builtin", previous = "builtin", ready = null, pinned = false)))
+        // High-water marks and WebView storage remain. Failed deletion can be retried safely.
+        garbageCollect()
+    }
     fun rememberedCatalog(): ResourceCatalog? = synchronized(lock) {
         require(stateFailure == null) { stateFailure ?: "Resource state invalid" }
         journalCatalogs().maxByOrNull { it.sequence }?.also {
@@ -75,7 +91,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             val active = if (selection.active == "builtin") null else runCatching { verifyVersion(id, selection.active) }
             val ready = selection.ready?.let { identity -> runCatching { verifyVersion(id, identity) } }
             val fresh = selection.ready?.let { identity -> ready?.isSuccess == true && runCatching {
-                ResourcePolicy.verifyInstalledProof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).requireFresh(now()); true
+                policy.proof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).requireFresh(now()); true
             }.getOrDefault(false) } ?: true
             LocalResourceInfo(selection, active?.getOrNull(), ready?.getOrNull(),
                 active?.exceptionOrNull()?.message, ready?.exceptionOrNull()?.message, stateFailure, fresh)
@@ -84,7 +100,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     fun hasSessions(): Boolean = synchronized(lock) { references.values.sum() > 0 }
     fun knownResourcePaths(): Set<String> = synchronized(lock) {
         selections.flatMap { (id, selected) -> setOfNotNull(selected.active, selected.previous, selected.ready).filter { it != "builtin" }.flatMap { identity ->
-            runCatching { ResourcePolicy.verifyInstalledProof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).games.single { it.id == id }.files.map { "/assets/games/$id/${it.path}" } }.getOrDefault(emptyList())
+            runCatching { policy.proof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).games.single { it.id == id }.files.map { "/assets/games/$id/${it.path}" } }.getOrDefault(emptyList())
         } }.toSet()
     }
     private fun readProof(file: File) = proofFile(file).read() ?: error("Missing signed resource proof")
@@ -92,7 +108,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         val root = File(directory, "catalog-history"); if (!root.exists()) return emptyList()
         val permitted = journalNames.flatMap { listOf(it, "$it.new", "$it.bak") }.toSet()
         require(root.listFiles()?.all { it.name in permitted } == true) { "Unknown or damaged watermark file" }
-        val catalogs = journalNames.map { ResourcePolicy.verifyInstalledProof(readProof(File(root, it)), publicKey) }
+        val catalogs = journalNames.map { policy.proof(readProof(File(root, it)), publicKey) }
         if (catalogs[0].sequence == catalogs[1].sequence) require(catalogs[0].payloadSha256 == catalogs[1].payloadSha256)
         // Both required copies normally contain the SAME highest catalog. Interrupted replacement
         // may contain two valid adjacent catalogs; choose the higher, never a missing/invalid copy.
@@ -101,6 +117,8 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     private fun recoverWatermark(catalog: ResourceCatalog) {
         if (catalog.sequence < sequence) return
         if (catalog.sequence == sequence && catalogHash.isNotEmpty()) require(catalogHash == catalog.payloadSha256)
+        policy.requireIds(selections.keys, catalog)
+        selections = catalog.games.associate { it.id to (selections[it.id] ?: ResourceSelection(highestCode = policy.baselineCode)) }
         sequence = catalog.sequence; catalogHash = catalog.payloadSha256
         selections = selections.mapValues { (id, current) ->
             val game = catalog.games.single { it.id == id }
@@ -109,38 +127,48 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         }
     }
     fun acceptCatalog(envelope: ByteArray): ResourceCatalog = synchronized(lock) {
-        val catalog = ResourcePolicy.verifyEnvelope(envelope, publicKey, now = now())
+        val catalog = policy.fresh(envelope, publicKey, now())
         require(stateFailure == null) { stateFailure ?: "Resource state invalid" }; catalog.requireFresh(now())
         require(catalog.sequence > sequence || catalog.sequence == sequence && catalog.payloadSha256 == catalogHash) { "Resource catalog rollback or conflict" }
+        policy.requireIds(selections.keys, catalog)
         val next = selections.toMutableMap()
         for (game in catalog.games) {
-            val current = next.getValue(game.id)
+            val current = next[game.id] ?: ResourceSelection(highestCode = policy.baselineCode)
             require(game.contentCode >= current.highestCode && (game.contentCode != current.highestCode || current.highestHash == null || current.highestHash == game.archiveSha256)) { "Resource code rollback or conflict" }
             next[game.id] = current.copy(highestCode = game.contentCode, highestHash = game.archiveSha256)
         }
         val journalRoot = File(directory, "catalog-history")
-        require(usedBytes(directory) + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "资源信任记录空间不足，旧版本保留" }
+        require(usedBytes(directory) + otherResourceBytes() + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "资源信任记录空间不足，旧版本保留" }
         require(journalRoot.isDirectory || journalRoot.mkdirs())
-        journalNames.forEach { proofFile(File(journalRoot, it)).write(envelope) }
-        persist(next, catalog.sequence, catalog.payloadSha256)
+        try {
+            journalNames.forEach { proofFile(File(journalRoot, it)).write(envelope) }
+            persist(next, catalog.sequence, catalog.payloadSha256)
+        } catch (error: Exception) {
+            // A newer signed journal may already be durable while state is still old.
+            // Never allow this live instance to overwrite that watermark with an old offer.
+            stateFailure = "资源信任提交未完成，已停止网络更新；请从可信历史恢复，存档保留"
+            throw error
+        }
         catalog
     }
     fun isEligible(game: ResourceGame): Boolean = synchronized(lock) {
-        val selected = selections.getValue(game.id)
-        stateFailure == null && !selected.pinned && game.contentCode !in selected.quarantine && game.compatible(hostCode, ResourcePolicy.contract(game.id)) && game.contentCode > selected.active.substringBefore('-').toIntOrNull().let { it ?: 1 } && selected.ready != game.identity
+        val selected = selections[game.id] ?: return@synchronized false
+        stateFailure == null && game.available && game.contentCode >= selected.highestCode &&
+            (game.contentCode != selected.highestCode || selected.highestHash == null || game.archiveSha256 == selected.highestHash) &&
+            !selected.pinned && game.contentCode !in selected.quarantine && game.compatible(hostCode, policy.contract(game.id)) && game.contentCode > selected.active.substringBefore('-').toIntOrNull().let { it ?: policy.baselineCode } && selected.ready != game.identity
     }
     fun refreshReadyProof(envelope: ByteArray) = synchronized(lock) {
         require(stateFailure == null)
-        val catalog = ResourcePolicy.verifyEnvelope(envelope, publicKey, now = now())
+        val catalog = policy.fresh(envelope, publicKey, now())
         require(catalog.sequence == sequence && catalog.payloadSha256 == catalogHash) { "Accept the fresh catalog before renewing candidates" }
         renewalFailures.keys.retainAll(catalog.games.filter { selections.getValue(it.id).ready == it.identity }.map { it.id }.toSet())
         for (game in catalog.games) {
             val current = selections.getValue(game.id)
-            if (current.ready != game.identity || current.active == game.identity || game.contentCode in current.quarantine || !game.compatible(hostCode, ResourcePolicy.contract(game.id))) continue
+            if (current.ready != game.identity || current.active == game.identity || game.contentCode in current.quarantine || !game.compatible(hostCode, policy.contract(game.id))) continue
             try {
                 val verified = verifyVersion(game.id, game.identity)
                 require(verified == game) { "Candidate metadata changed under the same archive identity" }
-                require(usedBytes(directory) + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "候选证明续期空间不足" }
+                require(usedBytes(directory) + otherResourceBytes() + envelope.size * 2L <= ResourcePolicy.MAX_STORE && freeSpace() >= envelope.size * 2L + ResourcePolicy.FREE_RESERVE) { "候选证明续期空间不足" }
                 proofFile(File(version(game.id, game.identity), "catalog.signed.json")).write(envelope)
                 renewalFailures.remove(game.id)
             } catch (error: Exception) { renewalFailures[game.id] = "候选证明续期失败，原版本保留：${error.message}" }
@@ -148,12 +176,12 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     }
     fun install(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean = { false }) = synchronized(lock) {
         require(stateFailure == null && !hasSessions()) { "Install only while hall is idle" }
-        val catalog = ResourcePolicy.verifyEnvelope(envelope, publicKey, now = now())
+        val catalog = policy.fresh(envelope, publicKey, now())
         require(catalog.games.single { it.id == game.id } == game && isEligible(game)) { "Resource not eligible" }
         acceptCatalog(envelope)
         val bytesNeeded = game.files.sumOf { it.bytes } + game.archiveBytes + envelope.size
         garbageCollect()
-        require(usedBytes(directory) + bytesNeeded <= ResourcePolicy.MAX_STORE && freeSpace() >= bytesNeeded + ResourcePolicy.FREE_RESERVE) { "资源空间不足，旧版本保留" }
+        require(usedBytes(directory) + otherResourceBytes() + bytesNeeded <= ResourcePolicy.MAX_STORE && freeSpace() >= bytesNeeded + ResourcePolicy.FREE_RESERVE) { "资源空间不足，旧版本保留" }
         val stagingParent = File(directory, "staging").apply { mkdirs() }; val staging = File(stagingParent, UUID.randomUUID().toString())
         try {
             ResourceArchive.extract(archive, staging, game, cancelled)
@@ -170,12 +198,12 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         } finally { if (staging.exists()) deletePrivate(staging) }
     }
     private fun verifyVersion(id: String, identity: String): ResourceGame {
-        val root = version(id, identity); require(root.isDirectory && root.canonicalFile == root.absoluteFile)
+        val root = version(id, identity); ResourcePathGuard.requireUnlinked(root); require(root.isDirectory)
         val proof = File(root, "catalog.signed.json"); require(proof.length() in 1..1048576)
-        val game = ResourcePolicy.verifyInstalledProof(readProof(proof), publicKey).games.single { it.id == id }
-        require(game.identity == identity && game.compatible(hostCode, ResourcePolicy.contract(id)))
+        val game = policy.proof(readProof(proof), publicKey).games.single { it.id == id }
+        require(game.identity == identity && game.compatible(hostCode, policy.contract(id)))
         val actual = mutableSetOf<String>()
-        root.walkTopDown().forEach { file -> require(file.canonicalFile == file.absoluteFile) { "Resource link" }; if (file.isFile) actual.add(file.relativeTo(root).invariantSeparatorsPath) }
+        root.walkTopDown().forEach { file -> ResourcePathGuard.requireUnlinked(file); if (file.isFile) actual.add(file.relativeTo(root).invariantSeparatorsPath) }
         require(actual == game.files.map { it.path }.toSet() + "catalog.signed.json")
         game.files.forEach { metadata -> val file = File(root, metadata.path); require(file.length() == metadata.bytes); require(ResourcePolicy.sha256(file.inputStream().use { ResourceIo.readBounded(it, metadata.bytes) }) == metadata.sha256) { "Installed resource corrupted" } }
         return game
@@ -187,7 +215,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             val readyIdentity = selected.ready!!
             selected = try {
                 val game = verifyVersion(id, readyIdentity)
-                val proof = ResourcePolicy.verifyInstalledProof(readProof(File(version(id, game.identity), "catalog.signed.json")), publicKey)
+                val proof = policy.proof(readProof(File(version(id, game.identity), "catalog.signed.json")), publicKey)
                 val fresh = now() >= proof.issuedAt - 300000 && now() < proof.expiresAt
                 if (fresh) {
                     proof.requireFresh(now()); require(game.contentCode !in selected.quarantine)
@@ -200,6 +228,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             persist(selections + (id to selected))
         }
         val game = if (selected.active == "builtin") null else verifyVersion(id, selected.active)
+        require(policy != ResourceStorePolicy.DYNAMIC || game != null) { "此游戏尚未安装完整可用资源，请回到目录下载" }
         val reference = "$id/${selected.active}"; references[reference] = (references[reference] ?: 0) + 1
         ResourceSession(game, game?.let { version(id, it.identity) }) { references.compute(reference) { _, count -> require(count != null && count > 0); if (count == 1) null else count - 1 } }
     }
@@ -217,18 +246,19 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         val catalogs = journalCatalogs(); require(catalogs.isNotEmpty()) { "没有完整可信高水位记录，请恢复状态备份；自动更新保持停止" }
         val newest = catalogs.maxByOrNull { it.sequence }!!
         require(newest.sequence >= sequence) { "可信记录不足以恢复最高序号，自动更新保持停止" }
-        val next = newest.games.associate { game -> game.id to ResourceSelection(pinned = true, highestCode = game.contentCode, highestHash = game.archiveSha256, quarantine = if (game.contentCode > 1) setOf(game.contentCode) else emptySet()) }
+        policy.requireIds(selections.keys, newest)
+        val next = newest.games.associate { game -> game.id to ResourceSelection(pinned = true, highestCode = game.contentCode, highestHash = game.archiveSha256, quarantine = if (game.contentCode > policy.baselineCode) setOf(game.contentCode) else emptySet()) }
         persist(next, newest.sequence, newest.payloadSha256); stateFailure = null
     }
     fun resumeAutomatic(id: String, retryCode: Int? = null) = synchronized(lock) {
         require(stateFailure == null); val selected = selections.getValue(id)
-        require(retryCode == null || retryCode > 1 && retryCode in selected.quarantine) { "指定编号不在隔离列表中" }
+        require(retryCode == null || retryCode > policy.baselineCode && retryCode in selected.quarantine) { "指定编号不在隔离列表中" }
         persist(selections + (id to selected.copy(pinned = false, quarantine = if (retryCode == null) selected.quarantine else selected.quarantine - retryCode)))
         if (retryCode != null) failedIdentities.removeAll { it.startsWith("$id/$retryCode-") }
     }
     /** Nonblocking in-memory denial closes the window before the serial worker persists quarantine. */
     fun blockFailedIdentity(id: String, identity: String) {
-        require(id in setOf("conway", "eml", "light", "turing")); validateIdentity(identity)
+        require(policy.validId(id)); validateIdentity(identity)
         if (identity != "builtin") failedIdentities.add("$id/$identity")
     }
     fun quarantineFailedIdentity(id: String, identity: String) = synchronized(lock) {
@@ -241,15 +271,20 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         }
     }
     private fun garbageCollect() {
+        val versionsRoot = File(directory, "versions")
+        ResourcePathGuard.requireUnlinked(versionsRoot)
         for ((id, selected) in selections) {
             val protected = setOfNotNull(selected.active, selected.previous, selected.ready)
-            File(directory, "versions/$id").listFiles()?.forEach { file -> if (file.name !in protected && references["$id/${file.name}"] == null) deletePrivate(file) }
+            val gameRoot = File(versionsRoot, id)
+            ResourcePathGuard.requireUnlinked(gameRoot)
+            gameRoot.listFiles()?.forEach { file -> if (file.name !in protected && references["$id/${file.name}"] == null) deletePrivate(file) }
         }
     }
-    private fun usedBytes(file: File): Long { require(file.canonicalFile == file.absoluteFile); return if (file.isFile) file.length() else file.listFiles()?.sumOf { usedBytes(it) } ?: 0 }
+    private fun usedBytes(file: File): Long { ResourcePathGuard.requireUnlinked(file); return if (file.isFile) file.length() else file.listFiles()?.sumOf { usedBytes(it) } ?: 0 }
     private fun deletePrivate(file: File) {
         require(file.absolutePath.startsWith(directory.absolutePath + File.separator))
-        if (file.canonicalFile != file.absoluteFile) { require(file.delete()); return }
+        ResourcePathGuard.requireUnlinked(file.parentFile!!)
+        if (runCatching { ResourcePathGuard.requireUnlinked(file) }.isFailure) { require(file.delete()); return }
         if (file.isDirectory) file.listFiles()?.forEach { deletePrivate(it) }
         require(file.delete() || !file.exists()) { "Cannot remove resource staging" }
     }
