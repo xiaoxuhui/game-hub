@@ -1,0 +1,30 @@
+✔ demo preserves progress, counts wins once and validates imported state (1.62ms)
+✖ actual import handler never claims durable success after storage write failure (1.8911ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.7794ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 104.2979
+
+✖ failing tests:
+
+test at tests\memory-demo.test.cjs:12:1
+✖ actual import handler never claims durable success after storage write failure (1.8911ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /无法保存.*重启后不会保留/. Input:
+
+  '已导入存档。'
+
+      at TestContext.<anonymous> (D:\soft\.ci-tmp\game-hub-work\v030-final\tests\memory-demo.test.cjs:23:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '已导入存档。',
+    expected: /无法保存.*重启后不会保留/,
+    operator: 'match',
+    diff: 'simple'
+  }

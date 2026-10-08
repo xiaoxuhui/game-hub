@@ -38,7 +38,14 @@ export function strictJson(bytes, max = LIMITS.payload) {
       while (at < text.length) { result.push(value(depth + 1)); ws(); const end = text[at++]; if (end === ']') return result; if (end !== ',') throw new Error('Expected comma'); }
     } else {
       const match = /^(?:true|false|null|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)/.exec(text.slice(at));
-      if (match) { at += match[0].length; const parsed = JSON.parse(match[0]); if (typeof parsed === 'number' && !Number.isFinite(parsed)) throw new Error('Number overflow'); return parsed; }
+      if (match) {
+        at += match[0].length; const parsed = JSON.parse(match[0]);
+        if (typeof parsed === 'number' && !Number.isFinite(parsed)) throw new Error('Number overflow');
+        // JS folds 10.0/10e0 into integer 10, while Android preserves Double and rejects
+        // it in signed integer fields. Never silently accept that different raw grammar.
+        if (typeof parsed === 'number' && Number.isInteger(parsed) && /[.eE]/.test(match[0])) throw new Error('Noncanonical integer');
+        return parsed;
+      }
     }
     throw new Error('Invalid JSON');
   }

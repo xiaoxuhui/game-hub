@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { generateKeyPairSync } from 'node:crypto';
+import { generateKeyPairSync, sign } from 'node:crypto';
 import { validateDynamicCatalog } from '../scripts/dynamic-protocol.mjs';
 import { signCatalog, verifyEnvelope } from '../scripts/resource-protocol.mjs';
 const now = Date.parse('2026-10-09T00:00:00.000Z');
@@ -25,4 +25,12 @@ test('v2 rejects bad identities, capabilities, dangerous files, expiry and dupli
   for(const path of ['../x','plugin.so','catalog.signed.json']) {const data=fixture();data.games[0].files.push({path,bytes:0,sha256:'c'.repeat(64),mime:'application/octet-stream'});assert.throws(()=>validateDynamicCatalog(data,now));}
   assert.throws(()=>validateDynamicCatalog(fixture(),now+86400000));
   const future=fixture();future.games[0].bridgeProtocol=2;assert.doesNotThrow(()=>validateDynamicCatalog(future,now));
+});
+test('raw signed integer decimals and exponents cannot fold into accepted JS integers',()=>{
+  const pair=generateKeyPairSync('rsa',{modulusLength:3072});
+  for(const token of ['10.0','10e0','1e1']) {
+    const payload=Buffer.from(JSON.stringify(fixture()).replace('"releaseId":10',`"releaseId":${token}`));
+    const envelope=Buffer.from(JSON.stringify({envelopeVersion:1,keyId:'fixture',payloadBase64:payload.toString('base64'),signatureBase64:sign('RSA-SHA256',payload,pair.privateKey).toString('base64')}));
+    assert.throws(()=>verifyEnvelope(envelope,pair.publicKey,'fixture'),/Noncanonical integer/);
+  }
 });

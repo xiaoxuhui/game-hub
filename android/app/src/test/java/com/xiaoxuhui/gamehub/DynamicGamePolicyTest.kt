@@ -38,6 +38,9 @@ class DynamicGamePolicyTest {
         val signature=Signature.getInstance("SHA256withRSA").run {initSign(pair.private);update(bytes);sign()}
         val json=JSONObject().put("envelopeVersion",1).put("keyId","fixture").put("payloadBase64",Base64.getEncoder().encodeToString(bytes)).put("signatureBase64",Base64.getEncoder().encodeToString(signature))
         val envelope=json.toString().toByteArray()
+        for(token in listOf("10.0","10e0","1e1")) rejected {
+            DynamicGamePolicy.parseCatalog(StrictJson.parse(fixture().toString().replace("\"releaseId\":10", "\"releaseId\":$token").toByteArray()), "d".repeat(64))
+        }
         assertEquals(1L,DynamicGamePolicy.verifyEnvelope(envelope,pair.public.encoded,now,"fixture").sequence)
         rejected { DynamicGamePolicy.verifyEnvelope(envelope,pair.public.encoded,now+86400000,"fixture") }
         assertEquals(1L,DynamicGamePolicy.verifyProof(envelope,pair.public.encoded,"fixture").sequence)

@@ -15,7 +15,7 @@
       return button;
     }));
   }
-  function save() { try { localStorage.setItem(key, JSON.stringify(state)); } catch { message.textContent = '无法保存进度，请导出备份。'; } }
+  function save() { try { localStorage.setItem(key, JSON.stringify(state)); return true; } catch { message.textContent = '无法保存进度，仅当前会话有效，请导出备份。'; return false; } }
   document.getElementById('restart').onclick = () => { state = core.initial(state.wins); save(); render(); };
   document.getElementById('export').onclick = () => {
     const content = JSON.stringify(state, null, 2), name = 'memory-demo-save.json';
@@ -24,7 +24,7 @@
   };
   document.getElementById('import').onchange = async event => {
     const input = event.target, file = input.files[0];
-    try { if (!file) return; if (file.size > 65536) throw new Error('存档过大'); const candidate = core.validate(JSON.parse(await file.text())); state = candidate; save(); render(); message.textContent = '已导入存档。'; }
+    try { if (!file) return; if (file.size > 65536) throw new Error('存档过大'); const candidate = core.validate(JSON.parse(await file.text())); state = candidate; const persisted = save(); render(); message.textContent = persisted ? '已导入并保存存档。' : '已载入当前会话，但无法保存，请导出备份；重启后不会保留本次导入。'; }
     catch (error) { message.textContent = `未导入：${error.message}`; } finally { input.value = ''; }
   };
   render();

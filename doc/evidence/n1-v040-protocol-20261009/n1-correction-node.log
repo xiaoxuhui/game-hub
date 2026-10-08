@@ -1,0 +1,49 @@
+✔ Android application identity and minimum API stay independent of source APKs (1.2377ms)
+✔ Manifest has one launcher and only the planned update permission (1.2962ms)
+✔ compact lobby uses four fixed source icons and clickable cards (0.7831ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.2779ms)
+✔ four original export bridge names and a file chooser are wired (0.5271ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: a5fe76360e9142ee7c8314397c16f9d32c42a2359b48823e8ccdbd68901a28c3
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.1935ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (1.2442ms)
+✔ HTML references exclude external and fragment links while preserving local assets (0.916ms)
+✔ missing local HTML reference stops bundling (16.3319ms)
+✔ manifest hashes are stable and change when a resource changes (8.2378ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (3953.1409ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (316.9171ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (2.2447ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (129.6994ms)
+✔ detached programmatic Blob click saves content before immediate revoke (5.6157ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (2.4017ms)
+✔ demo preserves progress, counts wins once and validates imported state (2.066ms)
+✔ actual import handler never claims durable success after storage write failure (3.5173ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.3171ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (1.7199ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (0.7754ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (1.2085ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.4985ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (3.4184ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (156.9387ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.4012ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.7282ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (145.8092ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4635.6275
