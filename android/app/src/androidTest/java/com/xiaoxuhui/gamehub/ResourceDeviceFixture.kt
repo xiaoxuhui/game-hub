@@ -67,6 +67,16 @@ internal class ResourceDeviceFixture(val context: Context) : AutoCloseable {
         val offset = local.size().toLong(); local.write(central.toByteArray()); local.u32(0x06054b50); local.u16(0); local.u16(0); local.u16(resources.size.toLong()); local.u16(resources.size.toLong()); local.u32(central.size().toLong()); local.u32(offset); local.u16(0)
         return local.toByteArray()
     }
+    val publicKey: ByteArray get() = pair.public.encoded.clone()
+    fun archiveBytes(id: String) = archives.getValue(id).readBytes()
+    fun onlyLightEnvelope(): ByteArray {
+        val payload = JSONObject(String(Base64.getDecoder().decode(JSONObject(String(envelope)).getString("payloadBase64"))))
+        val games = payload.getJSONArray("games")
+        for (i in 0 until games.length()) if (games.getJSONObject(i).getString("id") != "light") games.getJSONObject(i).put("contentCode", 1)
+        val bytes = payload.toString().toByteArray()
+        val signature = Signature.getInstance("SHA256withRSA").run { initSign(pair.private); update(bytes); sign() }
+        return JSONObject().put("envelopeVersion", 1).put("keyId", ResourcePolicy.KEY_ID).put("payloadBase64", Base64.getEncoder().encodeToString(bytes)).put("signatureBase64", Base64.getEncoder().encodeToString(signature)).toString().toByteArray()
+    }
     fun install(id: String) { store.install(catalog.games.single { it.id == id }, envelope, archives.getValue(id)) }
     fun reopenedStore() = GameResourceStore(File(root, "store"), 3, pair.public.encoded)
     fun renewal(sequence: Int, changedId: String? = null): ByteArray {

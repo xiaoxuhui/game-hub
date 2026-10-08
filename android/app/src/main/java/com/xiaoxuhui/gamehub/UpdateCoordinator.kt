@@ -23,14 +23,18 @@ internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: L
     val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false,
     val settingsSaving: Boolean = false, val settingsStatus: String? = null)
 
+/** Package-only verification dependencies; production always uses its fixed repository and pinned key. */
+internal data class CoordinatorVerificationEnvironment(val store: GameResourceStore, val publicKey: ByteArray,
+    val http: PublicReleaseHttp, val network: () -> UpdateNetwork)
+
 /** One process instance owns connections, queue, settings and cancellation across Activity recreation. */
-internal class UpdateCoordinator private constructor(context: Context) {
+internal class UpdateCoordinator private constructor(context: Context, private val verification: CoordinatorVerificationEnvironment? = null) {
     private val app = context.applicationContext
     private val preferences = UpdatePreferences(app.getSharedPreferences("update-policy", Context.MODE_PRIVATE))
     private val worker = Executors.newSingleThreadExecutor()
     private val main = Handler(Looper.getMainLooper())
     private val connectivity = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val http = PublicReleaseHttp()
+    private val http = verification?.http ?: PublicReleaseHttp()
     private val gate = UpdateTaskGate(SystemClock::elapsedRealtime, System::currentTimeMillis,
         preferences::saveBackoff, preferences.backoff())
     private val stateLock = Any()
@@ -43,7 +47,8 @@ internal class UpdateCoordinator private constructor(context: Context) {
     @Volatile private var offer: ResourceOffer? = null
     private val attempted = HashSet<String>()
     private val runtime by lazy { ResourceRuntime.get(app) }
-    private val resourceClient by lazy { ResourceCatalogClient(runtime.publicKey, http) }
+    private val resourceStore by lazy { verification?.store ?: runtime.store }
+    private val resourceClient by lazy { ResourceCatalogClient(verification?.publicKey ?: runtime.publicKey, http) }
     private val apkManager = ApkUpdateManager(app)
     private val metadataCache by lazy { UpdateMetadataCache(AndroidResourceStateFile(File(app.filesDir, "apk-reminder.json")),
         AndroidResourceStateFile(File(app.filesDir, "resources-reminder.json"))) }
@@ -61,7 +66,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
             override fun onLost(network: Network) = refreshNetwork()
             override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) = refreshNetwork()
         }
-        connectivity.registerNetworkCallback(NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build(), callback)
+        if (verification == null) connectivity.registerNetworkCallback(NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build(), callback)
         refreshNetwork()
     }
     fun subscribe(listener: (UpdateSnapshot) -> Unit) {
@@ -85,13 +90,14 @@ internal class UpdateCoordinator private constructor(context: Context) {
         if (active && hall && allowCheck) automaticNext()
     }
     private fun refreshNetwork() {
-        val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
-        val online = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        val capabilities = if (verification == null) connectivity.getNetworkCapabilities(connectivity.activeNetwork) else null
+        val supplied = verification?.network?.invoke()
+        val online = supplied?.online ?: (capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))
         if (!online) checkCancelled = true
         if (!online) publish { it.copy(
             apkStatus = if (it.apkCheckedAt == null) "大厅未检查：离线" else it.apkStatus,
             resourceStatus = if (it.resourcesCheckedAt == null) "游戏未检查：离线" else it.resourceStatus) }
-        gate.setNetwork(UpdateNetwork(online, online && capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)))
+        gate.setNetwork(supplied ?: UpdateNetwork(online, online && capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)))
         // Reconnection may start a due check; existing cancelled attempts are never restarted this round.
         if (foreground) { if (checkEligible) check(false); if (hall) automaticNext() }
     }
@@ -134,9 +140,9 @@ internal class UpdateCoordinator private constructor(context: Context) {
                     try {
                         val next = resourceClient.query { checkCancelled || !foreground }
                         check(!checkCancelled && foreground) { "检查已取消" }
-                        runtime.store.acceptCatalog(next.envelope)
-                        runtime.store.refreshReadyProof(next.envelope)
-                        val available = next.catalog.games.filter { runtime.store.isEligible(it) }
+                        resourceStore.acceptCatalog(next.envelope)
+                        resourceStore.refreshReadyProof(next.envelope)
+                        val available = next.catalog.games.filter { resourceStore.isEligible(it) }
                         val checkedAt = System.currentTimeMillis()
                         val saved = runCatching { metadataCache.saveResources(next.catalog, checkedAt) }.isSuccess
                         readLocalResources()
@@ -185,7 +191,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
                 current.requireDownload(game)
                 archive = resourceClient.download(game, File(app.cacheDir, "resource-updates"), { !gate.valid(token) }, progressReporter())
                 check(gate.valid(token)) { "更新已取消" }
-                runtime.store.install(game, current.envelope, archive, { !gate.valid(token) })
+                resourceStore.install(game, current.envelope, archive, { !gate.valid(token) })
                 readLocalResources()
                 publish { it.copy(resources = it.resources.filterNot { candidate -> candidate.id == game.id }, resourceStatus = "${game.id} 更新已就绪，下次进入生效") }
             } catch (error: Exception) {
@@ -239,13 +245,13 @@ internal class UpdateCoordinator private constructor(context: Context) {
             // The serial queue places this after cleanup of the previously reserved network/local task.
             val token = checkNotNull(gate.beginRepair())
             try {
-                runtime.store.quarantineFailedIdentity(id, identity)
+                resourceStore.quarantineFailedIdentity(id, identity)
                 publish { it.copy(resourceStatus = "$id 失败资源已隔离，请恢复版本；存档保留") }
             } catch (error: Exception) { publish { it.copy(resourceStatus = "失败资源隔离未提交：${error.message}；请恢复版本") } }
             finally {
                 readLocalResources()
                 synchronized(stateLock) {
-                    val available = runCatching { offer?.catalog?.games?.filter { runtime.store.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
+                    val available = runCatching { offer?.catalog?.games?.filter { resourceStore.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
                     gate.finish(token); publish { idleStatus(it).copy(resources = available) }
                 }
                 automaticNext()
@@ -262,7 +268,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
             try {
                 require(gate.valid(token)) { "本地操作已取消，请回到大厅重试" }
                 // Once the store starts its atomic transaction, cancellation cannot undo a committed choice.
-                val store = runtime.store
+                val store = resourceStore
                 when (action) {
                     LocalResourceAction.RECOVER_ALL -> store.recoverAllBuiltinsFromTrustedHistory()
                     LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> {
@@ -282,7 +288,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
             finally {
                 readLocalResources()
                 synchronized(stateLock) {
-                    val available = runCatching { offer?.catalog?.games?.filter { runtime.store.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
+                    val available = runCatching { offer?.catalog?.games?.filter { resourceStore.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
                     if (changed && action == LocalResourceAction.RETRY) {
                         attempted.removeAll { it.startsWith("$id/$retryCode-") }
                     }
@@ -304,7 +310,7 @@ internal class UpdateCoordinator private constructor(context: Context) {
             }
         } catch (error: Exception) { publish { it.copy(apkStatus = "大厅历史提醒不可用，请联网检查") } }
         try {
-            runtime.store.rememberedCatalog()?.let { catalog ->
+            resourceStore.rememberedCatalog()?.let { catalog ->
                 val checkedAt = metadataCache.readResources(catalog)
                 val fresh = runCatching { catalog.requireFresh(System.currentTimeMillis()) }.isSuccess
                 publish { it.copy(catalogGames = catalog.games, resources = emptyList(), resourcesCheckedAt = checkedAt, resourcesRemembered = true,
@@ -314,16 +320,28 @@ internal class UpdateCoordinator private constructor(context: Context) {
     }
     private fun readLocalResources() {
         try {
-            val current = runtime.store.describeAll(); val diagnostic = runtime.store.failure()
+            val current = resourceStore.describeAll(); val diagnostic = resourceStore.failure()
             publish { it.copy(localResources = current, localDiagnostic = diagnostic, localLoaded = true, localReadError = null) }
         }
         catch (error: Exception) { publish { it.copy(localResources = emptyMap(), localLoaded = true, localReadError = error.message ?: "读取失败", resourceStatus = "本地资源状态不可用：${error.message}；存档保留") } }
     }
     fun unmeteredWifi(): Boolean {
+        verification?.let { return it.network().unmeteredWifi }
         val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork) ?: return false
         return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
     }
+    /** Verification owners must stop and drain their private worker before removing fixture files. */
+    fun closeVerification() {
+        check(verification != null) { "The production process owner cannot be closed by a screen" }
+        check(Looper.myLooper() != Looper.getMainLooper()) { "Drain verification off the UI thread" }
+        presence(false, false)
+        gate.cancel()
+        synchronized(stateLock) { listeners.clear() }
+        worker.shutdown()
+        check(worker.awaitTermination(45, java.util.concurrent.TimeUnit.SECONDS)) { "Verification worker did not finish cleanup" }
+    }
     companion object {
+        fun createForVerification(context: Context, environment: CoordinatorVerificationEnvironment) = UpdateCoordinator(context, environment)
         @Volatile private var instance: UpdateCoordinator? = null
         fun get(context: Context): UpdateCoordinator = instance ?: synchronized(this) { instance ?: UpdateCoordinator(context).also { instance = it } }
     }
