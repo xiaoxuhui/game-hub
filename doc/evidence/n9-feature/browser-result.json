@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "mobile: real generate/Enter/touch, 683 rows, invalid input preserves data, cold reload, clipboard success mock and forced-denial manual fallback, repeated generate, corrupt saved size fallback, denied storage remains usable, no page overflow",
+    "desktop: real generate/Enter/touch, 683 rows, invalid input preserves data, cold reload, clipboard success mock and forced-denial manual fallback, repeated generate, corrupt saved size fallback, denied storage remains usable, no page overflow"
+  ],
+  "errors": [],
+  "timings": [
+    {
+      "viewport": "mobile",
+      "generate10Ms": 109
+    },
+    {
+      "viewport": "desktop",
+      "generate10Ms": 61
+    }
+  ]
+}
