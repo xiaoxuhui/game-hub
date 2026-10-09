@@ -1,0 +1,25 @@
+{
+  "browser": "151.0.7922.34",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "cases": [
+    "real DOM loads and reloads unchanged content-1 schema/moves",
+    "Enter and Space replace card DOM while keeping focus; native Tab reaches next card",
+    "four arrows and Home/End change actual focus without changing saved moves",
+    "matched disabled cards are skipped and next available card gains focus",
+    "complete board moves focus to restart; native Enter restarts and keeps wins",
+    "real file input/download and reload preserve content-1 save; new keyboard hint visible"
+  ],
+  "passed": 6,
+  "pageErrors": [],
+  "sourceHashes": {
+    "app.js": "87fc6fcd09d131d5bc9274f1924cc6f3c1731bb013f1a16e018de5b0c5038734",
+    "index.html": "f62c5152bc5c749469b29a3156cda041406b9fd9372fe8a213e89bbe9d280bc5",
+    "core.js": "cb22b3116f8735b4813ca89eadc2553e00203cb4aa53381fd5c44a19223946eb"
+  },
+  "exportBytes": 144,
+  "exportSha256": "5dd0b7e0147736ab08693a8032661c82de834284bb0d3d61d7a6760b66e14c05",
+  "scope": "Actual Chromium DOM, native keyboard and browser file operations. Own isolated context and exact candidate files served through local request routing; not Android SAF or formal release acceptance."
+}
