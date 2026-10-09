@@ -1,0 +1,263 @@
+{
+  "originalRepositoriesExcluded": true,
+  "retainedRoots": [
+    "D:\\soft\\game-hub",
+    "D:\\soft\\game-hub-archives",
+    "D:\\soft\\game-hub-signing-backup",
+    "D:\\soft\\game-hub-toolchain"
+  ],
+  "driveFreeBeforeArchiving": 157654319104,
+  "otherCiTmpExcluded": true,
+  "recordedAtUtc": "2026-10-09T15:26:37.0109395Z",
+  "directories": [
+    {
+      "path": "D:\\soft\\.ci-tmp\\emulator-evidence",
+      "initialLogicalBytes": 1278859,
+      "files": 12,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-avd",
+      "initialLogicalBytes": 13479689608,
+      "files": 92,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-final-153df9a",
+      "initialLogicalBytes": 11341243,
+      "files": 28,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-license-audit",
+      "initialLogicalBytes": 5837510,
+      "files": 35,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-light-smoke-c861",
+      "initialLogicalBytes": 287,
+      "files": 2,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-m3-emulator",
+      "initialLogicalBytes": 8662,
+      "files": 2,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-maintenance",
+      "initialLogicalBytes": 76411,
+      "files": 13,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-p7-candidate",
+      "initialLogicalBytes": 10027772,
+      "files": 8,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-p7-emulator",
+      "initialLogicalBytes": 514658,
+      "files": 14,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-p7-license-candidate",
+      "initialLogicalBytes": 10050028,
+      "files": 8,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-signing-tools",
+      "initialLogicalBytes": 4234089365,
+      "files": 12461,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Preserve runtime in permanent toolchain; remove temporary directory and duplicate installers"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-tools",
+      "initialLogicalBytes": 36719444,
+      "files": 913,
+      "gitCheckouts": 0,
+      "links": 1,
+      "decision": "Preserve runtime in permanent toolchain; remove temporary directory and duplicate installers"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-upgrade-fixtures-20261009",
+      "initialLogicalBytes": 48949271,
+      "files": 32,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\.ci-tmp\\game-hub-work",
+      "initialLogicalBytes": 240346333,
+      "files": 7203,
+      "gitCheckouts": 6,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build",
+      "initialLogicalBytes": 196729170,
+      "files": 1260,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build-final",
+      "initialLogicalBytes": 19902476,
+      "files": 158,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build-icon-20261003",
+      "initialLogicalBytes": 101405797,
+      "files": 2318,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build-p3",
+      "initialLogicalBytes": 275773,
+      "files": 69,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build-p6",
+      "initialLogicalBytes": 8757006,
+      "files": 203,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build-p7",
+      "initialLogicalBytes": 34196193,
+      "files": 803,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build-resources-20261008",
+      "initialLogicalBytes": 44128945,
+      "files": 2021,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-build-v2",
+      "initialLogicalBytes": 14882811,
+      "files": 220,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-candidate-v0.2.0-153df9a",
+      "initialLogicalBytes": 11342853,
+      "files": 30,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-continuous-audit-20261008",
+      "initialLogicalBytes": 254305,
+      "files": 58,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-icon-audit-20261003",
+      "initialLogicalBytes": 1251,
+      "files": 2,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-planning-v0.3.0-20261003",
+      "initialLogicalBytes": 1250,
+      "files": 1,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-release-v0.2.0-74216c3",
+      "initialLogicalBytes": 15154506,
+      "files": 55,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-release-v0.2.0-f53a4c1",
+      "initialLogicalBytes": 13123373,
+      "files": 24,
+      "gitCheckouts": 0,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-resource-producer-20261009",
+      "initialLogicalBytes": 9158004,
+      "files": 350,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-upgrade-20261009",
+      "initialLogicalBytes": 74763243,
+      "files": 2966,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    },
+    {
+      "path": "D:\\soft\\game-hub-verify-v030-20261008",
+      "initialLogicalBytes": 7708173,
+      "files": 349,
+      "gitCheckouts": 1,
+      "links": 0,
+      "decision": "Archive required history/evidence, then remove"
+    }
+  ],
+  "taskDirectories": 31
+}

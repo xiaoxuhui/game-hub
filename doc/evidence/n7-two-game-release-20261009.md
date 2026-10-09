@@ -1,7 +1,7 @@
 # N7 两新游戏资源发行与正式客户端验收
 
 - 日期：2026-10-09；发行来源锁提交 `802c8af9da6f4dbd9614fe691950e2c8497aa340`，已推送；CI run `37944905173` completed/success。
-- 状态：发行与客户端验收完成，提交后独立发行复审待闭环；N8清理尚未执行。
+- 状态：发行与客户端验收完成，提交c5caf46fb11021a60838d3441c369e37af4d3496独立发行复审CLOSED，见[审阅记录](n7-two-game-release-independent-review-20261009.md)；N8清理尚未执行。
 - 前序计划、集成、来源锁分别独立审阅CLOSED，来源锁意见见 [独立审阅](n7-three-game-source-lock-independent-review-20261009.md)。
 
 ## 不可移动来源与重复生产
