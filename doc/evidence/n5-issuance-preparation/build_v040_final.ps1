@@ -44,10 +44,10 @@ Invoke-Step 'resource-repeat' { node --input-type=module -e "import {buildResour
 $taskAfter = @(Get-ChildItem -LiteralPath '.build\resource-candidate' -Filter '*.zip' | ForEach-Object { [pscustomobject]@{name=$_.Name; sha=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()} })
 if (($taskBefore | ConvertTo-Json -Compress) -ne ($taskAfter | ConvertTo-Json -Compress)) { throw 'Resource ZIPs not reproducible' }
 $taskAfter | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskEvidence 'resource-repeat-hashes.json') -Encoding utf8
-Invoke-Step 'android-unit-release-lint' { & 'D:\soft\.ci-tmp\game-hub-signing-tools\gradle-8.7\bin\gradle.bat' -p android testDebugUnitTest assembleRelease lintRelease --no-daemon }
+Invoke-Step 'android-unit-release-lint' { & 'D:\soft\.ci-tmp\game-hub-signing-tools\gradle-8.7\bin\gradle.bat' -p android testReleaseUnitTest assembleRelease lintRelease --no-daemon --rerun-tasks }
 Invoke-Step 'android-release-instrument' { & 'D:\soft\.ci-tmp\game-hub-signing-tools\gradle-8.7\bin\gradle.bat' -p android assembleReleaseAndroidTest -PgameHubTestBuildType=release --no-daemon }
 Invoke-Step 'apk-assets' { & 'C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' scripts/verify_apk.py android/app/build/outputs/apk/release/app-release-unsigned.apk $taskSha }
-$taskXml = @(Get-ChildItem -LiteralPath 'android\app\build\test-results\testDebugUnitTest' -Filter '*.xml' | ForEach-Object { [xml]$doc = Get-Content -LiteralPath $_.FullName -Raw; $doc.testsuite })
+$taskXml = @(Get-ChildItem -LiteralPath 'android\app\build\test-results\testReleaseUnitTest' -Filter '*.xml' | ForEach-Object { [xml]$doc = Get-Content -LiteralPath $_.FullName -Raw; $doc.testsuite })
 $taskCounts = [pscustomobject]@{tests=($taskXml | Measure-Object tests -Sum).Sum; failures=($taskXml | Measure-Object failures -Sum).Sum; errors=($taskXml | Measure-Object errors -Sum).Sum}
 $taskCounts | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskEvidence 'jvm-counts.json') -Encoding utf8
 if ($taskCounts.failures -ne 0 -or $taskCounts.errors -ne 0) { throw 'Unit tests failed' }

@@ -1,0 +1,12 @@
+[
+  {
+    "case": "{\"Commit\":\"main\",\"Mode\":\"Resources\"}",
+    "rejected": true,
+    "reason": "Full immutable commit required"
+  },
+  {
+    "case": "{\"Commit\":\"d51f14ca04e876cf2b3b662a201585d04091e9e8\"}",
+    "rejected": true,
+    "reason": "Explicit fixed publishing mode required"
+  }
+]

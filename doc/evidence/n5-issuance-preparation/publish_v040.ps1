@@ -1,5 +1,6 @@
 param([ValidateSet('Resources','Apk')][string]$Mode,[Parameter(Mandatory=$true)][string]$Commit,[string]$Apk,[string]$ExpectedApkSha)
 $ErrorActionPreference='Stop'
+if($Mode -notin @('Resources','Apk')) { throw 'Explicit fixed publishing mode required' }
 $taskCheckout='D:\soft\.ci-tmp\game-hub-work\v030-final'
 $taskEvidence='D:\soft\.ci-tmp\game-hub-work\v030-evidence\v040-release'
 $taskApi='https://api.github.com/repos/xiaoxuhui/game-hub'
