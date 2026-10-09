@@ -191,8 +191,8 @@ for name in TOP:
         archive_zip(name, files(BASE / name))
 for name in CI:
     if name not in ('game-hub-avd', 'game-hub-signing-tools', 'game-hub-tools', 'game-hub-work'):
-    snapshot_name = name + '-after-stop' if post_stop and name in ('game-hub-m3-emulator', 'game-hub-upgrade-fixtures-20261009') else name
-    archive_zip(snapshot_name, files(TEMP / name))
+        snapshot_name = name + '-after-stop' if post_stop and name in ('game-hub-m3-emulator', 'game-hub-upgrade-fixtures-20261009') else name
+        archive_zip(snapshot_name, files(TEMP / name))
 archive_zip('final-evidence', files(TEMP / 'game-hub-work/v030-evidence'))
 avd = TEMP / 'game-hub-avd'
 expected_avds = {'gamehub-icon-20261003', 'gamehub-p7', 'gamehub-resource-20261008', 'gamehub-upgrade-20261009'}
