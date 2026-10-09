@@ -1,0 +1,2 @@
+$ node scripts/dynamic-resources.mjs
+Verified 1 dynamic resource ZIPs; 868aaf6ebf3802cff17c0f60794e339609248b87

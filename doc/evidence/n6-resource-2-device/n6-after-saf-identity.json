@@ -1,0 +1,10 @@
+{
+  "actualSystemSaf": true,
+  "moves": 1,
+  "earlyPullBytes": 0,
+  "sha256": "5dd0b7e0147736ab08693a8032661c82de834284bb0d3d61d7a6760b66e14c05",
+  "schemaVersion": 1,
+  "phase": "after-resource-2",
+  "wins": 0,
+  "bytes": 144
+}
