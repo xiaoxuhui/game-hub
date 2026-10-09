@@ -1,0 +1,83 @@
+{
+  "repositories": [
+    {
+      "repository": "abelian-sandpile",
+      "trackedHtml": [
+        "index.html"
+      ],
+      "head": "c4290283b1109e13e37d6f696b83fefd3b7a6855"
+    },
+    {
+      "repository": "conway-life-game",
+      "trackedHtml": [
+        "index.html"
+      ],
+      "head": "87027a69ff93cb517c262a5010c342b7ac32b7d6"
+    },
+    {
+      "repository": "EML",
+      "trackedHtml": [
+        "dist/eml-workbench.html",
+        "src/template.html"
+      ],
+      "head": "76cdd75bc26fc7d1dc23a2a4b19e74857c9c430c"
+    },
+    {
+      "repository": "game-hub",
+      "trackedHtml": [
+        "examples/abelian-sandpile/index.html",
+        "examples/lambda-diagram-game/lambda-lab.html",
+        "examples/memory-demo/index.html"
+      ],
+      "head": "ed85802ad2f49354c803429ab2bd63a24d3956d4"
+    },
+    {
+      "repository": "lambda-diagram-game",
+      "trackedHtml": [
+        "dist/lambda-lab.html",
+        "index.html"
+      ],
+      "head": "06dee48e0fe319cc72448fadf7ae9783cb441408"
+    },
+    {
+      "repository": "light_game",
+      "trackedHtml": [
+        "index.html"
+      ],
+      "head": "5b89d598a131ff9680363a02d4749a94181413bf"
+    },
+    {
+      "repository": "mini-app-harness",
+      "trackedHtml": [],
+      "head": "77cec1148415c3f135aa067828ee0f251adb3821"
+    },
+    {
+      "repository": "turing-machine-simulator",
+      "trackedHtml": [
+        "campaign.html",
+        "doc/red-green-puzzle.html",
+        "index.html"
+      ],
+      "head": "592027dbc5cab9cb83f91b904f4f23a9e3cbe24b"
+    }
+  ],
+  "alreadyCovered": {
+    "hallExamples": "memory-demo, abelian-sandpile, lambda-diagram-game already registered",
+    "harness": "workflow skills, no tracked HTML game",
+    "lambda": "index.html and dist/lambda-lab.html are one app",
+    "eml": "src/template.html and dist/eml-workbench.html are one app",
+    "turingCampaign": "campaign.html is linked by src/main.ts:43; hall bundle.mjs:154 requires its built artifact",
+    "otherGames": "conway-life-game, light_game and abelian-sandpile each have one main index.html"
+  },
+  "scope": "D:\\soft top-level Git repositories; tracked HTML only; D:\\aiden contains signing directories, no top-level Git project",
+  "recordedAtUtc": "2026-10-09T16:51:25.4035640Z",
+  "omittedStandalone": [
+    {
+      "id": "red-green-puzzle",
+      "path": "doc/red-green-puzzle.html",
+      "repository": "turing-machine-simulator",
+      "classification": "Single independent omitted offline game/tool",
+      "inputSha256": "c73db02267b40eeca1ba9c7c263bf1fa0de57b86b17cecf24b5fcff95676f520"
+    }
+  ]
+}
