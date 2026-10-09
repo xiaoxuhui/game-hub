@@ -1,0 +1,34 @@
+Performing Streamed Install
+Success
+Performing Incremental Install
+Performing Streamed Install
+Success
+
+com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest:.
+
+Time: 5.46
+
+OK (1 test)
+
+
+
+com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest:
+Error in fourRealGameSavesSurviveSameSignerApkUpgrade(com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest):
+org.junit.ComparisonFailure: turing actual stored state restored expected:<[tru]e> but was:<[fals]e>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest.page(UpgradeSaveDeviceTest.kt:55)
+	at com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest.fourRealGameSavesSurviveSameSignerApkUpgrade(UpgradeSaveDeviceTest.kt:77)
+
+
+Time: 4.457
+There was 1 failure:
+1) fourRealGameSavesSurviveSameSignerApkUpgrade(com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest)
+org.junit.ComparisonFailure: turing actual stored state restored expected:<[tru]e> but was:<[fals]e>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest.page(UpgradeSaveDeviceTest.kt:55)
+	at com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest.fourRealGameSavesSurviveSameSignerApkUpgrade(UpgradeSaveDeviceTest.kt:77)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+

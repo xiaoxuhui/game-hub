@@ -53,8 +53,9 @@ class UpgradeSaveDeviceTest {
             assertTrue("Actual $id page loaded", loaded.await(20, TimeUnit.SECONDS))
             if (mode == "seed") assertEquals("$id saved", "true", js(view, write))
             assertEquals("$id actual stored state restored", "true", js(view, read))
-            // Actual localStorage writes must reach the WebView storage process before external stop.
-            Thread.sleep(500)
+            // Chromium batches localStorage disk commits. Keep the renderer alive during seed;
+            // waiting after am instrument exits cannot flush a renderer that has already stopped.
+            Thread.sleep(if (mode == "seed") 6000 else 500)
         } finally { instrumentation.runOnMainSync { view.destroy() } }
     }
     @Test fun fourRealGameSavesSurviveSameSignerApkUpgrade() {
