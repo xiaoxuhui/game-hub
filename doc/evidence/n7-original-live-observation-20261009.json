@@ -1,0 +1,22 @@
+[
+  {
+    "repository": "abelian-sandpile",
+    "frozenRevision": "d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f",
+    "observedHead": "c4290283b1109e13e37d6f696b83fefd3b7a6855",
+    "worktree": [],
+    "baselineIsAncestor": true,
+    "observedAtUtc": "2026-10-09T14:14:25.8141734Z",
+    "readOnly": true,
+    "resourceRevisionMoves": false
+  },
+  {
+    "repository": "lambda-diagram-game",
+    "frozenRevision": "11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2",
+    "observedHead": "06dee48e0fe319cc72448fadf7ae9783cb441408",
+    "worktree": [],
+    "baselineIsAncestor": true,
+    "observedAtUtc": "2026-10-09T14:14:26.3214174Z",
+    "readOnly": true,
+    "resourceRevisionMoves": false
+  }
+]
