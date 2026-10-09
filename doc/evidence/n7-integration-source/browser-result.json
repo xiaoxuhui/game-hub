@@ -1,0 +1,33 @@
+{
+  "browser": "151.0.7922.34",
+  "mobile": {
+    "width": 390,
+    "height": 844
+  },
+  "desktop": {
+    "width": 1280,
+    "height": 900
+  },
+  "cases": [
+    "abelian: real mobile touch adds one grain, exact local reload, download, confirm reset/import and reload restore",
+    "abelian: desktop keyboard direction/Enter adds grain",
+    "lambda: mobile convert/step, checkpoint/reload, export/reset/import restores step; separate origin has no abelian keys",
+    "lambda: desktop Ctrl+Enter conversion and step"
+  ],
+  "pageErrors": [],
+  "summaries": [
+    {
+      "id": "abelian-sandpile",
+      "exportBytes": 94231,
+      "exportSha256": "36806cae91d8bd0d730c64adcad2254c63857450e47c0e6ea18f6395d467f947",
+      "total": 1,
+      "schemaVersion": 1
+    },
+    {
+      "id": "lambda-diagram-game",
+      "exportBytes": 553,
+      "exportSha256": "958e3a3be094c969211a5629abead16124d1cb2ace9c4b14f9bba0fed781cdad",
+      "steps": 1
+    }
+  ]
+}

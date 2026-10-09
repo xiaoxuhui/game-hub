@@ -15,3 +15,11 @@
 - 序列 3 明确固定上一目录 SHA `0428dedaa4dd8abdd5299cf1db52a0f3f8bbbbfb381bd0ec20ad58be16b31915`，保留示范 #2、旧签名历史和 ZIP；游戏主动安装、正式 APK 不变、独立 origin、公网验签及发布后审阅均列为待办。N8 清理仍在 N7 后。
 
 **当前结论：规划需先修正来源状态和 Lambda dist 证明措辞，提交后独立复审；在此之前不放行 N7-B 集成构建。**
+
+## 批改复审：`7fa2cb21b9d3d221d295ccc186d3aafc727529f3`、`15b51ba712fd7975ae06caca7b9745b03b621268`
+
+两个提交已推送；最终 `HEAD=origin/main=15b51ba`，大厅主仓库干净，两次 `git show --check` 均无格式错误。`doc/evidence/n7-original-live-observation-20261009.json` 单独记录两原仓库审阅时当前 HEAD、空工作树、冻结提交为祖先及 `resourceRevisionMoves:false`，没有改写起始只读快照。N7-U1 和阶段末门禁已改为本任务不写六原仓库、每次复核当前状态，并严格区分两新游戏当前外部 HEAD 与 d58/11b 不移动资源来源；**原 P1 闭环**。
+
+设计明确 Lambda 冻结 11b 提交已跟踪 `dist/lambda-lab.html`，独立重建须与该 Git blob 逐字节比较；不同时分别记录原 blob、重建产物、固定输入与原因，集成产物归属大厅后续已审提交，不借用当前原仓库 dist。阿贝尔冻结提交 dist 仅 `.gitkeep` 的事实也已说明；**原 P2 闭环**。首审原文已单独归档 `doc/evidence/n7-two-game-plan-independent-review-20261009.md`，保留发现与修订路径。
+
+**复审结论：CLOSED，无剩余规划阻塞，可进入 N7-B 的独立上游构建及可审核集成来源切片。** 此结论仅确认计划，未将两来源测试/构建、资源 ZIP、真实 SAF 或正式序列 3 发行记为已完成。

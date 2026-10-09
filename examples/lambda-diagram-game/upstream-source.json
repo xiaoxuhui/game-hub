@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "id": "lambda-diagram-game",
+  "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+  "revision": "11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2",
+  "version": "0.3.0",
+  "buildKind": "inline-html",
+  "entryPage": "lambda-lab.html",
+  "inputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "index.html",
+      "bytes": 11375,
+      "sha256": "2bfb55a35b576662ad4a7ab73d5fefc2654399eef459b40343b5a67e7822d9eb"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1048,
+      "sha256": "7f98f900b098cf64e940164c4bf78bdd56993e94ff5db972c4440de88612d5d2"
+    },
+    {
+      "path": "scripts/build.mjs",
+      "bytes": 854,
+      "sha256": "7db66aeb64372f696bfbd01959623a1fcf2c574d53edec792665c6ebd7a29fd1"
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 15937,
+      "sha256": "1f4ed221e5978be5bd418a2162be4f1746185888274b3982f8b4592f7c9def95"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 8597,
+      "sha256": "b715d4417063c41320b368f2d0fa64524803c452ff86157996eda5f1af6c061b"
+    },
+    {
+      "path": "src/diagram.js",
+      "bytes": 3908,
+      "sha256": "36544d57bd507e0c40e6bcbe99e7beaeeea22e9a60aed4b83427bb83c1713586"
+    },
+    {
+      "path": "src/download.js",
+      "bytes": 521,
+      "sha256": "a189edb9b7be72435cba13fbe2b4d2234b6e4d87fc61da22714b28eafef70cc1"
+    },
+    {
+      "path": "src/library.js",
+      "bytes": 3177,
+      "sha256": "6a9894b198d62b1aa70f891c3c86208dc70a54dd6cc66e41e8f9b9432bbca7bf"
+    },
+    {
+      "path": "src/presets.js",
+      "bytes": 2556,
+      "sha256": "ea2c1a592436a75a89ab6ddcaac52934800dea5deb6e0e8dd77b55d8c78b7ebc"
+    },
+    {
+      "path": "src/snapshot.js",
+      "bytes": 5639,
+      "sha256": "53b163fe37c668e60567d5b2231d8c3b3491641c39544157a1174cc09f700a2c"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 21919,
+      "sha256": "c79285d56780abaea457f7eb3bf45d2324f69d2080ecc946a2409eb0af40b2f2"
+    },
+    {
+      "path": "src/viewport.js",
+      "bytes": 3831,
+      "sha256": "9c8f229053c86e74971d3e13fc9b26a446fc0828201a3d9f0bd11266b35e8e89"
+    },
+    {
+      "path": "src/workspace-tools.js",
+      "bytes": 8038,
+      "sha256": "259309798bfe485ba3326156abd058af34c32582fb1edd6723f0c53d89694f2f"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "lambda-lab.html",
+      "bytes": 85296,
+      "sha256": "548484c86bfb3b43fdfb1d9bc2e7f9fe0212f03b437d2ef4277c7f0f8df149ab"
+    }
+  ],
+  "trackedArtifact": {
+    "path": "dist/lambda-lab.html",
+    "bytes": 85296,
+    "sha256": "548484c86bfb3b43fdfb1d9bc2e7f9fe0212f03b437d2ef4277c7f0f8df149ab",
+    "matchesRebuild": true
+  }
+}

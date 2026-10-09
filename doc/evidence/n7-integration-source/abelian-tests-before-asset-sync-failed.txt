@@ -1,0 +1,128 @@
+✖ U03 assets 中的网页与源产物字节一致 (13.8785ms)
+✖ 入口页存在于 assets 中 (0.5369ms)
+✔ 应用身份与需求一致（包名/SDK/版本） (6.3162ms)
+✔ 固定 debug 签名存在且被 gradle 引用（否则新包无法覆盖安装） (1.6146ms)
+✔ 应用显示名正确 (1.2641ms)
+✔ 清单声明启动入口且不申请任何权限（离线运行） (1.5001ms)
+✔ 旋转屏幕不重建 Activity 且不锁定方向 (1.6612ms)
+✔ WebView 关键配置齐备（JS/本地存储/离线资源/返回键） (2.0696ms)
+✔ 图标资源齐全（各密度传统图标 + 自适应图标前景） (1.3612ms)
+✔ 资源 XML 的注释里不含连续两个减号（AAPT 会直接拒绝） (19.9108ms)
+✔ 开发工具脚本没有被同步进 assets (6.3045ms)
+✔ Android uses selected-document export with bounded content and truthful result (2.3229ms)
+✔ native lifecycle pauses and saves, recreated entry always loads, foreign URLs blocked (1.5973ms)
+✖ Android assets exactly equal the 13-file web runtime whitelist (11.321ms)
+✔ U14/U15/U17 legal move, busy/invalid rejection, final move wins (6.1826ms)
+✔ U16/U18 exact target and exhausted budget, not merely equal total (1.1074ms)
+✔ U19 undo before/during/after avalanche restores stable counters (1.0868ms)
+✔ challenge checkpoint rolls back in-flight move, restore validates replay (2.966ms)
+✔ U20 ten levels prove minimum by increasing depth; zero-step and budget failure handled (49.4625ms)
+✔ U13 old frame cannot overwrite reset or mode after cancellation (6.6547ms)
+✔ pause then synchronous step does one wave, resumed budget work reaches stability (3.8802ms)
+✔ queue admission reserves total budget; queued actions apply in order and restore paused (3.5609ms)
+✔ busy challenge invalid move does not cancel running work or consume budget (4.6873ms)
+✔ U01 empty, U02 center three plus one, U03 bulk eight (6.6215ms)
+✔ U04-U06 corner, edge and singleton use threshold four (0.9432ms)
+✔ U07/U10 synchronous wave leaves newly unstable neighbour until next wave (0.6421ms)
+✔ U08/U09/U11 seeded configurations agree with independent forward/reverse reference (24.7276ms)
+✔ U12 invalid inputs and cumulative budget reject atomically (2.3365ms)
+✔ validated snapshots check ledger, stability and per-cell toppling counters (1.511ms)
+✔ fast work respects operation budget, and deadline can stop before a mutation (0.6955ms)
+✔ U32 wave trace shows initial input, source/recipient/frontier and does not mutate game (6.4718ms)
+✔ U33 exact trace accounting matches independent engine on every allowed tutorial action (13.6453ms)
+✔ U34 prediction is computed from actual basic topplings, not number of animation waves (0.5559ms)
+✔ U34 old six level identities and saved physics/history remain compatible (5.9045ms)
+✔ U35 advanced lessons have choices and proven nontrivial budgets (0.4742ms)
+✔ U28 repeated input uses frozen cell/amount, interval and exact physics (6.2015ms)
+✔ U29 manual queue finishes first and ongoing avalanche creates no repeated queue (4.2197ms)
+✔ U30 every cancellation invalidates old loop frames; pause preserves the current experiment (9.1218ms)
+✔ U30 restart has one active generation and save-v1 never resumes automatic input (6.594ms)
+✔ U31 invalid loop settings/mode reject without cancelling an existing valid loop (2.8392ms)
+✔ U31 cumulative limit stops automatically before a partial drop or numerical overflow (1.0053ms)
+✔ S01 candidate static contract lists all shipped web resources (11.4859ms)
+✔ S02 page resource references resolve in a nested game directory (4.6381ms)
+✔ S03 runtime has no external dependencies or broad storage clear (2.272ms)
+✔ S04 reserved storage keys are unique and game-scoped (0.3093ms)
+✔ S05 challenge example is a stable format draft, not a verified level (0.352ms)
+✔ S06 build emits exact bytes and auditable resource hashes (69.3089ms)
+✔ S07 two builds are byte-for-byte reproducible and exclude development files (124.7073ms)
+✔ U21 full save roundtrip includes unstable experiment and queued input, restore paused (13.0118ms)
+✔ U22 corrupt/future/cross-game/oversized/invalid ledger imports reject without mutating controller (17.4209ms)
+✔ U23 clear only owned keys preserves other games and unrelated data (2.4844ms)
+✔ U24 storage exceptions propagate without modifying memory (2.2127ms)
+✔ challenge checkpoint persists success; undo does not revoke historic best (3.9568ms)
+ℹ tests 53
+ℹ suites 0
+ℹ pass 50
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 779.3966
+
+✖ failing tests:
+
+test at tests\android-shell.test.mjs:67:1
+✖ U03 assets 中的网页与源产物字节一致 (13.8785ms)
+  AssertionError [ERR_ASSERTION]: 缺少 index.html，请先执行同步命令
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/tests/android-shell.test.mjs:71:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\android-shell.test.mjs:80:1
+✖ 入口页存在于 assets 中 (0.5369ms)
+  AssertionError [ERR_ASSERTION]: 缺少入口页 index.html（需与 MainActivity 的 ASSET_FILE 一致）
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/tests/android-shell.test.mjs:81:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\android-shell.test.mjs:278:1
+✖ Android assets exactly equal the 13-file web runtime whitelist (11.321ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   '缺少 index.html',
+  +   '缺少 src/styles.css',
+  +   '缺少 src/project-config.js',
+  +   '缺少 src/domain/sandpile.js',
+  +   '缺少 src/domain/challenge.js',
+  +   '缺少 src/domain/lesson.js',
+  +   '缺少 src/domain/levels.js',
+  +   '缺少 src/storage/persistence.js',
+  +   '缺少 src/controller.js',
+  +   '缺少 src/renderer.js',
+  +   '缺少 src/teaching.js',
+  +   '缺少 src/app.js',
+  +   '缺少 LICENSE'
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/tests/android-shell.test.mjs:283:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ '缺少 index.html', '缺少 src/styles.css', '缺少 src/project-config.js', '缺少 src/domain/sandpile.js', '缺少 src/domain/challenge.js', '缺少 src/domain/lesson.js', '缺少 src/domain/levels.js', '缺少 src/storage/persistence.js', '缺少 src/controller.js', '缺少 src/renderer.js', '缺少 src/teaching.js', '缺少 src/app.js', '缺少 LICENSE' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

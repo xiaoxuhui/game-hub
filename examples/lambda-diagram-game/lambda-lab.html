@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#131c2d">
+  <title>Lambda 线路实验室</title>
+  <style>
+:root{color-scheme:light;--ink:#182238;--muted:#737d8a;--paper:#f5f4ef;--border:#e2e5de;--mint:#276e5b;--mint-light:#e7f1e9;--dark:#131c2d;--pink:#ff91b7;--sans:Inter,"Segoe UI","Microsoft YaHei",sans-serif;--mono:"Cascadia Code","Consolas",monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.65}button,input,textarea,select{font:inherit}button,select{cursor:pointer}button{transition:background .15s,border-color .15s,transform .15s}button:active{transform:translateY(1px)}button:disabled{opacity:.4;cursor:not-allowed;transform:none}button:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid #6caa91;outline-offset:3px}button{color:inherit}code{font-family:var(--mono)}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.topbar{height:74px;padding:0 max(28px,calc((100vw - 1400px)/2));display:flex;align-items:center;justify-content:space-between;background:var(--dark);color:#eef3f5;gap:14px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;font-size:18px;font-weight:650;letter-spacing:.2px}.brand-mark{width:35px;height:35px;display:grid;place-items:center;border:1px solid #6bc7a9;border-radius:9px;color:#78dab7;font-family:Georgia,serif;font-size:30px;line-height:1}.brand-sub{font-size:13px;font-weight:400;color:#a7b6c8;margin-left:9px}.top-right{display:flex;align-items:center;gap:27px}.offline{color:#b0c3c0;font-size:12px;display:flex;align-items:center;gap:7px}.offline i{width:6px;height:6px;background:#7cd2ac;border-radius:50%}.header-button{background:none;color:#d1d9e4;border:0;padding:8px 0;font-size:12px}.header-button span{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:8px;border:1px solid #67748a;border-radius:50%;font-size:11px}
+.shell{max-width:1400px;margin:auto;padding:34px 28px 22px}.intro{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;gap:20px}.eyebrow{color:var(--mint);font-size:10px;font-weight:700;letter-spacing:2px;margin:0 0 8px}.intro h1{font-size:29px;letter-spacing:-.6px;line-height:1.35;font-weight:650;margin:0 0 10px}.intro-copy{margin:0;color:var(--muted);font-size:13px}.intro-symbol{position:relative;width:155px;height:92px;margin-right:18px;opacity:.7}.intro-symbol span{font-family:Georgia,serif;position:absolute;right:40px;top:-15px;font-size:74px;color:#306b57}.intro-symbol i{position:absolute;background:#b6cabc;height:1px;left:10px;right:0;bottom:10px}.intro-symbol i:nth-child(3){right:55px;bottom:25px}.intro-symbol i:nth-child(4){width:1px;height:80px;left:95px;bottom:10px}
+.mode-row{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:23px;gap:8px}.mode-tabs{display:flex;gap:24px}.mode-tab{background:none;border:0;border-bottom:2px solid transparent;padding:11px 2px 14px;margin-bottom:-1px;color:#7c858d;font-weight:550;font-size:13px}.mode-tab.active{border-bottom-color:var(--mint);color:var(--mint)}.mode-tab span{background:#e5e9df;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:4px}.progress-label{font-size:11px;color:var(--muted)}
+.workspace{display:grid;grid-template-columns:360px minmax(0,1fr);gap:22px;align-items:start}.editor-column,.visual-column{display:flex;flex-direction:column;gap:18px;min-width:0}.card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 3px 12px #18223803}.editor-card{padding:23px}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.section-heading>div{display:flex;align-items:center;gap:9px}.section-heading h2,.diagram-heading h2{font-size:14px;font-weight:650;letter-spacing:.1px;margin:0}.section-number{font-family:var(--mono);font-size:10px;color:#8c969f;letter-spacing:1px}.mini-label{font-size:9px;letter-spacing:1.5px;color:#9aa19f}.editor-wrap{border:1px solid #dce1d9;border-radius:8px;background:#f9faf6;margin-top:20px;overflow:hidden}.editor-wrap:focus-within{border-color:#739f87;box-shadow:0 0 0 3px #e9f2ec}textarea{width:100%;min-height:148px;resize:vertical;padding:17px 14px 9px;border:0;outline:none!important;background:transparent;color:#293c33;font-family:var(--mono);font-size:19px;line-height:1.7;overflow-wrap:anywhere}.editor-bottom{display:flex;justify-content:space-between;gap:8px;padding:8px 13px;border-top:1px solid #e6eae2;color:#8a948c;font-size:10px;letter-spacing:.2px}.toolbar-caption{font-weight:600;font-size:11px;margin:18px 0 9px;display:flex;justify-content:space-between}.toolbar-caption span{font-weight:400;color:#8c958f;font-size:10px}.symbol-toolbar{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}.symbol-toolbar button{height:33px;min-width:0;padding:0;background:white;border:1px solid #dde2dc;border-radius:5px;font-family:var(--mono);font-size:15px}.symbol-toolbar button:hover,.template-toolbar button:hover{background:#eaf2e9;border-color:#89b299}.symbol-toolbar .lambda-key{background:var(--mint-light);color:var(--mint);border-color:#bdd7c4;font-size:23px}.symbol-toolbar button:last-child{font-size:11px}.template-toolbar{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}.template-toolbar button{background:#f5f6f2;border:1px solid #e9ebe3;border-radius:5px;padding:5px 8px;font-family:var(--mono);font-size:11px;color:#63766a}.template-toolbar small{font-family:var(--sans);font-size:9px;margin-left:3px}.syntax-note{font-size:10px;color:#8b938e;margin:13px 0 16px;line-height:1.8}.syntax-note code{background:#f0f2ed;padding:1px 3px;border-radius:3px;color:#66746d}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #dce3da;background:white;border-radius:6px;padding:9px 14px;font-size:12px;font-weight:600;white-space:nowrap}.button:hover:not(:disabled){border-color:#93b8a0;background:#f4f8f3}.button.primary{background:var(--mint);color:white;border-color:var(--mint)}.button.primary:hover{background:#225c4c}.convert-button{width:100%;justify-content:space-between;padding:11px 15px}.key-hint{text-align:center;font-size:9px;color:#a1aaa1;margin:8px 0 18px}.example-row{border-top:1px solid #eceee8;padding-top:15px;display:flex;align-items:center;gap:10px}.example-row label{font-size:11px;color:#8b948d;white-space:nowrap}select{background:#fafbf8;border:1px solid #dfe4dd;border-radius:5px;color:#62746a;padding:7px;font-size:11px;min-width:0}.example-row select{width:100%}.error-message{font-size:11px;padding:10px;margin-bottom:12px;color:#a9434b;border:1px solid #ecc5c7;border-radius:6px;background:#fff4f3;overflow-wrap:anywhere}
+.rules-card{padding:21px 23px}.rules-card>.section-heading{margin-bottom:14px}.rule{display:flex;align-items:center;gap:14px;padding:7px 0}.rule p{display:flex;flex-direction:column;margin:0;font-size:10px;color:#909a92}.rule strong{font-size:11px;font-weight:600;color:#5b7063}.legend-line{width:37px;flex:none;position:relative;height:26px;display:block}.lambda-line:before{content:"";position:absolute;top:9px;left:0;right:0;height:2px;background:#3b9978}.var-line:before{content:"";position:absolute;top:0;bottom:0;left:18px;width:2px;background:#bd975b}.var-line:after{content:"";position:absolute;top:0;left:4px;right:3px;height:2px;background:#bd975b}.app-line:before{content:"";position:absolute;left:2px;right:2px;bottom:4px;height:2px;background:#868ec1}.app-line:after{content:"";position:absolute;left:2px;right:2px;bottom:4px;height:17px;border-left:2px solid #868ec1;border-right:2px solid #868ec1}.rules-foot{font-size:9px;color:#a2aba1;border-top:1px solid #eceee8;margin:13px 0 0;padding-top:12px}
+.diagram-card{background:var(--dark);border:1px solid #243247;color:#edf2fa;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px #131c2d10}.diagram-heading{height:60px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 24px;border-bottom:1px solid #ffffff09}.diagram-heading>div{display:flex;align-items:center;gap:10px}.diagram-heading .section-number{color:#6f8199}.diagram-label{font-size:9px;color:#657991;letter-spacing:1.5px;margin-left:7px}.state-badge{padding:3px 8px;background:#223731;color:#86d3b5;border:1px solid #335949;border-radius:4px;font-size:10px;white-space:nowrap}.state-badge.dirty{background:#3f3427;color:#e4c78c;border-color:#60513b}.state-badge.error{background:#412d37;color:#e9a2b1;border-color:#60414f}.diagram-viewport{height:330px;overflow:auto;display:flex;align-items:safe center;justify-content:safe center;position:relative;background-image:radial-gradient(#77899e28 .8px,transparent .8px);background-size:20px 20px;padding:24px;scrollbar-color:#526579 #19283b}.diagram-mount{display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:auto;min-height:100%}.diagram-mount svg{display:block;flex-shrink:0;filter:drop-shadow(0 0 7px #64d8bd0a)}.diagram-mount line{transition:stroke .2s}.diagram-empty{text-align:center;color:#8696ac;margin:auto}.diagram-empty span{font-family:Georgia,serif;font-size:55px;color:#4b6475}.diagram-empty p{font-size:14px;margin:0 0 5px}.diagram-empty small{font-size:11px}.diagram-footer{min-height:51px;border-top:1px solid #ffffff09;display:flex;align-items:center;justify-content:space-between;padding:9px 17px 9px 24px;gap:8px;flex-wrap:wrap}.diagram-legend{display:flex;gap:15px;font-size:9px;color:#8496ad}.diagram-legend>span{display:flex;align-items:center;gap:5px}.dot{height:5px;width:5px;border-radius:50%;display:inline-block}.mint{background:#64d8bd}.pink{background:var(--pink)}.zoom-controls{display:flex;align-items:center;gap:2px;color:#b6c7d8}.zoom-controls button{background:transparent;border:1px solid transparent;color:#b6c7d8;padding:3px 7px;font-size:11px;border-radius:4px;min-width:25px}.zoom-controls button:hover{background:#253247;border-color:#40536c}.zoom-controls #zoom-label{font-size:9px;color:#7489a4;min-width:36px;text-align:center}.zoom-controls #export-svg{border-left:1px solid #344157;padding-left:10px;margin-left:4px;font-size:9px}
+.execution-card{padding:20px 23px}.execution-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.speed-label{font-size:10px;color:#98a18f;display:flex;align-items:center;gap:7px}.speed-label select{padding:4px 6px;font-size:10px}.run-controls{display:flex;align-items:center;gap:8px;margin-top:17px;flex-wrap:wrap}.run-button{background:var(--mint-light);color:var(--mint);border-color:#c0d9c8;min-width:92px}.reset-button{color:#8b978d;margin-left:2px}.step-counter{margin-left:auto;color:#9ba298;font-size:10px}.step-counter b{font-family:var(--mono);font-size:19px;font-weight:500;color:#46674f;margin-right:4px}.run-status{font-size:11px;color:#85917f;margin:12px 0 14px;overflow-wrap:anywhere;min-height:18px}.current-term{background:#f6f8f2;border:1px solid #e8ede2;padding:12px 14px;border-radius:7px}.current-term>div{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:9px;color:#899580;margin-bottom:6px}.current-term>code{display:block;font-size:15px;color:#3c5541;overflow-wrap:anywhere;max-height:132px;overflow:auto;line-height:1.8}.decoded{font-size:9px;color:var(--mint);text-align:right}.next-explanation{margin-top:12px;font-size:10px;color:#929d8b;overflow-wrap:anywhere;line-height:1.9}.next-explanation code{color:#6d8467;font-size:10px}.history-details{border-top:1px solid #eaeee5;margin-top:16px;padding-top:12px}.history-details summary{font-size:11px;color:#71826b;cursor:pointer}.history-details summary>span{float:right;color:#a1ac9b;font-size:10px}.history-list{list-style:none;margin:13px 0 0;padding:0;max-height:225px;overflow:auto}.history-list li{display:grid;grid-template-columns:25px minmax(0,1fr);gap:8px;padding:9px 0;border-top:1px solid #eff2ec}.history-list li>span{font-family:var(--mono);font-size:10px;color:#a2ad9b}.history-list code{font-size:11px;color:#5d7754;overflow-wrap:anywhere}.history-list small{display:block;color:#a0aa9a;font-size:9px;overflow-wrap:anywhere;margin-top:3px}
+.page-footer{margin-top:28px;display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--border);padding-top:18px;color:#a4ab9e;font-size:10px}.page-footer b{font-family:Georgia,serif;font-size:16px;color:#7f9781;margin-right:8px}.help-panel{border:1px solid #d8e2d6;background:#edf2e8;border-radius:10px;padding:21px 25px;margin-bottom:23px;display:grid;grid-template-columns:1fr 1.6fr;gap:30px;color:#61735c}.help-panel h2{font-size:13px;margin:0 0 9px}.help-panel p{font-size:11px;margin:5px 0;line-height:1.9}.help-panel code{color:#2d6346}.help-panel a{color:#316c52;white-space:nowrap}
+.challenge-panel{background:#fff;border:1px solid #d8e2d6;border-radius:12px;margin-bottom:22px;padding:20px 23px}.level-list{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}.level-list button{font-size:11px;padding:6px 12px;background:#f6f7f1;border:1px solid #e3e8db;border-radius:5px;color:#8a977f}.level-list button.active{background:var(--mint);color:white;border-color:var(--mint)}.level-list button.completed:after{content:' ✓';color:#6eb293}.level-list button.active.completed:after{color:#a5efd0}.challenge-body{display:flex;justify-content:space-between;align-items:center;gap:30px}.challenge-body h2{font-size:18px;margin:0 0 5px}.challenge-body p{font-size:12px;color:#8b9982;margin:0}.challenge-body .eyebrow{font-size:9px;color:#739068;margin-bottom:5px}.challenge-target{padding:12px 17px;border-left:2px solid #d8e5d2;max-width:45%;display:flex;flex-direction:column;gap:3px}.challenge-target span{font-size:9px;color:#9ba68f}.challenge-target strong{font-size:12px;color:#5c8253;font-weight:600}.challenge-target code{font-size:11px;color:#7e9972;overflow-wrap:anywhere}.challenge-footer{display:flex;align-items:center;gap:14px;margin-top:19px;flex-wrap:wrap}.challenge-footer #check-answer{margin-left:auto}.text-button{background:none;border:0;color:#829675;font-size:11px;padding:6px 0;text-decoration:underline;text-underline-offset:3px}.challenge-footer p{font-size:11px;color:#8c9e7e;margin:0;flex:1;min-width:130px}.challenge-feedback{font-size:12px;color:#487b42;margin:10px 0 0}.challenge-feedback:empty{display:none}.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#254d3c;color:#fff;padding:11px 21px;border-radius:7px;box-shadow:0 8px 24px #0002;font-size:12px;z-index:10;max-width:90vw}
+@media(min-width:1600px){.diagram-viewport{height:390px}.shell{padding-top:43px}.intro{margin-bottom:35px}.workspace{grid-template-columns:380px minmax(0,1fr)}}
+@media(max-width:1100px){.workspace{grid-template-columns:320px minmax(0,1fr);gap:16px}.editor-card{padding:20px}.diagram-label{display:none}.diagram-footer{padding:10px 15px}.diagram-legend{gap:10px}.execution-card{padding:19px}.button{padding:9px 11px}.reset-button{margin-left:0}.run-controls{gap:6px}.shell{padding:27px 22px}.topbar{padding:0 22px}}
+@media(max-width:800px){.workspace{grid-template-columns:minmax(0,1fr)}.rules-card{display:none}.editor-wrap{margin-top:15px}textarea{min-height:112px}.editor-card{padding:20px}.editor-column{gap:0}.intro{margin-bottom:20px}.intro h1{font-size:25px}.intro-symbol{width:110px;margin-right:0}.intro-symbol i:nth-child(4){left:75px}.visual-column{gap:16px}.symbol-toolbar{gap:6px}.symbol-toolbar button{height:37px}.diagram-viewport{height:330px}.help-panel{grid-template-columns:1fr;gap:12px}.example-row{padding-top:13px}.key-hint{margin-bottom:13px}.page-footer{font-size:9px}.challenge-body{gap:15px}.challenge-target{max-width:45%}.challenge-footer #check-answer{margin-left:auto}}
+@media(max-width:480px){.topbar{height:62px;padding:0 17px}.brand{font-size:16px;gap:9px}.brand-mark{width:30px;height:30px;font-size:26px}.brand-sub{display:block;margin:0;font-size:9px;line-height:1.3}.offline{display:none}.top-right{gap:0}.header-button{font-size:10px}.shell{padding:24px 14px 18px}.eyebrow{font-size:8px;letter-spacing:1.5px}.intro h1{font-size:22px;margin-bottom:8px}.intro-copy{font-size:11px}.intro-symbol{display:none}.mode-tabs{gap:19px}.mode-tab{font-size:12px}.progress-label{font-size:9px}.mode-row{margin-bottom:18px}.diagram-heading{padding:0 16px;height:56px}.diagram-heading h2{font-size:13px}.diagram-heading>div{gap:7px}.diagram-footer{gap:9px;justify-content:center;padding:9px 10px}.diagram-legend{font-size:8px}.zoom-controls{margin-left:auto}.zoom-controls button{font-size:10px;padding:3px 5px}.zoom-controls #zoom-label{min-width:29px}.zoom-controls #export-svg{font-size:8px;padding-left:6px;margin-left:1px}.execution-card{padding:18px 15px}.run-controls{gap:5px}.run-controls .button{font-size:11px;padding:8px 9px}.run-button{min-width:76px}.step-counter{font-size:9px}.step-counter b{font-size:17px}.page-footer{flex-direction:column;gap:4px;margin-top:20px;padding-top:12px}.challenge-panel{padding:17px 16px}.level-list{gap:5px;margin-bottom:15px}.level-list button{padding:6px 8px;font-size:10px}.challenge-body{flex-direction:column;align-items:stretch;gap:13px}.challenge-target{max-width:100%;padding:7px 12px}.challenge-body h2{font-size:16px}.challenge-body p{font-size:11px}.challenge-footer{gap:10px}.challenge-footer p{flex-basis:100%;order:3}.current-term>code{font-size:14px}.help-panel{padding:17px}.editor-bottom{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.diagram-viewport{touch-action:none;cursor:grab;user-select:none;overflow-anchor:none}.diagram-viewport.dragging{cursor:grabbing}.diagram-hint{font-size:10px;color:#7d94ad;padding:8px 24px 0;margin:0}.zoom-controls #fit[aria-pressed="true"]{color:#64d8bd;background:#64d8bd10}
+.execution-top{flex-wrap:wrap}.speed-label{flex-wrap:wrap}.speed-label input{width:67px;padding:4px 5px;border:1px solid #dfe4dd;border-radius:5px;background:#fafbf8;color:#486c55;font-size:11px;min-width:0}.execution-card #speed-error{margin:10px 0 0}
+.function-actions{flex-wrap:wrap}.function-item-head{flex-wrap:wrap}.function-item-buttons{margin-left:auto}#function-edit-status{color:var(--mint);overflow-wrap:anywhere}
+.symbol-toolbar{display:flex}.symbol-toolbar button.lambda-key{width:44px;height:37px;font-size:23px}.function-keys [data-function-insert="λ"]{width:40px;font-size:21px;color:var(--mint);background:var(--mint-light)}
+.save-bar{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;background:#edf2e8;border:1px solid #dce5d6;border-radius:10px;padding:14px 18px;margin-bottom:22px}.save-info{display:grid;grid-template-columns:auto auto;gap:1px 12px;align-items:center}.save-info strong{font-size:12px;color:#4b7055}.save-info>span{font-size:10px;color:#809274}.save-info small{grid-column:1/-1;font-size:9px;color:#9ca894}.save-info>span.storage-error{color:#aa5353}.save-actions{display:flex;gap:7px;flex-wrap:wrap}.save-actions .button{padding:7px 10px;font-size:10px}.save-feedback{flex-basis:100%;margin:0;font-size:11px;color:#55784d;overflow-wrap:anywhere}.save-feedback.error{color:#ab4f52}.function-card{padding:21px 23px}.function-note{font-size:10px;color:#8a9882;margin:11px 0 14px}.function-note code{color:#59816b}.function-card form>label{display:block;font-size:10px;color:#7a8b73;margin:11px 0 5px}.function-card input{width:100%;border:1px solid #dce2d6;background:#f9faf6;padding:9px 11px;border-radius:6px;font-size:12px;font-family:var(--mono);color:#43604a;min-width:0}.function-card textarea{border:1px solid #dce2d6;border-radius:6px;background:#f9faf6;padding:10px 11px;min-height:85px;font-size:14px}.function-card input:focus,.function-card textarea:focus{outline:2px solid #b5d3b4!important;outline-offset:1px}.function-actions{display:flex;justify-content:space-between;gap:7px;margin-top:12px}.function-actions .button{font-size:10px;padding:7px 9px}.function-keys{display:flex;gap:5px;margin-top:5px}.function-keys button{background:#f6f8f1;border:1px solid #e0e7da;border-radius:4px;font-family:var(--mono);font-size:13px;min-width:27px;height:28px;padding:0 6px;color:#607956}.function-list{display:flex;flex-direction:column;gap:8px;margin-top:17px;max-height:340px;overflow:auto}.function-empty{font-size:10px;text-align:center;color:#a6b09c;padding:12px 0;margin:0;border-top:1px dashed #e1e8d9}.function-item{border:1px solid #e1e8d9;background:#f7f9f3;border-radius:6px;padding:10px;min-width:0}.function-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.function-item strong{font-size:12px;font-family:var(--mono);color:#3d7053;overflow-wrap:anywhere;min-width:0}.function-item-buttons{display:flex;gap:5px;flex-shrink:0}.function-item button{background:white;border:1px solid #dce5d7;border-radius:4px;font-size:9px;padding:3px 7px;color:#739166}.function-item .delete-function{color:#b36565;border-color:#e7d6d2}.function-item>code{display:block;font-size:10px;margin-top:7px;color:#7f9273;overflow-wrap:anywhere;max-height:72px;overflow:auto}.function-foot{font-size:9px;line-height:1.8;color:#a0ac93;margin:13px 0 0}.function-card .error-message{margin-top:10px;margin-bottom:0}
+@media(max-width:1100px){.save-info{width:100%}.save-bar{gap:10px}.function-card{padding:20px}}
+@media(max-width:800px){.editor-column{gap:16px}.function-card{order:1}.save-info{width:auto}.save-actions{margin-left:auto}.save-bar{padding:13px 17px}.function-list{max-height:250px}}
+@media(max-width:480px){.save-bar{padding:13px;margin-bottom:18px}.save-info{width:100%}.save-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:7px}.save-actions .button{min-width:0;padding:8px 7px;font-size:10px}.function-card{padding:19px 20px}.function-actions .button{font-size:11px;padding:8px 11px}.function-keys button{min-width:31px;height:32px}.function-item button{font-size:10px;padding:5px 8px}}
+
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">λ</span><span>Lambda <span class="brand-sub">线路实验室</span></span></a>
+    <div class="top-right"><span class="offline"><i></i> 离线可用</span><button id="help-toggle" class="header-button" aria-expanded="false" aria-controls="help-panel">玩法与语法 <span>?</span></button></div>
+  </header>
+  <main class="shell">
+    <section class="intro">
+      <div><p class="eyebrow">LAMBDA CALCULUS / PLAYGROUND</p><h1>写一段 λ，看函数如何流动。</h1><p class="intro-copy">从表达式到 Tromp 图示，一步一步，看见计算。</p></div>
+      <div class="intro-symbol" aria-hidden="true"><span>λ</span><i></i><i></i><i></i></div>
+    </section>
+    <section id="help-panel" class="help-panel" hidden>
+      <div><h2>三个积木，就能计算</h2><p><code>x</code> 是变量；<code>λx.x</code> 是函数；<code>f x</code> 把 x 交给 f。<code>(λx.x) y → y</code> 是一次 β 归约。</p></div>
+      <div><h2>怎么写、怎么看</h2><p>用快捷栏插入 λ；也可用 <code>\</code>。<code>λx y.x</code> 等同 <code>λx.λy.x</code>。变量之间用空格：<code>xy</code> 是一个名字。λ 的作用域延伸到右侧，作为参数时需加括号。</p><p>同色竖线连接绑定横线；应用横线连接子式最左变量。粉色标记下一步归约，自由变量以虚线显示。采用左最外正常序，包含函数内部归约。<a href="https://tromp.github.io/cl/diagrams.html" target="_blank" rel="noopener">John Tromp 原始说明 ↗</a></p></div>
+    </section>
+    <nav class="mode-row" aria-label="游戏模式"><div class="mode-tabs"><button id="mode-free" class="mode-tab active" aria-pressed="true">自由实验</button><button id="mode-challenge" class="mode-tab" aria-pressed="false">闯关模式 <span>5</span></button></div><span id="progress-text" class="progress-label">探索 · 输入 · 归约</span></nav>
+    <section class="save-bar" aria-label="状态与进度存档"><div class="save-info"><strong>状态与进度</strong><span id="storage-status" role="status">自动保存准备中</span><small>包含函数库、归约轨迹与关卡进度</small></div><div class="save-actions"><button id="save-state" class="button primary">保存当前状态</button><button id="restore-state" class="button" disabled>恢复已保存状态</button><button id="export-state" class="button">导出存档 ↓</button><button id="import-state" class="button">导入存档 ↑</button><input id="import-file" type="file" accept=".json,application/json" hidden></div><p id="save-feedback" class="save-feedback" role="status" hidden></p></section>
+    <section id="challenge-panel" class="challenge-panel" hidden>
+      <div class="level-list" id="level-list" aria-label="选择关卡"></div>
+      <div class="challenge-body"><div><p id="level-topic" class="eyebrow"></p><h2 id="level-title"></h2><p id="level-description"></p></div><div class="challenge-target"><span>目标正规形</span><strong id="target-label"></strong><code id="target-expression"></code></div></div>
+      <div class="challenge-footer"><button id="hint-toggle" class="text-button" aria-expanded="false">显示提示</button><p id="hint" hidden></p><button id="check-answer" class="button primary">验证答案 <span>↗</span></button><button id="next-level" class="button" hidden>下一关 →</button></div>
+      <p id="challenge-feedback" class="challenge-feedback" role="status"></p>
+    </section>
+    <div class="workspace">
+      <aside class="editor-column">
+        <section class="card editor-card">
+          <div class="section-heading"><div><span class="section-number">01</span><h2>写下表达式</h2></div><span class="mini-label">INPUT</span></div>
+          <label class="sr-only" for="expression">Lambda 表达式</label>
+          <div class="editor-wrap"><textarea id="expression" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="syntax-note error-message">(λx.x) (λy.y)</textarea><div class="editor-bottom"><span>λ / \ 均可输入</span><span id="char-count">12 / 1500</span></div></div>
+          <p class="toolbar-caption">快捷输入 <span>插入到光标位置</span></p>
+          <div id="symbol-toolbar" class="symbol-toolbar" role="group" aria-label="Lambda 符号快捷栏">
+            <button data-insert="λ" class="lambda-key" aria-label="插入 λ">λ</button>
+          </div>
+          <p id="syntax-note" class="syntax-note">数字自动表示丘奇数，例如 <code>3</code>。应用用空格分开，例如 <code>f x</code>；函数参数用括号包住。</p>
+          <div id="error-message" class="error-message" role="alert" hidden></div>
+          <button id="convert" class="button primary convert-button">转换成图示 <span>→</span></button>
+          <p class="key-hint">Ctrl / ⌘ + Enter 快速转换</p>
+          <div class="example-row"><label for="examples">试试示例</label><select id="examples"><option value="">选择一个表达式…</option></select></div>
+        </section>
+        <section class="card function-card">
+          <div class="section-heading"><div><span class="section-number">ƒ</span><h2>自定义函数</h2></div><span id="function-count" class="mini-label">0 个函数</span></div>
+          <p class="function-note">保存后按名称调用，如 <code>ID (λy.y)</code>。</p>
+          <p id="function-edit-status" class="function-note" role="status" hidden></p>
+          <form id="function-form"><label for="function-name">函数名称</label><input id="function-name" placeholder="例如 ID、ADD、SUCC" maxlength="32" autocomplete="off" spellcheck="false"><label for="function-source">函数定义</label><textarea id="function-source" placeholder="例如 λx.x" spellcheck="false" autocapitalize="off" aria-describedby="function-error"></textarea><div id="function-keys" class="function-keys" role="group" aria-label="函数定义快捷输入"><button type="button" data-function-insert="λ" aria-label="函数定义插入 λ">λ</button></div><p id="function-error" class="error-message" role="alert" hidden></p><div class="function-actions"><button id="function-use-current" type="button" class="button">使用当前式</button><button id="function-add" type="submit" class="button primary">新增函数 +</button></div></form>
+          <div id="function-list" class="function-list"></div><p class="function-foot">定义在保存时展开。删除函数后，已转换的图示仍可运行；再次转换会使用最新函数库。</p>
+        </section>
+        <section class="card rules-card"><div class="section-heading"><div><span class="section-number">λ</span><h2>读懂线路</h2></div></div><div class="rule"><span class="legend-line lambda-line"></span><p><strong>抽象</strong><span>一条横线，绑定一个变量。</span></p></div><div class="rule"><span class="legend-line var-line"></span><p><strong>变量</strong><span>竖线连接到它所属的 λ。</span></p></div><div class="rule"><span class="legend-line app-line"></span><p><strong>应用</strong><span>横线连接函数与参数。</span></p></div><p class="rules-foot">颜色辅助追踪绑定；连线结构决定含义。</p></section>
+      </aside>
+      <section class="visual-column">
+        <div class="diagram-card">
+          <div class="diagram-heading"><div><span class="section-number">02</span><h2>Tromp 图示</h2><span class="diagram-label">LIVE STRUCTURE</span></div><span id="state-badge" class="state-badge">可以归约</span></div>
+          <p class="diagram-hint">运行中也可缩放 · 滚轮 / 双指放大，拖动查看内部结构</p>
+          <div id="diagram-viewport" class="diagram-viewport" tabindex="0" aria-label="滚轮或双指缩放，拖动平移的图示画布"><div id="diagram-mount" class="diagram-mount"></div><div id="diagram-empty" class="diagram-empty" hidden><span>λ</span><p>等待一个表达式</p><small>写好后，点击「转换成图示」</small></div></div>
+          <div class="diagram-footer"><div class="diagram-legend"><span><i class="dot mint"></i>绑定线路</span><span><i class="dot pink"></i>下一步归约</span></div><div class="zoom-controls"><button id="zoom-out" aria-label="缩小图示">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="放大图示">+</button><button id="actual-size" title="按原尺寸查看内部结构">100%</button><button id="fit" aria-label="适配图示" aria-pressed="true">适配</button><button id="export-svg">导出 SVG ↗</button></div></div>
+        </div>
+        <section class="card execution-card">
+          <div class="execution-top"><div class="section-heading"><div><span class="section-number">03</span><h2>运行与归约</h2></div></div><div class="speed-label"><label for="speed">速度</label><select id="speed"><option value="1200">慢速</option><option value="600" selected>正常</option><option value="180">快速</option><option value="10">极速</option><option value="custom">自定义</option></select><label class="sr-only" for="speed-ms">每步间隔，毫秒</label><input id="speed-ms" type="number" min="1" max="60000" step="1" value="600" inputmode="numeric" title="每步间隔 1–60000 毫秒，数字越小运行越快" aria-describedby="speed-error"><span>ms/步</span></div></div>
+          <p id="speed-error" class="error-message" role="alert" hidden></p>
+          <div class="run-controls"><button id="run" class="button run-button"><span>▶</span> <span id="run-label">运行</span></button><button id="step" class="button">单步 →</button><button id="back" class="button">← 回退</button><button id="reset" class="button reset-button">↺ 重置</button><span class="step-counter"><b id="step-count">0</b> 步</span></div>
+          <p id="run-status" class="run-status" role="status" aria-live="polite">准备好了。点击单步，观察一次函数替换。</p>
+          <div class="current-term"><div><span>当前表达式</span><span id="decoded" class="decoded"></span></div><code id="current-expression"></code></div>
+          <div id="next-explanation" class="next-explanation"></div>
+          <details class="history-details" id="history-details"><summary>归约轨迹 <span id="history-count">0 次替换</span></summary><ol id="history-list" class="history-list"></ol></details>
+        </section>
+      </section>
+    </div>
+    <footer class="page-footer"><span><b>λ</b> 只有变量、函数和应用。其余，交给计算。</span><span>正常序 β 归约 · 本地保存</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script>
+(function (root) {
+  'use strict';
+  const LIMITS = Object.freeze({ chars: 1500, nodes: Infinity, depth: Infinity, steps: Infinity, nameChars:Infinity });
+  const V = name => ({ type: 'var', name });
+  const L = (param, body) => ({ type: 'abs', param, body });
+  const A = (fn, arg) => ({ type: 'app', fn, arg });
+
+  class LambdaError extends Error {
+    constructor(message, position = null) { super(message); this.name = 'LambdaError'; this.position = position; }
+  }
+  function inspect(term) {
+    let nodes = 0, depth = 0, vars = 0, abstractions = 0, applications = 0, nameChars = 0;
+    const stack = [[term, 1]];
+    while (stack.length) {
+      const [t, d] = stack.pop(); nodes++; depth = Math.max(depth, d);
+      if (t.type === 'var') { vars++; nameChars += t.name.length; }
+      else if (t.type === 'abs') { abstractions++; nameChars += t.param.length; stack.push([t.body, d + 1]); }
+      else { applications++; stack.push([t.fn, d + 1], [t.arg, d + 1]); }
+    }
+    return { nodes, depth, vars, abstractions, applications };
+  }
+  function tokenize(source, maxChars = LIMITS.chars) {
+    if (source.length > maxChars) throw new LambdaError(`输入最多 ${maxChars} 个字符。`, maxChars);
+    const out = [];
+    for (let i = 0; i < source.length;) {
+      if (/\s/.test(source[i])) { i++; continue; }
+      const start = i, c = source[i];
+      if ('λ\\.()'.includes(c)) { out.push({ kind: c === '\\' ? 'λ' : c, pos: i++ }); continue; }
+      if(c==='-' && /[0-9]/.test(source[i+1]||'')) throw new LambdaError('丘奇数只支持非负整数，不能输入负数。',i);
+      const numeric=/^[0-9]+/.exec(source.slice(i));
+      if(numeric) {
+        if(source[i+numeric[0].length]==='.') throw new LambdaError('丘奇数只支持非负整数，不能输入小数。',i);
+        const value=Number(numeric[0]);
+        if(!Number.isSafeInteger(value)) throw new LambdaError('数字超出可精确表示的整数范围。',i);
+        out.push({kind:'number',value,pos:i});i+=numeric[0].length;continue;
+      }
+      const m = /^[a-zA-Z][a-zA-Z0-9_']*/.exec(source.slice(i));
+      if (m) { out.push({ kind: 'name', value: m[0], pos: start }); i += m[0].length; continue; }
+      throw new LambdaError(`无法识别「${c}」，变量请用英文字母开头。`, i);
+    }
+    out.push({ kind: 'end', pos: source.length }); return out;
+  }
+  function parse(source, maxChars = LIMITS.chars) {
+    const tokens = tokenize(source, maxChars); let at = 0, nesting = 0;
+    const peek = () => tokens[at];
+    const fail = message => { throw new LambdaError(message, peek().pos); };
+    function expr() {
+      ++nesting;
+      let result;
+      if (peek().kind === 'λ') {
+        at++; const params = [];
+        while (peek().kind === 'name') params.push(tokens[at++].value);
+        if (!params.length) fail('λ 后面需要一个变量，例如 λx.x。');
+        if (peek().kind !== '.') fail('变量后面需要一个点「.」。');
+        at++; result = expr();
+        for (let i = params.length - 1; i >= 0; i--) result = L(params[i], result);
+      } else {
+        result = atom();
+        while (peek().kind === 'name' || peek().kind === 'number' || peek().kind === '(') result = A(result, atom());
+        if (peek().kind === 'λ') fail('作为参数的 λ 表达式需要括号，例如 f (λx.x)。');
+      }
+      nesting--; return result;
+    }
+    function atom() {
+      if (peek().kind === 'name') return V(tokens[at++].value);
+      if (peek().kind === 'number') {
+        const n=tokens[at++].value;let body=V('x');
+        for(let i=0;i<n;i++)body=A(V('f'),body);
+        return L('f',L('x',body));
+      }
+      if (peek().kind === '(') {
+        at++; const t = expr();
+        if (peek().kind !== ')') fail('缺少右括号「)」。');
+        at++; return t;
+      }
+      fail(peek().kind === 'end' ? '这里需要一个表达式。' : '这里需要变量或括号内的表达式。');
+    }
+    if (peek().kind === 'end') fail('先写一个 Lambda 表达式，或选一个示例。');
+    const t = expr();
+    if (peek().kind !== 'end') fail('多余的符号或右括号。');
+    inspect(t); return t;
+  }
+  function format(t, context = 0) {
+    if (t.type === 'var') return t.name;
+    if (t.type === 'abs') {
+      const s = `λ${t.param}.${format(t.body)}`;
+      return context > 0 ? `(${s})` : s;
+    }
+    const s = `${format(t.fn, 1)} ${format(t.arg, 2)}`;
+    return context > 1 ? `(${s})` : s;
+  }
+  function freeVars(t, bound = new Set(), out = new Set()) {
+    if (t.type === 'var') { if (!bound.has(t.name)) out.add(t.name); }
+    else if (t.type === 'abs') { const next = new Set(bound); next.add(t.param); freeVars(t.body, next, out); }
+    else { freeVars(t.fn, bound, out); freeVars(t.arg, bound, out); }
+    return out;
+  }
+  function allNames(t, out = new Set()) {
+    if (t.type === 'var') out.add(t.name);
+    else if (t.type === 'abs') { out.add(t.param); allNames(t.body, out); }
+    else { allNames(t.fn, out); allNames(t.arg, out); }
+    return out;
+  }
+  function renameBound(t, from, to) {
+    if (t.type === 'var') return t.name === from ? V(to) : t;
+    if (t.type === 'abs') return t.param === from ? t : L(t.param, renameBound(t.body, from, to));
+    return A(renameBound(t.fn, from, to), renameBound(t.arg, from, to));
+  }
+  function substitute(t, name, argument) {
+    const argFree = freeVars(argument), used = allNames(t, allNames(argument)); used.add(name);
+    function sub(node) {
+      if (node.type === 'var') return node.name === name ? argument : node;
+      if (node.type === 'app') return A(sub(node.fn), sub(node.arg));
+      if (node.param === name || !freeVars(node.body).has(name)) return node;
+      let param = node.param, body = node.body;
+      if (argFree.has(param)) {
+        let i = 1; while (used.has(`${param}${i}`)) i++;
+        const fresh = `${param}${i}`; used.add(fresh); body = renameBound(body, param, fresh); param = fresh;
+      }
+      return L(param, sub(body));
+    }
+    const result = sub(t); inspect(result); return result;
+  }
+  function alphaKey(t, env = []) {
+    if (t.type === 'var') {
+      const i = env.lastIndexOf(t.name);
+      return i < 0 ? ['free', t.name] : ['bound', env.length - 1 - i];
+    }
+    if (t.type === 'abs') return ['abs', alphaKey(t.body, [...env, t.param])];
+    return ['app', alphaKey(t.fn, env), alphaKey(t.arg, env)];
+  }
+  const key = t => JSON.stringify(alphaKey(t));
+  const equal = (a, b) => key(a) === key(b);
+  function findRedex(t, path = []) {
+    if (t.type === 'app') {
+      if (t.fn.type === 'abs') return { term: t, path };
+      return findRedex(t.fn, [...path, 'fn']) || findRedex(t.arg, [...path, 'arg']);
+    }
+    if (t.type === 'abs') return findRedex(t.body, [...path, 'body']);
+    return null;
+  }
+  function replaceAt(t, path, replacement, i = 0) {
+    if (i === path.length) return replacement;
+    const part = path[i];
+    if (part === 'body') return L(t.param, replaceAt(t.body, path, replacement, i + 1));
+    return part === 'fn' ? A(replaceAt(t.fn, path, replacement, i + 1), t.arg) : A(t.fn, replaceAt(t.arg, path, replacement, i + 1));
+  }
+  function step(t) {
+    const redex = findRedex(t); if (!redex) return null;
+    const { fn, arg } = redex.term;
+    const replacement = substitute(fn.body, fn.param, arg);
+    const result = replaceAt(t, redex.path, replacement); inspect(result);
+    return { term: result, path: redex.path, before: redex.term, replacement, param: fn.param, argument: arg };
+  }
+  function normalize(t, max = LIMITS.steps) {
+    const seen = new Set([key(t)]); let steps = 0;
+    while (steps < max) {
+      const s = step(t); if (!s) return { term: t, steps, status: 'normal' };
+      t = s.term; steps++; const k = key(t);
+      if (seen.has(k)) return { term: t, steps, status: 'cycle' };
+      seen.add(k);
+    }
+    return { term: t, steps, status: findRedex(t) ? 'limit' : 'normal' };
+  }
+  function churchNumber(t) {
+    if (t.type !== 'abs' || t.body.type !== 'abs' || t.param === t.body.param) return null;
+    const f = t.param, x = t.body.param; let body = t.body.body, n = 0;
+    while (body.type === 'app' && body.fn.type === 'var' && body.fn.name === f) { n++; body = body.arg; }
+    return body.type === 'var' && body.name === x ? n : null;
+  }
+  const API = { LIMITS, LambdaError, V, L, A, parse, format, inspect, freeVars, substitute, alphaKey, key, equal, findRedex, step, normalize, churchNumber };
+  root.LambdaCore = API;
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script><script>
+(function (root) {
+  'use strict';
+  const COLORS = ['#64d8bd', '#eabe75', '#9fa6ff', '#f38fac', '#79bcf2', '#c2dd87'];
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&apos;' }[c]));
+  function layout(term, redexPath = null) {
+    const lines = [], labels = [], binders = [], leaves = []; let leaf = 0;
+    const samePath = (a,b) => b !== null && a.length === b.length && a.every((x,i)=>x===b[i]);
+    function draw(t, top, env, path) {
+      const start = leaf;
+      if (t.type === 'var') {
+        const x = leaf++ * 40 + 50, end = top + 32;
+        const binder = [...env].reverse().find(b=>b.name === t.name);
+        const line = { kind:'variable', x1:x, x2:x, y1:binder ? binder.y : 30, y2:end,
+          color:binder ? binder.color : '#aeb9ce', free:!binder, name:t.name, binder:binder ? binder.id : null, path };
+        lines.push(line); leaves.push(line);
+        if (!binder) labels.push({ x, y:19, text:t.name, free:true });
+        return { left:x, right:x, bottom:end, start, end:leaf };
+      }
+      if (t.type === 'abs') {
+        const binder = { id:binders.length, name:t.param, y:top, color:COLORS[binders.length % COLORS.length] };
+        binders.push(binder);
+        const body = draw(t.body, top+32, [...env,binder], [...path,'body']);
+        const active = redexPath && samePath(path,[...redexPath,'fn']);
+        lines.push({ kind:'abstraction', x1:body.left-15, x2:body.right+15, y1:top, y2:top, color:binder.color, binder:binder.id, name:t.param, active });
+        return { ...body };
+      }
+      const left = draw(t.fn, top, env, [...path,'fn']);
+      const right = draw(t.arg, top, env, [...path,'arg']);
+      const bottom = Math.max(left.bottom, right.bottom) + 32;
+      lines.push({ kind:'extension', x1:left.left, x2:left.left, y1:left.bottom, y2:bottom, color:leaves[left.start].color });
+      lines.push({ kind:'extension', x1:right.left, x2:right.left, y1:right.bottom, y2:bottom, color:leaves[right.start].color });
+      lines.push({ kind:'application', x1:left.left, x2:right.left, y1:bottom, y2:bottom, color:'#d5dff1', active:samePath(path,redexPath), path });
+      return { left:left.left, right:right.right, bottom, start, end:leaf };
+    }
+    const tree = draw(term, 64, [], []);
+    return { lines, labels, binders, leaves, width:Math.max(140, leaf*40+60), height:tree.bottom+48 };
+  }
+  function svg(term, redexPath = null, options = {}) {
+    const model = layout(term, redexPath), { width, height } = model;
+    const backgrounds = options.export ? `<rect width="100%" height="100%" fill="#131c2d"/>` : '';
+    const shapes = model.lines.map(l => `<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${l.active ? '#ff91b7' : l.color}" stroke-width="${l.active ? 5 : 3}" stroke-linecap="square" ${l.free ? 'stroke-dasharray="5 5"' : ''} data-kind="${l.kind}" ${l.active ? 'data-active="true"' : ''}><title>${esc(l.kind==='abstraction' ? `λ${l.name}：绑定横线` : l.kind==='variable' ? `${l.name}：${l.free?'自由变量':`连接绑定 λ${l.name}`}` : l.kind==='application' ? '函数应用：连接左右子项最左变量' : '延伸到外层应用')}</title></line>`).join('');
+    const labels = model.labels.map(l=>`<text x="${l.x}" y="${l.y}" text-anchor="middle" fill="#bac5d8" font-size="10" font-family="monospace"><title>${esc(l.text)}</title>${esc(l.text)}</text>`).join('');
+    return { model, markup:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="John Tromp Lambda 图示"><title>John Tromp Lambda 图示</title>${backgrounds}${shapes}${labels}</svg>` };
+  }
+  const API = { layout, svg, COLORS };
+  root.LambdaDiagram = API;
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const I='λx.x', TRUE='λx.λy.x', FALSE='λx.λy.y';
+  const TWO='λf.λx.f (f x)', THREE='λf.λx.f (f (f x))', FIVE='λf.λx.f (f (f (f (f x))))';
+  const ADD='λm.λn.λf.λx.m f (n f x)', SUCC='λn.λf.λx.f (n f x)';
+  const examples = [
+    { name:'恒等函数 I', term:I },
+    { name:'TRUE · 选择第一个', term:TRUE },
+    { name:'FALSE / 数字 0', term:FALSE },
+    { name:'Church 数字 2', term:TWO },
+    { name:'S K K → I', term:`(λx y z.(x z) (y z)) (${TRUE}) (${TRUE})` },
+    { name:'加法 · 2 + 3', term:`(${ADD}) (${TWO}) (${THREE})` },
+    { name:'Ω · 无限循环', term:'(λx.x x) (λx.x x)' },
+    { name:'防止变量捕获', term:'(λx.λy.x) y' }
+  ];
+  const levels = [
+    { id:1, name:'原样返回', topic:'恒等函数', description:'让恒等函数接收一个函数，看看它如何把输入原样返回。', start:'(λx.x) (λy.y)', target:I, targetLabel:'I · 恒等函数', hint:'λx.x 会把参数直接返回。点击「单步」，观察 x 被整个参数替换。' },
+    { id:2, name:'选择第一个', topic:'布尔值', description:'两个函数交给 TRUE；归约后应只留下第一个。', start:`(${TRUE}) (${I}) (${TRUE})`, target:I, targetLabel:'I · 恒等函数', hint:'λx.λy.x 接收两个参数，只保留第一个。第二个参数可以是任意式。' },
+    { id:3, name:'翻转真假', topic:'函数组合', description:'将 TRUE 交给 NOT，把选择第一个变成选择第二个。', start:`(λb.b (${FALSE}) (${TRUE})) (${TRUE})`, target:FALSE, targetLabel:'FALSE · 选择第二个', hint:'布尔值本身是一个选择器。NOT 把 FALSE 放在第一位，把 TRUE 放在第二位。' },
+    { id:4, name:'再走一步', topic:'Church 数', description:'将 2 交给后继函数，让 f 在 x 上连续作用 3 次。', start:`(${SUCC}) (${TWO})`, target:THREE, targetLabel:'Church 数字 3', hint:'数字 n 表示重复 n 次。「加一」会在 n 次作用之外，再套上一层 f。' },
+    { id:5, name:'让函数相加', topic:'Church 加法', description:'不用数字运算，只靠函数，把 2 + 3 归约成 5。', start:`(${ADD}) (${TWO}) (${THREE})`, target:FIVE, targetLabel:'Church 数字 5', hint:'m f (n f x)：先把 f 作用 n 次，再继续作用 m 次。运行到正规形后验证答案。' }
+  ];
+  const API={ examples, levels, I, TRUE, FALSE };
+  root.LambdaPresets=API;
+  if(typeof module !== 'undefined' && module.exports) module.exports=API;
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const C=root.LambdaCore || require('./core.js');
+  const LIMITS={count:Infinity,nodes:Infinity,nameChars:Infinity};
+  const validName=name=>typeof name==='string'&&/^[A-Za-z][A-Za-z0-9_']{0,31}$/.test(name);
+  function names(t,out=new Set()) {
+    if(t.type==='var')out.add(t.name);
+    else if(t.type==='abs'){out.add(t.param);names(t.body,out);}
+    else{names(t.fn,out);names(t.arg,out);}return out;
+  }
+  function validate(functions) {
+    if(!Array.isArray(functions))throw new C.LambdaError('函数库格式不合法。');
+    const seen=new Set();let nodes=0,nameChars=0;
+    for(const fn of functions) {
+      if(!validName(fn.name))throw new C.LambdaError('函数名需以英文字母开头，最多 32 字符，可含数字、下划线和单引号。');
+      if(seen.has(fn.name))throw new C.LambdaError(`函数「${fn.name}」已存在，请换一个名字。`);
+      seen.add(fn.name);nodes+=C.inspect(fn.term).nodes;
+      const stack=[fn.term];while(stack.length){const t=stack.pop();if(t.type==='var')nameChars+=t.name.length;else if(t.type==='abs'){nameChars+=t.param.length;stack.push(t.body);}else stack.push(t.fn,t.arg);}
+    }
+    return functions;
+  }
+  function expand(term,functions) {
+    const registry=new Map(functions.map(f=>[f.name,f.term])),free=C.freeVars(term);
+    const used=names(term);for(const f of functions)names(f.term,used);
+    const replacements=[];let next=0,result=term;
+    for(const name of free) {
+      if(!registry.has(name))continue;
+      let placeholder;do{placeholder=`lambdaMacro${++next}`;}while(used.has(placeholder));used.add(placeholder);
+      result=C.substitute(result,name,C.V(placeholder));replacements.push([placeholder,registry.get(name)]);
+    }
+    for(const [placeholder,definition] of replacements)result=C.substitute(result,placeholder,definition);
+    C.inspect(result);return result;
+  }
+  function add(functions,name,source,maxChars=C.LIMITS.chars) {
+    name=name.trim();
+    if(!validName(name))throw new C.LambdaError('函数名需以英文字母开头，最多 32 字符，可含数字、下划线和单引号。');
+    if(functions.some(f=>f.name===name))throw new C.LambdaError(`函数「${name}」已存在，请换一个名字。`);
+    const parsed=C.parse(source,maxChars);
+    if(C.freeVars(parsed).has(name))throw new C.LambdaError('定义不能直接引用自身。递归请使用显式不动点组合子。');
+    const result=[...functions,{name,term:expand(parsed,functions)}];validate(result);return result;
+  }
+  const remove=(functions,name)=>functions.filter(f=>f.name!==name);
+  function update(functions,originalName,name,source) {
+    if(!functions.some(fn=>fn.name===originalName))throw new C.LambdaError('要编辑的函数已不存在。');
+    const others=remove(functions,originalName);
+    const replacement=add(others,name,source,Infinity).at(-1);
+    return functions.map(fn=>fn.name===originalName?replacement:fn);
+  }
+  const API={LIMITS,validName,validate,expand,add,update,remove};root.LambdaLibrary=API;
+  if(typeof module!=='undefined'&&module.exports)module.exports=API;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const C=root.LambdaCore||require('./core.js'),L=root.LambdaLibrary||require('./library.js');
+  const MAX_BYTES=2*1024*1024;
+  const fail=message=>{throw new C.LambdaError(`存档无效：${message}`);};
+  const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+  function ast(raw) {
+    let count=0;
+    function walk(t,depth) {
+      ++count;
+      if(!object(t))fail('表达式结构不完整。');
+      const name=n=>{if(typeof n!=='string'||n.length>C.LIMITS.nameChars||!/^[A-Za-z][A-Za-z0-9_']*$/.test(n))fail('变量名不合法。');return n;};
+      if(t.type==='var')return C.V(name(t.name));
+      if(t.type==='abs')return C.L(name(t.param),walk(t.body,depth+1));
+      if(t.type==='app')return C.A(walk(t.fn,depth+1),walk(t.arg,depth+1));
+      fail('未知表达式类型。');
+    }
+    const term=walk(raw,1);C.inspect(term);return term;
+  }
+  function validate(raw) {
+    if(!object(raw)||raw.version!==2)fail('不支持这个存档版本。');
+    if(typeof raw.draft!=='string'||raw.draft.length>10000)fail('草稿过长或缺失。');
+    if(!Array.isArray(raw.functions))fail('函数库不合法。');
+    const functions=raw.functions.map(f=>{if(!object(f))fail('函数定义不完整。');return {name:f.name,term:ast(f.term)};});L.validate(functions);
+    if(!Array.isArray(raw.completed)||raw.completed.length>5||raw.completed.some(i=>!Number.isInteger(i)||i<1||i>5))fail('通关进度不合法。');
+    if(raw.mode!=='free'&&raw.mode!=='challenge')fail('游戏模式不合法。');
+    if(!Number.isInteger(raw.level)||raw.level<0||raw.level>4)fail('关卡编号不合法。');
+    const s=raw.session;if(!object(s)||!Number.isSafeInteger(s.steps)||s.steps<0||typeof s.dirty!=='boolean')fail('归约状态不合法。');
+    const original=s.original===null?null:ast(s.original);if(!original&&s.steps!==0)fail('没有起始表达式，无法恢复归约。');
+    if(typeof s.halt!=='string'||s.halt.length>500)fail('暂停信息不合法。');
+    const v=raw.view;if(!object(v)||!Number.isInteger(v.speed)||v.speed<1||v.speed>60000||!Number.isFinite(v.scale)||v.scale<.02||v.scale>16)fail('视图设置不合法。');
+    const panX=v.panX??0,panY=v.panY??0;
+    if(!Number.isFinite(panX)||!Number.isFinite(panY)||panX<0||panY<0||panX>5000000||panY>5000000)fail('图示位置不合法。');
+    for(const field of ['autoFit','historyOpen','helpOpen','hintOpen'])if(typeof v[field]!=='boolean')fail('视图开关不合法。');
+    const selection=raw.selection;if(!object(selection)||!Number.isInteger(selection.start)||!Number.isInteger(selection.end)||selection.start<0||selection.start>selection.end||selection.end>raw.draft.length)fail('光标位置不合法。');
+    if(typeof raw.error!=='string'||raw.error.length>2000)fail('错误信息不合法。');
+    const functionDraft=raw.functionDraft??{name:'',source:''};
+    if(!object(functionDraft)||typeof functionDraft.name!=='string'||functionDraft.name.length>32||typeof functionDraft.source!=='string')fail('函数编辑草稿不合法。');
+    const editing=functionDraft.editing??null;
+    if(editing!==null&&(!L.validName(editing)||!functions.some(fn=>fn.name===editing)))fail('正在编辑的函数不存在或不合法。');
+    return {version:2,savedAt:typeof raw.savedAt==='string'&&Number.isFinite(Date.parse(raw.savedAt))?raw.savedAt:new Date().toISOString(),draft:raw.draft,
+      functions,completed:[...new Set(raw.completed)],mode:raw.mode,level:raw.level,
+      session:{original,steps:s.steps,dirty:s.dirty,halt:s.halt},view:{speed:v.speed,scale:v.scale,autoFit:v.autoFit,panX,panY,historyOpen:v.historyOpen,helpOpen:v.helpOpen,hintOpen:v.hintOpen},
+      selection:{start:selection.start,end:selection.end},error:raw.error,functionDraft:{name:functionDraft.name,source:functionDraft.source,...(editing===null?{}:{editing})}};
+  }
+  function replay(s) {
+    const history=s.session.original?[{term:s.session.original,change:null}]:[];let term=s.session.original;
+    for(let i=0;i<s.session.steps;i++){const result=C.step(term);if(!result)fail('步数超过实际可归约次数。');term=result.term;history.push({term,change:result});}
+    return {...s,term,history,hasSession:true};
+  }
+  function encode(raw) {
+    const text=JSON.stringify(validate(raw));
+    if(new TextEncoder().encode(text).length>MAX_BYTES)fail('文件超过 2 MiB 上限。');return text;
+  }
+  function decode(text) {
+    if(typeof text!=='string'||text.length>MAX_BYTES||new TextEncoder().encode(text).length>MAX_BYTES)fail('文件超过 2 MiB 上限。');
+    let raw;try{raw=JSON.parse(text);}catch{fail('不是有效的 JSON 文件。');}
+    if(object(raw)&&raw.version===1) {
+      const draft=typeof raw.draft==='string'&&raw.draft.length<=10000?raw.draft:'(λx.x) (λy.y)';
+      const migrated={version:2,savedAt:new Date().toISOString(),draft,functions:[],completed:Array.isArray(raw.completed)?[...new Set(raw.completed.filter(i=>Number.isInteger(i)&&i>0&&i<6))]:[],
+        mode:raw.mode==='challenge'?'challenge':'free',level:Number.isInteger(raw.level)&&raw.level>=0&&raw.level<5?raw.level:0,
+        session:{original:null,steps:0,dirty:true,halt:''},view:{speed:600,scale:1,autoFit:true,historyOpen:false,helpOpen:false,hintOpen:false},selection:{start:0,end:0},error:''};
+      return {...validate(migrated),history:[],term:null,hasSession:false};
+    }
+    return replay(validate(raw));
+  }
+  const API={MAX_BYTES,ast,validate,encode,decode};root.LambdaSnapshot=API;
+  if(typeof module!=='undefined'&&module.exports)module.exports=API;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root){
+  'use strict';
+  function save(name,content,mime) {
+    if(typeof root.LambdaAndroid?.saveFile==='function') {
+      root.LambdaAndroid.saveFile(name,content,mime);return;
+    }
+    const url=URL.createObjectURL(new Blob([content],{type:`${mime};charset=utf-8`}));
+    const anchor=document.createElement('a');anchor.href=url;anchor.download=name;anchor.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  root.LambdaDownload={save};
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const C=root.LambdaCore,L=root.LambdaLibrary,S=root.LambdaSnapshot;
+  const AUTO='lambda-lab-v2',CHECKPOINT='lambda-lab-checkpoint-v2',LEGACY='lambda-lab-v1';
+  const $=id=>document.getElementById(id);
+  function init(api) {
+    const cancel=document.createElement('button');cancel.id='function-cancel';cancel.type='button';cancel.className='button';cancel.textContent='取消编辑';cancel.hidden=true;
+    $('function-add').before(cancel);
+    let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null;
+    const feedback=(message,error=false)=>{$('save-feedback').hidden=false;$('save-feedback').textContent=message;$('save-feedback').classList.toggle('error',error);};
+    function captured() {return {...api.capture(),version:2,savedAt:new Date().toISOString(),functions,functionDraft:{name:$('function-name').value,source:$('function-source').value,...(editing===null?{}:{editing})}};}
+    function renderEditMode() {
+      $('function-add').textContent=editing===null?'新增函数 +':'保存修改 ✓';
+      $('function-cancel').hidden=editing===null;$('function-edit-status').hidden=editing===null;
+      $('function-edit-status').textContent=editing===null?'':`正在编辑：${editing}`;
+    }
+    function clearEditor() {
+      editing=null;$('function-name').value='';$('function-source').value='';$('function-error').hidden=true;renderEditMode();
+    }
+    function storageStatus(ok) {
+      $('storage-status').textContent=ok?'当前状态已自动保存':'自动保存不可用，请导出存档备份';$('storage-status').classList.toggle('storage-error',!ok);
+    }
+    function persist() {
+      clearTimeout(saveTimer);if(restoring)return;
+      try{localStorage.setItem(AUTO,S.encode(captured()));storageStatus(true);}catch{storageStatus(false);}
+    }
+    function queueSave(){if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
+    function renderLibrary() {
+      $('function-count').textContent=`${functions.length} 个函数`;const list=$('function-list');list.replaceChildren();
+      if(!functions.length){const p=document.createElement('p');p.className='function-empty';p.textContent='还没有自定义函数，先保存一个试试。';list.append(p);}
+      functions.forEach(fn=>{
+        const row=document.createElement('div');row.className='function-item';row.dataset.name=fn.name;
+        const head=document.createElement('div');head.className='function-item-head';const title=document.createElement('strong');title.textContent=fn.name;
+        const buttons=document.createElement('div');buttons.className='function-item-buttons';
+        const insert=document.createElement('button');insert.textContent='插入';insert.setAttribute('aria-label',`插入函数 ${fn.name}`);
+        insert.addEventListener('mousedown',e=>e.preventDefault());insert.addEventListener('click',()=>api.insertFunction(fn.name));
+        const edit=document.createElement('button');edit.textContent='编辑';edit.setAttribute('aria-label',`编辑函数 ${fn.name}`);
+        edit.addEventListener('click',()=>{
+          editing=fn.name;$('function-name').value=fn.name;$('function-source').value=C.format(fn.term);
+          $('function-error').hidden=true;renderEditMode();persist();$('function-source').focus();$('function-form').scrollIntoView({block:'nearest'});
+        });
+        const del=document.createElement('button');del.textContent='删除';del.className='delete-function';del.setAttribute('aria-label',`删除函数 ${fn.name}`);
+        del.addEventListener('click',()=>{functions=L.remove(functions,fn.name);if(editing===fn.name)clearEditor();renderLibrary();persist();api.toast(`已删除函数 ${fn.name}`);});
+        buttons.append(insert,edit,del);head.append(title,buttons);const definition=document.createElement('code');definition.textContent=C.format(fn.term);row.append(head,definition);list.append(row);
+      });
+    }
+    function apply(snapshot) {
+      restoring=true;
+      try {functions=snapshot.functions;renderLibrary();api.apply(snapshot);$('function-name').value=snapshot.functionDraft.name;$('function-source').value=snapshot.functionDraft.source;editing=snapshot.functionDraft.editing??null;renderEditMode();$('function-error').hidden=true;}
+      finally{restoring=false;}
+    }
+    function restoreInitial() {
+      let restored=false;
+      try {
+        const text=localStorage.getItem(AUTO)||localStorage.getItem(LEGACY);
+        if(text){const snapshot=S.decode(text);apply(snapshot);restored=true;}
+      }catch(e){feedback(`自动存档未能恢复：${e.message}。可以重新导入备份。`,true);}
+      try{const text=localStorage.getItem(CHECKPOINT);if(text){S.decode(text);checkpoint=text;}}catch{/* Keep a corrupt checkpoint untouched. */}
+      $('restore-state').disabled=!checkpoint;renderLibrary();return restored;
+    }
+    $('function-form').addEventListener('submit',e=>{
+      e.preventDefault();$('function-error').hidden=true;
+      try {const name=$('function-name').value.trim(),source=$('function-source').value;functions=editing===null?L.add(functions,name,source):L.update(functions,editing,name,source);renderLibrary();clearEditor();persist();api.toast(`已保存函数 ${name}`);}
+      catch(error){$('function-error').textContent=error.message;$('function-error').hidden=false;}
+    });
+    $('function-cancel').addEventListener('click',()=>{clearEditor();persist();});
+    renderEditMode();
+    $('function-use-current').addEventListener('click',()=>{$('function-source').value=api.currentExpression();$('function-error').hidden=true;$('function-name').focus();queueSave();});
+    $('function-name').addEventListener('input',queueSave);$('function-source').addEventListener('input',queueSave);
+    document.querySelectorAll('[data-function-insert]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.addEventListener('click',()=>{const field=$('function-source');field.setRangeText(b.dataset.functionInsert,field.selectionStart,field.selectionEnd,'end');field.focus();queueSave();});});
+    $('save-state').addEventListener('click',()=>{
+      try{const text=S.encode(captured());localStorage.setItem(CHECKPOINT,text);checkpoint=text;$('restore-state').disabled=false;persist();feedback('当前状态和关卡进度已保存。可随时恢复到这个位置。');api.toast('当前状态已保存');}
+      catch(e){feedback(`未能保存到浏览器：${e.message}。请使用「导出存档」备份当前状态。`,true);}
+    });
+    $('restore-state').addEventListener('click',()=>{
+      if(!checkpoint)return;
+      try{const snapshot=S.decode(checkpoint);apply(snapshot);persist();feedback('已恢复保存时的状态。自动运行保持暂停，可单步或继续运行。');api.toast('已恢复当前状态');}
+      catch(e){feedback(e.message,true);}
+    });
+    $('export-state').addEventListener('click',()=>{
+      try{const text=S.encode(captured());root.LambdaDownload.save(`lambda-lab-save-${new Date().toISOString().replace(/[-:]/g,'').slice(0,15)}.json`,text,'application/json');feedback('完整存档已导出。可以在另一台设备导入继续。');}
+      catch(e){feedback(e.message,true);}
+    });
+    $('import-state').addEventListener('click',()=>$('import-file').click());
+    $('import-file').addEventListener('change',async()=>{
+      const file=$('import-file').files[0];$('import-file').value='';if(!file)return;
+      try{if(file.size>S.MAX_BYTES)throw new C.LambdaError('存档文件超过 2 MiB 上限。');const snapshot=S.decode(await file.text());apply(snapshot);persist();feedback('存档已导入，函数库、计算状态和进度均已恢复。');api.toast('存档导入成功');}
+      catch(e){feedback(`导入失败：${e.message}。当前现场未改变。`,true);}
+    });
+    window.addEventListener('pagehide',persist);
+    return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};
+  }
+  root.LambdaWorkspace={init};
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root){
+  'use strict';
+  function init(api) {
+    const viewport=document.getElementById('diagram-viewport');
+    const svg=()=>document.querySelector('#diagram-mount svg');
+    const points=new Map();let gesture=null;
+    function anchor(point) {
+      if(!svg())return null;
+      const box=viewport.getBoundingClientRect(),image=svg().getBoundingClientRect();
+      const client=point||{x:box.left+viewport.clientWidth/2,y:box.top+viewport.clientHeight/2};
+      return {client,x:(client.x-image.left)/api.getScale(),y:(client.y-image.top)/api.getScale()};
+    }
+    function restore(a) {
+      if(!a||!svg())return;
+      const image=svg().getBoundingClientRect();
+      viewport.scrollLeft+=image.left+a.x*api.getScale()-a.client.x;
+      viewport.scrollTop+=image.top+a.y*api.getScale()-a.client.y;
+    }
+    function zoomTo(scale,point) {
+      if(!api.canInteract())return;
+      const a=anchor(point);api.setScale(Math.max(.02,Math.min(16,scale)));restore(a);api.onChange();
+    }
+    document.getElementById('zoom-in').addEventListener('click',()=>zoomTo(api.getScale()*1.25));
+    document.getElementById('zoom-out').addEventListener('click',()=>zoomTo(api.getScale()/1.25));
+    document.getElementById('actual-size').addEventListener('click',()=>zoomTo(1));
+    document.getElementById('fit').addEventListener('click',()=>{if(!api.canInteract())return;api.fit();viewport.scrollLeft=0;viewport.scrollTop=0;api.onChange();});
+    viewport.addEventListener('wheel',e=>{
+      if(!api.canInteract()||!e.deltaY)return;
+      e.preventDefault();const unit=e.deltaMode===1?16:e.deltaMode===2?viewport.clientHeight:1;
+      const delta=Math.max(-1000,Math.min(1000,e.deltaY*unit));zoomTo(api.getScale()*Math.exp(-delta*.002),{x:e.clientX,y:e.clientY});
+    },{passive:false});
+    function startGesture() {
+      const p=[...points.values()];
+      gesture=p.length>1?{type:'pinch',distance:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2}:p.length?{type:'pan',...p[0]}:null;
+      viewport.classList.toggle('dragging',!!gesture);
+    }
+    viewport.addEventListener('pointerdown',e=>{
+      if(!api.canInteract()||(e.pointerType==='mouse'&&e.button!==0))return;
+      e.preventDefault();points.set(e.pointerId,{x:e.clientX,y:e.clientY});viewport.setPointerCapture(e.pointerId);viewport.focus({preventScroll:true});startGesture();
+    });
+    viewport.addEventListener('pointermove',e=>{
+      if(!points.has(e.pointerId)||!gesture)return;
+      e.preventDefault();points.set(e.pointerId,{x:e.clientX,y:e.clientY});const p=[...points.values()];
+      if(p.length>1) {
+        const x=(p[0].x+p[1].x)/2,y=(p[0].y+p[1].y)/2,distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+        viewport.scrollLeft-=x-gesture.x;viewport.scrollTop-=y-gesture.y;
+        if(gesture.distance>0&&distance>0)zoomTo(api.getScale()*distance/gesture.distance,{x,y});
+        gesture={type:'pinch',distance,x,y};
+      }else{viewport.scrollLeft-=p[0].x-gesture.x;viewport.scrollTop-=p[0].y-gesture.y;gesture={type:'pan',...p[0]};api.onChange();}
+    });
+    function end(e){points.delete(e.pointerId);if(viewport.hasPointerCapture(e.pointerId))viewport.releasePointerCapture(e.pointerId);startGesture();}
+    viewport.addEventListener('pointerup',end);viewport.addEventListener('pointercancel',end);
+    viewport.addEventListener('lostpointercapture',e=>{points.delete(e.pointerId);startGesture();});
+    viewport.addEventListener('scroll',api.onChange,{passive:true});
+    viewport.addEventListener('keydown',e=>{
+      if(!api.canInteract())return;
+      if(['+','=','-','0'].includes(e.key)){e.preventDefault();zoomTo(e.key==='0'?1:api.getScale()*(e.key==='-'?.8:1.25));}
+    });
+    return {anchor,restore,zoomTo};
+  }
+  root.LambdaViewport={init};
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function () {
+  'use strict';
+  const C=window.LambdaCore, D=window.LambdaDiagram, P=window.LambdaPresets;
+  const $=id=>document.getElementById(id);
+  const input=$('expression');
+  const state={ term:null, original:null, history:[], dirty:false, running:false, timer:null,
+    mode:'free', level:0, completed:new Set(), halt:'', scale:1, autoFit:true, model:null, speed:600 };
+  let toastTimer,workspace,viewer,renderedHistory=[];
+  function save() { workspace?.queueSave(); }
+  function capture() {
+    return {draft:input.value,completed:[...state.completed],mode:state.mode,level:state.level,
+      session:{original:state.original,steps:Math.max(0,state.history.length-1),dirty:state.dirty,halt:state.halt},
+      view:{speed:state.speed,scale:state.scale,autoFit:state.autoFit,panX:$('diagram-viewport').scrollLeft,panY:$('diagram-viewport').scrollTop,historyOpen:$('history-details').open,helpOpen:!$('help-panel').hidden,hintOpen:!$('hint').hidden},
+      selection:{start:input.selectionStart,end:input.selectionEnd},error:$('error-message').hidden?'':$('error-message').textContent};
+  }
+  function applySnapshot(s) {
+    stop();input.value=s.draft;state.completed=new Set(s.completed);state.mode=s.mode;state.level=s.level;
+    state.original=s.session.original;state.term=s.term;state.history=s.history;state.dirty=s.session.dirty;state.halt=s.session.halt;
+    state.scale=s.view.scale;state.autoFit=s.view.autoFit;state.speed=s.view.speed;renderSpeed();
+    $('history-details').open=s.view.historyOpen;$('help-panel').hidden=!s.view.helpOpen;$('help-toggle').setAttribute('aria-expanded',String(s.view.helpOpen));
+    $('hint').hidden=!s.view.hintOpen;$('hint-toggle').textContent=s.view.hintOpen?'收起提示':'显示提示';$('hint-toggle').setAttribute('aria-expanded',String(s.view.hintOpen));
+    $('challenge-feedback').textContent='';$('next-level').hidden=true;$('error-message').textContent=s.error;$('error-message').hidden=!s.error;
+    renderMode();if(s.hasSession)render();else convert();input.setSelectionRange(s.selection.start,s.selection.end);
+    $('diagram-viewport').scrollLeft=s.view.panX;$('diagram-viewport').scrollTop=s.view.panY;
+  }
+  function toast(message) {
+    clearTimeout(toastTimer); $('toast').textContent=message; $('toast').hidden=false;
+    toastTimer=setTimeout(()=>$('toast').hidden=true,2400);
+  }
+  function stop() { clearTimeout(state.timer); state.timer=null; state.running=false; }
+  function changed() {
+    stop(); state.dirty=true; state.halt=''; $('error-message').hidden=true;
+    $('challenge-feedback').textContent=''; $('next-level').hidden=true;
+    $('char-count').textContent=`${input.value.length} / ${C.LIMITS.chars}`;
+    save(); render();
+  }
+  function insert(text) {
+    const start=input.selectionStart,end=input.selectionEnd;
+    input.setRangeText(text,start,end,'end');
+    input.focus();
+    changed();
+  }
+  function convert() {
+    stop(); $('error-message').hidden=true; state.halt='';
+    $('challenge-feedback').textContent=''; $('next-level').hidden=true;
+    try {
+      const term=workspace?workspace.expand(C.parse(input.value)):C.parse(input.value);
+      state.term=term; state.original=term; state.history=[{term,change:null}]; state.dirty=false;
+      state.autoFit=true; render(); save(); return true;
+    } catch(e) {
+      state.term=null; state.original=null; state.history=[]; state.dirty=true;
+      $('error-message').textContent=(e.position!==null&&e.position!==undefined?`第 ${e.position+1} 个字符：`:'')+e.message;
+      $('error-message').hidden=false; render(); input.focus();
+      if(e.position!==null&&e.position!==undefined) input.setSelectionRange(e.position,e.position+1);
+      return false;
+    }
+  }
+  function renderDiagram(redex) {
+    const mount=$('diagram-mount');
+    const anchor=state.autoFit?null:viewer?.anchor();
+    if(!state.term) { mount.innerHTML=''; $('diagram-empty').hidden=false; state.model=null; return; }
+    $('diagram-empty').hidden=true;
+    const result=D.svg(state.term,state.dirty?null:redex?.path??null);
+    state.model=result.model; mount.innerHTML=result.markup;
+    mount.style.opacity=state.dirty?'0.35':'1';
+    applyScale();
+    viewer?.restore(anchor);
+  }
+  function applyScale() {
+    if(!state.model) return;
+    const viewport=$('diagram-viewport'),m=state.model;
+    if(state.autoFit) state.scale=Math.min(2.2,(viewport.clientWidth-48)/m.width,(viewport.clientHeight-48)/m.height);
+    state.scale=Math.max(.02,Math.min(16,state.scale));
+    const svg=$('diagram-mount').querySelector('svg');
+    svg.setAttribute('width',Math.round(m.width*state.scale)); svg.setAttribute('height',Math.round(m.height*state.scale));
+    $('zoom-label').textContent=`${Math.round(state.scale*100)}%`;
+    $('fit').setAttribute('aria-pressed',String(state.autoFit));
+  }
+  function decode(t) {
+    const number=C.churchNumber(t), isTrue=C.equal(t,C.parse(P.TRUE)), isFalse=C.equal(t,C.parse(P.FALSE));
+    if(isFalse) return 'FALSE / Church 数 0';
+    if(isTrue) return 'TRUE · 选择第一个';
+    if(number!==null) return `Church 数 ${number}`;
+    if(C.equal(t,C.parse(P.I))) return 'I · 恒等函数';
+    const free=[...C.freeVars(t)];
+    return free.length?`${free.length} 个自由变量`:'闭合表达式';
+  }
+  function code(text) { const el=document.createElement('code'); el.textContent=text; return el; }
+  function render() {
+    const ready=state.term&&!state.dirty, redex=state.term?C.findRedex(state.term):null;
+    const count=Math.max(0,state.history.length-1);
+    $('char-count').textContent=`${input.value.length} / ${C.LIMITS.chars}`;
+    $('step-count').textContent=count; $('run-label').textContent=state.running?'暂停':'运行';
+    $('run').firstElementChild.textContent=state.running?'Ⅱ':'▶';
+    $('run').disabled=!ready||!redex;
+    $('step').disabled=!ready||!redex||state.running;
+    $('back').disabled=!ready||count===0||state.running;
+    $('reset').disabled=!ready||state.running||count===0;
+    $('export-svg').disabled=!ready; $('zoom-in').disabled=!state.term; $('zoom-out').disabled=!state.term; $('fit').disabled=!state.term;$('actual-size').disabled=!state.term;
+    const badge=$('state-badge'); badge.className='state-badge';
+    if(!state.term) { badge.textContent='等待输入'; badge.classList.add('dirty'); }
+    else if(state.dirty) { badge.textContent='已编辑 · 请转换'; badge.classList.add('dirty'); }
+    else if(state.running) badge.textContent='正在归约';
+    else if(state.halt) { badge.textContent='已暂停'; badge.classList.add('error'); }
+    else if(!redex) badge.textContent='已到正规形';
+    else badge.textContent='可以归约';
+    $('run-status').textContent=!state.term?'输入有效表达式后，就能开始运行。':state.dirty?'输入已改变。重新转换后开始新的归约。':
+      state.halt|| (state.running?'自动运行中；粉色线路标记下一次函数替换。':!redex?'已到正规形，没有可继续的 β 归约。':count?'可以继续单步，或回退查看上一帧。':'准备好了。点击单步，观察一次函数替换。');
+    $('current-expression').textContent=state.term?C.format(state.term):'—';
+    $('decoded').textContent=ready?decode(state.term):'';
+    const next=$('next-explanation'); next.replaceChildren();
+    if(ready&&redex) {
+      next.append('下一步：用 ',code(C.format(redex.term.arg)),' 替换函数体中自由出现的 ',code(redex.term.fn.param),'。必要时自动改名，避免变量捕获。');
+    } else if(ready) next.textContent='正规形表示归约完成；可以换个表达式，或进入闯关模式。';
+    $('history-count').textContent=`${count} 次替换`;
+    const history=$('history-list');
+    if(renderedHistory.length>state.history.length||renderedHistory.some((entry,i)=>entry!==state.history[i])) {
+      history.replaceChildren();renderedHistory=[];
+    }
+    state.history.forEach((entry,i)=>{
+      if(i<renderedHistory.length)return;
+      const li=document.createElement('li'),num=document.createElement('span'),body=document.createElement('div');
+      num.textContent=String(i).padStart(2,'0');body.append(code(C.format(entry.term)));
+      if(entry.change) { const note=document.createElement('small'); note.textContent=`${entry.change.param} ← ${C.format(entry.change.argument)}`;body.append(note); }
+      li.append(num,body);history.append(li);renderedHistory.push(entry);
+    });
+    renderDiagram(redex);
+    save();
+  }
+  function advance() {
+    if(!state.term||state.dirty) return false;
+    try {
+      const result=C.step(state.term); if(!result){stop();render();return false;}
+      state.term=result.term;state.history.push({term:result.term,change:result});state.halt='';
+      if(!C.findRedex(state.term)) stop();
+      render(); return !state.halt&&!!C.findRedex(state.term);
+    } catch(e) {stop();state.halt=e.message;render();return false;}
+  }
+  function schedule() {
+    state.timer=setTimeout(()=>{if(!state.running)return;const more=advance();if(more&&state.running)schedule();},state.speed);
+  }
+  function renderSpeed() {
+    $('speed').value=[1200,600,180,10].includes(state.speed)?String(state.speed):'custom';
+    $('speed-ms').value=state.speed;$('speed-error').hidden=true;
+  }
+  function setSpeed(value) {
+    if(!Number.isInteger(value)||value<1||value>60000){$('speed-error').textContent='每步间隔请输入 1–60000 的整数毫秒；当前仍使用上次有效速度。';$('speed-error').hidden=false;return;}
+    state.speed=value;renderSpeed();if(state.running){clearTimeout(state.timer);schedule();}save();
+  }
+  function run() {
+    if(state.running){stop();render();return;}
+    if(!state.term||state.dirty||!C.findRedex(state.term)) return;
+    state.halt='';state.running=true;render();schedule();
+  }
+  function setSource(source) { input.value=source; changed(); convert(); }
+  function renderLevels() {
+    const list=$('level-list');list.replaceChildren();
+    P.levels.forEach((level,index)=>{
+      const b=document.createElement('button');b.textContent=`${level.id} ${level.name}`;
+      b.className=(index===state.level?'active ':'')+(state.completed.has(level.id)?'completed':'');
+      b.setAttribute('aria-pressed',String(index===state.level));b.addEventListener('click',()=>selectLevel(index));list.append(b);
+    });
+    const l=P.levels[state.level];
+    $('level-topic').textContent=`CHALLENGE ${String(l.id).padStart(2,'0')} / ${l.topic}`;
+    $('level-title').textContent=l.name; $('level-description').textContent=l.description;
+    $('target-label').textContent=l.targetLabel;$('target-expression').textContent=l.target;$('hint').textContent=l.hint;
+    $('progress-text').textContent=state.mode==='challenge'?`${state.completed.size} / ${P.levels.length} 关已完成`:'探索 · 输入 · 归约';
+  }
+  function renderMode() {
+    const challenge=state.mode==='challenge';$('challenge-panel').hidden=!challenge;
+    $('mode-free').classList.toggle('active',!challenge);$('mode-challenge').classList.toggle('active',challenge);
+    $('mode-free').setAttribute('aria-pressed',String(!challenge));$('mode-challenge').setAttribute('aria-pressed',String(challenge));
+    renderLevels();
+  }
+  function selectLevel(index) {
+    state.level=index;state.mode='challenge';$('hint').hidden=true;$('hint-toggle').textContent='显示提示';$('hint-toggle').setAttribute('aria-expanded','false');
+    renderMode();setSource(P.levels[index].start);save();
+  }
+  function checkAnswer() {
+    const feedback=$('challenge-feedback');
+    if(!state.term||state.dirty){feedback.textContent='先把当前输入转换成图示，再运行和验证。';return;}
+    if(state.running){feedback.textContent='正在运行，等归约完成后再验证。';return;}
+    if(C.findRedex(state.term)){feedback.textContent='还有可归约的部分。先运行到正规形，再验证答案。';return;}
+    const l=P.levels[state.level];
+    if(!C.equal(state.term,C.parse(l.target))){feedback.textContent='这还不是目标结果。可以修改表达式，或显示提示再试一次。';return;}
+    state.completed.add(l.id);save();renderLevels();
+    feedback.textContent=state.completed.size===P.levels.length?'五关全部完成！现在可以自由实验，组合你自己的函数。':`第 ${l.id} 关完成！结果与目标等价。`;
+    $('next-level').hidden=state.level===P.levels.length-1;
+    toast(`✓ ${l.name} · 挑战完成`);
+  }
+  input.addEventListener('input',changed);
+  input.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();convert();}});
+  document.querySelectorAll('[data-insert]').forEach(b=>{
+    b.addEventListener('mousedown',e=>e.preventDefault());
+    b.addEventListener('click',()=>insert(b.dataset.insert));
+  });
+  P.examples.forEach((e,i)=>{const option=document.createElement('option');option.value=i;option.textContent=e.name;$('examples').append(option);});
+  $('examples').addEventListener('change',()=>{const value=$('examples').value;if(value==='')return;setSource(P.examples[Number(value)].term);$('examples').value='';});
+  $('convert').addEventListener('click',convert);$('step').addEventListener('click',advance);$('run').addEventListener('click',run);
+  $('back').addEventListener('click',()=>{if(state.history.length>1){stop();state.history.pop();state.term=state.history.at(-1).term;state.halt='';$('challenge-feedback').textContent='';$('next-level').hidden=true;render();}});
+  $('reset').addEventListener('click',()=>{if(state.original){stop();state.term=state.original;state.history=[{term:state.original,change:null}];state.halt='';$('challenge-feedback').textContent='';$('next-level').hidden=true;render();}});
+  $('speed').addEventListener('change',()=>{if($('speed').value==='custom'){$('speed-ms').focus();$('speed-ms').select();}else setSpeed(Number($('speed').value));});
+  $('speed-ms').addEventListener('input',()=>setSpeed($('speed-ms').value===''?NaN:Number($('speed-ms').value)));
+  viewer=window.LambdaViewport.init({getScale:()=>state.scale,canInteract:()=>!!state.model,onChange:save,
+    setScale:scale=>{state.autoFit=false;state.scale=scale;applyScale();},fit:()=>{state.autoFit=true;applyScale();}});
+  window.addEventListener('resize',applyScale);
+  $('export-svg').addEventListener('click',()=>{
+    if(!state.term||state.dirty)return;
+    const content=D.svg(state.term,null,{export:true}).markup;
+    window.LambdaDownload.save('lambda-diagram.svg',content,'image/svg+xml');toast('SVG 图示已导出');
+  });
+  $('mode-free').addEventListener('click',()=>{stop();state.mode='free';renderMode();render();save();});
+  $('mode-challenge').addEventListener('click',()=>selectLevel(state.level));
+  $('hint-toggle').addEventListener('click',()=>{const show=$('hint').hidden;$('hint').hidden=!show;$('hint-toggle').textContent=show?'收起提示':'显示提示';$('hint-toggle').setAttribute('aria-expanded',String(show));save();});
+  $('check-answer').addEventListener('click',checkAnswer);
+  $('next-level').addEventListener('click',()=>selectLevel(Math.min(state.level+1,P.levels.length-1)));
+  $('help-toggle').addEventListener('click',()=>{const show=$('help-panel').hidden;$('help-panel').hidden=!show;$('help-toggle').setAttribute('aria-expanded',String(show));save();});
+  $('history-details').addEventListener('toggle',save);
+  $('speed').addEventListener('change',save);
+  workspace=window.LambdaWorkspace.init({capture,apply:applySnapshot,toast,
+    currentExpression:()=>state.term&&!state.dirty?C.format(state.term):input.value,
+    insertFunction:name=>{const start=input.selectionStart,end=input.selectionEnd;
+      const before=start&&/[A-Za-z0-9_']/.test(input.value[start-1])?' ':'';
+      const after=end<input.value.length&&/[A-Za-z0-9_']/.test(input.value[end])?' ':'';
+      insert(before+name+after);
+    }});
+  if(!workspace.restoreInitial()){renderMode();convert();}
+  workspace.persist();
+})();
+
+</script>
+</body>
+</html>

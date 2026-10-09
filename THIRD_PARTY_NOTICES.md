@@ -4,6 +4,15 @@
 
 动态资源单独附带对应来源的完整 LICENSE，署名与逐文件摘要进入签名清单。首个配对示范为本仓库自有 MIT 源码，不内置于大厅 APK；后续新增游戏的许可及完整来源 SHA 需分别审核和归档。
 
+## N7 动态游戏集成来源（资源包单独发行）
+
+| 来源 | 固定上游提交 / 版本 | 许可与集成证明 |
+| --- | --- | --- |
+| [abelian-sandpile](https://github.com/xiaoxuhui/abelian-sandpile) | d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f / 0.1.2 | MIT全文位于 examples/abelian-sandpile/LICENSE，固定构建输入及输出摘要见该目录upstream-source.json |
+| [lambda-diagram-game](https://github.com/xiaoxuhui/lambda-diagram-game) | 11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2 / 0.3.0 | MIT全文位于 examples/lambda-diagram-game/LICENSE，输入/输出及已跟踪单文件重建一致证明见该目录upstream-source.json |
+
+集成来源由大厅维护、提交与审阅后作为动态签名清单真实 sourceRepository/sourceRevision；上游固定提交另附证明，不把未提交构建输出混称为上游提交。两资源包分别附完整许可，不改变已发布v0.4.0 APK中的历史许可文件或运行依赖。动态来源锁定及正式发行状态见N7实施计划。
+
 ## 四个固定游戏来源（MIT）
 
 | 来源 | 固定版本 | 许可 |

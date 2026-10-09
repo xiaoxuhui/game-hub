@@ -1,0 +1,1 @@
+Checked 31 JavaScript files and 11 required documents; plan schema valid

@@ -1,0 +1,4 @@
+Built 13 files in dist; abelian-sandpile 0.1.2 (playable)
+Staged abelian-sandpile 0.1.2, 13 runtime/license files; fixed d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f
+Built dist/lambda-lab.html (85296 bytes), no external dependencies.
+Staged lambda-diagram-game 0.3.0, 2 runtime/license files; fixed 11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2

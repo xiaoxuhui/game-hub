@@ -1,0 +1,112 @@
+✖ U03 assets 中的网页与源产物字节一致 (3.6115ms)
+✖ 入口页存在于 assets 中 (2.1768ms)
+✔ 应用身份与需求一致（包名/SDK/版本） (25.4054ms)
+✔ 固定 debug 签名存在且被 gradle 引用（否则新包无法覆盖安装） (3.3327ms)
+✔ 应用显示名正确 (2.3168ms)
+✔ 清单声明启动入口且不申请任何权限（离线运行） (2.449ms)
+✔ 旋转屏幕不重建 Activity 且不锁定方向 (1.9015ms)
+✔ WebView 关键配置齐备（JS/本地存储/离线资源/返回键） (2.6402ms)
+✔ 图标资源齐全（各密度传统图标 + 自适应图标前景） (5.0234ms)
+✔ 资源 XML 的注释里不含连续两个减号（AAPT 会直接拒绝） (31.4165ms)
+✖ 开发工具脚本没有被同步进 assets (1.0618ms)
+✔ Android uses selected-document export with bounded content and truthful result (3.1364ms)
+✔ native lifecycle pauses and saves, recreated entry always loads, foreign URLs blocked (2.0093ms)
+✖ Android assets exactly equal the 13-file web runtime whitelist (1.7237ms)
+✔ U14/U15/U17 legal move, busy/invalid rejection, final move wins (5.6419ms)
+✔ U16/U18 exact target and exhausted budget, not merely equal total (0.7899ms)
+✔ U19 undo before/during/after avalanche restores stable counters (0.9714ms)
+✔ challenge checkpoint rolls back in-flight move, restore validates replay (2.5252ms)
+✔ U20 ten levels prove minimum by increasing depth; zero-step and budget failure handled (78.8383ms)
+✔ U13 old frame cannot overwrite reset or mode after cancellation (13.3989ms)
+✔ pause then synchronous step does one wave, resumed budget work reaches stability (4.5324ms)
+✔ queue admission reserves total budget; queued actions apply in order and restore paused (3.5735ms)
+✔ busy challenge invalid move does not cancel running work or consume budget (2.9746ms)
+✔ U01 empty, U02 center three plus one, U03 bulk eight (4.4516ms)
+✔ U04-U06 corner, edge and singleton use threshold four (1.2843ms)
+✔ U07/U10 synchronous wave leaves newly unstable neighbour until next wave (0.5203ms)
+✔ U08/U09/U11 seeded configurations agree with independent forward/reverse reference (30.4111ms)
+✔ U12 invalid inputs and cumulative budget reject atomically (2.1385ms)
+✔ validated snapshots check ledger, stability and per-cell toppling counters (1.2542ms)
+✔ fast work respects operation budget, and deadline can stop before a mutation (0.4859ms)
+✔ U32 wave trace shows initial input, source/recipient/frontier and does not mutate game (7.0351ms)
+✔ U33 exact trace accounting matches independent engine on every allowed tutorial action (20.8357ms)
+✔ U34 prediction is computed from actual basic topplings, not number of animation waves (0.4916ms)
+✔ U34 old six level identities and saved physics/history remain compatible (9.5267ms)
+✔ U35 advanced lessons have choices and proven nontrivial budgets (0.9443ms)
+✔ U28 repeated input uses frozen cell/amount, interval and exact physics (7.8021ms)
+✔ U29 manual queue finishes first and ongoing avalanche creates no repeated queue (11.4088ms)
+✔ U30 every cancellation invalidates old loop frames; pause preserves the current experiment (13.5729ms)
+✔ U30 restart has one active generation and save-v1 never resumes automatic input (6.2757ms)
+✔ U31 invalid loop settings/mode reject without cancelling an existing valid loop (8.3532ms)
+✔ U31 cumulative limit stops automatically before a partial drop or numerical overflow (0.9664ms)
+✔ S01 candidate static contract lists all shipped web resources (3.5997ms)
+✔ S02 page resource references resolve in a nested game directory (4.7441ms)
+✔ S03 runtime has no external dependencies or broad storage clear (2.8545ms)
+✔ S04 reserved storage keys are unique and game-scoped (0.3119ms)
+✔ S05 challenge example is a stable format draft, not a verified level (1.6525ms)
+✔ S06 build emits exact bytes and auditable resource hashes (89.1543ms)
+✔ S07 two builds are byte-for-byte reproducible and exclude development files (160.5928ms)
+✔ U21 full save roundtrip includes unstable experiment and queued input, restore paused (18.0058ms)
+✔ U22 corrupt/future/cross-game/oversized/invalid ledger imports reject without mutating controller (15.3086ms)
+✔ U23 clear only owned keys preserves other games and unrelated data (4.3281ms)
+✔ U24 storage exceptions propagate without modifying memory (10.6138ms)
+✔ challenge checkpoint persists success; undo does not revoke historic best (6.2654ms)
+ℹ tests 53
+ℹ suites 0
+ℹ pass 49
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1068.3451
+
+✖ failing tests:
+
+test at tests\android-shell.test.mjs:67:1
+✖ U03 assets 中的网页与源产物字节一致 (3.6115ms)
+  Error: 找不到源：dist/index.html（相对仓库根）
+      at buildPlan (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/scripts/sync-android-assets.mjs:47:13)
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/tests/android-shell.test.mjs:68:23)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at tests\android-shell.test.mjs:80:1
+✖ 入口页存在于 assets 中 (2.1768ms)
+  AssertionError [ERR_ASSERTION]: 缺少入口页 index.html（需与 MainActivity 的 ASSET_FILE 一致）
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/tests/android-shell.test.mjs:81:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\android-shell.test.mjs:238:1
+✖ 开发工具脚本没有被同步进 assets (1.0618ms)
+  Error: 找不到源：dist/index.html（相对仓库根）
+      at buildPlan (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/scripts/sync-android-assets.mjs:47:13)
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/tests/android-shell.test.mjs:241:22)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests\android-shell.test.mjs:278:1
+✖ Android assets exactly equal the 13-file web runtime whitelist (1.7237ms)
+  Error: 找不到源：dist/index.html（相对仓库根）
+      at buildPlan (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/scripts/sync-android-assets.mjs:47:13)
+      at check (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/scripts/sync-android-assets.mjs:75:23)
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/.build/upstream-dynamic/abelian-sandpile/tests/android-shell.test.mjs:281:22)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
