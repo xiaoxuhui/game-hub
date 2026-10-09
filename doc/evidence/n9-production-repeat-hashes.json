@@ -1,0 +1,26 @@
+[
+  {
+    "Path": "D:\\soft\\.ci-tmp\\game-hub-n9\\work\\.build\\dynamic-candidate\\candidate.json",
+    "Hash": "439AE5A2650F5EDA604579EA033B0B31CE1E477E54D295ECDEE07ED0A7C87D41"
+  },
+  {
+    "Path": "D:\\soft\\.ci-tmp\\game-hub-n9\\work\\.build\\dynamic-candidate\\game-abelian-sandpile-1-8e9db7fc8720.zip",
+    "Hash": "8E9DB7FC872072B43ED035673107D58E86BD6E486F83B05D44F57BB392F369E5"
+  },
+  {
+    "Path": "D:\\soft\\.ci-tmp\\game-hub-n9\\work\\.build\\dynamic-candidate\\game-lambda-diagram-game-1-5e418cdff45e.zip",
+    "Hash": "5E418CDFF45E84EA6ED0B3B1D29D99E0EBB4D1841BC5F2171D48B20F1BF81BB8"
+  },
+  {
+    "Path": "D:\\soft\\.ci-tmp\\game-hub-n9\\work\\.build\\dynamic-candidate\\game-memory-demo-2-178d01e9ee05.zip",
+    "Hash": "178D01E9EE05F66CF22D4DD8C77FD3DDD47CB94BFCE20E6E38FE406F9FDE8442"
+  },
+  {
+    "Path": "D:\\soft\\.ci-tmp\\game-hub-n9\\work\\.build\\dynamic-candidate\\game-red-green-puzzle-1-81edc7c967f7.zip",
+    "Hash": "81EDC7C967F7CDFABD1A1E8707B677EC0D930D63E12CC0B8D427F65261767C62"
+  },
+  {
+    "Path": "D:\\soft\\.ci-tmp\\game-hub-n9\\work\\.build\\dynamic-candidate\\games.unsigned.json",
+    "Hash": "0C8C393127707685EF9DE33E9CF1B26DE335EB0DB2BEF5F0985B40B9624A619C"
+  }
+]
