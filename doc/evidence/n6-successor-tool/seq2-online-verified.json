@@ -1,0 +1,26 @@
+{
+  "catalogSequence": "2",
+  "catalogAssetId": 625125622,
+  "catalogSha256": "0428dedaa4dd8abdd5299cf1db52a0f3f8bbbbfb381bd0ec20ad58be16b31915",
+  "historyAssetId": 623482430,
+  "verifiedHistorySequences": [
+    "1",
+    "2"
+  ],
+  "resources": [
+    {
+      "id": "memory-demo",
+      "contentCode": 1,
+      "assetId": 623482293,
+      "bytes": 8490,
+      "sha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b"
+    },
+    {
+      "id": "memory-demo",
+      "contentCode": 2,
+      "assetId": 625120403,
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    }
+  ]
+}

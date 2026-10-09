@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {packDynamic,dynamicSources} from '../scripts/dynamic-resources.mjs';
 import {assetName} from '../scripts/resource-protocol.mjs';
-import {successorPayload,validateHistoryCatalogs} from '../scripts/resource-successor.mjs';
+import {successorPayload,validateHistoryCatalogs,publicDownloadUrl} from '../scripts/resource-successor.mjs';
 function fixture(){
   const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
   const entries=source.files.map(path=>({path,data:readFileSync(new URL(`../examples/memory-demo/${path}`,import.meta.url))}));
@@ -48,4 +48,11 @@ test('complete signed history audit detects earliest missing ZIP, sequence gaps 
   assert.throws(()=>validateHistoryCatalogs([old,forged],third,snapshot),/same-code/);
   snapshot.assetPages[0].assets.shift();
   assert.throws(()=>validateHistoryCatalogs([old,second],third,snapshot),/Asset identity/);
+});
+test('public download binds same-name CDN cache key to immutable asset ID and rejects foreign URLs',()=>{
+  const a={id:101,name:'catalog.signed.json',browser_download_url:'https://github.com/xiaoxuhui/game-hub/releases/download/game-resources-v2/catalog.signed.json'};
+  assert.equal(publicDownloadUrl(a).searchParams.get('verified_asset_id'),'101');
+  assert.notEqual(String(publicDownloadUrl(a)),String(publicDownloadUrl({...a,id:102})));
+  assert.throws(()=>publicDownloadUrl({...a,browser_download_url:'https://example.com/catalog.signed.json'}));
+  assert.throws(()=>publicDownloadUrl({...a,id:0}));
 });

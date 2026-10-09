@@ -1,0 +1,62 @@
+$ node --check scripts/bundle.mjs && node --test
+✔ Android application identity and minimum API stay independent of source APKs (11.0724ms)
+✔ Manifest has one launcher and only the planned update permission (3.6186ms)
+✔ compact lobby uses four fixed source icons and clickable cards (2.6855ms)
+✔ CI builds pinned sources and checks APK without a publish step (1.1688ms)
+✔ four original export bridge names and a file chooser are wired (1.3707ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: 3417eee0817b6a2709bd48fb594574014c9ca76ce6d8b4613f6c219bf8bdd910
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (4.1275ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (2.5749ms)
+✔ HTML references exclude external and fragment links while preserving local assets (3.6595ms)
+✔ missing local HTML reference stops bundling (40.7044ms)
+✔ manifest hashes are stable and change when a resource changes (26.3175ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (11092.1007ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (19.3629ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (41.6917ms)
+✔ higher content accepts new bytes only with new exact public asset identity (1.4465ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (2132.801ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (615.9311ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (11.8219ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (587.3724ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (36.0558ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (14.2856ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (2.8841ms)
+✔ detached programmatic Blob click saves content before immediate revoke (19.5774ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (3.459ms)
+✔ demo preserves progress, counts wins once and validates imported state (5.4475ms)
+✔ actual import handler never claims durable success after storage write failure (27.2207ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.7168ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (5.7443ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (3.0791ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (3.2454ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (1.4498ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (18.0559ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (643.8378ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.8145ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (1.7193ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (471.493ms)
+✔ successor retains identities omitted from candidate and binds new resources to public assets (65.4301ms)
+✔ successor refuses skipped sequences, same-code metadata changes and incomplete historical snapshot (6.8671ms)
+✔ successor rejects forged asset bytes and duplicate candidate identities before signing (3.7593ms)
+✔ complete signed history audit detects earliest missing ZIP, sequence gaps and historical identity mutation (16.4818ms)
+✔ public download binds same-name CDN cache key to immutable asset ID and rejects foreign URLs (1.0869ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13888.7525

@@ -42,9 +42,15 @@ export function validateHistoryCatalogs(history,current,snapshot){
   }
   return catalogs;
 }
-async function download(asset){
+export function publicDownloadUrl(asset){
+  if(!Number.isSafeInteger(asset.id)||asset.id<1)throw new Error('Public asset identity');
   const url=new URL(asset.browser_download_url);
   if(url.origin!=='https://github.com'||url.pathname!==`/xiaoxuhui/game-hub/releases/download/game-resources-v2/${asset.name}`)throw new Error('Public asset URL changed');
+  // catalog.signed.json is replaced by a new immutable asset ID. Bind the CDN cache key to that ID.
+  url.searchParams.set('verified_asset_id',String(asset.id));return url;
+}
+async function download(asset){
+  const url=publicDownloadUrl(asset);
   const response=await fetch(url,{headers:{'User-Agent':'game-hub-resource-successor','Cache-Control':'no-cache'},signal:AbortSignal.timeout(60000)});
   if(!response.ok)throw new Error(`Asset HTTP ${response.status}`);
   const chunks=[];let size=0;
