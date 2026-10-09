@@ -1,0 +1,33 @@
+Revalidated ten historical checkout bundles, patches and untracked archives
+Verified archive upgrade-checkout-untracked: 6 files
+Verified archive final-producer-untracked: 0 files
+Verified archive dynamic-abelian-sandpile-untracked: 0 files
+Verified archive dynamic-lambda-diagram-game-untracked: 0 files
+Verified archive dynamic-memory-demo-untracked: 0 files
+Verified archive upstream-abelian-sandpile-untracked: 0 files
+Verified archive upstream-lambda-diagram-game-untracked: 1 files
+Verified archive game-hub-candidate-v0.2.0-153df9a: 30 files
+Verified archive game-hub-continuous-audit-20261008: 59 files
+Verified archive game-hub-icon-audit-20261003: 2 files
+Verified archive game-hub-planning-v0.3.0-20261003: 1 files
+Verified archive game-hub-release-v0.2.0-74216c3: 55 files
+Verified archive game-hub-release-v0.2.0-f53a4c1: 24 files
+Verified archive emulator-evidence: 12 files
+Verified archive game-hub-final-153df9a: 28 files
+Verified archive game-hub-license-audit: 35 files
+Verified archive game-hub-light-smoke-c861: 2 files
+Verified archive game-hub-m3-emulator-after-stop: 2 files
+Verified archive game-hub-maintenance: 14 files
+Verified archive game-hub-p7-candidate: 8 files
+Verified archive game-hub-p7-emulator: 14 files
+Verified archive game-hub-p7-license-candidate: 8 files
+Verified archive game-hub-upgrade-fixtures-20261009-after-stop: 32 files
+Verified archive final-evidence: 645 files
+Verified archive task-avd-config: 8 files
+Shared-IP limit: using existing credential for read-only GitHub metadata; public byte downloads stay anonymous
+Archived formal release v0.2.0
+Archived formal release v0.3.0
+Archived formal release v0.4.0
+Archived formal release game-resources-v1
+Archived formal release game-resources-v2
+{"ready": true, "archivedFiles": 102, "archiveBytes": 322610505, "formalAssets": 15, "additionalGitClones": 7}

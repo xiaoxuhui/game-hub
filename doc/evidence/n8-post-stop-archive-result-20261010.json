@@ -1,0 +1,16 @@
+{
+  "archivedFiles": 102,
+  "indexFile": "verified-archive-index-after-stop.json",
+  "gitClones": 17,
+  "toolchainMoved": false,
+  "postStopDirectories": [
+    "game-hub-m3-emulator",
+    "game-hub-upgrade-fixtures-20261009"
+  ],
+  "deletionStarted": false,
+  "archiveBytes": 322610505.0,
+  "formalAssets": 15,
+  "ready": true,
+  "beforeIndexSha256": "05b326523c0152ccb8ec8ab18074c194119220dd507ea303c67e42f13e3b78b3",
+  "indexSha256": "b8e04185c809fcad3c25c4700c91d24077a6ba499c1ac646829b75dd49a67f9a"
+}
