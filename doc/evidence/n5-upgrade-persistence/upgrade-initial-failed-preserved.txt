@@ -30,5 +30,3 @@ org.junit.ComparisonFailure: turing actual stored state restored expected:<[tru]
 
 FAILURES!!!
 Tests run: 1,  Failures: 1
-
-
