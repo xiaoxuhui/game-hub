@@ -89,6 +89,8 @@ def archive_zip(name, pairs):
     print(f'Verified archive {name}: {len(index)} files', flush=True)
 
 ARCHIVE.mkdir(parents=True, exist_ok=True)
+if ARCHIVE.resolve() != ARCHIVE:
+    raise RuntimeError('Permanent archive root is a link')
 # Revalidate existing ten snapshots against their still-present original task clones.
 old_dir = BASE / 'game-hub-archives/retired-checkouts-20261009'
 old_index = json.loads((old_dir / 'verified-index.json').read_text(encoding='utf-8'))
@@ -141,6 +143,8 @@ for label, root in repos:
     head = git(root, 'rev-parse', 'HEAD').decode().strip()
     snap = ARCHIVE / label
     snap.mkdir(exist_ok=True)
+    if snap.resolve() != snap:
+        raise RuntimeError('Git archive directory is a link')
     for name, args in (('status.txt', ('status', '--porcelain=v1', '--untracked-files=all')),
                        ('staged.patch', ('diff', '--cached', '--binary', 'HEAD')),
                        ('worktree.patch', ('diff', '--binary'))):
@@ -186,27 +190,54 @@ archive_zip('task-avd-config', avd_config)
 # Permanent formal assets: anonymous GitHub metadata + actual public bytes, no credentials.
 formal = ARCHIVE / 'formal-assets'
 formal.mkdir(exist_ok=True)
+if formal.resolve() != formal:
+    raise RuntimeError('Formal asset directory is a link')
 formal_records = []
-for tag in ('v0.2.0', 'v0.3.0', 'v0.4.0', 'game-resources-v1', 'game-resources-v2'):
-    request = urllib.request.Request('https://api.github.com/repos/xiaoxuhui/game-hub/releases/tags/' + tag,
-                                     headers={'User-Agent': 'game-hub-cleanup-archive', 'Accept': 'application/vnd.github+json'})
+
+def api_json(url):
+    request = urllib.request.Request(url, headers={'User-Agent': 'game-hub-cleanup-archive',
+                                                  'Accept': 'application/vnd.github+json'})
     with urllib.request.urlopen(request, timeout=60) as response:
-        release = json.load(response)
-    if release['draft'] or release['tag_name'] != tag or len(release['assets']) > 30:
+        return json.load(response)
+
+def complete_release(tag):
+    release = api_json('https://api.github.com/repos/xiaoxuhui/game-hub/releases/tags/' + tag)
+    if release['draft'] or release['tag_name'] != tag or not isinstance(release['id'], int) or release['id'] <= 0:
         raise RuntimeError('Unexpected formal release')
-    for asset in release['assets']:
+    assets = []
+    for page in range(1, 11):
+        batch = api_json(f"https://api.github.com/repos/xiaoxuhui/game-hub/releases/{release['id']}/assets?per_page=100&page={page}")
+        if not isinstance(batch, list) or len(batch) > 100:
+            raise RuntimeError('Unexpected asset page')
+        assets.extend(batch)
+        if len(batch) < 100:
+            break
+    else:
+        raise RuntimeError('Incomplete bounded asset pagination')
+    if len(assets) > 30 or len({a['id'] for a in assets}) != len(assets) or len({a['name'] for a in assets}) != len(assets):
+        raise RuntimeError('Duplicate or unexpected asset set')
+    return release, assets
+
+def identities(assets):
+    return sorted((a['id'], a['name'], a['size'], a.get('digest'), a['state'], a['browser_download_url']) for a in assets)
+
+for tag in ('v0.2.0', 'v0.3.0', 'v0.4.0', 'game-resources-v1', 'game-resources-v2'):
+    release, assets = complete_release(tag)
+    for asset in assets:
         name = asset['name']
         if Path(name).name != name or '/' in name or '\\' in name or name in ('.', '..'):
             raise RuntimeError('Unsafe asset filename')
         expected = asset.get('digest', '')
-        if asset['state'] != 'uploaded' or not expected.startswith('sha256:') or len(expected) != 71:
+        if asset['state'] != 'uploaded' or not expected.startswith('sha256:') or len(expected) != 71 or not isinstance(asset['id'], int) or asset['id'] <= 0 or not isinstance(asset['size'], int) or not 0 < asset['size'] <= 26 * 1024 * 1024:
             raise RuntimeError('Formal asset lacks immutable digest')
         path = formal / (tag + '--' + name)
         url = 'https://github.com/xiaoxuhui/game-hub/releases/download/' + tag + '/' + name
         if asset['browser_download_url'] != url:
             raise RuntimeError('Unexpected asset origin')
         if not path.exists():
-            request = urllib.request.Request(url + '?verified_asset_id=' + str(asset['id']), headers={'User-Agent': 'game-hub-cleanup-archive'})
+            # Asset ID is in the actual API path. A cache query alone is not identity binding.
+            download = 'https://api.github.com/repos/xiaoxuhui/game-hub/releases/assets/' + str(asset['id'])
+            request = urllib.request.Request(download + '?download=1', headers={'User-Agent': 'game-hub-cleanup-archive', 'Accept': 'application/octet-stream'})
             with urllib.request.urlopen(request, timeout=60) as response:
                 data = response.read(asset['size'] + 1)
             if len(data) != asset['size'] or digest(data) != expected[7:]:
@@ -216,6 +247,9 @@ for tag in ('v0.2.0', 'v0.3.0', 'v0.4.0', 'game-resources-v1', 'game-resources-v
             raise RuntimeError('Permanent formal asset copy differs')
         formal_records.append({'tag': tag, 'releaseId': release['id'], 'assetId': asset['id'],
                                'name': name, 'bytes': asset['size'], 'sha256': expected[7:], 'file': path.name})
+    after_release, after_assets = complete_release(tag)
+    if after_release['id'] != release['id'] or identities(after_assets) != identities(assets):
+        raise RuntimeError('Formal asset identities changed during archival')
     print(f'Archived formal release {tag}', flush=True)
 write_new_or_identical(formal / 'verified-index.json', json_bytes(formal_records))
 
