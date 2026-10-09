@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 /** Controlled HTTPS streams with real signed producer bytes, AtomicFile, both stores and production coordinator. */
 class DynamicCoordinatorDeviceTest {
-    private class Harness:AutoCloseable {
+    internal class Harness:AutoCloseable {
         val base=InstrumentationRegistry.getInstrumentation().targetContext
         val fixture=ResourceDeviceFixture(base)
         val names=mutableSetOf<String>()

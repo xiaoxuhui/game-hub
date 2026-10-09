@@ -1,0 +1,28 @@
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name color
+s_glBindAttribLocation: bind attrib 2 name localCoord
+com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest:.
+Error in largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest):
+java.lang.IllegalStateException: Timeout: real large font landscape
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.await(DynamicLobbyDeviceTest.kt:26)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.access$await(DynamicLobbyDeviceTest.kt:23)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:116)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:109)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.withUi(DynamicLobbyDeviceTest.kt:75)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(DynamicLobbyDeviceTest.kt:109)
+
+
+Time: 40.624
+There was 1 failure:
+1) largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest)
+java.lang.IllegalStateException: Timeout: real large font landscape
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.await(DynamicLobbyDeviceTest.kt:26)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.access$await(DynamicLobbyDeviceTest.kt:23)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:116)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:109)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.withUi(DynamicLobbyDeviceTest.kt:75)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(DynamicLobbyDeviceTest.kt:109)
+
+FAILURES!!!
+Tests run: 2,  Failures: 1

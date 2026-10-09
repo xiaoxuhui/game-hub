@@ -1,0 +1,28 @@
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name color
+s_glBindAttribLocation: bind attrib 2 name localCoord
+com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest:
+Error in largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest):
+java.lang.IllegalStateException: Timeout: returned
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.await(DynamicLobbyDeviceTest.kt:27)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.access$await(DynamicLobbyDeviceTest.kt:24)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:132)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:110)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.withUi(DynamicLobbyDeviceTest.kt:76)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(DynamicLobbyDeviceTest.kt:110)
+
+
+Time: 35.081
+There was 1 failure:
+1) largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest)
+java.lang.IllegalStateException: Timeout: returned
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.await(DynamicLobbyDeviceTest.kt:27)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.access$await(DynamicLobbyDeviceTest.kt:24)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:132)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest$largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable$1.invoke(DynamicLobbyDeviceTest.kt:110)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.withUi(DynamicLobbyDeviceTest.kt:76)
+	at com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest.largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(DynamicLobbyDeviceTest.kt:110)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

@@ -230,7 +230,8 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         catch (error: Exception) { resourceStatus(current.policy,"${error.message}；请重新检查更新"); return false }
         if (token == null) return false
         attempted.add("${game.id}/${game.identity}")
-        publish { it.copy(busy = true, task = "下载 ${game.id}", done = 0, total = game.archiveBytes) }
+        val displayName=if(current.policy==ResourceStorePolicy.DYNAMIC)game.displayName else game.id
+        publish { it.copy(busy = true, task = "下载 $displayName", done = 0, total = game.archiveBytes) }
         worker.execute {
             var archive: File? = null
             try {
@@ -241,7 +242,7 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                 storeFor(current.policy).install(game, current.envelope, archive, { !gate.valid(token) })
                 readLocalResources()
                 publish { if(current.policy==ResourceStorePolicy.BUILTIN) it.copy(resources=it.resources.filterNot {candidate->candidate.id==game.id},resourceStatus="${game.id} 更新已就绪，下次进入生效")
-                    else it.copy(dynamicResources=it.dynamicResources.filterNot {candidate->candidate.id==game.id},dynamicStatus="${game.id} 资源已就绪，下次进入生效") }
+                    else it.copy(dynamicResources=it.dynamicResources.filterNot {candidate->candidate.id==game.id},dynamicStatus="${game.displayName} 资源已就绪，下次进入生效") }
             } catch (error: Exception) {
                 if (token.cancelled) resourceStatus(current.policy,"游戏下载已取消，原版本保留") else channelFailure(current.policy.updateChannel, error)
             } finally {
@@ -333,7 +334,8 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                 }
                 changed = true
                 resourceStatus(policy,when (action) {
-                    LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN, LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC -> "已恢复并固定资源；存档保留"
+                    LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN, LocalResourceAction.RECOVER_ALL -> "已恢复并固定资源；存档保留"
+                    LocalResourceAction.RECOVER_DYNAMIC -> "已从可信历史恢复目录，需明确重试并手动重新安装；存档保留"
                     LocalResourceAction.REMOVE -> "游戏资源已移除；存档和历史水位保留，重装需手动选择"
                     LocalResourceAction.RESUME -> "已解除固定；失败编号仍隔离"
                     LocalResourceAction.RETRY -> "已允许重试指定编号；存档保留"

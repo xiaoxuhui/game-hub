@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
@@ -50,6 +51,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var lobby: ScrollView
     private lateinit var updateLink: TextView
     private lateinit var updateSummary: TextView
+    private lateinit var dynamicSection: LinearLayout
+    private var dynamicLobbyKey: List<Pair<Game, Int>> = emptyList()
     private val updates by lazy { UpdateCoordinator.get(applicationContext) }
     @Volatile private var activityStarted = false
     private val updateDialogs = mutableSetOf<AlertDialog>()
@@ -130,7 +133,9 @@ class MainActivity : ComponentActivity() {
             cleanStaleUpdateFiles()
             val restoreId = savedInstanceState?.getString(STATE_GAME)
             if (restoreId != null) {
-                games.firstOrNull { it.id == restoreId }?.let { openGame(it, savedInstanceState) }
+                val builtin=games.firstOrNull { it.id == restoreId }
+                if(builtin!=null) openGame(builtin,savedInstanceState)
+                else if(DynamicGamePolicy.validId(restoreId)) restoreDynamicGame(restoreId,savedInstanceState)
             }
         } catch (error: Exception) {
             showFatal("内置资源清单不可用：${error.message ?: "未知错误"}")
@@ -157,6 +162,15 @@ class MainActivity : ComponentActivity() {
             updates.subscribe(updateListener)
             refreshUpdatePresence()
         }
+    }
+
+    override fun onConfigurationChanged(newConfig:Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if(!::lobby.isInitialized)return
+        val visibility=lobby.visibility;val position=lobby.scrollY
+        root.removeView(lobby);lobby=buildLobby();lobby.visibility=visibility
+        root.addView(lobby,0,FrameLayout.LayoutParams(-1,-1))
+        renderUpdates(updates.snapshot());lobby.post {lobby.scrollTo(0,position)}
     }
 
     override fun onStop() {
@@ -205,6 +219,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun buildLobby(): ScrollView {
+        gameVersionLabels.clear();gameCards.clear()
         val scroll = ScrollView(this).apply { isFillViewport = true; isVerticalScrollBarEnabled = false }
         val cardMinDp = 192 + ((resources.configuration.fontScale - 1f).coerceAtLeast(0f) * 160).toInt()
         val column = LinearLayout(this).apply {
@@ -221,7 +236,12 @@ class MainActivity : ComponentActivity() {
         headerRow.addView(label("合集 v${installedVersionName()}", 11f, MUTED, false).apply {
             setPadding(dp(6), 0, 0, 0)
         }, LinearLayout.LayoutParams(0, -2, 1f))
+        headerRow.addView(label("游戏目录",13f,0xFF6EE7B7.toInt(),true).apply {
+            minimumHeight=dp(48);gravity=Gravity.CENTER;setPadding(dp(8),0,dp(8),0)
+            isClickable=true;isFocusable=true;setOnClickListener {showGameCatalog()}
+        })
         updateLink = label("检查更新", 13f, 0xFF8AB7FF.toInt(), true).apply {
+            minimumHeight=dp(48);gravity=Gravity.CENTER
             setPadding(dp(8), dp(4), dp(6), dp(4))
             isClickable = true
             isFocusable = true
@@ -230,7 +250,7 @@ class MainActivity : ComponentActivity() {
         headerRow.addView(updateLink)
         updateSummary = label("更新尚未检查 · 点击查看", 11f, MUTED, false).apply {
             setPadding(dp(6), dp(3), dp(6), dp(6))
-            maxLines = 2
+            maxLines = 3
             isClickable = true; isFocusable = true
             setOnClickListener { showUpdateDetails() }
         }
@@ -276,7 +296,64 @@ class MainActivity : ComponentActivity() {
                 })
             }
         }
+        dynamicSection=LinearLayout(this).apply {orientation=LinearLayout.VERTICAL}
+        column.addView(dynamicSection,LinearLayout.LayoutParams(-1,-2))
+        dynamicLobbyKey=emptyList()
         return scroll
+    }
+
+    private fun dynamicGame(id:String,local:LocalResourceInfo,remote:ResourceGame?):Game {
+        val metadata=local.active ?: local.ready ?: remote
+        return Game(id,metadata?.displayName ?: id,metadata?.version ?: "",metadata?.sourceRevision ?: "",metadata?.entry ?: "index.html")
+    }
+    private fun dynamicIcon(kind:String?)=when(kind){
+        "puzzle"->R.drawable.game_dynamic_puzzle
+        "logic"->R.drawable.game_dynamic_logic
+        "simulation"->R.drawable.game_dynamic_simulation
+        else->R.drawable.game_dynamic_generic
+    }
+    private fun renderDynamicLobby(state:UpdateSnapshot) {
+        val entries=state.localDynamicResources.entries.filter {it.value.selection.active!="builtin" || it.value.selection.ready!=null}
+            .sortedBy {it.key}.map {(id,local)->
+                val remote=state.dynamicCatalogGames.singleOrNull {it.id==id}
+                dynamicGame(id,local,remote) to dynamicIcon((local.active ?: local.ready ?: remote)?.iconKind)
+            }
+        if(entries!=dynamicLobbyKey){
+            dynamicLobbyKey.forEach {(game,_)->gameVersionLabels.remove(game.id);gameCards.remove(game.id)}
+            dynamicLobbyKey=entries;dynamicSection.removeAllViews()
+            if(entries.isNotEmpty())dynamicSection.addView(label("已安装的游戏",15f,Color.WHITE,true).apply {setPadding(dp(6),dp(12),0,dp(4))})
+            entries.chunked(2).forEach {pair->
+                val row=LinearLayout(this).apply {orientation=LinearLayout.HORIZONTAL}
+                dynamicSection.addView(row,LinearLayout.LayoutParams(-1,-2))
+                pair.forEach {(game,icon)->
+                    val card=LinearLayout(this).apply {
+                        orientation=LinearLayout.VERTICAL;gravity=Gravity.CENTER;minimumHeight=dp(144)
+                        setPadding(dp(8),dp(12),dp(8),dp(12));background=rounded(0xFF1B2330.toInt(),dp(16))
+                        isClickable=true;isFocusable=true;setOnClickListener {openGame(game)}
+                    }
+                    row.addView(card,LinearLayout.LayoutParams(0,-2,1f).apply {setMargins(dp(4),dp(4),dp(4),dp(4))})
+                    gameCards[game.id]=card
+                    card.addView(ImageView(this).apply {setImageResource(icon);contentDescription=null},LinearLayout.LayoutParams(dp(56),dp(56)))
+                    card.addView(label(game.name,16f,Color.WHITE,true).apply {gravity=Gravity.CENTER;maxLines=3;setPadding(0,dp(6),0,0)})
+                    card.addView(label("",11f,MUTED,false).apply {gravity=Gravity.CENTER;gameVersionLabels[game.id]=this})
+                }
+                if(pair.size==1)row.addView(View(this),LinearLayout.LayoutParams(0,1,1f))
+            }
+        }
+        entries.forEach {(game,_)->
+            val local=state.localDynamicResources.getValue(game.id)
+            val text=when {
+                local.stateError!=null || local.activeError!=null->"资源异常 · 待恢复"
+                local.selection.active.substringBefore('-').toIntOrNull() in local.selection.quarantine->"失败已隔离 · 待恢复"
+                local.readyError!=null->"候选损坏 · 原版保留"
+                local.ready!=null && !local.readyFresh->"候选已过期 · 请检查"
+                local.ready!=null->"v${local.ready.version} · 待生效"
+                local.active!=null->"v${local.active.version}"+(if(!local.selection.available) " · 已退役" else if(local.selection.pinned) " · 固定版本" else "")
+                else->"资源不可用 · 待恢复"
+            }
+            gameVersionLabels[game.id]?.text=text
+            gameCards[game.id]?.contentDescription="${game.name}，$text，打开"
+        }
     }
 
     private fun iconFor(id: String) = when (id) {
@@ -298,8 +375,9 @@ class MainActivity : ComponentActivity() {
         updateLink.text = if (state.busy) "更新详情" else "检查更新"
         updateSummary.text = if (state.task != null) {
             "${state.task} · ${if (state.total > 0) "${state.done * 100 / state.total}%" else "查询中"} · 点击查看"
-        } else "${state.apkStatus}\n${state.resourceStatus} · 点击查看"
-        updateSummary.contentDescription = "更新状态：${state.apkStatus}；${state.resourceStatus}；点击查看详情"
+        } else "${state.apkStatus}\n${state.resourceStatus}\n${state.dynamicStatus} · 点击查看"
+        updateSummary.contentDescription = "更新状态：${state.apkStatus}；${state.resourceStatus}；${state.dynamicStatus}；点击查看详情"
+        renderDynamicLobby(state)
         for (game in games) {
             val local = state.localResources[game.id]
             val actual = when {
@@ -349,6 +427,72 @@ class MainActivity : ComponentActivity() {
         updates.subscribe(detailListener)
     }
 
+    private fun showGameCatalog() {
+        val content=LinearLayout(this).apply {orientation=LinearLayout.VERTICAL;setPadding(dp(18),dp(8),dp(18),dp(8))}
+        val dialog=AlertDialog.Builder(this).setTitle("游戏目录").setView(ScrollView(this).apply {addView(content)})
+            .setPositiveButton("关闭",null).create()
+        val listener:(UpdateSnapshot)->Unit={state->if(!isDestroyed && dialog.isShowing)renderGameCatalog(content,state,dialog)}
+        dialog.setOnDismissListener {updates.unsubscribe(listener);updateDialogs.remove(dialog)}
+        updateDialogs.add(dialog);dialog.show();renderGameCatalog(content,updates.snapshot(),dialog);updates.subscribe(listener)
+    }
+    private fun renderGameCatalog(column:LinearLayout,state:UpdateSnapshot,dialog:AlertDialog) {
+        val previous=column.tag as? UpdateSnapshot;column.tag=state
+        if(previous?.copy(done=0)==state.copy(done=0)){
+            column.findViewWithTag<TextView>("catalog-progress")?.text="${state.task}：${state.done/1024} / ${state.total/1024} KiB";return
+        }
+        column.removeAllViews()
+        fun description(text:String){column.addView(label(text,13f,Color.WHITE,false).apply {setPadding(0,dp(8),0,dp(4))})}
+        description("${state.dynamicStatus}\n最后成功检查：${checkedTime(state.dynamicCheckedAt)}")
+        description("新游戏由你选择安装；已安装游戏遵守自动更新设置。移除资源保留存档，重新安装需要主动选择。")
+        state.dynamicDiagnostic?.let {description("本地诊断：$it；存档保留")}
+        state.dynamicReadError?.let {description("本地读取失败：$it；存档保留")}
+        if(state.localDynamicResources.values.any {it.stateError!=null} || state.localDynamicResources.isEmpty() && (state.dynamicDiagnostic!=null || state.dynamicReadError!=null))detailButton(column,"从可信历史恢复游戏目录",!state.busy){confirmLocalChange(null,LocalResourceAction.RECOVER_DYNAMIC)}
+        if(state.task!=null){
+            column.addView(label("${state.task}：${state.done/1024} / ${state.total/1024} KiB",13f,Color.WHITE,false).apply {tag="catalog-progress"})
+            detailButton(column,"取消本次下载",state.total>0){updates.cancel()}
+        }
+        detailButton(column,"检查新游戏与更新",!state.busy){if(!updates.check(true))toast("当前无可用网络或任务尚未结束")}
+        val ids=(state.dynamicCatalogGames.map {it.id}+state.localDynamicResources.keys).distinct().sorted()
+        if(ids.isEmpty())description("暂无可展示的游戏。可稍后重新检查；四个内置游戏仍可离线使用。")
+        ids.forEach {id->
+            val remote=state.dynamicCatalogGames.singleOrNull {it.id==id};val local=state.localDynamicResources[id]
+            val installed=local?.let {it.selection.active!="builtin" || it.selection.ready!=null}==true
+            val metadata=local?.active ?: local?.ready ?: remote
+            val name=metadata?.displayName ?: id
+            val title=LinearLayout(this).apply {orientation=LinearLayout.HORIZONTAL;gravity=Gravity.CENTER_VERTICAL;setPadding(0,dp(16),0,0)}
+            title.addView(ImageView(this).apply {setImageResource(dynamicIcon(metadata?.iconKind));contentDescription=null},LinearLayout.LayoutParams(dp(36),dp(36)))
+            title.addView(label(name,17f,Color.WHITE,true).apply {setPadding(dp(8),0,0,0)},LinearLayout.LayoutParams(0,-2,1f));column.addView(title)
+            description(when {
+                local?.active!=null->"已安装 v${local.active.version}"+(if(local.selection.pinned) " · 固定版本" else "")
+                installed->"资源待激活或待恢复"
+                else->"尚未安装"
+            })
+            local?.ready?.let {description("候选 v${it.version}"+if(local.readyFresh) " · 下次打开生效" else " · 已过期，请检查")}
+            local?.activeError?.let {description("当前资源：$it")};local?.readyError?.let {description("候选：$it")};local?.stateError?.let {description("状态异常：$it")}
+            if(remote!=null){
+                description("目录 v${remote.version} · ${remote.archiveBytes/1024} KiB\n${remote.notes}")
+                if(!remote.available)description("已退役：不再提供下载；已安装的版本可继续离线使用。")
+                else if(!remote.compatible(hostVersionCode,ResourceStorePolicy.DYNAMIC.contract(id)))description("此游戏与当前大厅不兼容。请在更新详情检查大厅升级；升级前不会下载此游戏。")
+                if(state.dynamicRemembered)description("这是上次检查记录；重新检查成功后才可下载。")
+                if(!state.dynamicRemembered && state.dynamicResources.any {it.id==id})detailButton(column,(if(installed) "更新" else "安装")+name,!state.busy){
+                    confirmDownload {allowed->if(!updates.downloadResource(id,allowed))toast("下载未开始，请检查网络或重新查询")}
+                }
+            }
+            if(installed && local!=null){
+                detailButton(column,"打开$name",!state.busy){dialog.dismiss();openGame(dynamicGame(id,local,remote))}
+                if(local.stateError==null){
+                    if(local.selection.previous!="builtin" && local.selection.previous!=local.selection.active)detailButton(column,"恢复${name}上个版本并固定",!state.busy){confirmLocalChange(id,LocalResourceAction.RESTORE_PREVIOUS)}
+                    detailButton(column,"移除${name}资源（保留存档）",!state.busy){confirmLocalChange(id,LocalResourceAction.REMOVE)}
+                }
+            }
+            if(local!=null && local.stateError==null){
+                if(local.selection.pinned)detailButton(column,"解除${name}版本固定",!state.busy){confirmLocalChange(id,LocalResourceAction.RESUME)}
+                local.selection.quarantine.sorted().forEach {code->detailButton(column,"明确重试${name}资源 #$code",!state.busy){confirmLocalChange(id,LocalResourceAction.RETRY,code)}}
+            }
+        }
+        detailButton(column,"更新详情与自动更新设置"){dialog.dismiss();showUpdateDetails()}
+    }
+
     private fun detailButton(column: LinearLayout, title: String, enabled: Boolean = true, action: () -> Unit) {
         column.addView(Button(this).apply {
             text = title; isAllCaps = false; isEnabled = enabled
@@ -367,6 +511,8 @@ class MainActivity : ComponentActivity() {
         fun description(text: String) { column.addView(label(text, 13f, Color.WHITE, false).apply { setPadding(0, dp(8), 0, dp(4)) }) }
         description("大厅：${state.apkStatus}\n最后成功检查：${checkedTime(state.apkCheckedAt)}")
         description("游戏：${state.resourceStatus}\n最后成功检查：${checkedTime(state.resourcesCheckedAt)}")
+        description("新游戏：${state.dynamicStatus}\n最后成功检查：${checkedTime(state.dynamicCheckedAt)}")
+        detailButton(column,"查看游戏目录与已安装游戏"){dialog.dismiss();showGameCatalog()}
         state.localDiagnostic?.let { description("本地资源诊断：$it；存档未删除") }
         state.localReadError?.let { description("本地资源读取失败：$it；存档未删除") }
         if (state.localResources.values.any { it.stateError != null }) detailButton(column, "全局可信恢复内置资源", !state.busy) {
@@ -470,7 +616,7 @@ class MainActivity : ComponentActivity() {
     private fun confirmLocalChange(id: String?, action: LocalResourceAction, retryCode: Int? = null) {
         val message = when (action) {
             LocalResourceAction.RECOVER_ALL -> "仅使用完整可信签名历史恢复四个内置版本并固定，保留最高更新编号。无法验证历史时不会重置。游戏存档保留。"
-            LocalResourceAction.RECOVER_DYNAMIC -> "仅使用完整可信签名历史恢复动态游戏的资源选择状态，保留存档和最高更新编号。无法验证历史时不会重置；恢复后需明确重试并手动下载。"
+            LocalResourceAction.RECOVER_DYNAMIC -> "根据完整可信历史重建游戏目录，将资源选择恢复为未安装并固定，保留存档和最高更新编号。无法验证历史时不会重置；恢复后需明确重试并手动重新安装。"
             LocalResourceAction.REMOVE -> "只移除此游戏可重新下载的资源，存档和历史更新编号保留。以后需要手动选择重新安装，不会自动重装。"
             LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> "恢复资源后固定该游戏版本，隔离当前下载版本。游戏存档保留，但不会回到过去；下一次进入使用恢复版本。"
             LocalResourceAction.RESUME -> "解除固定后允许自动更新；此前失败编号继续隔离，需另行明确重试。游戏存档保留。"
@@ -554,6 +700,24 @@ class MainActivity : ComponentActivity() {
                         }.start()
                     }
                 }
+            }
+        }.start()
+    }
+
+    private fun restoreDynamicGame(id:String,state:Bundle) {
+        val serial=++navigationSerial
+        currentGame=Game(id,id,"","","index.html")
+        showLoading("正在恢复游戏…")
+        Thread {
+            val prepared=runCatching {
+                val store=ResourceRuntime.get(this).dynamicStore
+                val local=store.describeAll()[id] ?: error("游戏没有本地资源记录")
+                require(local.selection.active!="builtin" || local.selection.ready!=null){"游戏资源已移除"}
+                dynamicGame(id,local,store.rememberedCatalog()?.games?.singleOrNull {it.id==id})
+            }
+            runOnUiThread {
+                if(isDestroyed || navigationSerial!=serial)return@runOnUiThread
+                prepared.onSuccess {openGame(it,state)}.onFailure {showError("无法恢复游戏：${it.message}")}
             }
         }.start()
     }
