@@ -10,4 +10,4 @@
 - 删除后只读复核六原游戏仓库及mini-app-harness，完整HEAD/工作树逐项与本轮冻结基线一致；EML既有22项用户改动保留，未读取原始用户JSON。见 `n9-original-post-cleanup-state.json`。
 - 永久工具链、旧N8归档、主仓、六原仓库、技能仓库、两类签名目录及同机备份保留。未停止用户HTTP8000服务/其他设备，未修改正式APK/不可移动标签，seq4发行字节已在N9-D闭环。
 
-实际完整日志见 `n9-cleanup-execution.txt`，机器结果 `n9-cleanup-result.json`；先行归档独立审阅 `n9-archive-independent-review.md`。本结果提交后最终独立审阅仍待执行，不提前把N9整体标为VERIFIED。
+实际完整日志见 `n9-cleanup-execution.txt`，机器结果 `n9-cleanup-result.json`；先行归档独立审阅 `n9-archive-independent-review.md`。本结果提交52b1403后最终独立审阅CLOSED，详见[n9-final-independent-review.md](n9-final-independent-review.md)；N9整体标为VERIFIED。
