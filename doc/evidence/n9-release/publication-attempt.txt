@@ -1,0 +1,7 @@
+Verified 4 dynamic resource ZIPs; 538b16ee386be508050faccad5563195c618303e
+Preflight verified previous sequence 3, 4 immutable candidates
+Verified 4 dynamic resource ZIPs; 538b16ee386be508050faccad5563195c618303e
+Prepared asset-bound successor sequence 4
+Signed v2 sequence 4; 09c8a2ba0a799cac3144794619c38ff83036278ab6953614019dbedfe5d0424c
+Verified v2 sequence 4; 09c8a2ba0a799cac3144794619c38ff83036278ab6953614019dbedfe5d0424c
+Public asset bytes mismatch

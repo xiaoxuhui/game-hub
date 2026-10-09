@@ -1,0 +1,2 @@
+--------- beginning of main
+10-09 17:26:10.758  3581  3601 I GameHubResourceAcceptance: {"id":"red-green-puzzle","contentCode":1,"version":"1.0.0","active":"1-81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62","ready":null,"archiveSha256":"81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62","sourceRevision":"31eec2e638357d8e3e6a0550afc780e09bdaac49","storageContract":"red-green-puzzle-dynamic-v1","apkSha256":"c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39","hostCode":4}
