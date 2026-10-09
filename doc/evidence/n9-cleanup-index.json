@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 1,
+  "taskRoot": "D:\\soft\\.ci-tmp\\game-hub-n9",
+  "archiveRoot": "D:\\soft\\game-hub-archives\\n9-20261010",
+  "sourceCommit": "5459d83957ec1416f5744d7de42ce12377da901a",
+  "upstreamCommit": "592027dbc5cab9cb83f91b904f4f23a9e3cbe24b",
+  "emulatorStopped": true,
+  "artifacts": [
+    {
+      "path": "cleanup-n9.ps1",
+      "bytes": 6623,
+      "sha256": "6a55036657ee6f708c706bf87e8f74d2a0d3302e679d8a7736a34fd75de4d341"
+    },
+    {
+      "path": "complete-evidence.zip",
+      "bytes": 6286528,
+      "sha256": "8d74cf64da7aea6d63106c28323a00b257b54bb657cf7e6d71b5e122ccb88326"
+    },
+    {
+      "path": "formal-assets/catalog-seq3.signed.json",
+      "bytes": 7935,
+      "sha256": "69a34e189c352ec7bfc4e47be2ba2b08711c46264036277e8de9e2be30d3b5f4"
+    },
+    {
+      "path": "formal-assets/catalog-seq4.signed.json",
+      "bytes": 9867,
+      "sha256": "7a0312859ae27ccec42e737006a4deb46d57e7620cdd44dbfb8619a377bb17ac"
+    },
+    {
+      "path": "formal-assets/game-abelian-sandpile-1-8e9db7fc8720.zip",
+      "bytes": 83690,
+      "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5"
+    },
+    {
+      "path": "formal-assets/game-lambda-diagram-game-1-5e418cdff45e.zip",
+      "bytes": 89571,
+      "sha256": "5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8"
+    },
+    {
+      "path": "formal-assets/game-memory-demo-2-178d01e9ee05.zip",
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "path": "formal-assets/game-red-green-puzzle-1-81edc7c967f7.zip",
+      "bytes": 14620,
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+    },
+    {
+      "path": "formal-assets/v0.4.0-game-hub.apk",
+      "bytes": 2645967,
+      "sha256": "c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39"
+    },
+    {
+      "path": "frozen-turing-source.bundle",
+      "bytes": 1640200,
+      "sha256": "5b4e33b49874880b620bae9aa354e605897219856a363a9d218bd6d9d45cea77"
+    },
+    {
+      "path": "n9-source.bundle",
+      "bytes": 10667226,
+      "sha256": "3ef2894d7e301cf762fc1bcaa1df9724f17e58480587def889c3295046fbee99"
+    },
+    {
+      "path": "README.txt",
+      "bytes": 787,
+      "sha256": "b0b4797a5e8d06173ad0000d130a6e490fbf99a543a0e70e097135ba2e55d1a7"
+    }
+  ],
+  "evidenceFiles": [
+    {
+      "path": "before-window.xml",
+      "bytes": 10967,
+      "sha256": "67276a0a5ecdbdd11e8b543c2e4853d9118ed28b66c4fafb1d8824f40627433b"
+    },
+    {
+      "path": "browser/browser-result.json",
+      "bytes": 689,
+      "sha256": "ee683186995aa4c5bb18a41aa29a634931d689e7434afbd93efa7ca4d831198a"
+    },
+    {
+      "path": "browser/red-green-desktop-default.png",
+      "bytes": 103936,
+      "sha256": "38918457ad4e778993c3eabff74f6ebc9f753a7beff2f08dd2d01e7cf8b82bbf"
+    },
+    {
+      "path": "browser/red-green-desktop-fallback.png",
+      "bytes": 117727,
+      "sha256": "82b736f7febac4484154a9681cf669a0753c0e08c066d0415df73ffacdd97c87"
+    },
+    {
+      "path": "browser/red-green-mobile-default.png",
+      "bytes": 78167,
+      "sha256": "681c0b22a62aabe072d24edb0194cfb47c6dda29907605a1266e95cbee56e4f9"
+    },
+    {
+      "path": "browser/red-green-mobile-fallback.png",
+      "bytes": 85406,
+      "sha256": "035d0fb412e725bd196cfbe70cc8cd59e4e1f7aee7d87d7d9ef25ae56b1da72b"
+    },
+    {
+      "path": "canonical-post-assets.json",
+      "bytes": 15979,
+      "sha256": "93a6d7f7b277998c7ca3763795b02daddcdfa018223f51ff7d41ddfe8640f159"
+    },
+    {
+      "path": "catalog-after-scroll.xml",
+      "bytes": 10617,
+      "sha256": "eaed24bf75b20d2b0361f61604755c074319754f4cdf7ec958d2b111f32d95c7"
+    },
+    {
+      "path": "catalog-open.xml",
+      "bytes": 9599,
+      "sha256": "302e6785e6b966b4ddb7b9c1790b70870a22b17b14d849d6f316465d3f9089b3"
+    },
+    {
+      "path": "catalog-seq3-window.xml",
+      "bytes": 10637,
+      "sha256": "877873e73ceaaa7fc9a0a500391055d551e639fa01f82e33267cfe40f9e72547"
+    },
+    {
+      "path": "ci-release-preparation-jobs.json",
+      "bytes": 2903,
+      "sha256": "773799ef213b8f4e04a52e2530a382573a1bec3669d7eaf08b4d671e0ec928fb"
+    },
+    {
+      "path": "ci-release-preparation.json",
+      "bytes": 221,
+      "sha256": "3771985e732a732434e393ee5d4fa2f36cfeb14826aca15e34839d303494a117"
+    },
+    {
+      "path": "ci-release-report.json",
+      "bytes": 177,
+      "sha256": "a5c664c3cd3314b3c673711502ad21ff52fbcc63bdc7b4461c00651b01a9b8e0"
+    },
+    {
+      "path": "ci-source-run-final.json",
+      "bytes": 258,
+      "sha256": "0f4298cfb2a89871f2d1fc5534a3bec8ce90347136e99a4fd7a23dad2c956ee6"
+    },
+    {
+      "path": "ci-source-runs.json",
+      "bytes": 255,
+      "sha256": "3dead6286074018336f31d709887cef1b8a991ed1522d174530b49327791ed19"
+    },
+    {
+      "path": "device-helper.ps1",
+      "bytes": 1465,
+      "sha256": "6f2cfae5963c0afb72bc7a6334ec726d12c3da203619329f131c31effd43a959"
+    },
+    {
+      "path": "emulator-stderr.txt",
+      "bytes": 189,
+      "sha256": "55b676890c76e5ae8ba4e4fe8e0f9b3f313761b83c7b2b6bed0131b91cef1903"
+    },
+    {
+      "path": "emulator-stdout.txt",
+      "bytes": 9343,
+      "sha256": "96268f491cd9732c8331484f034d406cd355e08fbf9b364cf72ecf8cb1d6c40c"
+    },
+    {
+      "path": "formal-game-hub.apk",
+      "bytes": 2645967,
+      "sha256": "c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39"
+    },
+    {
+      "path": "fresh-post-assets.json",
+      "bytes": 15979,
+      "sha256": "93a6d7f7b277998c7ca3763795b02daddcdfa018223f51ff7d41ddfe8640f159"
+    },
+    {
+      "path": "n9-browser-final.txt",
+      "bytes": 123,
+      "sha256": "f337380bcd4281e6a190133c30876314a4860b9ba69df4d6ea0da12a96aa2c3d"
+    },
+    {
+      "path": "n9-browser.txt",
+      "bytes": 122,
+      "sha256": "e9dbd26a3418956d6930ebbec35397345d002906368566778095ea8639edd14f"
+    },
+    {
+      "path": "n9-lock-tests.txt",
+      "bytes": 6028,
+      "sha256": "164aa795d5eb8b4d62a3de3fb42efac529b7c0ab1447e92e7bf3420cc3fefc7c"
+    },
+    {
+      "path": "n9-node-tests-final.txt",
+      "bytes": 6029,
+      "sha256": "398ace0a7adbd7b4f764f18dff2e6dedb07e22654e3e67a17d8d2c987ba49322"
+    },
+    {
+      "path": "n9-node-tests.txt",
+      "bytes": 5925,
+      "sha256": "cf2953a62631228cb532f44159454846904f84a8263f699b6f7411234fe28295"
+    },
+    {
+      "path": "n9-source-final-tests.txt",
+      "bytes": 6028,
+      "sha256": "2850dce898a9411881b2140a6dfdd66d573b5b6c4641d93bb40b48932bfc716a"
+    },
+    {
+      "path": "native-ten-summary.txt",
+      "bytes": 57,
+      "sha256": "3866e1d2b67653a13bb2a239076e292fbd7853901ceabb72068ee7075c1c7b60"
+    },
+    {
+      "path": "offline-connectivity.txt",
+      "bytes": 23627,
+      "sha256": "bac8065ae9419a6dd1ff2061fe2bbcfdf56ff83f6406c3bf4d6dd5140d2c2aa2"
+    },
+    {
+      "path": "offline-open.xml",
+      "bytes": 13381,
+      "sha256": "2ff0ccedc54e8a9ee3dcf4b5ec74dffe499a6682c8bd86e058633713916d7921"
+    },
+    {
+      "path": "offline-regenerated-ten.xml",
+      "bytes": 2715518,
+      "sha256": "13b5edd994ca8ed244c056b0eeb5ab7a53968a3f967df9aef0ea11f536c0e7a8"
+    },
+    {
+      "path": "offline-restored-ten-ready.xml",
+      "bytes": 2715518,
+      "sha256": "721313a75648f4d8bbd2f5ee1f6e8e1c98ba7c075a7e72ae47b56998cb7f53fd"
+    },
+    {
+      "path": "offline-restored-ten.xml",
+      "bytes": 2120,
+      "sha256": "4f23e9b134eb10f6efe5492ace6306980896c8dd60387d87e830d7ef3aa3d0d6"
+    },
+    {
+      "path": "online-readonly-retry.txt",
+      "bytes": 77,
+      "sha256": "81ceca1fe1ac4f26b136851380c44ad956e67009e39717ad02a53fa3e1f6b862"
+    },
+    {
+      "path": "original-final-state.json",
+      "bytes": 2503,
+      "sha256": "98717f102cff2fc4695517cd4d212fdd4727e7765a91fc4974741aa0477dda5f"
+    },
+    {
+      "path": "own-avd-create.txt",
+      "bytes": 90,
+      "sha256": "7e7fa19547a157cefe37b1b1bae627f841c6d1e7db0c6c6290635feee01b42a1"
+    },
+    {
+      "path": "own-emulator-stopped.txt",
+      "bytes": 42,
+      "sha256": "cea6d655c7cc4fd159dd4f34457c6d80d9b746b882e30b15f6dd7a77d319a697"
+    },
+    {
+      "path": "own-emulator.json",
+      "bytes": 245,
+      "sha256": "c984a9e623c95623db5e3631394171574e962c4a8d6288e072d7bafee48fba41"
+    },
+    {
+      "path": "phone-before-seq3.png",
+      "bytes": 297408,
+      "sha256": "6ed78ddde1d6d86a610a7507681f96915ef52fcf60b95f20817f7fd869aebf14"
+    },
+    {
+      "path": "phone-before-window.xml",
+      "bytes": 11023,
+      "sha256": "cea29822a465284efa07e386f599febd4dd4a1f26da5e4566f83aac27d197b99"
+    },
+    {
+      "path": "post-check-button.xml",
+      "bytes": 11023,
+      "sha256": "cea29822a465284efa07e386f599febd4dd4a1f26da5e4566f83aac27d197b99"
+    },
+    {
+      "path": "post-check-running.xml",
+      "bytes": 9402,
+      "sha256": "6e5f18ac292fa613d1e6336b9a5e18ff33a58df6df34edc2e6b52cd57fd3875a"
+    },
+    {
+      "path": "production-final-head.txt",
+      "bytes": 76,
+      "sha256": "cbe627da8d4d94d6dacdac5d10dbcc1b98e8955c8a075b1e1744e182768fa8f3"
+    },
+    {
+      "path": "production-first-hashes.json",
+      "bytes": 1234,
+      "sha256": "f51abb38d8903b86e525b3cc35a77ee23e151edcc688c67fd986d67dbe2b5a5d"
+    },
+    {
+      "path": "production-first.txt",
+      "bytes": 76,
+      "sha256": "a423ccb0ed1d2d15075b8fa71dd7ab01466bba9ca5e0f4833ffb6f300dfb88ba"
+    },
+    {
+      "path": "production-identity-log.txt",
+      "bytes": 524,
+      "sha256": "b4e801b7e713b0065db587ba8d6758e3f5b4c542079d019712d9c1b200c16a9a"
+    },
+    {
+      "path": "production-identity-result.txt",
+      "bytes": 98,
+      "sha256": "884cb43e42f68f71051ab986ca24293a2709ce90e232ebcbd72f74ddb1f5e5dc"
+    },
+    {
+      "path": "production-identity-test.apk",
+      "bytes": 422659,
+      "sha256": "ca68651778720f7803047b6bbfedf82718ea295dffece7d25e0ccf9070bd464c"
+    },
+    {
+      "path": "production-second.txt",
+      "bytes": 76,
+      "sha256": "a423ccb0ed1d2d15075b8fa71dd7ab01466bba9ca5e0f4833ffb6f300dfb88ba"
+    },
+    {
+      "path": "publication-attempt.txt",
+      "bytes": 466,
+      "sha256": "c58790abcba2d282c4810b6eecfc2d73731be885abc7c748c1a9ec17c0fd39ac"
+    },
+    {
+      "path": "publication/issuance-seq4/activation-intent.json",
+      "bytes": 267,
+      "sha256": "4c869fa4cbb9b7f09ee1242b1ee65b32b3ebb12b939e550ec4894de62a5c069a"
+    },
+    {
+      "path": "publication/issuance-seq4/before-snapshot.json",
+      "bytes": 30385,
+      "sha256": "765cfda5db2a9e2ceb891a03c60fe2c0573fabc31ad0a952e2c1a535ed40dbc7"
+    },
+    {
+      "path": "publication/issuance-seq4/catalog.signed.json",
+      "bytes": 9867,
+      "sha256": "7a0312859ae27ccec42e737006a4deb46d57e7620cdd44dbfb8619a377bb17ac"
+    },
+    {
+      "path": "publication/issuance-seq4/online-snapshot.json",
+      "bytes": 38227,
+      "sha256": "ba374a62d8a107029b5a3eea5e78b6c173ef3da053a8f5bcab9b2447f23537fb"
+    },
+    {
+      "path": "publication/issuance-seq4/online-verified.json",
+      "bytes": 1272,
+      "sha256": "a3901a89d55eb3b2b642282a034a1b93ac3498b6df068c8ee2c30b8c471895ae"
+    },
+    {
+      "path": "publication/issuance-seq4/payload.json",
+      "bytes": 6949,
+      "sha256": "e92b8a00a28243d4e956c1c6b378d9f400f732ac1ff50eb68c604a3e075089e6"
+    },
+    {
+      "path": "publication/issuance-seq4/previous.signed.json",
+      "bytes": 7935,
+      "sha256": "69a34e189c352ec7bfc4e47be2ba2b08711c46264036277e8de9e2be30d3b5f4"
+    },
+    {
+      "path": "publication/issuance-seq4/published.json",
+      "bytes": 270,
+      "sha256": "38018663bf9ddc5d90a0a483f7c3f37dde92dfc4551a9469e4ef7433cc11c7fc"
+    },
+    {
+      "path": "publication/issuance-seq4/signing-snapshot.json",
+      "bytes": 34313,
+      "sha256": "3302d66e9090b022c9c0fd6c80fad61945faf44df27edd73c097d0477c00d037"
+    },
+    {
+      "path": "publication/issuance-seq4/uploaded-resources.json",
+      "bytes": 7280,
+      "sha256": "ef7c3236f86e5ed25cc4ecb6226dc82d92dbc1b3cd0c60844a0314f1da4d9085"
+    },
+    {
+      "path": "red-green-catalog-install.png",
+      "bytes": 243786,
+      "sha256": "904fb647cde39dd9b9bfeb4d7f5552fc436ba1894e34a0582c5fe6767d8d5dc1"
+    },
+    {
+      "path": "red-green-cold-lobby.xml",
+      "bytes": 13603,
+      "sha256": "c2ecf55c9359b3241a58a2c67d2202b1c741bf64cedb7b67e1473cab1fc9974a"
+    },
+    {
+      "path": "red-green-cold-reminder.png",
+      "bytes": 295953,
+      "sha256": "a2ba1406df342f8e3d5576e6b316a05000cf298fea5df89ef2e498e04cadcaab"
+    },
+    {
+      "path": "red-green-copy-click.xml",
+      "bytes": 2715926,
+      "sha256": "b38a6ffd5ba04157b892bdab8165b6dc1c24e8881e12bd52a39d8f9e054e276c"
+    },
+    {
+      "path": "red-green-default-webview.xml",
+      "bytes": 2120,
+      "sha256": "4f23e9b134eb10f6efe5492ace6306980896c8dd60387d87e830d7ef3aa3d0d6"
+    },
+    {
+      "path": "red-green-home-card.xml",
+      "bytes": 13378,
+      "sha256": "5d3bf5b3af9af4719f62a3921edd20df3041a42af2a0940a0abc12684c66cca3"
+    },
+    {
+      "path": "red-green-install-state.xml",
+      "bytes": 10604,
+      "sha256": "e1f01cb1fab8c202c1b7e05af94936e9781da4b1bc8e992f9b247c67d12f9f03"
+    },
+    {
+      "path": "red-green-install-tap.xml",
+      "bytes": 10617,
+      "sha256": "eaed24bf75b20d2b0361f61604755c074319754f4cdf7ec958d2b111f32d95c7"
+    },
+    {
+      "path": "red-green-installed-bottom.xml",
+      "bytes": 10837,
+      "sha256": "8776f905e3f218b9462bec2d374ea5d458c5f04de0f642f71b74a6805cca667f"
+    },
+    {
+      "path": "red-green-installed-home.png",
+      "bytes": 309641,
+      "sha256": "8ebe1d0e14cfb2a3a35c1959072c3c71139274d66bc3db3407ea43a62e91d640"
+    },
+    {
+      "path": "red-green-installed-state.xml",
+      "bytes": 11005,
+      "sha256": "a38e992cdbef22ec060959a1be7579cc69054fac6ae4f4f9eaf2c6106109de97"
+    },
+    {
+      "path": "red-green-invalid-eleven.xml",
+      "bytes": 2715902,
+      "sha256": "f8678f8e31ced72bad312e4e538744d06e491d9d56ec4a167c962da9b1c4726d"
+    },
+    {
+      "path": "red-green-offline-restored.png",
+      "bytes": 261181,
+      "sha256": "eee9cc95fcedfedf33ca916d8e8093cafe5da8a1b69d2cd584cd266289a09b79"
+    },
+    {
+      "path": "red-green-open-tap.xml",
+      "bytes": 10837,
+      "sha256": "8776f905e3f218b9462bec2d374ea5d458c5f04de0f642f71b74a6805cca667f"
+    },
+    {
+      "path": "red-green-ten.xml",
+      "bytes": 2715518,
+      "sha256": "13b5edd994ca8ed244c056b0eeb5ab7a53968a3f967df9aef0ea11f536c0e7a8"
+    },
+    {
+      "path": "red-green-webview-copy.png",
+      "bytes": 260218,
+      "sha256": "bac02092ccc126f32bda094b3ecdf901f17656e440f0bbe9d72097b4f40c0557"
+    },
+    {
+      "path": "red-green-webview-default.png",
+      "bytes": 257790,
+      "sha256": "84732303db781f5bebea83a1d8c5b869ba6968c2c6370672deb7077cf3660328"
+    },
+    {
+      "path": "red-green-webview-invalid.png",
+      "bytes": 260407,
+      "sha256": "1b1c043df972d1973dfbeb8d34dd14589482c9bc5245d3527bb66e8b9447fd8f"
+    },
+    {
+      "path": "red-green-webview-ten.png",
+      "bytes": 261379,
+      "sha256": "80ea464c4e5b7142996f8f7041ba3e1c8ebdd7c5f8f5955097e7144316963b42"
+    },
+    {
+      "path": "release-notes-updated.json",
+      "bytes": 1485,
+      "sha256": "a547bd3e89309f4d2424a8bda7715d8ac721483348ffd25ee225288c7c22ae8f"
+    },
+    {
+      "path": "seq4-lobby.xml",
+      "bytes": 9599,
+      "sha256": "302e6785e6b966b4ddb7b9c1790b70870a22b17b14d849d6f316465d3f9089b3"
+    },
+    {
+      "path": "seq4-reminder.png",
+      "bytes": 288182,
+      "sha256": "18f194b71bc3f02c59200c8f2994bd13ae810672dba6906d8ca781abdd7ab8ad"
+    },
+    {
+      "path": "update-release-body.ps1",
+      "bytes": 2899,
+      "sha256": "f1c618e69329262bf0ede6b1e55cf549f064fd4835aa7abf8529c1ba1796f3e2"
+    }
+  ],
+  "createdAtUtc": "2026-10-09T17:37:28.5496048Z"
+}
