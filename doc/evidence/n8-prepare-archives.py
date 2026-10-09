@@ -4,6 +4,8 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
+import urllib.error
 import urllib.request
 import zipfile
 
@@ -187,18 +189,53 @@ avd_config = [(p, p.relative_to(avd).as_posix()) for p in sorted(avd.glob('*.ini
 avd_config += [(avd / (name + '.avd') / 'config.ini', name + '.avd/config.ini') for name in sorted(expected_avds)]
 archive_zip('task-avd-config', avd_config)
 
-# Permanent formal assets: anonymous GitHub metadata + actual public bytes, no credentials.
+# Public bytes remain anonymous. Optional metadata-only authentication handles shared-IP limits.
 formal = ARCHIVE / 'formal-assets'
 formal.mkdir(exist_ok=True)
 if formal.resolve() != formal:
     raise RuntimeError('Formal asset directory is a link')
 formal_records = []
+if sys.argv[1:] not in ([], ['--authenticated-api']):
+    raise RuntimeError('Unexpected archive arguments')
+allow_authenticated_api = sys.argv[1:] == ['--authenticated-api']
+api_token = None
+
+class NoApiRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, fp, code, msg, headers, newurl):
+        return None
+
+api_opener = urllib.request.build_opener(NoApiRedirect())
+
+def existing_github_token():
+    credential_env = dict(env, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='never')
+    result = subprocess.run(['git', '-C', str(MAIN), 'credential', 'fill'],
+                            input=b'protocol=https\nhost=github.com\n\n',
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            env=credential_env, timeout=30)
+    fields = dict(line.split('=', 1) for line in result.stdout.decode('utf-8', errors='replace').splitlines()
+                  if '=' in line)
+    token = fields.get('password')
+    if result.returncode or not token or '\r' in token or '\n' in token:
+        raise RuntimeError('Existing GitHub credential unavailable; no API gate bypass permitted')
+    return token
 
 def api_json(url):
-    request = urllib.request.Request(url, headers={'User-Agent': 'game-hub-cleanup-archive',
-                                                  'Accept': 'application/vnd.github+json'})
-    with urllib.request.urlopen(request, timeout=60) as response:
-        return json.load(response)
+    global api_token
+    if not url.startswith('https://api.github.com/repos/xiaoxuhui/game-hub/releases/'):
+        raise RuntimeError('Unexpected metadata endpoint')
+    headers = {'User-Agent': 'game-hub-cleanup-archive', 'Accept': 'application/vnd.github+json'}
+    if api_token:
+        headers['Authorization'] = 'Bearer ' + api_token
+    request = urllib.request.Request(url, headers=headers)
+    try:
+        with api_opener.open(request, timeout=60) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as error:
+        if not allow_authenticated_api or api_token or error.code != 403 or error.headers.get('X-RateLimit-Remaining') != '0':
+            raise
+    api_token = existing_github_token()
+    print('Shared-IP limit: using existing credential for read-only GitHub metadata; public byte downloads stay anonymous', flush=True)
+    return api_json(url)
 
 def complete_release(tag):
     release = api_json('https://api.github.com/repos/xiaoxuhui/game-hub/releases/tags/' + tag)

@@ -1,0 +1,54 @@
+Revalidated ten historical checkout bundles, patches and untracked archives
+Verified archive upgrade-checkout-untracked: 6 files
+Verified archive final-producer-untracked: 0 files
+Verified archive dynamic-abelian-sandpile-untracked: 0 files
+Verified archive dynamic-lambda-diagram-game-untracked: 0 files
+Verified archive dynamic-memory-demo-untracked: 0 files
+Verified archive upstream-abelian-sandpile-untracked: 0 files
+Verified archive upstream-lambda-diagram-game-untracked: 1 files
+Verified archive game-hub-candidate-v0.2.0-153df9a: 30 files
+Verified archive game-hub-continuous-audit-20261008: 59 files
+Verified archive game-hub-icon-audit-20261003: 2 files
+Verified archive game-hub-planning-v0.3.0-20261003: 1 files
+Verified archive game-hub-release-v0.2.0-74216c3: 55 files
+Verified archive game-hub-release-v0.2.0-f53a4c1: 24 files
+Verified archive emulator-evidence: 12 files
+Verified archive game-hub-final-153df9a: 28 files
+Verified archive game-hub-license-audit: 35 files
+Verified archive game-hub-light-smoke-c861: 2 files
+Verified archive game-hub-m3-emulator: 2 files
+Verified archive game-hub-maintenance: 14 files
+Verified archive game-hub-p7-candidate: 8 files
+Verified archive game-hub-p7-emulator: 14 files
+Verified archive game-hub-p7-license-candidate: 8 files
+Verified archive game-hub-upgrade-fixtures-20261009: 32 files
+Verified archive final-evidence: 645 files
+Verified archive task-avd-config: 8 files
+Traceback (most recent call last):
+  File "D:\soft\game-hub\doc\evidence\n8-prepare-archives.py", line 225, in <module>
+    release, assets = complete_release(tag)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\soft\game-hub\doc\evidence\n8-prepare-archives.py", line 204, in complete_release
+    release = api_json('https://api.github.com/repos/xiaoxuhui/game-hub/releases/tags/' + tag)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\soft\game-hub\doc\evidence\n8-prepare-archives.py", line 200, in api_json
+    with urllib.request.urlopen(request, timeout=60) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\urllib\request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\urllib\request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\urllib\request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\urllib\request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\urllib\request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\urllib\request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 403: rate limit exceeded

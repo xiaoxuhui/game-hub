@@ -74,7 +74,7 @@ foreach($entry in $index){
     if($file.PSIsContainer -or ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $file.Length -ne $entry.bytes -or (Task-Hash $path) -cne $entry.sha256){throw 'Recovery archive bytes differ'}
 }
 # Reject changed clone statuses/untracked bytes and missing history before deleting anything.
-& 'C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' (Join-Path $taskMain 'doc\evidence\n8-prepare-archives.py')
+& 'C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' (Join-Path $taskMain 'doc\evidence\n8-prepare-archives.py') --authenticated-api
 if($LASTEXITCODE -ne 0 -or (Task-Hash $indexPath) -cne $ExpectedArchiveIndexSha){throw 'Final archive/source revalidation failed'}
 if(Test-Path -LiteralPath $taskToolchain){throw 'Fresh permanent toolchain destination required'}
 if(Test-Path -LiteralPath (Join-Path $taskMaintenance 'cleanup-result.json')){throw 'Prior execution exists; inspect its outcome before recovery'}
