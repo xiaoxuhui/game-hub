@@ -30,6 +30,10 @@ CI = (
     'game-hub-signing-tools', 'game-hub-tools', 'game-hub-upgrade-fixtures-20261009', 'game-hub-work',
 )
 env = dict(os.environ, GIT_OPTIONAL_LOCKS='0')
+if len(sys.argv[1:]) != len(set(sys.argv[1:])) or set(sys.argv[1:]) - {'--authenticated-api', '--post-stop'}:
+    raise RuntimeError('Unexpected archive arguments')
+allow_authenticated_api = '--authenticated-api' in sys.argv[1:]
+post_stop = '--post-stop' in sys.argv[1:]
 if BASE.resolve() != BASE or TEMP.resolve() != TEMP or MAIN.resolve() != MAIN:
     raise RuntimeError('Workspace ancestry differs from exact intended roots')
 
@@ -93,6 +97,14 @@ def archive_zip(name, pairs):
 ARCHIVE.mkdir(parents=True, exist_ok=True)
 if ARCHIVE.resolve() != ARCHIVE:
     raise RuntimeError('Permanent archive root is a link')
+if post_stop:
+    original_index = ARCHIVE / 'verified-archive-index.json'
+    if sha(original_index) != '05b326523c0152ccb8ec8ab18074c194119220dd507ea303c67e42f13e3b78b3':
+        raise RuntimeError('Pre-stop archive index changed')
+    for entry in json.loads(original_index.read_text(encoding='utf-8')):
+        path = ARCHIVE / entry['path']
+        if path.resolve() != path or not path.is_relative_to(ARCHIVE) or path.stat().st_size != entry['bytes'] or sha(path) != entry['sha256']:
+            raise RuntimeError('Pre-stop archive bytes changed')
 # Revalidate existing ten snapshots against their still-present original task clones.
 old_dir = BASE / 'game-hub-archives/retired-checkouts-20261009'
 old_index = json.loads((old_dir / 'verified-index.json').read_text(encoding='utf-8'))
@@ -179,7 +191,8 @@ for name in TOP:
         archive_zip(name, files(BASE / name))
 for name in CI:
     if name not in ('game-hub-avd', 'game-hub-signing-tools', 'game-hub-tools', 'game-hub-work'):
-        archive_zip(name, files(TEMP / name))
+    snapshot_name = name + '-after-stop' if post_stop and name in ('game-hub-m3-emulator', 'game-hub-upgrade-fixtures-20261009') else name
+    archive_zip(snapshot_name, files(TEMP / name))
 archive_zip('final-evidence', files(TEMP / 'game-hub-work/v030-evidence'))
 avd = TEMP / 'game-hub-avd'
 expected_avds = {'gamehub-icon-20261003', 'gamehub-p7', 'gamehub-resource-20261008', 'gamehub-upgrade-20261009'}
@@ -195,9 +208,6 @@ formal.mkdir(exist_ok=True)
 if formal.resolve() != formal:
     raise RuntimeError('Formal asset directory is a link')
 formal_records = []
-if sys.argv[1:] not in ([], ['--authenticated-api']):
-    raise RuntimeError('Unexpected archive arguments')
-allow_authenticated_api = sys.argv[1:] == ['--authenticated-api']
 api_token = None
 
 class NoApiRedirect(urllib.request.HTTPRedirectHandler):
@@ -301,8 +311,17 @@ write_new_or_identical(ARCHIVE / 'README.txt', (
     'Original six repositories, main repository, signing keys and backup are outside cleanup scope.\n'
     'Old maintenance scripts retain historical paths; consult permanent toolchain README before reuse.\n'
 ).encode('utf-8'))
+index_name = 'verified-archive-index-after-stop.json' if post_stop else 'verified-archive-index.json'
+if post_stop:
+    write_new_or_identical(ARCHIVE / 'README-after-stop.txt', (
+        'The original 96-file archive and original index remain byte-identical.\n'
+        'Own emulator shutdown appended four logs in two task evidence directories.\n'
+        'The two *-after-stop ZIPs preserve complete final directory states; original ZIPs preserve pre-stop states.\n'
+        'The after-stop index binds both generations, including the original index.\n'
+        'Only these two explicit task snapshots vary; other source/current clone gates are unchanged.\n'
+    ).encode('utf-8'))
 index = [{'path': relative, 'bytes': p.stat().st_size, 'sha256': sha(p)} for p, relative in files(ARCHIVE)
-         if relative != 'verified-archive-index.json']
-write_new_or_identical(ARCHIVE / 'verified-archive-index.json', json_bytes(index))
+         if relative != index_name]
+write_new_or_identical(ARCHIVE / index_name, json_bytes(index))
 print(json.dumps({'ready': True, 'archivedFiles': len(index), 'archiveBytes': sum(r['bytes'] for r in index),
                   'formalAssets': len(formal_records), 'additionalGitClones': len(repo_records)}), flush=True)

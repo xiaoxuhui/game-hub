@@ -16,25 +16,9 @@ Verified archive emulator-evidence: 12 files
 Verified archive game-hub-final-153df9a: 28 files
 Verified archive game-hub-license-audit: 35 files
 Verified archive game-hub-light-smoke-c861: 2 files
-Verified archive game-hub-m3-emulator: 2 files
-Verified archive game-hub-maintenance: 14 files
-Verified archive game-hub-p7-candidate: 8 files
-Verified archive game-hub-p7-emulator: 14 files
-Verified archive game-hub-p7-license-candidate: 8 files
-Verified archive game-hub-upgrade-fixtures-20261009: 32 files
-Verified archive final-evidence: 645 files
-Verified archive task-avd-config: 8 files
-Shared-IP limit: using existing credential for read-only GitHub metadata; public byte downloads stay anonymous
-Archived formal release v0.2.0
-Archived formal release v0.3.0
-Archived formal release v0.4.0
-Archived formal release game-resources-v1
-Archived formal release game-resources-v2
-{"ready": true, "archivedFiles": 96, "archiveBytes": 274047831, "formalAssets": 15, "additionalGitClones": 7}
-OK: killing emulator, bye bye
-
-OK
-
-OK: killing emulator, bye bye
-
-OK
+Traceback (most recent call last):
+  File "D:\soft\game-hub\doc\evidence\n8-prepare-archives.py", line 182, in <module>
+    archive_zip(name, files(TEMP / name))
+  File "D:\soft\game-hub\doc\evidence\n8-prepare-archives.py", line 89, in archive_zip
+    raise RuntimeError(f'ZIP bytes changed: {name}')
+RuntimeError: ZIP bytes changed: game-hub-m3-emulator

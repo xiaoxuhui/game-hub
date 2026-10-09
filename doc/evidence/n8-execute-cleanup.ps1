@@ -62,7 +62,7 @@ if($ReviewedCommit -notmatch '^[0-9a-f]{40}$' -or $ExpectedArchiveIndexSha -notm
 if((git -C $taskMain rev-parse HEAD).Trim() -cne $ReviewedCommit -or (git -C $taskMain status --porcelain=v1 --untracked-files=all)){throw 'Clean reviewed main required'}
 $remote=@(git -C $taskMain ls-remote origin refs/heads/main)
 if($LASTEXITCODE -ne 0 -or $remote.Count -ne 1 -or ($remote[0] -split '\s+')[0] -cne $ReviewedCommit){throw 'Exact pushed main required'}
-$indexPath=Join-Path $taskArchive 'verified-archive-index.json'
+$indexPath=Join-Path $taskArchive 'verified-archive-index-after-stop.json'
 Assert-OrdinaryRoot $taskArchive 'D:\soft\game-hub-archives' | Out-Null
 @(Tree-Files $taskArchive) | Out-Null
 if((Task-Hash $indexPath) -cne $ExpectedArchiveIndexSha){throw 'Archive index differs from independently reviewed copy'}
@@ -74,7 +74,7 @@ foreach($entry in $index){
     if($file.PSIsContainer -or ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $file.Length -ne $entry.bytes -or (Task-Hash $path) -cne $entry.sha256){throw 'Recovery archive bytes differ'}
 }
 # Reject changed clone statuses/untracked bytes and missing history before deleting anything.
-& 'C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' (Join-Path $taskMain 'doc\evidence\n8-prepare-archives.py') --authenticated-api
+& 'C:\Users\25133\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' (Join-Path $taskMain 'doc\evidence\n8-prepare-archives.py') --authenticated-api --post-stop
 if($LASTEXITCODE -ne 0 -or (Task-Hash $indexPath) -cne $ExpectedArchiveIndexSha){throw 'Final archive/source revalidation failed'}
 if(Test-Path -LiteralPath $taskToolchain){throw 'Fresh permanent toolchain destination required'}
 if(Test-Path -LiteralPath (Join-Path $taskMaintenance 'cleanup-result.json')){throw 'Prior execution exists; inspect its outcome before recovery'}
