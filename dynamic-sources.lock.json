@@ -21,6 +21,55 @@
         "style.css"
       ],
       "releaseNotes": "配对示范兼容更新：翻牌后保持键盘焦点，支持方向键及Home/End选牌；原存档格式和进度保持。"
+    },
+    {
+      "id": "abelian-sandpile",
+      "displayName": "阿贝尔沙滩",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "c46ec6d3cabc6df9ecd90409649b89d765a0a5a9",
+      "directory": "examples/abelian-sandpile",
+      "version": "0.1.2",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "abelian-sandpile-dynamic-v1",
+      "files": [
+        "index.html",
+        "LICENSE",
+        "src/app.js",
+        "src/controller.js",
+        "src/domain/challenge.js",
+        "src/domain/lesson.js",
+        "src/domain/levels.js",
+        "src/domain/sandpile.js",
+        "src/project-config.js",
+        "src/renderer.js",
+        "src/storage/persistence.js",
+        "src/styles.css",
+        "src/teaching.js",
+        "upstream-source.json"
+      ],
+      "releaseNotes": "首次动态资源接入；原游戏固定来源 d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f，原玩法和存档格式保持。来源与MIT许可随资源包附带。"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "displayName": "Lambda 线路实验室",
+      "iconKind": "logic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "c46ec6d3cabc6df9ecd90409649b89d765a0a5a9",
+      "directory": "examples/lambda-diagram-game",
+      "version": "0.3.0",
+      "contentCode": 1,
+      "entryPage": "lambda-lab.html",
+      "storageContract": "lambda-diagram-game-dynamic-v1",
+      "files": [
+        "lambda-lab.html",
+        "LICENSE",
+        "upstream-source.json"
+      ],
+      "releaseNotes": "首次动态资源接入；原游戏固定来源 11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2，原玩法和存档格式保持。来源与MIT许可随资源包附带。"
     }
   ]
 }
