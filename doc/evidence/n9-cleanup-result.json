@@ -1,0 +1,11 @@
+{
+  "removed": true,
+  "freeBytesBefore": 180777033728,
+  "taskRoot": "D:\\soft\\.ci-tmp\\game-hub-n9",
+  "logicalBytes": 3525424327,
+  "files": 4722,
+  "completedAtUtc": "2026-10-09T17:42:00.6522023Z",
+  "verifiedCommit": "8bea08a1ef9590b52046d723beb6584ada0f78b3",
+  "indexSha256": "7d575d833a957566f45186ef27f55f3558f89c2f4a695603ec9e5da33502afd9",
+  "freeBytesAfter": 184245927936
+}
