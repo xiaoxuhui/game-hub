@@ -1,0 +1,41 @@
+{
+  "catalogSequence": "3",
+  "catalogAssetId": 625249539,
+  "catalogSha256": "69a34e189c352ec7bfc4e47be2ba2b08711c46264036277e8de9e2be30d3b5f4",
+  "historyAssetId": 625125622,
+  "verifiedHistorySequences": [
+    "1",
+    "2",
+    "3"
+  ],
+  "resources": [
+    {
+      "id": "memory-demo",
+      "contentCode": 1,
+      "assetId": 623482293,
+      "bytes": 8490,
+      "sha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b"
+    },
+    {
+      "id": "memory-demo",
+      "contentCode": 2,
+      "assetId": 625120403,
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "id": "abelian-sandpile",
+      "contentCode": 1,
+      "assetId": 625246315,
+      "bytes": 83690,
+      "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "contentCode": 1,
+      "assetId": 625246403,
+      "bytes": 89571,
+      "sha256": "5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8"
+    }
+  ]
+}

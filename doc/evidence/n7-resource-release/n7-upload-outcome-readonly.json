@@ -1,0 +1,44 @@
+[
+  {
+    "id": 623482430,
+    "name": "catalog-seq1-0bc8cf66fe67.signed.json",
+    "size": 2599,
+    "digest": "sha256:0bc8cf66fe67f030b6628bc7e761b466ea8b53d8bf4d3c46d29788178dcfba68",
+    "state": "uploaded"
+  },
+  {
+    "id": 625125622,
+    "name": "catalog.signed.json",
+    "size": 2659,
+    "digest": "sha256:0428dedaa4dd8abdd5299cf1db52a0f3f8bbbbfb381bd0ec20ad58be16b31915",
+    "state": "uploaded"
+  },
+  {
+    "id": 625246315,
+    "name": "game-abelian-sandpile-1-8e9db7fc8720.zip",
+    "size": 83690,
+    "digest": "sha256:8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5",
+    "state": "uploaded"
+  },
+  {
+    "id": 625246403,
+    "name": "game-lambda-diagram-game-1-5e418cdff45e.zip",
+    "size": 89571,
+    "digest": "sha256:5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8",
+    "state": "uploaded"
+  },
+  {
+    "id": 623482293,
+    "name": "game-memory-demo-1-27f1df3b689e.zip",
+    "size": 8490,
+    "digest": "sha256:27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b",
+    "state": "uploaded"
+  },
+  {
+    "id": 625120403,
+    "name": "game-memory-demo-2-178d01e9ee05.zip",
+    "size": 9510,
+    "digest": "sha256:178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+    "state": "uploaded"
+  }
+]

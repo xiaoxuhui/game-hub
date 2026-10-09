@@ -1,0 +1,242 @@
+[
+  {
+    "name": "activation-intent.json",
+    "sha256": "3d4faf8b64c128b93f6de0912e9116e166fe917427ad7dc5e14d6caf02f18fd6",
+    "bytes": 261
+  },
+  {
+    "name": "before-snapshot.json",
+    "sha256": "d1d0a80849494090721a579b095d07142dad19622fce94905d15916d55937436",
+    "bytes": 26045
+  },
+  {
+    "name": "catalog.signed.json",
+    "sha256": "69a34e189c352ec7bfc4e47be2ba2b08711c46264036277e8de9e2be30d3b5f4",
+    "bytes": 7935
+  },
+  {
+    "name": "n7-abelian-footer-1.png",
+    "sha256": "99354c75915523b81fb6e53a0380d510f5758289985a52dbb54bd7fc5fb86b54",
+    "bytes": 123130
+  },
+  {
+    "name": "n7-abelian-import-confirm-stable.png",
+    "sha256": "4d635cfba80fe0569cbe7b38580781ffb8453fc0890a0c659fafcbe6e68bf2a7",
+    "bytes": 147818
+  },
+  {
+    "name": "n7-abelian-install.xml",
+    "sha256": "274995b49a6ea2d19844e9eeb4f25da229001e9990896994759df175a27f71f4",
+    "bytes": 10489
+  },
+  {
+    "name": "n7-abelian-loaded.png",
+    "sha256": "c697ec28d051c62c14f0afa8b3eec503d48f60402025adf53df1001194ffde7c",
+    "bytes": 129835
+  },
+  {
+    "name": "n7-abelian-offline-stable.png",
+    "sha256": "bbf32e04c66beff25ea3a004ad4d1300877b48511055d60e6c8294459360031d",
+    "bytes": 123011
+  },
+  {
+    "name": "n7-abelian-play.png",
+    "sha256": "df4cb67e9ffce929aadc867fdd3e107beb1c27e9e6d1b0a56c8ea897356fa556",
+    "bytes": 76104
+  },
+  {
+    "name": "n7-abelian-production-identity-logcat.txt",
+    "sha256": "ec87e35fffd6e04639df76c287f0e5caba4e6d8c3c8864a5353a7aaf46cd4db7",
+    "bytes": 522
+  },
+  {
+    "name": "n7-abelian-production-identity.txt",
+    "sha256": "e40752fc15c377bbff524b2693c5946db3df19182f1a49d106a863918c0f4c19",
+    "bytes": 88
+  },
+  {
+    "name": "n7-abelian-saf-create.png",
+    "sha256": "ba9a4063dcd099ed976d55e068e123a091ad5b2d59a2d55e3638e46d614ed1a9",
+    "bytes": 81336
+  },
+  {
+    "name": "n7-abelian-saf-imported.png",
+    "sha256": "1ef72fd6ba21b52a71701e747f6eddd1bf7ca50b77d5fab11820f39084574406",
+    "bytes": 119533
+  },
+  {
+    "name": "n7-abelian-saf-named.xml",
+    "sha256": "2c5989eb53e708fb3e3836f39491da7469d47bc381e22fed23640749e394ef76",
+    "bytes": 40115
+  },
+  {
+    "name": "n7-existing-demo-final.png",
+    "sha256": "45df12197152e7aae03c0bc7371ff51f2e9bdd336b0a001605750b915aacd55b",
+    "bytes": 135153
+  },
+  {
+    "name": "n7-final-gallery.xml",
+    "sha256": "eb75de847b109b3b245b1e31377ab8c6afa39f82610e65f06c274a817cfd1dae",
+    "bytes": 14840
+  },
+  {
+    "name": "n7-issued-assets-readonly.json",
+    "sha256": "7f5e4c75aceaf069621fd757d66a1f1bf87cdc1fa0e940eea699216635cf2b52",
+    "bytes": 1490
+  },
+  {
+    "name": "n7-lambda-cold-loaded.png",
+    "sha256": "d8eb56dcad33fdac24e2abf6a8b0848357e9f4b9b01360a8124a254666ea5acc",
+    "bytes": 170895
+  },
+  {
+    "name": "n7-lambda-installed.xml",
+    "sha256": "248daa918c6517c055af33e7e6391227323de70ad7975b0101e08a3f6d3909d7",
+    "bytes": 10527
+  },
+  {
+    "name": "n7-lambda-loaded.png",
+    "sha256": "b74b184707cc715d70cf5b8a60d49db524e6fb77840b789c144209fd9dacad73",
+    "bytes": 171363
+  },
+  {
+    "name": "n7-lambda-offline-stable.png",
+    "sha256": "9ad56a5c89bd96a7fa754893eb580ca18d8994f63a725a238452907d772a4708",
+    "bytes": 136036
+  },
+  {
+    "name": "n7-lambda-offline.xml",
+    "sha256": "0a9395a1a79dc665dfe7ccbc3f3b60ab49d80a08bb698b032320d9fff0cf36d7",
+    "bytes": 35689
+  },
+  {
+    "name": "n7-lambda-one-step.png",
+    "sha256": "ba020ee8cdba8d50cbe5caa3c028766b8adae6080a453d2e4ffb35c001992f65",
+    "bytes": 137492
+  },
+  {
+    "name": "n7-lambda-production-identity-logcat.txt",
+    "sha256": "cdf143ba6d59a8d84553b61dd13bc151904bc1b151ffa2242b2b3c157bc01e94",
+    "bytes": 528
+  },
+  {
+    "name": "n7-lambda-production-identity.txt",
+    "sha256": "252e8c8c3f298f203dcce4cdfe3aba1eabb650b6af212d59835d8fd702ff062e",
+    "bytes": 88
+  },
+  {
+    "name": "n7-lambda-saf-imported.png",
+    "sha256": "0ac37ce9432f7c24296d86c5c798705c4c46d3084649afc6e34691a017fc04ee",
+    "bytes": 155844
+  },
+  {
+    "name": "n7-lambda-saf-named.xml",
+    "sha256": "891048db54f6ec17dab553c46b9ea5770a28cb4d61d2d46e8e3641bafb227597",
+    "bytes": 40087
+  },
+  {
+    "name": "n7-new-catalog.xml",
+    "sha256": "92baa07d22d96d8ef5b5fd1cc3522429ccc03ee179017b4cbb10e923af001ad9",
+    "bytes": 10284
+  },
+  {
+    "name": "n7-offline-connectivity.txt",
+    "sha256": "96e413bb45b1e4f9dbb3f9f43615474d8c8cc105a020a765f7b4bf10d018446d",
+    "bytes": 29
+  },
+  {
+    "name": "n7-original-source-state-final.json",
+    "sha256": "71b1491b7cdf1897496fd8665c73b615d4b3e34ea4b58be860a2ad1ea4bc37a5",
+    "bytes": 2102
+  },
+  {
+    "name": "n7-readonly-online-retry.txt",
+    "sha256": "ee1f4489aa88bb936522836e07e1f82a4613d6f91b84110cde58efa6f08b65cd",
+    "bytes": 76
+  },
+  {
+    "name": "n7-restored-connectivity.txt",
+    "sha256": "f1b5d06f64e753911f802919089aee480ed8e9880cdb94a2d2635c91421247ec",
+    "bytes": 28
+  },
+  {
+    "name": "n7-seq3-inspected-retry.txt",
+    "sha256": "b63938d748bb851c44bade0b8d1d58a9f1fdd61cc4f55390fdc8995cddaf8282",
+    "bytes": 481
+  },
+  {
+    "name": "n7-seq3-publish.txt",
+    "sha256": "4778f18fd2826908c571cdf161f807d77f5058d705db265b196228b8bfc71e03",
+    "bytes": 237
+  },
+  {
+    "name": "n7-startup-reminder.png",
+    "sha256": "67983a6155e00abd305e3c1f15b615df7aeb4abb6fc05758c2a2e1dc194c0d82",
+    "bytes": 309929
+  },
+  {
+    "name": "n7-startup-reminder.xml",
+    "sha256": "63118a0b05b9599efefb5cc1e0561ba86dd71ff082ab31cad74c350d04532184",
+    "bytes": 13421
+  },
+  {
+    "name": "n7-upload-outcome-readonly.json",
+    "sha256": "5fd6af367e17892909412bd4331c74d1190bf03922568432f4f1c8e37a98859f",
+    "bytes": 1276
+  },
+  {
+    "name": "online-snapshot.json",
+    "sha256": "da5a5ed6fbc056bfee86c31a1f342f8e8be244519142f316569d9fa4fcca90a0",
+    "bytes": 29959
+  },
+  {
+    "name": "online-verified.json",
+    "sha256": "e7805fc0f8d5f1c53ffcd1e8441563de5ba964b9a293b4218718216b63e1ccec",
+    "bytes": 1061
+  },
+  {
+    "name": "payload.json",
+    "sha256": "7cb409cf8b2c2cc9064e28f33788c68bd31139c9ae63089632d7c60ffa3796eb",
+    "bytes": 5499
+  },
+  {
+    "name": "previous.signed.json",
+    "sha256": "0428dedaa4dd8abdd5299cf1db52a0f3f8bbbbfb381bd0ec20ad58be16b31915",
+    "bytes": 2659
+  },
+  {
+    "name": "published.json",
+    "sha256": "18db86db27d38a39d423d6a1acd7d06dbee198793d948d25c794887fe70b66c9",
+    "bytes": 262
+  },
+  {
+    "name": "release-notes.json",
+    "sha256": "50c10549596e14912b5c545e1947a8479fe1356253ffd998416771f3cd7603c8",
+    "bytes": 801
+  },
+  {
+    "name": "saf-shape-and-hashes.json",
+    "sha256": "666fa2098f947c91dd9a7f7ec32310be129381fd8183550666414ae9d184c81f",
+    "bytes": 1017
+  },
+  {
+    "name": "signing-snapshot.json",
+    "sha256": "b136fd1c741f389ea875685fc503f0ab701bfd1881d6b925a3dcffb9ab1be922",
+    "bytes": 26045
+  },
+  {
+    "name": "three-game-production-1.txt",
+    "sha256": "d394816a26668f81ed046f2c50d6f214e38872a690f61177699c2794a037471a",
+    "bytes": 112
+  },
+  {
+    "name": "three-game-production-2.txt",
+    "sha256": "d394816a26668f81ed046f2c50d6f214e38872a690f61177699c2794a037471a",
+    "bytes": 112
+  },
+  {
+    "name": "three-game-production-hashes.json",
+    "sha256": "a536151a2b847d6653fd776b4f95709b09caeae268f177c4c92b311519aaecd4",
+    "bytes": 780
+  }
+]

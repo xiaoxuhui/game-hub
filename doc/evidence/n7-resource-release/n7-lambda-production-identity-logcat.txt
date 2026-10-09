@@ -1,0 +1,2 @@
+--------- beginning of main
+10-09 14:56:15.015 26335 26354 I GameHubResourceAcceptance: {"id":"lambda-diagram-game","contentCode":1,"version":"0.3.0","active":"1-5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8","ready":null,"archiveSha256":"5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8","sourceRevision":"c46ec6d3cabc6df9ecd90409649b89d765a0a5a9","storageContract":"lambda-diagram-game-dynamic-v1","apkSha256":"c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39","hostCode":4}

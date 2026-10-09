@@ -1,0 +1,27 @@
+[
+  {
+    "name": "candidate.json",
+    "bytes": 164,
+    "sha256": "947048884757d120a34c6f765e1d83aad7fed8ece959b48a9912cf30837db03a"
+  },
+  {
+    "name": "game-abelian-sandpile-1-8e9db7fc8720.zip",
+    "bytes": 83690,
+    "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5"
+  },
+  {
+    "name": "game-lambda-diagram-game-1-5e418cdff45e.zip",
+    "bytes": 89571,
+    "sha256": "5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8"
+  },
+  {
+    "name": "game-memory-demo-2-178d01e9ee05.zip",
+    "bytes": 9510,
+    "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+  },
+  {
+    "name": "games.unsigned.json",
+    "bytes": 6802,
+    "sha256": "16f8eda54e020aeeee34313e407ec89850b719f7b465484a2e57ba5704511a6b"
+  }
+]

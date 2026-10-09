@@ -1,0 +1,2 @@
+--------- beginning of main
+10-09 14:46:56.611 25405 25424 I GameHubResourceAcceptance: {"id":"abelian-sandpile","contentCode":1,"version":"0.1.2","active":"1-8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5","ready":null,"archiveSha256":"8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5","sourceRevision":"c46ec6d3cabc6df9ecd90409649b89d765a0a5a9","storageContract":"abelian-sandpile-dynamic-v1","apkSha256":"c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39","hostCode":4}

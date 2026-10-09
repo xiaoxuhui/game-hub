@@ -1,0 +1,7 @@
+Verified 3 dynamic resource ZIPs; 802c8af9da6f4dbd9614fe691950e2c8497aa340
+Preflight verified previous sequence 2, 3 immutable candidates
+Verified 3 dynamic resource ZIPs; 802c8af9da6f4dbd9614fe691950e2c8497aa340
+Prepared asset-bound successor sequence 3
+Signed v2 sequence 3; a2c0557bcf1a3357ba97bdbec25637ec91d929a2c92ee20e32d7ea24f67780fb
+Verified v2 sequence 3; a2c0557bcf1a3357ba97bdbec25637ec91d929a2c92ee20e32d7ea24f67780fb
+Online signed bytes differ from reviewed issuance

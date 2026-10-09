@@ -1,0 +1,4 @@
+Verified 3 dynamic resource ZIPs; 802c8af9da6f4dbd9614fe691950e2c8497aa340
+Preflight verified previous sequence 2, 3 immutable candidates
+Verified 3 dynamic resource ZIPs; 802c8af9da6f4dbd9614fe691950e2c8497aa340
+Asset identity mismatch

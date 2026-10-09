@@ -1,0 +1,42 @@
+{
+  "onlyTaskGeneratedSaves": true,
+  "rawSavesPublished": false,
+  "abelian": {
+    "bytes": 94231,
+    "sha256": "96cb1636a56519b2c055544c9cdc8bbe16095385304db9f8de3f1a0d5098bfb8",
+    "schemaVersion": 1,
+    "gameId": "abelian-sandpile",
+    "rootFields": [
+      "challenge",
+      "experiment",
+      "gameId",
+      "progress",
+      "schemaVersion",
+      "settings"
+    ],
+    "nativeCreateAndOpenDocument": true
+  },
+  "lambda": {
+    "beforeBytes": 551,
+    "beforeSha256": "10363748fe074d6e184fc99fa8974e6dd2455141b7be189c82f1532826491d65",
+    "afterBytes": 551,
+    "afterSha256": "b545b85255b0002e83b97e26d6f44d1bd1926c79daba03e44b5563d331fcfabd",
+    "rootFields": [
+      "completed",
+      "draft",
+      "error",
+      "functionDraft",
+      "functions",
+      "level",
+      "mode",
+      "savedAt",
+      "selection",
+      "session",
+      "version",
+      "view"
+    ],
+    "stepsBeforeAndAfter": 1,
+    "actualSessionFieldsEqualAfterImport": true,
+    "nativeCreateAndOpenDocument": true
+  }
+}

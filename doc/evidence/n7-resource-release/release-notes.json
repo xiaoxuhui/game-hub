@@ -1,0 +1,6 @@
+{
+  "id": 407394942,
+  "tag_name": "game-resources-v2",
+  "prerelease": true,
+  "body": "动态游戏签名资源通道 v2，与正式大厅 APK 的 latest 通道分离。当前目录序列 3，适用于游戏大厅 v0.4.0：新增阿贝尔沙滩 0.1.2 和 Lambda 线路实验室 0.3.0，保留配对示范 1.0.1。打开大厅可自动发现新游戏，在“游戏目录”主动选择安装；兼容的新游戏无需重新安装大厅 APK。已安装游戏按更新设置下载资源，在下次打开时激活。三个签名历史目录及四个资源 ZIP 保留，来源、MIT许可、资源摘要和存档往返已验证。真机验收由用户在发布后进行。发行与客户端验收记录：https://github.com/xiaoxuhui/game-hub/blob/main/doc/evidence/n7-two-game-release-20261009.md"
+}
