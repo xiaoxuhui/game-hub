@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference='Stop'
 $taskCheckout='D:\soft\.ci-tmp\game-hub-work\v030-final'
 $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-work\v030-evidence\v040-resource-update'
-if($TaskScope -ceq 'n9'){
+if($TaskScope -ieq 'n9'){
     $taskCheckout='D:\soft\.ci-tmp\game-hub-n9\work'
     $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n9\evidence\publication'
 }
