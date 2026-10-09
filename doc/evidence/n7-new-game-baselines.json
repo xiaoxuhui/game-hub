@@ -1,0 +1,20 @@
+[
+  {
+    "repository": "abelian-sandpile",
+    "path": "D:\\soft\\abelian-sandpile",
+    "head": "d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f",
+    "worktree": [],
+    "origin": "https://github.com/xiaoxuhui/abelian-sandpile.git",
+    "recordedAtUtc": "2026-10-09T01:03:10.2204530Z",
+    "readOnly": true
+  },
+  {
+    "repository": "lambda-diagram-game",
+    "path": "D:\\soft\\lambda-diagram-game",
+    "head": "11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2",
+    "worktree": [],
+    "origin": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+    "recordedAtUtc": "2026-10-09T01:03:10.6173478Z",
+    "readOnly": true
+  }
+]
