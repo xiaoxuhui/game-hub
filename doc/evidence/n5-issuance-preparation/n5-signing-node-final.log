@@ -1,0 +1,56 @@
+✔ Android application identity and minimum API stay independent of source APKs (1.2219ms)
+✔ Manifest has one launcher and only the planned update permission (1.4503ms)
+✔ compact lobby uses four fixed source icons and clickable cards (0.79ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.2385ms)
+✔ four original export bridge names and a file chooser are wired (0.5849ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: d5986cd52a54602ee69327cfbcb02df20f3c2aa7217aa0ace7730e05e32ee8f2
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.0209ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (0.5866ms)
+✔ HTML references exclude external and fragment links while preserving local assets (0.8217ms)
+✔ missing local HTML reference stops bundling (14.2716ms)
+✔ manifest hashes are stable and change when a resource changes (6.0583ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (3461.2706ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (5.6897ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (13.3751ms)
+✔ higher content accepts new bytes only with new exact public asset identity (0.9266ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (887.4779ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (215.5107ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (1.5757ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (36.6798ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (11.8637ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (7.1986ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (1.402ms)
+✔ detached programmatic Blob click saves content before immediate revoke (5.5966ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (1.9362ms)
+✔ demo preserves progress, counts wins once and validates imported state (2.108ms)
+✔ actual import handler never claims durable success after storage write failure (3.2955ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.2545ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (1.9023ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (0.7672ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (1.2801ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.5648ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (3.6749ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (87.5546ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.4686ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.8238ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (151.1169ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4242.9158

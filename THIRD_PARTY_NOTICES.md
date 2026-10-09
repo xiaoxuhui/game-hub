@@ -1,6 +1,8 @@
 # 第三方许可与来源
 
-本文件对应游戏大厅 **0.2.0 发布候选**。随 APK 一同放在 `assets/games/THIRD_PARTY_NOTICES.md`；Apache 2.0 完整文本位于 `assets/games/Apache-2.0.txt`，本仓库对应文件为 [`licenses/Apache-2.0.txt`](licenses/Apache-2.0.txt)。合集 MIT 文本与四份来源 MIT 文本也分别放在 APK 的 `assets/games/LICENSE` 和 `assets/games/<id>/LICENSE`。这些文件均纳入 `bundle-manifest.json` 的逐文件 SHA-256 校验。
+本文件对应游戏大厅的四个固定来源和锁定 Android 运行依赖，适用于 v0.2.0、v0.3.0 及准备发行的 v0.4.0；运行依赖坐标未在本轮改变，最终依赖图须再核验。随 APK 一同放在 `assets/games/THIRD_PARTY_NOTICES.md`；Apache 2.0 完整文本位于 `assets/games/Apache-2.0.txt`，本仓库对应文件为 [`licenses/Apache-2.0.txt`](licenses/Apache-2.0.txt)。合集 MIT 文本与四份来源 MIT 文本也分别放在 APK 的 `assets/games/LICENSE` 和 `assets/games/<id>/LICENSE`。这些文件均纳入 `bundle-manifest.json` 的逐文件 SHA-256 校验。
+
+动态资源单独附带对应来源的完整 LICENSE，署名与逐文件摘要进入签名清单。首个配对示范为本仓库自有 MIT 源码，不内置于大厅 APK；后续新增游戏的许可及完整来源 SHA 需分别审核和归档。
 
 ## 四个固定游戏来源（MIT）
 
