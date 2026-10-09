@@ -1,0 +1,17 @@
+[
+  {
+    "name": "candidate.json",
+    "sha256": "592a120ff60ef9965c3e56e36e852d4a4da3e494e03de88e8335a0a7907666ae",
+    "bytes": 164
+  },
+  {
+    "name": "game-memory-demo-2-178d01e9ee05.zip",
+    "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+    "bytes": 9510
+  },
+  {
+    "name": "games.unsigned.json",
+    "sha256": "c4b8d9fd0e02bb1b22a28035275d3cbc69df28db138a2bea9cc88243d56ec25d",
+    "bytes": 1728
+  }
+]

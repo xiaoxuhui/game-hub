@@ -1,0 +1,2 @@
+Verified 1 dynamic resource ZIPs; 64e1451044513139509a3821de6745dfffb03ef5
+Preflight verified previous sequence 1, 1 immutable candidates
