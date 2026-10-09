@@ -1,0 +1,81 @@
+$ node --check scripts/bundle.mjs && node --test
+✔ Android application identity and minimum API stay independent of source APKs (1.2381ms)
+✔ Manifest has one launcher and only the planned update permission (1.6942ms)
+✔ compact lobby uses four fixed source icons and clickable cards (0.9261ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.3069ms)
+✔ four original export bridge names and a file chooser are wired (0.5469ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: e4d58ab77e6f3bcb3b5dc30d43514ac1fd992f7f1e69f93cfd296d6279877948
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.7116ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (0.5367ms)
+✔ HTML references exclude external and fragment links while preserving local assets (0.868ms)
+✔ missing local HTML reference stops bundling (16.1827ms)
+✔ manifest hashes are stable and change when a resource changes (9.1033ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (4164.4669ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (7.2889ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (12.4908ms)
+✔ higher content accepts new bytes only with new exact public asset identity (0.5446ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (967.3279ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (386.0016ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (2.1926ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (93.7696ms)
+✖ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (11.4302ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (9.2776ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (1.6745ms)
+✔ detached programmatic Blob click saves content before immediate revoke (7.009ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (2.855ms)
+✔ demo preserves progress, counts wins once and validates imported state (3.0697ms)
+✔ actual import handler never claims durable success after storage write failure (5.2906ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.4252ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (2.1272ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (0.9495ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (1.3975ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.6033ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (4.1167ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (203.4232ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.4709ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.8808ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (179.7516ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 34
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5032.2103
+
+✖ failing tests:
+
+test at tests\dynamic-resources.test.mjs:9:1
+✖ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (11.4302ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + '80898b3ba78ea51a62533c42362f00a4e37421f1'
+  - '81bdef33331fefedbb858b1ce109ebc437759bb6'
+
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-work/v030-final/tests/dynamic-resources.test.mjs:11:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '80898b3ba78ea51a62533c42362f00a4e37421f1',
+    expected: '81bdef33331fefedbb858b1ce109ebc437759bb6',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+[ELIFECYCLE] Command failed with exit code 1.

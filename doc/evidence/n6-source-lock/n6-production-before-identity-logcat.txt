@@ -1,0 +1,2 @@
+--------- beginning of main
+10-09 01:40:21.731 24050 24070 I GameHubResourceAcceptance: {"id":"memory-demo","contentCode":1,"version":"1.0.0","active":"1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b","ready":null,"archiveSha256":"27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b","sourceRevision":"81bdef33331fefedbb858b1ce109ebc437759bb6","storageContract":"memory-demo-dynamic-v1","apkSha256":"c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39","hostCode":4}

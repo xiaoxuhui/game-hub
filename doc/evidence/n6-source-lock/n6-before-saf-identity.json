@@ -1,0 +1,17 @@
+{
+  "device": "emulator-5562",
+  "avd": "gamehub-resource-20261008",
+  "game": "memory-demo",
+  "phase": "before-resource-2",
+  "actualSystemSaf": true,
+  "schemaVersion": 1,
+  "moves": 1,
+  "wins": 0,
+  "bytes": 144,
+  "sha256": "5dd0b7e0147736ab08693a8032661c82de834284bb0d3d61d7a6760b66e14c05",
+  "apkVersion": "0.4.0",
+  "apkCode": 4,
+  "apkSha256": "c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39",
+  "expectedActiveContentCode": 1,
+  "expectedArchiveSha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b"
+}
