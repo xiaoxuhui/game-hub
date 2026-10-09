@@ -11,7 +11,7 @@ import android.os.SystemClock
 import java.io.File
 import java.util.concurrent.Executors
 
-internal enum class LocalResourceAction { RESTORE_PREVIOUS, RESTORE_BUILTIN, RESUME, RETRY, RECOVER_ALL }
+internal enum class LocalResourceAction { RESTORE_PREVIOUS, RESTORE_BUILTIN, RESUME, RETRY, RECOVER_ALL, REMOVE, RECOVER_DYNAMIC }
 internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: List<ResourceGame> = emptyList(),
     val catalogGames: List<ResourceGame> = emptyList(), val apkCheckedAt: Long? = null, val resourcesCheckedAt: Long? = null,
     val localResources: Map<String, LocalResourceInfo> = emptyMap(),
@@ -21,11 +21,15 @@ internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: L
     val apkStatus: String = "尚未检查大厅更新", val resourceStatus: String = "尚未检查游戏更新",
     val busy: Boolean = false, val task: String? = null, val done: Long = 0, val total: Long = 0,
     val readyApk: File? = null, val automatic: Boolean = true, val metered: Boolean = false,
-    val settingsSaving: Boolean = false, val settingsStatus: String? = null)
+    val settingsSaving: Boolean = false, val settingsStatus: String? = null,
+    val dynamicResources: List<ResourceGame> = emptyList(), val dynamicCatalogGames: List<ResourceGame> = emptyList(),
+    val localDynamicResources: Map<String, LocalResourceInfo> = emptyMap(), val dynamicCheckedAt: Long? = null,
+    val dynamicRemembered: Boolean = false, val dynamicStatus: String = "尚未检查新游戏目录",
+    val dynamicDiagnostic: String? = null, val dynamicReadError: String? = null)
 
 /** Package-only verification dependencies; production always uses its fixed repository and pinned key. */
 internal data class CoordinatorVerificationEnvironment(val store: GameResourceStore, val publicKey: ByteArray,
-    val http: PublicReleaseHttp, val network: () -> UpdateNetwork)
+    val http: PublicReleaseHttp, val network: () -> UpdateNetwork, val dynamicStore: GameResourceStore? = null)
 
 /** One process instance owns connections, queue, settings and cancellation across Activity recreation. */
 internal class UpdateCoordinator private constructor(context: Context, private val verification: CoordinatorVerificationEnvironment? = null) {
@@ -45,19 +49,27 @@ internal class UpdateCoordinator private constructor(context: Context, private v
     @Volatile private var checkEligible = true
     @Volatile private var checkCancelled = false
     @Volatile private var offer: ResourceOffer? = null
+    @Volatile private var dynamicOffer: ResourceOffer? = null
     private val attempted = HashSet<String>()
     private val runtime by lazy { ResourceRuntime.get(app) }
     private val resourceStore by lazy { verification?.store ?: runtime.store }
     private val resourceClient by lazy { ResourceCatalogClient(verification?.publicKey ?: runtime.publicKey, http) }
+    // Existing v1-only verification owners cannot touch the production dynamic store.
+    private val dynamicStore by lazy { if (verification == null) runtime.dynamicStore else verification.dynamicStore }
+    private val dynamicClient by lazy { ResourceCatalogClient(verification?.publicKey ?: runtime.publicKey, http, policy = ResourceStorePolicy.DYNAMIC) }
+    private fun storeFor(policy: ResourceStorePolicy) = if (policy == ResourceStorePolicy.BUILTIN) resourceStore else requireNotNull(dynamicStore)
+    private fun policyFor(id: String) = if (DynamicGamePolicy.validId(id)) ResourceStorePolicy.DYNAMIC else ResourceStorePolicy.BUILTIN
     private val apkManager = ApkUpdateManager(app)
     private val metadataCache by lazy { UpdateMetadataCache(AndroidResourceStateFile(File(app.filesDir, "apk-reminder.json")),
         AndroidResourceStateFile(File(app.filesDir, "resources-reminder.json"))) }
+    private val dynamicMetadataCache by lazy { UpdateMetadataCache(AndroidResourceStateFile(File(app.filesDir, "apk-reminder.json")),
+        AndroidResourceStateFile(File(app.filesDir, "dynamic-reminder.json"))) }
     init {
         gate.settings(state.automatic, state.metered)
         // Only this process owner cleans abandoned private parts, before any worker can download.
         worker.execute {
             val directory = File(app.cacheDir, "resource-updates")
-            directory.listFiles()?.filter { Regex("resource-(conway|eml|light|turing)-[0-9a-f-]{36}\\.part").matches(it.name) && it.canonicalFile.parentFile == directory.canonicalFile }?.forEach { it.delete() }
+            directory.listFiles()?.filter { Regex("resource-[a-z][a-z0-9-]{0,31}-[0-9a-f-]{36}\\.part").matches(it.name) && it.canonicalFile.parentFile == directory.canonicalFile }?.forEach { it.delete() }
             readLocalResources()
             readRememberedUpdates()
         }
@@ -96,7 +108,8 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         if (!online) checkCancelled = true
         if (!online) publish { it.copy(
             apkStatus = if (it.apkCheckedAt == null) "大厅未检查：离线" else it.apkStatus,
-            resourceStatus = if (it.resourcesCheckedAt == null) "游戏未检查：离线" else it.resourceStatus) }
+            resourceStatus = if (it.resourcesCheckedAt == null) "游戏未检查：离线" else it.resourceStatus,
+            dynamicStatus = if (it.dynamicCheckedAt == null) "新游戏目录未检查：离线" else it.dynamicStatus) }
         gate.setNetwork(supplied ?: UpdateNetwork(online, online && capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)))
         // Reconnection may start a due check; existing cancelled attempts are never restarted this round.
         if (foreground) { if (checkEligible) check(false); if (hall) automaticNext() }
@@ -136,22 +149,8 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                         publish { it.copy(apk = release, apkRemembered = false, apkCheckedAt = checkedAt, apkStatus = (if (release == null) "大厅已是最新版本" else "大厅 ${release.version} 可更新") + if (saved) "" else "；历史提醒保存失败") }
                     } catch (error: Exception) { channelFailure("apk", error) }
                 } else publish { it.copy(apkStatus = "大厅查询限流，稍后可重试") }
-                if (!checkCancelled && foreground && gate.channelAllowed("resources")) {
-                    try {
-                        val next = resourceClient.query { checkCancelled || !foreground }
-                        check(!checkCancelled && foreground) { "检查已取消" }
-                        resourceStore.acceptCatalog(next.envelope)
-                        resourceStore.refreshReadyProof(next.envelope)
-                        val available = next.catalog.games.filter { resourceStore.isEligible(it) }
-                        val checkedAt = System.currentTimeMillis()
-                        val saved = runCatching { metadataCache.saveResources(next.catalog, checkedAt) }.isSuccess
-                        readLocalResources()
-                        synchronized(stateLock) {
-                            attempted.clear(); offer = next
-                            publish { it.copy(resources = available, catalogGames = next.catalog.games, resourcesRemembered = false, resourcesCheckedAt = checkedAt, resourceStatus = (if (available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新") + if (saved) "" else "；历史提醒保存失败") }
-                        }
-                    } catch (error: Exception) { channelFailure("resources", error) }
-                } else if (foreground) publish { it.copy(resourceStatus = if (checkCancelled) "游戏检查已取消，已安装资源保留" else "游戏查询限流，稍后可重试") }
+                checkResourceChannel(ResourceStorePolicy.BUILTIN)
+                if (dynamicStore != null) checkResourceChannel(ResourceStorePolicy.DYNAMIC)
             } finally {
                 synchronized(stateLock) { gate.endCheck(); publish(::idleStatus) }
                 automaticNext()
@@ -159,29 +158,76 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         }
         true
     }
+    private fun resourceStatus(policy: ResourceStorePolicy, message: String) {
+        publish { if (policy == ResourceStorePolicy.BUILTIN) it.copy(resourceStatus = message) else it.copy(dynamicStatus = message) }
+    }
+    private fun checkResourceChannel(policy: ResourceStorePolicy) {
+        val channel = policy.updateChannel
+        if (checkCancelled || !foreground || !gate.channelAllowed(channel)) {
+            if (foreground) resourceStatus(policy, if(checkCancelled) "游戏检查已取消，已安装资源保留" else "游戏查询限流，稍后可重试")
+            return
+        }
+        try {
+            val store=storeFor(policy)
+            val next=(if(policy==ResourceStorePolicy.BUILTIN) resourceClient else dynamicClient).query {checkCancelled || !foreground}
+            check(!checkCancelled && foreground) {"检查已取消"}
+            store.acceptCatalog(next.envelope);store.refreshReadyProof(next.envelope)
+            val available=next.catalog.games.filter {store.isEligible(it)}
+            val checkedAt=System.currentTimeMillis()
+            val saved=runCatching {(if(policy==ResourceStorePolicy.BUILTIN) metadataCache else dynamicMetadataCache).saveResources(next.catalog,checkedAt)}.isSuccess
+            readLocalResources()
+            synchronized(stateLock) {
+                val ids=next.catalog.games.map {it.id}.toSet()
+                attempted.removeAll {it.substringBefore('/') in ids}
+                val status=if(policy==ResourceStorePolicy.BUILTIN) {
+                    if(available.isEmpty()) "没有可安装的游戏更新" else "${available.size} 个游戏有更新"
+                } else {
+                    val fresh=available.count {!store.installed(it.id)}
+                    val pending=next.catalog.games.count {it.available && !store.installed(it.id)}
+                    "发现 $pending 个目录游戏（$fresh 个可安装），${available.size-fresh} 个已装游戏有更新"
+                } + if(saved) "" else "；历史提醒保存失败"
+                if(policy==ResourceStorePolicy.BUILTIN) {
+                    offer=next
+                    publish {it.copy(resources=available,catalogGames=next.catalog.games,resourcesRemembered=false,resourcesCheckedAt=checkedAt,resourceStatus=status)}
+                } else {
+                    dynamicOffer=next
+                    publish {it.copy(dynamicResources=available,dynamicCatalogGames=next.catalog.games,dynamicRemembered=false,dynamicCheckedAt=checkedAt,dynamicStatus=status)}
+                }
+            }
+        } catch(error:Exception) {channelFailure(channel,error)}
+    }
     private fun channelFailure(channel: String, error: Exception) {
         var message = error.message ?: "查询失败，已安装内容仍可使用"
         if (error is UpdateRateLimited) {
             try { gate.rateLimited(channel, error.until) } catch (saveError: Exception) { message += "；${saveError.message}" }
         }
-        publish { if (channel == "apk") it.copy(apkStatus = message) else it.copy(resourceStatus = message) }
+        publish { when(channel) {"apk" -> it.copy(apkStatus=message);"resources" -> it.copy(resourceStatus=message);else -> it.copy(dynamicStatus=message)} }
     }
     private fun automaticNext() {
         synchronized(stateLock) {
-            if (!gate.canAutoDownload()) return
-            val current = offer ?: return
-            val game = state.resources.firstOrNull { "${it.id}/${it.identity}" !in attempted } ?: return
-            startResource(current, game, false, false)
+            for(policy in ResourceStorePolicy.entries) {
+                if(!gate.canAutoDownload(policy.updateChannel)) continue
+                val current=(if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer) ?: continue
+                val candidates=if(policy==ResourceStorePolicy.BUILTIN) state.resources else state.dynamicResources
+                val game=candidates.firstOrNull {"${it.id}/${it.identity}" !in attempted &&
+                    storeFor(policy).isEligible(it) &&
+                    (policy==ResourceStorePolicy.BUILTIN || storeFor(policy).installed(it.id))} ?: continue
+                startResource(current,game,false,false);return
+            }
         }
     }
     fun downloadResource(id: String, meteredConfirmed: Boolean): Boolean = synchronized(stateLock) {
-        val current = offer ?: return false
-        val game = state.resources.singleOrNull { it.id == id } ?: return false
+        val policy=policyFor(id)
+        val current = (if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer) ?: return false
+        val game = (if(policy==ResourceStorePolicy.BUILTIN) state.resources else state.dynamicResources).singleOrNull { it.id == id } ?: return false
         startResource(current, game, true, meteredConfirmed)
     }
     private fun startResource(current: ResourceOffer, game: ResourceGame, manual: Boolean, meteredConfirmed: Boolean): Boolean {
-        val token = try { current.reserveDownload(game, gate, manual, meteredConfirmed) }
-        catch (error: Exception) { publish { it.copy(resourceStatus = "${error.message}；请重新检查更新") }; return false }
+        val token = try {
+            require(storeFor(current.policy).isEligible(game)) {"本地资源授权已改变，请重新检查"}
+            current.reserveDownload(game, gate, manual, meteredConfirmed)
+        }
+        catch (error: Exception) { resourceStatus(current.policy,"${error.message}；请重新检查更新"); return false }
         if (token == null) return false
         attempted.add("${game.id}/${game.identity}")
         publish { it.copy(busy = true, task = "下载 ${game.id}", done = 0, total = game.archiveBytes) }
@@ -189,13 +235,15 @@ internal class UpdateCoordinator private constructor(context: Context, private v
             var archive: File? = null
             try {
                 current.requireDownload(game)
-                archive = resourceClient.download(game, File(app.cacheDir, "resource-updates"), { !gate.valid(token) }, progressReporter())
+                val client=if(current.policy==ResourceStorePolicy.BUILTIN) resourceClient else dynamicClient
+                archive = client.download(game, File(app.cacheDir, "resource-updates"), { !gate.valid(token) }, progressReporter())
                 check(gate.valid(token)) { "更新已取消" }
-                resourceStore.install(game, current.envelope, archive, { !gate.valid(token) })
+                storeFor(current.policy).install(game, current.envelope, archive, { !gate.valid(token) })
                 readLocalResources()
-                publish { it.copy(resources = it.resources.filterNot { candidate -> candidate.id == game.id }, resourceStatus = "${game.id} 更新已就绪，下次进入生效") }
+                publish { if(current.policy==ResourceStorePolicy.BUILTIN) it.copy(resources=it.resources.filterNot {candidate->candidate.id==game.id},resourceStatus="${game.id} 更新已就绪，下次进入生效")
+                    else it.copy(dynamicResources=it.dynamicResources.filterNot {candidate->candidate.id==game.id},dynamicStatus="${game.id} 资源已就绪，下次进入生效") }
             } catch (error: Exception) {
-                if (token.cancelled) publish { it.copy(resourceStatus = "游戏下载已取消，原版本保留") } else channelFailure("resources", error)
+                if (token.cancelled) resourceStatus(current.policy,"游戏下载已取消，原版本保留") else channelFailure(current.policy.updateChannel, error)
             } finally {
                 archive?.delete()
                 synchronized(stateLock) { gate.finish(token); publish(::idleStatus) }
@@ -245,23 +293,26 @@ internal class UpdateCoordinator private constructor(context: Context, private v
             // The serial queue places this after cleanup of the previously reserved network/local task.
             val token = checkNotNull(gate.beginRepair())
             try {
-                val failedStore = if (DynamicGamePolicy.validId(id)) runtime.dynamicStore else resourceStore
+                val failedStore = storeFor(policyFor(id))
                 failedStore.quarantineFailedIdentity(id, identity)
-                publish { it.copy(resourceStatus = "$id 失败资源已隔离，请恢复版本；存档保留") }
-            } catch (error: Exception) { publish { it.copy(resourceStatus = "失败资源隔离未提交：${error.message}；请恢复版本") } }
+                resourceStatus(policyFor(id),"$id 失败资源已隔离，请恢复版本；存档保留")
+            } catch (error: Exception) { resourceStatus(policyFor(id),"失败资源隔离未提交：${error.message}；请恢复版本") }
             finally {
                 readLocalResources()
                 synchronized(stateLock) {
-                    val available = runCatching { offer?.catalog?.games?.filter { resourceStore.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
-                    gate.finish(token); publish { idleStatus(it).copy(resources = available) }
+                    gate.finish(token);publish {refreshOffers(idleStatus(it))}
                 }
                 automaticNext()
             }
         }
     }
     fun changeLocal(id: String?, action: LocalResourceAction, retryCode: Int? = null): Boolean = synchronized(stateLock) {
-        require(action == LocalResourceAction.RECOVER_ALL || id in setOf("conway", "eml", "light", "turing"))
-        require(action != LocalResourceAction.RETRY || retryCode != null && retryCode > 1)
+        val global=action in setOf(LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC)
+        require(!global || id==null)
+        val policy=when(action) {LocalResourceAction.RECOVER_ALL -> ResourceStorePolicy.BUILTIN;LocalResourceAction.RECOVER_DYNAMIC -> ResourceStorePolicy.DYNAMIC;else -> policyFor(requireNotNull(id))}
+        require(action in setOf(LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC) || id!=null && policy.validId(id))
+        require(action!=LocalResourceAction.REMOVE || policy==ResourceStorePolicy.DYNAMIC)
+        require(action != LocalResourceAction.RETRY || retryCode != null && retryCode > policy.baselineCode)
         val token = gate.beginLocalChange() ?: return false
         publish { it.copy(busy = true, task = "正在处理本地资源", done = 0, total = 0) }
         worker.execute {
@@ -269,38 +320,42 @@ internal class UpdateCoordinator private constructor(context: Context, private v
             try {
                 require(gate.valid(token)) { "本地操作已取消，请回到大厅重试" }
                 // Once the store starts its atomic transaction, cancellation cannot undo a committed choice.
-                val store = resourceStore
+                val store = storeFor(policy)
                 when (action) {
-                    LocalResourceAction.RECOVER_ALL -> store.recoverAllBuiltinsFromTrustedHistory()
+                    LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC -> store.recoverAllBuiltinsFromTrustedHistory()
+                    LocalResourceAction.REMOVE -> store.removeResources(id!!)
                     LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> {
-                        val code = store.selection(id!!).active.substringBefore('-').toIntOrNull()?.takeIf { it > 1 }
+                        val code = store.selection(id!!).active.substringBefore('-').toIntOrNull()?.takeIf { it > policy.baselineCode }
                         store.restore(id, action == LocalResourceAction.RESTORE_BUILTIN, code)
                     }
                     LocalResourceAction.RESUME -> store.resumeAutomatic(id!!)
                     LocalResourceAction.RETRY -> store.resumeAutomatic(id!!, retryCode)
                 }
                 changed = true
-                publish { it.copy(resourceStatus = when (action) {
-                    LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN, LocalResourceAction.RECOVER_ALL -> "已恢复并固定资源；存档保留"
+                resourceStatus(policy,when (action) {
+                    LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN, LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC -> "已恢复并固定资源；存档保留"
+                    LocalResourceAction.REMOVE -> "游戏资源已移除；存档和历史水位保留，重装需手动选择"
                     LocalResourceAction.RESUME -> "已解除固定；失败编号仍隔离"
                     LocalResourceAction.RETRY -> "已允许重试指定编号；存档保留"
-                }) }
-            } catch (error: Exception) { publish { it.copy(resourceStatus = "本地操作失败：${error.message}；存档保留") } }
+                })
+            } catch (error: Exception) { resourceStatus(policy,"本地操作失败：${error.message}；存档保留") }
             finally {
                 readLocalResources()
                 synchronized(stateLock) {
-                    val available = runCatching { offer?.catalog?.games?.filter { resourceStore.isEligible(it) } ?: emptyList() }.getOrDefault(emptyList())
                     if (changed && action == LocalResourceAction.RETRY) {
                         attempted.removeAll { it.startsWith("$id/$retryCode-") }
                     }
                     gate.finish(token)
-                    publish { idleStatus(it).copy(resources = available) }
+                    publish {refreshOffers(idleStatus(it))}
                 }
                 automaticNext()
             }
         }
         true
     }
+    private fun refreshOffers(value:UpdateSnapshot)=value.copy(
+        resources=runCatching {offer?.catalog?.games?.filter {resourceStore.isEligible(it)} ?: emptyList()}.getOrDefault(emptyList()),
+        dynamicResources=runCatching {dynamicOffer?.catalog?.games?.filter {storeFor(ResourceStorePolicy.DYNAMIC).isEligible(it)} ?: emptyList()}.getOrDefault(emptyList()))
     fun reloadLocalResources() { worker.execute { readLocalResources() } }
     private fun readRememberedUpdates() {
         try {
@@ -318,13 +373,25 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                     resourceStatus = if (fresh) "上次验证的游戏目录，待检查" else "上次游戏目录已过期，请检查") }
             }
         } catch (error: Exception) { publish { it.copy(resourceStatus = "游戏历史提醒不可用，请联网检查；本地存档保留") } }
+        try {
+            dynamicStore?.rememberedCatalog()?.let {catalog->
+                val checkedAt=dynamicMetadataCache.readResources(catalog)
+                val fresh=runCatching {catalog.requireFresh(System.currentTimeMillis())}.isSuccess
+                publish {it.copy(dynamicCatalogGames=catalog.games,dynamicResources=emptyList(),dynamicCheckedAt=checkedAt,dynamicRemembered=true,
+                    dynamicStatus=if(fresh) "上次验证的新游戏目录，待检查" else "上次新游戏目录已过期，请检查")}
+            }
+        } catch(error:Exception) {publish {it.copy(dynamicStatus="新游戏历史提醒不可用，请联网检查；本地存档保留")}}
     }
     private fun readLocalResources() {
         try {
             val current = resourceStore.describeAll(); val diagnostic = resourceStore.failure()
-            publish { it.copy(localResources = current, localDiagnostic = diagnostic, localLoaded = true, localReadError = null) }
+            publish { it.copy(localResources = current, localDiagnostic = diagnostic, localReadError = null) }
         }
-        catch (error: Exception) { publish { it.copy(localResources = emptyMap(), localLoaded = true, localReadError = error.message ?: "读取失败", resourceStatus = "本地资源状态不可用：${error.message}；存档保留") } }
+        catch (error: Exception) { publish { it.copy(localResources = emptyMap(), localReadError = error.message ?: "读取失败", resourceStatus = "本地资源状态不可用：${error.message}；存档保留") } }
+        try {
+            val current=dynamicStore?.describeAll() ?: emptyMap();val diagnostic=dynamicStore?.failure()
+            publish {it.copy(localDynamicResources=current,dynamicDiagnostic=diagnostic,dynamicReadError=null,localLoaded=true)}
+        } catch(error:Exception) {publish {it.copy(localDynamicResources=emptyMap(),dynamicReadError=error.message ?: "读取失败",localLoaded=true,dynamicStatus="动态资源状态不可用：${error.message}；存档保留")}}
     }
     fun unmeteredWifi(): Boolean {
         verification?.let { return it.network().unmeteredWifi }

@@ -470,6 +470,8 @@ class MainActivity : ComponentActivity() {
     private fun confirmLocalChange(id: String?, action: LocalResourceAction, retryCode: Int? = null) {
         val message = when (action) {
             LocalResourceAction.RECOVER_ALL -> "仅使用完整可信签名历史恢复四个内置版本并固定，保留最高更新编号。无法验证历史时不会重置。游戏存档保留。"
+            LocalResourceAction.RECOVER_DYNAMIC -> "仅使用完整可信签名历史恢复动态游戏的资源选择状态，保留存档和最高更新编号。无法验证历史时不会重置；恢复后需明确重试并手动下载。"
+            LocalResourceAction.REMOVE -> "只移除此游戏可重新下载的资源，存档和历史更新编号保留。以后需要手动选择重新安装，不会自动重装。"
             LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> "恢复资源后固定该游戏版本，隔离当前下载版本。游戏存档保留，但不会回到过去；下一次进入使用恢复版本。"
             LocalResourceAction.RESUME -> "解除固定后允许自动更新；此前失败编号继续隔离，需另行明确重试。游戏存档保留。"
             LocalResourceAction.RETRY -> "解除资源 #$retryCode 的隔离并解除固定。签名目录仍提供该编号且兼容时，允许重新尝试；更新继续遵守网络设置。游戏存档保留。"

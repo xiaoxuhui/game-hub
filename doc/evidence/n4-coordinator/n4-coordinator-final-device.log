@@ -1,0 +1,18 @@
+
+com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest:......
+Error in sharedActualStoreBytesRejectDynamicInstallAndKeepBothOldSelections(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest):
+java.lang.IllegalStateException: Timeout: capacity rejection
+	at com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest.await(DynamicCoordinatorDeviceTest.kt:96)
+	at com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest.sharedActualStoreBytesRejectDynamicInstallAndKeepBothOldSelections(DynamicCoordinatorDeviceTest.kt:161)
+.
+com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest:......
+
+Time: 40.634
+There was 1 failure:
+1) sharedActualStoreBytesRejectDynamicInstallAndKeepBothOldSelections(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+java.lang.IllegalStateException: Timeout: capacity rejection
+	at com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest.await(DynamicCoordinatorDeviceTest.kt:96)
+	at com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest.sharedActualStoreBytesRejectDynamicInstallAndKeepBothOldSelections(DynamicCoordinatorDeviceTest.kt:161)
+
+FAILURES!!!
+Tests run: 14,  Failures: 1

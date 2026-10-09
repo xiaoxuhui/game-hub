@@ -13,6 +13,7 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
 import java.util.zip.CRC32
+import java.util.zip.ZipInputStream
 
 /** Ephemeral test key; exercises production AtomicFile and full actual bundled games. Never a release key. */
 internal class ResourceDeviceFixture(val context: Context) : AutoCloseable {
@@ -68,6 +69,31 @@ internal class ResourceDeviceFixture(val context: Context) : AutoCloseable {
         return local.toByteArray()
     }
     val publicKey: ByteArray get() = pair.public.encoded.clone()
+    /** Test-only v2 using the same ephemeral trust root as this fixture's actual v1 archives. */
+    fun dynamicRelease(sequence: Int = 1, code: Int = 1, available: Boolean = true, minHost: Int = 4): Triple<ResourceCatalog,ByteArray,ByteArray> {
+        val assets=androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().context.assets
+        val original=assets.open("dynamic-demo-fixture/game.zip").use {it.readBytes()}
+        require(ResourcePolicy.sha256(original)=="27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b")
+        val game=JSONArray(assets.open("dynamic-demo-fixture/games.json").bufferedReader().use {it.readText()}).getJSONObject(0)
+        val resources=linkedMapOf<String,ByteArray>()
+        ZipInputStream(original.inputStream()).use {zip->
+            while(true) {val entry=zip.nextEntry ?: break;val path=ResourcePolicy.safePath(entry.name);require(!entry.isDirectory);resources[path]=zip.readBytes()}
+        }
+        require(resources.keys==setOf("LICENSE","app.js","core.js","index.html","style.css"))
+        if(code>1) resources["index.html"]=resources.getValue("index.html")+"\n<!-- private coordinator compatibility fixture $code -->".toByteArray()
+        val archive=if(code==1) original else storedZip(resources)
+        game.put("assetId",701).put("contentCode",code).put("version","1.0.${code-1}").put("available",available).put("minHostVersionCode",minHost)
+            .put("archiveBytes",archive.size).put("archiveSha256",ResourcePolicy.sha256(archive))
+            .put("files",JSONArray(resources.map {(path,bytes)->JSONObject().put("path",path).put("bytes",bytes.size).put("sha256",ResourcePolicy.sha256(bytes)).put("mime",ResourcePolicy.mime(path))}))
+        val format=SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",Locale.ROOT).apply {timeZone=TimeZone.getTimeZone("UTC")}
+        val now=System.currentTimeMillis()
+        val payload=JSONObject().put("schemaVersion",2).put("channel",DynamicGamePolicy.CHANNEL).put("releaseId",2).put("catalogSequence",sequence.toString())
+            .put("issuedAt",format.format(java.util.Date(now-60000))).put("expiresAt",format.format(java.util.Date(now+86400000))).put("games",JSONArray().put(game)).toString().toByteArray()
+        val signature=Signature.getInstance("SHA256withRSA").run {initSign(pair.private);update(payload);sign()}
+        val envelope=JSONObject().put("envelopeVersion",1).put("keyId",ResourcePolicy.KEY_ID).put("payloadBase64",Base64.getEncoder().encodeToString(payload))
+            .put("signatureBase64",Base64.getEncoder().encodeToString(signature)).toString().toByteArray()
+        return Triple(DynamicGamePolicy.verifyEnvelope(envelope,publicKey,now=now),envelope,archive)
+    }
     fun archiveBytes(id: String) = archives.getValue(id).readBytes()
     fun onlyLightEnvelope(): ByteArray {
         val payload = JSONObject(String(Base64.getDecoder().decode(JSONObject(String(envelope)).getString("payloadBase64"))))
