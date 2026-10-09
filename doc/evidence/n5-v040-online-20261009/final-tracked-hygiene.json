@@ -1,0 +1,8 @@
+{
+  "commit": "4aacb1f81b7fc381d2ca7fd725fd93dd109e390e",
+  "trackedFiles": 657,
+  "forbiddenTrackedCount": 0,
+  "privateKeyOrTokenLiteralCount": 0,
+  "pathsOnly": [],
+  "scope": "Tracked filenames, UTF-8 private-key bodies and GitHub token literals; not a proof against every possible secret format."
+}

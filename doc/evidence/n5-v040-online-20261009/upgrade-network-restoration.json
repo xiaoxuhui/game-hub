@@ -1,0 +1,15 @@
+{
+  "beforeServices": {
+    "wifi": true,
+    "mobile": false
+  },
+  "afterServices": {
+    "wifi": true,
+    "mobile": false
+  },
+  "beforeWifi": "1",
+  "beforeMobile": "1",
+  "afterWifi": "1",
+  "afterMobile": "1",
+  "errors": []
+}

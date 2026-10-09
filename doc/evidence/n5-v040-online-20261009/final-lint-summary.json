@@ -1,0 +1,12 @@
+{
+  "errors": 0,
+  "warnings": 18,
+  "issueIds": [
+    "GradleDependency",
+    "ObsoleteSdkInt",
+    "StaticFieldLeak",
+    "UsableSpace",
+    "MonochromeLauncherIcon",
+    "SetTextI18n"
+  ]
+}

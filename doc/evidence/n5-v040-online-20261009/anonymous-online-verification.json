@@ -1,0 +1,74 @@
+{
+  "latest": "v0.4.0",
+  "formalReleaseId": 407395194,
+  "v1ReleaseId": 407293817,
+  "v2ReleaseId": 407394942,
+  "assets": [
+    {
+      "channel": "apk",
+      "name": "game-hub.apk",
+      "assetId": 623483084,
+      "bytes": 2645967,
+      "sha256": "c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39",
+      "anonymous": true
+    },
+    {
+      "channel": "v1",
+      "name": "catalog.signed.json",
+      "assetId": 623110620,
+      "bytes": 10907,
+      "sha256": "e7f017b35cbb2fad04f5a521c47508f3616fea0ef471f4bd7245f42cd02f7d62",
+      "anonymous": true
+    },
+    {
+      "channel": "v1",
+      "name": "game-conway-1-77af28d46a71.zip",
+      "assetId": 623110366,
+      "bytes": 269135,
+      "sha256": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65",
+      "anonymous": true
+    },
+    {
+      "channel": "v1",
+      "name": "game-eml-1-20205b0dfba4.zip",
+      "assetId": 623110443,
+      "bytes": 106336,
+      "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+      "anonymous": true
+    },
+    {
+      "channel": "v1",
+      "name": "game-light-1-9df0cadcfc97.zip",
+      "assetId": 623110476,
+      "bytes": 114919,
+      "sha256": "9df0cadcfc979a355df2b07e6f0d0aff5c09fd8a0669b33324eef176b42530c0",
+      "anonymous": true
+    },
+    {
+      "channel": "v1",
+      "name": "game-turing-1-e633a50595e9.zip",
+      "assetId": 623110526,
+      "bytes": 83347,
+      "sha256": "e633a50595e969d6fd96b52c0d1d5380a17220b0a0acad88055549c570339ce1",
+      "anonymous": true
+    },
+    {
+      "channel": "v2",
+      "name": "catalog.signed.json",
+      "assetId": 623482430,
+      "bytes": 2599,
+      "sha256": "0bc8cf66fe67f030b6628bc7e761b466ea8b53d8bf4d3c46d29788178dcfba68",
+      "anonymous": true
+    },
+    {
+      "channel": "v2",
+      "name": "game-memory-demo-1-27f1df3b689e.zip",
+      "assetId": 623482293,
+      "bytes": 8490,
+      "sha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b",
+      "anonymous": true
+    }
+  ],
+  "productionTrustRootFromDownloadedApk": true,
+  "downloadDirectory": "D:\\soft\\.ci-tmp\\game-hub-work\\v030-evidence\\v040-release\\anonymous-downloads\\f3030e78ddec4d75b04e02edcc246b7a"
+}

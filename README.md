@@ -2,9 +2,9 @@
 
 一个离线 Android 应用，把康威生命游戏、EML 计算台、光学游戏和图灵机实验台装进同一个 APK。Android 原生首页显示四个项目及实际资源版本；游戏网页资源内置，离线可用。v0.3.0 支持启动更新提醒与四游戏独立资源更新。
 
-**v0.3.0 已发布。** 从 [GitHub Releases](https://github.com/xiaoxuhui/game-hub/releases/latest) 下载正式签名的 `game-hub.apk`。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。最终同证书覆盖升级、四游戏真实测试存档及旧/新客户端公开通道查询已在任务模拟器验证；匿名六资产和目录验签通过，见[发行记录](doc/evidence/m7-v030-release-20261009.md)。真机由用户发行后安装验收，两类签名密钥异机备份按授权列入待办。
+**v0.4.0 已发布。** 从 [GitHub Releases](https://github.com/xiaoxuhui/game-hub/releases/latest) 下载正式签名的 `game-hub.apk`。CI 的调试 APK 仅用于检查和测试；未签名 Release 构建不能直接安装。最终同证书 v0.3.0→v0.4.0 五页存档及旧/新客户端公开通道已在任务模拟器验证；匿名八资产、APK内生产公钥和完整Release绑定通过，见[发行记录](doc/evidence/n5-v040-release-20261009.md)。真机由用户发行后安装验收，两类签名密钥异机备份按授权列入待办。
 
-v0.4.0 已完成动态目录实现与开发候选验证，正在准备正式发行，尚未发布。用户可从“游戏目录”主动安装兼容的新游戏，安装后加入首页；已安装游戏按设置自动更新，移除资源保留存档且不会自动重装。动态游戏各有稳定独立 origin，四个旧游戏保留原存储位置。实际验证与待执行门禁见[v0.4.0 测试报告](doc/测试报告-v0.4.0.md)和[发行就绪度审计](doc/开源就绪度审计-v0.4.0.md)。
+v0.4.0 已正式发布，首份 v2 目录提供独立下载的自有配对示范。用户可从“游戏目录”主动安装兼容的新游戏，安装后加入首页；已安装游戏按设置自动更新，移除资源保留存档且不会自动重装。动态游戏各有稳定独立 origin，四个旧游戏保留原存储位置。实际验证与待执行门禁见[v0.4.0 测试报告](doc/测试报告-v0.4.0.md)和[发行就绪度审计](doc/开源就绪度审计-v0.4.0.md)。
 
 ![Android 模拟器中的游戏大厅](doc/screenshots/lobby.png)
 
@@ -61,4 +61,4 @@ v0.3.0 的实际验证与未测边界见[测试报告](doc/测试报告-v0.3.0.m
 
 ## 协作与许可
 
-贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及 Android 运行依赖的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。该清单及 Apache 2.0 全文均内置于 APK；本轮发行审计见 [v0.3.0 开源就绪度审计](doc/开源就绪度审计-v0.3.0.md)。
+贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及 Android 运行依赖的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。该清单及 Apache 2.0 全文均内置于 APK；本轮发行审计见 [v0.4.0 开源就绪度审计](doc/开源就绪度审计-v0.4.0.md)。

@@ -1,0 +1,25 @@
+{
+  "commit": "4aacb1f81b7fc381d2ca7fd725fd93dd109e390e",
+  "apkSha256": "c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39",
+  "apkBytes": 2645967,
+  "testApkSha256": "06bde7d7ead8d4b53804e971771612da3653492da9b4f94c4f91b7be2a930488",
+  "ciRun": 37867512231,
+  "ciConclusion": "success",
+  "jvm": {
+    "tests": 82.0,
+    "failures": 0.0,
+    "errors": 0.0
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 18,
+    "issueIds": [
+      "GradleDependency",
+      "ObsoleteSdkInt",
+      "StaticFieldLeak",
+      "UsableSpace",
+      "MonochromeLauncherIcon",
+      "SetTextI18n"
+    ]
+  }
+}
