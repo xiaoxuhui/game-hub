@@ -62,3 +62,7 @@ v0.3.0 的实际验证与未测边界见[测试报告](doc/测试报告-v0.3.0.m
 ## 协作与许可
 
 贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，行为准则见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，漏洞报告见 [SECURITY.md](SECURITY.md)。本仓库以 [MIT](LICENSE) 授权；四个固定来源及 Android 运行依赖的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。该清单及 Apache 2.0 全文均内置于 APK；本轮发行审计见 [v0.4.0 开源就绪度审计](doc/开源就绪度审计-v0.4.0.md)。
+
+## 本轮集中收尾
+
+31个过程目录及主仓库两个空过程目录已清理，恢复资料和正式发行原字节保存于私有永久归档；本机可复用工具链移至D:\soft\game-hub-toolchain。迁移原字节、空间观测、原六仓库只读状态和审阅记录见[集中清理报告](doc/evidence/n8-cleanup-report-20261010.md)。历史证据中旧过程路径保留当时语境，复用脚本需采用永久工具链并重新创建独立检出。

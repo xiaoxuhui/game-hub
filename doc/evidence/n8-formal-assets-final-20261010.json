@@ -1,0 +1,137 @@
+[
+  {
+    "tag": "v0.2.0",
+    "releaseId": 400453719,
+    "assetId": 601837809,
+    "name": "game-hub.apk",
+    "bytes": 2526679,
+    "sha256": "2a7c61881b22af64aae16c06bfa250d958a7d6b7bd30bec9a44fe06b38a161e4",
+    "file": "v0.2.0--game-hub.apk"
+  },
+  {
+    "tag": "v0.3.0",
+    "releaseId": 407294713,
+    "assetId": 623113303,
+    "name": "game-hub.apk",
+    "bytes": 2621167,
+    "sha256": "61751251fa878523186a879c3c73ae9fef722a163cbf1e00f343c6c17736d73d",
+    "file": "v0.3.0--game-hub.apk"
+  },
+  {
+    "tag": "v0.4.0",
+    "releaseId": 407395194,
+    "assetId": 623483084,
+    "name": "game-hub.apk",
+    "bytes": 2645967,
+    "sha256": "c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39",
+    "file": "v0.4.0--game-hub.apk"
+  },
+  {
+    "tag": "game-resources-v1",
+    "releaseId": 407293817,
+    "assetId": 623110620,
+    "name": "catalog.signed.json",
+    "bytes": 10907,
+    "sha256": "e7f017b35cbb2fad04f5a521c47508f3616fea0ef471f4bd7245f42cd02f7d62",
+    "file": "game-resources-v1--catalog.signed.json"
+  },
+  {
+    "tag": "game-resources-v1",
+    "releaseId": 407293817,
+    "assetId": 623110366,
+    "name": "game-conway-1-77af28d46a71.zip",
+    "bytes": 269135,
+    "sha256": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65",
+    "file": "game-resources-v1--game-conway-1-77af28d46a71.zip"
+  },
+  {
+    "tag": "game-resources-v1",
+    "releaseId": 407293817,
+    "assetId": 623110443,
+    "name": "game-eml-1-20205b0dfba4.zip",
+    "bytes": 106336,
+    "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+    "file": "game-resources-v1--game-eml-1-20205b0dfba4.zip"
+  },
+  {
+    "tag": "game-resources-v1",
+    "releaseId": 407293817,
+    "assetId": 623110476,
+    "name": "game-light-1-9df0cadcfc97.zip",
+    "bytes": 114919,
+    "sha256": "9df0cadcfc979a355df2b07e6f0d0aff5c09fd8a0669b33324eef176b42530c0",
+    "file": "game-resources-v1--game-light-1-9df0cadcfc97.zip"
+  },
+  {
+    "tag": "game-resources-v1",
+    "releaseId": 407293817,
+    "assetId": 623110526,
+    "name": "game-turing-1-e633a50595e9.zip",
+    "bytes": 83347,
+    "sha256": "e633a50595e969d6fd96b52c0d1d5380a17220b0a0acad88055549c570339ce1",
+    "file": "game-resources-v1--game-turing-1-e633a50595e9.zip"
+  },
+  {
+    "tag": "game-resources-v2",
+    "releaseId": 407394942,
+    "assetId": 623482430,
+    "name": "catalog-seq1-0bc8cf66fe67.signed.json",
+    "bytes": 2599,
+    "sha256": "0bc8cf66fe67f030b6628bc7e761b466ea8b53d8bf4d3c46d29788178dcfba68",
+    "file": "game-resources-v2--catalog-seq1-0bc8cf66fe67.signed.json"
+  },
+  {
+    "tag": "game-resources-v2",
+    "releaseId": 407394942,
+    "assetId": 625125622,
+    "name": "catalog-seq2-0428dedaa4dd.signed.json",
+    "bytes": 2659,
+    "sha256": "0428dedaa4dd8abdd5299cf1db52a0f3f8bbbbfb381bd0ec20ad58be16b31915",
+    "file": "game-resources-v2--catalog-seq2-0428dedaa4dd.signed.json"
+  },
+  {
+    "tag": "game-resources-v2",
+    "releaseId": 407394942,
+    "assetId": 625249539,
+    "name": "catalog.signed.json",
+    "bytes": 7935,
+    "sha256": "69a34e189c352ec7bfc4e47be2ba2b08711c46264036277e8de9e2be30d3b5f4",
+    "file": "game-resources-v2--catalog.signed.json"
+  },
+  {
+    "tag": "game-resources-v2",
+    "releaseId": 407394942,
+    "assetId": 625246315,
+    "name": "game-abelian-sandpile-1-8e9db7fc8720.zip",
+    "bytes": 83690,
+    "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5",
+    "file": "game-resources-v2--game-abelian-sandpile-1-8e9db7fc8720.zip"
+  },
+  {
+    "tag": "game-resources-v2",
+    "releaseId": 407394942,
+    "assetId": 625246403,
+    "name": "game-lambda-diagram-game-1-5e418cdff45e.zip",
+    "bytes": 89571,
+    "sha256": "5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8",
+    "file": "game-resources-v2--game-lambda-diagram-game-1-5e418cdff45e.zip"
+  },
+  {
+    "tag": "game-resources-v2",
+    "releaseId": 407394942,
+    "assetId": 623482293,
+    "name": "game-memory-demo-1-27f1df3b689e.zip",
+    "bytes": 8490,
+    "sha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b",
+    "file": "game-resources-v2--game-memory-demo-1-27f1df3b689e.zip"
+  },
+  {
+    "tag": "game-resources-v2",
+    "releaseId": 407394942,
+    "assetId": 625120403,
+    "name": "game-memory-demo-2-178d01e9ee05.zip",
+    "bytes": 9510,
+    "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+    "file": "game-resources-v2--game-memory-demo-2-178d01e9ee05.zip"
+  }
+]

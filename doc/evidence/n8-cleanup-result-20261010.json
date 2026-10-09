@@ -1,0 +1,208 @@
+{
+  "archiveIndexSha256": "b8e04185c809fcad3c25c4700c91d24077a6ba499c1ac646829b75dd49a67f9a",
+  "completedAtUtc": "2026-10-09T16:08:09.6121123Z",
+  "toolchainPreserved": [
+    {
+      "destination": "D:\\soft\\game-hub-toolchain\\android-sdk",
+      "bytes": 3287184828.0,
+      "files": 11698,
+      "source": "D:\\soft\\.ci-tmp\\game-hub-signing-tools\\android-sdk",
+      "allHashesEqual": true
+    },
+    {
+      "destination": "D:\\soft\\game-hub-toolchain\\gradle-8.7",
+      "bytes": 148700096.0,
+      "files": 268,
+      "source": "D:\\soft\\.ci-tmp\\game-hub-signing-tools\\gradle-8.7",
+      "allHashesEqual": true
+    },
+    {
+      "destination": "D:\\soft\\game-hub-toolchain\\jdk-17.0.20.1+1",
+      "bytes": 317546460.0,
+      "files": 492,
+      "source": "D:\\soft\\.ci-tmp\\game-hub-signing-tools\\jdk-17.0.20.1+1",
+      "allHashesEqual": true
+    },
+    {
+      "destination": "D:\\soft\\game-hub-toolchain\\pnpm-11.19",
+      "bytes": 36704291.0,
+      "files": 899,
+      "source": "D:\\soft\\.ci-tmp\\game-hub-tools\\pnpm-11.19\\node_modules\\.pnpm\\pnpm@11.19.0\\node_modules\\pnpm",
+      "allHashesEqual": true
+    }
+  ],
+  "observedDriveFreeBefore": 169645256704,
+  "observedDriveFreeAfter": 184266313728,
+  "processes": [
+    {
+      "serial": "emulator-5562",
+      "alreadyAbsent": true,
+      "avd": "gamehub-resource-20261008"
+    },
+    {
+      "serial": "emulator-5564",
+      "alreadyAbsent": true,
+      "avd": "gamehub-upgrade-20261009"
+    }
+  ],
+  "originalRepositoriesTouched": false,
+  "reviewedCommit": "f77905fe46ac3e77fca4d531412655ddaac07b81",
+  "logicalBytesRemoved": 14883135516.0,
+  "removed": [
+    {
+      "logicalBytes": 196729170.0,
+      "path": "D:\\soft\\game-hub-build",
+      "removed": true
+    },
+    {
+      "logicalBytes": 19902476.0,
+      "path": "D:\\soft\\game-hub-build-final",
+      "removed": true
+    },
+    {
+      "logicalBytes": 101405797.0,
+      "path": "D:\\soft\\game-hub-build-icon-20261003",
+      "removed": true
+    },
+    {
+      "logicalBytes": 275773.0,
+      "path": "D:\\soft\\game-hub-build-p3",
+      "removed": true
+    },
+    {
+      "logicalBytes": 8757006.0,
+      "path": "D:\\soft\\game-hub-build-p6",
+      "removed": true
+    },
+    {
+      "logicalBytes": 34196193.0,
+      "path": "D:\\soft\\game-hub-build-p7",
+      "removed": true
+    },
+    {
+      "logicalBytes": 44128945.0,
+      "path": "D:\\soft\\game-hub-build-resources-20261008",
+      "removed": true
+    },
+    {
+      "logicalBytes": 14882811.0,
+      "path": "D:\\soft\\game-hub-build-v2",
+      "removed": true
+    },
+    {
+      "logicalBytes": 11342853.0,
+      "path": "D:\\soft\\game-hub-candidate-v0.2.0-153df9a",
+      "removed": true
+    },
+    {
+      "logicalBytes": 259111.0,
+      "path": "D:\\soft\\game-hub-continuous-audit-20261008",
+      "removed": true
+    },
+    {
+      "logicalBytes": 1251.0,
+      "path": "D:\\soft\\game-hub-icon-audit-20261003",
+      "removed": true
+    },
+    {
+      "logicalBytes": 1250.0,
+      "path": "D:\\soft\\game-hub-planning-v0.3.0-20261003",
+      "removed": true
+    },
+    {
+      "logicalBytes": 15154506.0,
+      "path": "D:\\soft\\game-hub-release-v0.2.0-74216c3",
+      "removed": true
+    },
+    {
+      "logicalBytes": 13123373.0,
+      "path": "D:\\soft\\game-hub-release-v0.2.0-f53a4c1",
+      "removed": true
+    },
+    {
+      "logicalBytes": 9158004.0,
+      "path": "D:\\soft\\game-hub-resource-producer-20261009",
+      "removed": true
+    },
+    {
+      "logicalBytes": 74763243.0,
+      "path": "D:\\soft\\game-hub-upgrade-20261009",
+      "removed": true
+    },
+    {
+      "logicalBytes": 7708173.0,
+      "path": "D:\\soft\\game-hub-verify-v030-20261008",
+      "removed": true
+    },
+    {
+      "logicalBytes": 1278859.0,
+      "path": "D:\\soft\\.ci-tmp\\emulator-evidence",
+      "removed": true
+    },
+    {
+      "logicalBytes": 13485523474.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-avd",
+      "removed": true
+    },
+    {
+      "logicalBytes": 11341243.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-final-153df9a",
+      "removed": true
+    },
+    {
+      "logicalBytes": 5837510.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-license-audit",
+      "removed": true
+    },
+    {
+      "logicalBytes": 287.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-light-smoke-c861",
+      "removed": true
+    },
+    {
+      "logicalBytes": 12899.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-m3-emulator",
+      "removed": true
+    },
+    {
+      "logicalBytes": 82663.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-maintenance",
+      "removed": true
+    },
+    {
+      "logicalBytes": 10027772.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-p7-candidate",
+      "removed": true
+    },
+    {
+      "logicalBytes": 514658.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-p7-emulator",
+      "removed": true
+    },
+    {
+      "logicalBytes": 10050028.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-p7-license-candidate",
+      "removed": true
+    },
+    {
+      "logicalBytes": 480657981.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-signing-tools",
+      "removed": true
+    },
+    {
+      "logicalBytes": 36719444.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-tools",
+      "removed": true
+    },
+    {
+      "logicalBytes": 48952430.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-upgrade-fixtures-20261009",
+      "removed": true
+    },
+    {
+      "logicalBytes": 240346333.0,
+      "path": "D:\\soft\\.ci-tmp\\game-hub-work",
+      "removed": true
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "actualGameHubTopDirectories": [
+    "D:\\soft\\game-hub",
+    "D:\\soft\\game-hub-archives",
+    "D:\\soft\\game-hub-signing-backup",
+    "D:\\soft\\game-hub-toolchain"
+  ],
+  "extraEmptyDirectories": [
+    {
+      "empty": true,
+      "removed": true,
+      "logicalBytes": 0,
+      "path": "D:\\soft\\game-hub\\.build\\signing"
+    },
+    {
+      "empty": true,
+      "removed": true,
+      "logicalBytes": 0,
+      "path": "D:\\soft\\game-hub\\.build"
+    }
+  ],
+  "remainingAllowlistedDirectories": [],
+  "taskProcessesRemaining": [],
+  "absentAllowlistedDirectories": 31,
+  "retainedRoots": [
+    {
+      "path": "D:\\soft\\game-hub",
+      "exists": true
+    },
+    {
+      "path": "D:\\soft\\game-hub-archives",
+      "exists": true
+    },
+    {
+      "path": "D:\\soft\\game-hub-signing-backup",
+      "exists": true
+    },
+    {
+      "path": "D:\\soft\\game-hub-toolchain",
+      "exists": true
+    }
+  ],
+  "recordedAtUtc": "2026-10-09T16:09:18.9928255Z",
+  "sameFourOriginalHeadsAndWorktrees": true,
+  "signingDirectoriesPresent": {
+    "resources": true,
+    "apk": true
+  }
+}
