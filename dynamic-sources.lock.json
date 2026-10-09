@@ -70,6 +70,21 @@
         "upstream-source.json"
       ],
       "releaseNotes": "首次动态资源接入；原游戏固定来源 11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2，原玩法和存档格式保持。来源与MIT许可随资源包附带。"
+    },
+    {
+      "id": "red-green-puzzle",
+      "displayName": "红绿变换",
+      "iconKind": "logic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "31eec2e638357d8e3e6a0550afc780e09bdaac49",
+      "directory": "examples/red-green-puzzle",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "red-green-puzzle-dynamic-v1",
+      "files": ["LICENSE", "app.js", "core.js", "index.html", "upstream-source.json"],
+      "releaseNotes": "红绿变换首次接入：数量限1到10、最多683行，恢复本机数量参数；复制不可用时可选全文手动复制。固定图灵上游592027，适配源码与完整MIT许可随包。"
     }
   ]
 }
