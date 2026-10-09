@@ -92,6 +92,12 @@ if($http){
     $processEvents+=@{pid=$http.ProcessId;kind='task-local-http';stopped=$true}
 }
 foreach($pair in @(@('emulator-5562','gamehub-resource-20261008'),@('emulator-5564','gamehub-upgrade-20261009'))){
+    $present=@(& $taskAdb devices | Select-Object -Skip 1 | Where-Object { ($_ -split '\s+')[0] -ceq $pair[0] })
+    if($LASTEXITCODE -ne 0){throw 'Could not inspect emulator presence'}
+    if(-not $present.Count){
+        $processEvents+=@{serial=$pair[0];avd=$pair[1];alreadyAbsent=$true}
+        continue
+    }
     $name=@(& $taskAdb -s $pair[0] emu avd name)
     if($LASTEXITCODE -ne 0 -or $name[0].Trim() -cne $pair[1]){throw 'Task emulator identity differs'}
     & $taskAdb -s $pair[0] emu kill
@@ -103,7 +109,13 @@ $devices=@(& $taskAdb devices | Select-Object -Skip 1 | Where-Object { $_.Trim()
 if($devices.Count){throw 'Other device still connected; shared SDK relocation blocked'}
 & $taskAdb kill-server
 if($LASTEXITCODE -ne 0){throw 'Task-only adb server stop failed'}
-$busy=@(Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine.Contains('D:\soft\.ci-tmp\game-hub-signing-tools\') })
+$busy=@()
+for($attempt=0;$attempt -lt 10;$attempt++){
+    $busy=@(Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine.Contains('D:\soft\.ci-tmp\game-hub-signing-tools\') })
+    if(-not $busy.Count){break}
+    # Emulator exit watchdogs use -sleep 20. Wait at most 30 seconds; never kill unknown consumers.
+    Start-Sleep -Seconds 3
+}
 if($busy.Count){throw 'Toolchain still in use; inspect processes before relocating'}
 
 New-Item -ItemType Directory -Path $taskToolchain | Out-Null

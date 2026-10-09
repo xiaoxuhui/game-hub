@@ -1,4 +1,4 @@
-"""One-time task archive preparation. No deletion, original source writes, or key access."""
+"""Task recovery archive: no deletion/original writes/signing-key access; optional in-memory GitHub API credential."""
 import hashlib
 import json
 import os
