@@ -4,5 +4,3 @@ com.xiaoxuhui.gamehub.ProductionResourceIdentityDeviceTest:.
 Time: 0.103
 
 OK (1 test)
-
-
