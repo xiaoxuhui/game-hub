@@ -33,6 +33,15 @@ export function successorPayload(old,games,snapshot,sequence,now=Date.now()){
     issuedAt:new Date(now).toISOString(),expiresAt:new Date(now+89*86400000).toISOString(),games:merged};
   validateSigningInput(payload,snapshot,old,now);return payload;
 }
+export function validateHistoryCatalogs(history,current,snapshot){
+  const catalogs=[...history,current].sort((a,b)=>BigInt(a.catalogSequence)<BigInt(b.catalogSequence)?-1:1);
+  if(BigInt(current.catalogSequence)!==BigInt(catalogs.length))throw new Error('Incomplete signed history chain');
+  for(let i=0;i<catalogs.length;i++){
+    if(catalogs[i].catalogSequence!==String(i+1))throw new Error('Duplicate or missing signed history sequence');
+    validateSigningInput(catalogs[i],snapshot,i?catalogs[i-1]:null,Date.parse(catalogs[i].issuedAt));
+  }
+  return catalogs;
+}
 async function download(asset){
   const url=new URL(asset.browser_download_url);
   if(url.origin!=='https://github.com'||url.pathname!==`/xiaoxuhui/game-hub/releases/download/game-resources-v2/${asset.name}`)throw new Error('Public asset URL changed');
@@ -62,8 +71,9 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const fake=structuredClone(snapshot);let id=Math.max(...assets.map(a=>a.id))+1;
       for(const game of games){if(!assets.some(a=>a.name===assetName(game)))fake.assetPages.at(-1).assets.push({id:id++,name:assetName(game),state:'uploaded',size:game.archiveBytes,digest:`sha256:${game.archiveSha256}`});}
       // A synthetic page is only for local candidate admission; real issuance requires freshly captured complete pages.
-      const admission={...fake,assetPages:[{page:1,hasNext:false,assets:fake.assetPages.flatMap(p=>p.assets)}]};
-      if(admission.assetPages[0].assets.length>100)throw new Error('Admission snapshot exceeds one page; no issuance');
+      const all=fake.assetPages.flatMap(p=>p.assets),pages=[];
+      for(let i=0;i<all.length;i+=100)pages.push({page:pages.length+1,hasNext:i+100<all.length,assets:all.slice(i,i+100)});
+      const admission={...fake,assetPages:pages};
       successorPayload(old,games,admission,sequence);
       console.log(`Preflight verified previous sequence ${old.catalogSequence}, ${games.length} immutable candidates`);
     }else if(mode==='payload'){
@@ -85,16 +95,23 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       if(next.catalogSequence!==sequence)throw new Error('Online sequence mismatch');
       const history=assets.filter(a=>a.name===`catalog-seq${old.catalogSequence}-${expected.slice(0,12)}.signed.json`);
       if(history.length!==1||sha256(await download(history[0]))!==expected)throw new Error('Archived signed history missing');
+      const historical=[];
+      for(const asset of assets.filter(a=>/^catalog-seq[1-9][0-9]*-[0-9a-f]{12}\.signed\.json$/.test(a.name))){
+        const raw=await download(asset),catalog=verifyEnvelope(raw,publicKey,keyId).catalog;
+        if(asset.name!==`catalog-seq${catalog.catalogSequence}-${sha256(raw).slice(0,12)}.signed.json`)throw new Error('Historical catalog name/bytes mismatch');
+        historical.push(catalog);
+      }
+      const catalogs=validateHistoryCatalogs(historical,next,snapshot);
       const results=[];
-      for(const game of [...old.games,...next.games]){
+      for(const game of catalogs.flatMap(c=>c.games)){
         if(results.some(r=>r.assetId===game.assetId))continue;
         const asset=assets.find(a=>a.id===game.assetId),zip=await download(asset);
         if(sha256(zip)!==game.archiveSha256||zip.length!==game.archiveBytes)throw new Error('Signed ZIP identity mismatch');
         results.push({id:game.id,contentCode:game.contentCode,assetId:asset.id,bytes:zip.length,sha256:sha256(zip)});
       }
       put(directory,'online-snapshot.json',JSON.stringify(snapshot,null,2)+'\n');
-      put(directory,'online-verified.json',JSON.stringify({catalogSequence:sequence,catalogAssetId:current[0].id,catalogSha256:sha256(bytes),historyAssetId:history[0].id,resources:results},null,2)+'\n');
-      console.log(`Verified online sequence ${sequence}, ${results.length} cumulative current/previous resource assets`);
+      put(directory,'online-verified.json',JSON.stringify({catalogSequence:sequence,catalogAssetId:current[0].id,catalogSha256:sha256(bytes),historyAssetId:history[0].id,verifiedHistorySequences:catalogs.map(c=>c.catalogSequence),resources:results},null,2)+'\n');
+      console.log(`Verified online sequence ${sequence}, ${results.length} cumulative resources across ${catalogs.length} signed catalogs`);
     }else throw new Error('Unknown successor mode');
   }catch(error){console.error(error.message);process.exitCode=1;}
 }

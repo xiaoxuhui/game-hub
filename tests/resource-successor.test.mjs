@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {packDynamic,dynamicSources} from '../scripts/dynamic-resources.mjs';
 import {assetName} from '../scripts/resource-protocol.mjs';
-import {successorPayload} from '../scripts/resource-successor.mjs';
+import {successorPayload,validateHistoryCatalogs} from '../scripts/resource-successor.mjs';
 function fixture(){
   const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
   const entries=source.files.map(path=>({path,data:readFileSync(new URL(`../examples/memory-demo/${path}`,import.meta.url))}));
@@ -34,4 +34,18 @@ test('successor rejects forged asset bytes and duplicate candidate identities be
   assert.throws(()=>successorPayload(old,[game,game],snapshot,'2'),/Candidate identity/);
   snapshot.assetPages[0].assets[0].digest='sha256:'+'0'.repeat(64);
   assert.throws(()=>successorPayload(old,[game],snapshot,'2'),/Asset identity/);
+});
+test('complete signed history audit detects earliest missing ZIP, sequence gaps and historical identity mutation',()=>{
+  const {game,old,snapshot,asset}=fixture();
+  const newer={...game,contentCode:game.contentCode+1,version:'next',archiveSha256:'d'.repeat(64),assetId:101};
+  snapshot.assetPages[0].assets.push(asset(newer));
+  const second=successorPayload(old,[newer],snapshot,'2');
+  const third=successorPayload(second,[newer],snapshot,'3');
+  assert.equal(validateHistoryCatalogs([second,old],third,snapshot).length,3);
+  assert.throws(()=>validateHistoryCatalogs([second],third,snapshot),/Incomplete/);
+  assert.throws(()=>validateHistoryCatalogs([old,old],third,snapshot),/Duplicate or missing/);
+  const forged=structuredClone(second);forged.games[0].displayName='Changed';
+  assert.throws(()=>validateHistoryCatalogs([old,forged],third,snapshot),/same-code/);
+  snapshot.assetPages[0].assets.shift();
+  assert.throws(()=>validateHistoryCatalogs([old,second],third,snapshot),/Asset identity/);
 });
