@@ -1,6 +1,6 @@
 # N8 发布后集中清理实际报告
 
-- Status: REVIEW_PENDING
+- Status: VERIFIED
 - 执行绑定主提交：`f77905fe46ac3e77fca4d531412655ddaac07b81`，执行时 clean 且与 origin/main 完全一致。
 - 归档索引：`verified-archive-index-after-stop.json`，SHA-256 `b8e04185c809fcad3c25c4700c91d24077a6ba499c1ac646829b75dd49a67f9a`。
 - 完成时间：2026-10-10 00:08:09（Asia/Shanghai）；最终只读验收约 00:09。
@@ -56,3 +56,7 @@
 4. 两个 own AVD 停止后 SDK `-sleep 20` 退出 watchdog 尚在，忙碌门禁零迁移/零删除中止；增加最多 30 秒等待和已退出 serial 的显式记录，现存 serial 仍核真实 AVD 名，其他设备仍阻止搬迁。修订复审 CLOSED。
 5. 模拟器退出追加四个日志，再次原字节门禁中止；保留原归档、追加退出后快照。首轮分支 AST 缩进错误在实际运行前修复，两次提交留痕；修订复审 CLOSED，实际追加归档由另一审核视角 CLOSED。
 6. 绑定新索引执行全部门禁通过，迁移工具链、清理 31 目录及两个空过程目录完成。实际日志见 [完整执行](n8-cleanup-execution-complete-20261010.txt)；本清理结果提交后的独立审阅是最后关闭条件。
+
+## 最终独立闭环
+
+185a2c2首审硬证据通过，仅需修正总览中原仓库状态的笼统表述；18156fb43e219f7d81aafd3657c590e0f020e941修订复审CLOSED。独立审核额外重算SDK/JDK/Gradle全部12458个文件SHA为零差异，并实际查当前GitHub五个Release的完整分页15资产，与永久索引一致。原六仓库全状态及保护目录/无任务服务、全部路径清理均核查通过。首审与修订留痕见[首审](n8-cleanup-independent-review-first-20261010.md)和[最终审阅](n8-cleanup-independent-review-20261010.md)；N8已勾选完成。
