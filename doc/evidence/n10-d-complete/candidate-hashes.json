@@ -1,0 +1,77 @@
+{
+  "producer": "fc9da9be6a238018d86f2085facd5b8085e68cf8",
+  "files": [
+    {
+      "candidate": "resource-candidate",
+      "file": "candidate.json",
+      "bytes": 380,
+      "sha256": "cc538a63bb9555a7fe4454b600eadb384944f67318425729ec90439025917a4f"
+    },
+    {
+      "candidate": "resource-candidate",
+      "file": "game-conway-1-77af28d46a71.zip",
+      "bytes": 269135,
+      "sha256": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65"
+    },
+    {
+      "candidate": "resource-candidate",
+      "file": "game-eml-1-20205b0dfba4.zip",
+      "bytes": 106336,
+      "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6"
+    },
+    {
+      "candidate": "resource-candidate",
+      "file": "game-light-2-19adc2db9b14.zip",
+      "bytes": 115671,
+      "sha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267"
+    },
+    {
+      "candidate": "resource-candidate",
+      "file": "game-turing-2-ad26e84c8b60.zip",
+      "bytes": 86435,
+      "sha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43"
+    },
+    {
+      "candidate": "resource-candidate",
+      "file": "games.unsigned.json",
+      "bytes": 10073,
+      "sha256": "005f03cfcaed9d7fbdcc44ea819ef67e06602861db0ad3986144002d02930319"
+    },
+    {
+      "candidate": "dynamic-candidate",
+      "file": "candidate.json",
+      "bytes": 164,
+      "sha256": "de10ca25acf1b4663af4b76dbbc2c1ba4fd58f8c810e9b5d470b792d3a498c82"
+    },
+    {
+      "candidate": "dynamic-candidate",
+      "file": "game-abelian-sandpile-1-8e9db7fc8720.zip",
+      "bytes": 83690,
+      "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5"
+    },
+    {
+      "candidate": "dynamic-candidate",
+      "file": "game-lambda-diagram-game-2-0ee2f0ef4154.zip",
+      "bytes": 102362,
+      "sha256": "0ee2f0ef41545e2364172a3ec2c74481c9cb16ae3c6361a66786f24d0594cdb9"
+    },
+    {
+      "candidate": "dynamic-candidate",
+      "file": "game-memory-demo-2-178d01e9ee05.zip",
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "candidate": "dynamic-candidate",
+      "file": "game-red-green-puzzle-1-81edc7c967f7.zip",
+      "bytes": 14620,
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+    },
+    {
+      "candidate": "dynamic-candidate",
+      "file": "games.unsigned.json",
+      "bytes": 8659,
+      "sha256": "e1375de070704f6d1009d92113b1a144d4f4591f24247150792b45545afc83b0"
+    }
+  ]
+}
