@@ -27,3 +27,9 @@
 - 追加实际 Abel 发布列表证据：n10-abelian-release-list.json，0.1.2为预发布。
 - 独立审阅初稿已从主目录移到本轮独立检出；后续报告仅写入独立检出，主目录只快进同步。
 - 批改后 git diff --check 退出0；等待独立复审。
+
+## 独立复审：82ce4ca767ab64a7235c048f7aa80fdd7db48997
+
+**CLOSED。** 只读核对完整批改差异后，首审三项 P2 均已落实：计划类型为 `fix`；B–E 已列可运行的 Node、Gradle、strict online、APK 身份命令与退出/证据判据，尚未实现的 v1 发行器和 N10 清理器明确须先提交、独立审核、补足真实 CLI 才能执行；设计补齐目录新鲜度、available、host/协议/存储合同、eligible/pinned/quarantine 与 active/ready 区别，U13 覆盖同版资源不可用及待生效。Abel 发布列表证据记载 0.1.2 为预发布，与 `/latest` 404 及既有安装事实一致。
+
+本次复审只确认规划可进入 N10-B；未来工具命令仍须在各自实现切片复核。没有运行构建、设备、发行或删除。受审独立检出 HEAD 为 `82ce4ca767ab64a7235c048f7aa80fdd7db48997`，追加本段前工作树干净。
