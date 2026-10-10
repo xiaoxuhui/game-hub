@@ -18,7 +18,7 @@ jobs:
           set -euo pipefail
           remote=$(git ls-remote origin refs/heads/main | cut -f1)
           test "$GITHUB_SHA" = "$remote"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
       - uses: pnpm/action-setup@v4
