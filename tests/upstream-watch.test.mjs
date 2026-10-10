@@ -36,6 +36,8 @@ test('resource HTML in doc wins over metadata exclusion; rename and dist are det
 test('unknown new dependencies need review; only known metadata can be ignored', () => {
   assert.equal(classifyChanges([{filename: 'package.json'}], []).status, 'other-change-pending-review');
   assert.equal(classifyChanges([{filename: 'doc/new.html'}], []).status, 'other-change-pending-review');
+  assert.equal(classifyChanges([{filename: 'src/levels.md'}], []).status, 'other-change-pending-review');
+  assert.equal(classifyChanges([{filename: 'doc/README.md'}], ['doc/README.md']).status, 'resource-change-pending-review');
   assert.equal(classifyChanges([{filename: 'README.md'}, {filename: '.github/workflows/ci.yml'}], []).status, 'metadata-only');
   assert.throws(() => classifyChanges(Array.from({length: 300}, () => ({filename: 'a.js'})), []));
   assert.throws(() => classifyChanges([{filename: null}], []));

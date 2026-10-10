@@ -52,7 +52,9 @@ export function classifyChanges(files, inputs) {
       requireValue(typeof file.previous_filename === 'string', 'Invalid rename source');
       paths.push(file.previous_filename);
     }
-    const metadata = path => /^(?:\.github\/|tests?\/)/.test(path) || /\.md$/i.test(path);
+    const metadata = path => /^(?:\.github\/|tests?\/)/.test(path)
+      || /^(?:doc|docs)\/.*\.md$/i.test(path)
+      || /^(?:README|CHANGELOG|CONTRIBUTING|SECURITY|CODE_OF_CONDUCT)(?:\.[\w-]+)?\.md$/i.test(path);
     if (paths.some(matches)) resourceFiles.push(file.filename);
     else if (paths.every(metadata)) metadataFiles.push(file.filename);
     else reviewFiles.push(file.filename);
