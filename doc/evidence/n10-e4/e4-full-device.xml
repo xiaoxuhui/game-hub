@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.xiaoxuhui.gamehub.DocumentExportTest" tests="70" failures="0" errors="0" skipped="13" time="188.708" timestamp="2026-10-10T17:34:11" hostname="localhost">
+  <properties>
+    <property name="device" value="gamehub-n10-debug-20261011(AVD) - 14" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="missingRequestIsReportedInsteadOfClaimingSaved" classname="com.xiaoxuhui.gamehub.DocumentExportTest" time="1.901" />
+  <testcase name="staleStoppedAndOverlappingFileChoosersReturnCancellation" classname="com.xiaoxuhui.gamehub.DocumentExportTest" time="5.279" />
+  <testcase name="fourActualWebExportsSaveThroughSystemDocumentsUi" classname="com.xiaoxuhui.gamehub.DocumentExportTest" time="20.995" />
+  <testcase name="pendingDocumentSurvivesActivityRotationWithoutAnotherRequest" classname="com.xiaoxuhui.gamehub.DocumentExportTest" time="1.331" />
+  <testcase name="actualResolverWritesUtf8OffMainAndFailureReleasesTheReservation" classname="com.xiaoxuhui.gamehub.DocumentExportTest" time="0.048" />
+  <testcase name="fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker" classname="com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest" time="0.115">
+    <skipped />
+  </testcase>
+  <testcase name="apk403CannotBlockDynamicAutoUpdateAndMissingV2DoesNotBlockOldChannels" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="4.275" />
+  <testcase name="installedCompatibleGameUpdatesAutomaticallyAndRetirementClearsOnlyReady" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="2.178" />
+  <testcase name="installedDynamicFailurePersistsInDynamicStoreAndExplicitCodeOneRetryWorks" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="1.75" />
+  <testcase name="dynamic429BackoffPersistsWhileV1AndApkRemainAvailable" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="1.466" />
+  <testcase name="blockedDynamicReadRetainsGlobalBusyUntilCancelledBytesAreCleaned" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="1.439" />
+  <testcase name="wifiFirstInstallIsManualAndRemovedGameNeverAutomaticallyReinstalls" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="1.695" />
+  <testcase name="sharedActualStoreBytesRejectDynamicInstallAndKeepBothOldSelections" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="1.256" />
+  <testcase name="incompatibleNewGameIsVisibleButCannotDownloadAndCorruptInstalledUpdateKeepsOld" classname="com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest" time="2.025" />
+  <testcase name="actualPinnedDemoTouchesKeyboardSafAndResourceRemovalPreserveProgress" classname="com.xiaoxuhui.gamehub.DynamicDemoDeviceTest" time="13.885" />
+  <testcase name="missingDynamicEntryShowsErrorAndClosesSessionWithoutBuiltinIdCrash" classname="com.xiaoxuhui.gamehub.DynamicErrorDeviceTest" time="1.376" />
+  <testcase name="futureHostGameExplainsCompatibilityAndOffersNoInstall" classname="com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest" time="3.425" />
+  <testcase name="actualDirectoryInstallHomeOpenRecreateRemoveReinstallPreservesProgress" classname="com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest" time="10.175" />
+  <testcase name="largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable" classname="com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest" time="18.266" />
+  <testcase name="realDynamicScopedWorkerIsUnregisteredAndOldResponseCannotSurviveGuard" classname="com.xiaoxuhui.gamehub.DynamicOriginWebViewTest" time="1.446" />
+  <testcase name="dynamicGuardClearsOnlyKnownResourcesAndBlocksUnknownCacheWithoutDeletingSave" classname="com.xiaoxuhui.gamehub.DynamicOriginWebViewTest" time="0.736" />
+  <testcase name="forgedDynamicRootWorkerCannotAuthorizeActivationOrPlayAndSaveIsPreserved" classname="com.xiaoxuhui.gamehub.DynamicOriginWebViewTest" time="0.5" />
+  <testcase name="siblingAndOldOriginsIsolateStorageAndCannotReadOrWriteParentCookies" classname="com.xiaoxuhui.gamehub.DynamicOriginWebViewTest" time="1.322" />
+  <testcase name="verifyAfterActualProcessRestart" classname="com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest" time="0.043">
+    <skipped />
+  </testcase>
+  <testcase name="prepareInterruptedOperation" classname="com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest" time="0.053">
+    <skipped />
+  </testcase>
+  <testcase name="realLobbyAndUpdateDetailsRemainReachableAndCancellationActionReachesTaskGate" classname="com.xiaoxuhui.gamehub.LobbyAccessibilityDeviceTest" time="0.04">
+    <skipped />
+  </testcase>
+  <testcase name="realFormalHallChecksAndPreservesActivatedResources" classname="com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest" time="0.039">
+    <skipped />
+  </testcase>
+  <testcase name="installedProductionIdentityMatchesReviewedRelease" classname="com.xiaoxuhui.gamehub.ProductionResourceIdentityDeviceTest" time="0.038">
+    <skipped />
+  </testcase>
+  <testcase name="threeProductionResourceUpdatesPreserveRealSaves" classname="com.xiaoxuhui.gamehub.ProductionUpdateSaveDeviceTest" time="0.041">
+    <skipped />
+  </testcase>
+  <testcase name="readFourDownloadedGamesAndActualSavesAfterProcessRestart" classname="com.xiaoxuhui.gamehub.ResourceOfflineRestartDeviceTest" time="0.039">
+    <skipped />
+  </testcase>
+  <testcase name="prepareFourDownloadedOfflineSessionsAndPause" classname="com.xiaoxuhui.gamehub.ResourceOfflineRestartDeviceTest" time="0.038">
+    <skipped />
+  </testcase>
+  <testcase name="verifyAfterActualProcessRestart" classname="com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest" time="0.042">
+    <skipped />
+  </testcase>
+  <testcase name="prepareInterruptedOperation" classname="com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest" time="0.042">
+    <skipped />
+  </testcase>
+  <testcase name="downloadedTuringWorkerUsesSessionResourcesAndCompletesActualProtocol" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="0.68" />
+  <testcase name="emlRealSelectionStateSurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="1.529" />
+  <testcase name="turingActualProjectEditorSurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="2.289" />
+  <testcase name="lightActualStarsSurviveResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="2.368" />
+  <testcase name="conwayPatternLibrarySurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="2.421" />
+  <testcase name="turingCampaignDraftSurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="2.033" />
+  <testcase name="controllingWorkerCacheCannotSurviveFreshResolverSession" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.834" />
+  <testcase name="registeredCacheIsRemovedAndActualLightSaveIsPreservedButUnknownCacheBlocks" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.573" />
+  <testcase name="builtinResolverLoadsRealGameAtStableOriginAndRejectsOtherGameResources" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.242" />
+  <testcase name="forgedGuardPageFromRootWorkerCannotAuthorizeBuiltinOrActivation" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.397" />
+  <testcase name="badArchivePreservesBuiltinAndCleansPartBeforeExplicitRetry" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="0.731" />
+  <testcase name="sourceRateLimitIsDurableAndDoesNotBlockOtherUpdateChannels" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="1.053" />
+  <testcase name="goingOfflineMarksSuccessfulResultsAsHistorical" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="1.31" />
+  <testcase name="meteredNeedsManualConfirmationAndSavedAutomaticOptOutPersists" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="0.803" />
+  <testcase name="resourceRateLimitPersistsIndependentlyWhileApkReminderRemainsAvailable" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="0.389" />
+  <testcase name="source404AndTimeoutDoNotHideOtherVersionsOrSignedResources" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="0.494" />
+  <testcase name="wifiAutomaticallyDownloadsOnlyChangedGameAndNeverTheApk" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="0.746" />
+  <testcase name="apkRateLimitsAndMissingReleaseDoNotBlockResourceChannel" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="2.336" />
+  <testcase name="gameBackgroundAndMeteredTransitionsCancelHoldBusyUntilCleanupThenAllowManualRetry" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="2.132" />
+  <testcase name="manualAndStartupQueriesIncludeAllRegisteredGameRepositories" classname="com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest" time="0.441" />
+  <testcase name="newerSameSignerApkPassesPreflightAndProducesSystemInstallerIntent" classname="com.xiaoxuhui.gamehub.UpdateFixtureTest" time="0.034" />
+  <testcase name="loadingErrorDestroysActualViewRejectsOldBridgeAndKeepsActualLightSave" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="3.385" />
+  <testcase name="cardsDisplayActualCandidateAndActiveVersionsWithoutPromotingRemoteVersion" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.982" />
+  <testcase name="lobbyIsImmediatelyUsableAndRotationKeepsOneCoordinator" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.068" />
+  <testcase name="stoppedActivitySaveBridgeRejectsBeforeOpeningExternalFlow" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="46.177" />
+  <testcase name="oneOfFourRenewalFailuresDoesNotPreventOthersAndClearsAfterItsSuccess" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.752" />
+  <testcase name="startupChecksDoNotBlockOpeningActualOfflineGame" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="2.107" />
+  <testcase name="settingsPersistWithoutUiThreadDiskWrites" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.242" />
+  <testcase name="unknownAndFailedLocalScanNeverClaimBuiltinOrRemoteUpdates" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.897" />
+  <testcase name="localRecoveryCommitsOffUiAndPersistsAcrossStoreRecreation" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.167" />
+  <testcase name="blockedCrossGameNavigationKeepsVerifiedDownloadedSessionAndDoesNotQuarantineIt" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.934" />
+  <testcase name="trackedConfirmationIsDismissedOnStopAndDoesNotReopenOnRotation" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="2.339" />
+  <testcase name="realAtomicReminderAndSignedDirectoryReopenWithOriginalCheckTime" classname="com.xiaoxuhui.gamehub.UpdatePreferencesTest" time="0.721" />
+  <testcase name="realPreferencesRestoreSeparateBackoffAndSettings" classname="com.xiaoxuhui.gamehub.UpdatePreferencesTest" time="0.035" />
+  <testcase name="coordinatorSubscriptionsDoNotRetainDetachedActivityCallbacks" classname="com.xiaoxuhui.gamehub.UpdatePreferencesTest" time="0.01" />
+  <testcase name="stageSameSignerFixtureForPrivatePreflight" classname="com.xiaoxuhui.gamehub.UpgradeFixtureStageTest" time="0.058">
+    <skipped />
+  </testcase>
+  <testcase name="fourRealGameSavesSurviveSameSignerApkUpgrade" classname="com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest" time="0.05">
+    <skipped />
+  </testcase>
+</testsuite>

@@ -1,0 +1,97 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :app:compileReleaseKotlin UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:compileReleaseJavaWithJavac NO-SOURCE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:dexBuilderRelease
+> Task :app:desugarReleaseFileDependencies FROM-CACHE
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeExtDexRelease FROM-CACHE
+> Task :app:mergeReleaseGlobalSynthetics FROM-CACHE
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:processReleaseJavaRes
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:bundleReleaseClassesToCompileJar UP-TO-DATE
+> Task :app:preReleaseAndroidTestBuild SKIPPED
+> Task :app:checkReleaseAndroidTestAarMetadata UP-TO-DATE
+> Task :app:generateReleaseAndroidTestResValues UP-TO-DATE
+> Task :app:mapReleaseAndroidTestSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseAndroidTestResources UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestResources UP-TO-DATE
+> Task :app:processReleaseAndroidTestManifest UP-TO-DATE
+> Task :app:processReleaseAndroidTestResources UP-TO-DATE
+> Task :app:mergeReleaseJavaResource
+> Task :app:mergeDexRelease
+> Task :app:javaPreCompileReleaseAndroidTest UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestShaders UP-TO-DATE
+> Task :app:compileReleaseAndroidTestShaders NO-SOURCE
+> Task :app:generateReleaseAndroidTestAssets UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestAssets
+> Task :app:checkReleaseAndroidTestDuplicateClasses UP-TO-DATE
+> Task :app:desugarReleaseAndroidTestFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexReleaseAndroidTest UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestJniLibFolders UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripReleaseAndroidTestDebugSymbols NO-SOURCE
+> Task :app:writeReleaseAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :app:optimizeReleaseResources
+> Task :app:compressReleaseAndroidTestAssets
+> Task :app:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:lintVitalAnalyzeRelease
+
+> Task :app:compileReleaseAndroidTestKotlin
+w: file:///D:/soft/.ci-tmp/game-hub-n10/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ProductionHallUpdateDeviceTest.kt:79:96 Unnecessary safe call on a non-null receiver of type UpstreamCheck?
+w: file:///D:/soft/.ci-tmp/game-hub-n10/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/UpdateFixtureTest.kt:25:29 'ACTION_INSTALL_PACKAGE: String' is deprecated. Deprecated in Java
+
+> Task :app:compileReleaseAndroidTestJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderReleaseAndroidTest
+> Task :app:mergeReleaseAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :app:processReleaseAndroidTestJavaRes UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestJavaResource UP-TO-DATE
+> Task :app:mergeDexReleaseAndroidTest
+> Task :app:packageReleaseAndroidTest
+> Task :app:createReleaseAndroidTestApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleReleaseAndroidTest
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:assembleRelease
+
+BUILD SUCCESSFUL in 2m 14s
+70 actionable tasks: 30 executed, 3 from cache, 37 up-to-date

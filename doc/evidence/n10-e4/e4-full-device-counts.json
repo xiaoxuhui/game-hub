@@ -1,0 +1,22 @@
+{
+  "tests": 70,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 13,
+  "executed": 57,
+  "skipNames": [
+    "com.xiaoxuhui.gamehub.DownloadedDocumentBridgeTest#fourVerifiedDownloadedGamesImportAndExportThroughActualSystemPicker",
+    "com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest#verifyAfterActualProcessRestart",
+    "com.xiaoxuhui.gamehub.DynamicResourceProcessRecoveryTest#prepareInterruptedOperation",
+    "com.xiaoxuhui.gamehub.LobbyAccessibilityDeviceTest#realLobbyAndUpdateDetailsRemainReachableAndCancellationActionReachesTaskGate",
+    "com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest#realFormalHallChecksAndPreservesActivatedResources",
+    "com.xiaoxuhui.gamehub.ProductionResourceIdentityDeviceTest#installedProductionIdentityMatchesReviewedRelease",
+    "com.xiaoxuhui.gamehub.ProductionUpdateSaveDeviceTest#threeProductionResourceUpdatesPreserveRealSaves",
+    "com.xiaoxuhui.gamehub.ResourceOfflineRestartDeviceTest#readFourDownloadedGamesAndActualSavesAfterProcessRestart",
+    "com.xiaoxuhui.gamehub.ResourceOfflineRestartDeviceTest#prepareFourDownloadedOfflineSessionsAndPause",
+    "com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest#verifyAfterActualProcessRestart",
+    "com.xiaoxuhui.gamehub.ResourceProcessRecoveryTest#prepareInterruptedOperation",
+    "com.xiaoxuhui.gamehub.UpgradeFixtureStageTest#stageSameSignerFixtureForPrivatePreflight",
+    "com.xiaoxuhui.gamehub.UpgradeSaveDeviceTest#fourRealGameSavesSurviveSameSignerApkUpgrade"
+  ]
+}

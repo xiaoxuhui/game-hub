@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "fc9da9be6a238018d86f2085facd5b8085e68cf8",
+  "versionName": "0.4.1",
+  "versionCode": 5,
+  "productionCertificateSha256": "44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2",
+  "resourceKeySha256": "649107df10ad8f48e8da1d4f992fe652a63fea448fa17dce081b87333a892673",
+  "files": [
+    {
+      "file": "game-hub-v0.4.1.apk",
+      "bytes": 2654159,
+      "sha256": "9f57c90af42efea54e4e079d637d964346a78e7e880493eac7887f9aaac323da"
+    },
+    {
+      "file": "e4-companion.apk",
+      "bytes": 3019593,
+      "sha256": "3ef81927a6b9e5ad006231bc9ceee5d8533d834e8699aca6322ab9cc948ab978"
+    },
+    {
+      "file": "e4-debug.apk",
+      "bytes": 3236299,
+      "sha256": "33ac28331af453850462293db02441b179154c2ed2b39b7008a2f2d86f79dfc1"
+    },
+    {
+      "file": "e4-debug-companion.apk",
+      "bytes": 3319652,
+      "sha256": "fbc100b98015a4ea4514e34cce46fd2ebc63d02e31d542e6e2a832dfd9b9aceb"
+    },
+    {
+      "file": "e2-future-signed.apk",
+      "bytes": 2629359,
+      "sha256": "6f266cf0f8f99d9ab9842d38aa2aff8e82f7990047a206f0464abeb3cfc00d3c"
+    },
+    {
+      "file": "e2-future-debug.apk",
+      "bytes": 3202667,
+      "sha256": "d7114444f4683c709847bf02635078d7145636428eec7e5ee1c719a89e1f3cf2"
+    }
+  ],
+  "futureFixturePurpose": "Historical code body, private version6/0.4.2 installation-preflight input only; not a released version"
+}
