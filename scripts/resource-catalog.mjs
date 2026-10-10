@@ -29,7 +29,7 @@ export function validateReleaseSnapshot(payload, snapshot, tag = 'game-resources
 export async function captureReleaseSnapshot(request = fetch, tag = 'game-resources-v1') {
   if (!['game-resources-v1','game-resources-v2'].includes(tag)) throw new Error('Unknown resource tag');
   const api = 'https://api.github.com/repos/xiaoxuhui/game-hub/releases';
-  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'game-hub-resource-publisher' };
+  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'game-hub-resource-publisher', 'Cache-Control': 'no-cache' };
   let total = 0;
   async function get(url) {
     const response = await request(url, { headers, redirect: 'error', signal: AbortSignal.timeout(30000) });

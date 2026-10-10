@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('n10')][string]$TaskScope='n10'
+    [ValidateSet('n10')][string]$TaskScope='n10',
+    [switch]$ResumeAfterUploads
 )
 $ErrorActionPreference='Stop'
 $taskCheckout='D:\soft\.ci-tmp\game-hub-n10\work'
@@ -13,7 +14,15 @@ $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resou
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null
 if($Commit -notmatch '^[0-9a-f]{40}$' -or $ExpectedPreviousSha -notmatch '^[0-9a-f]{64}$' -or $NextSequence -notmatch '^[1-9][0-9]{0,18}$'){throw 'Explicit exact commit, previous SHA and sequence required'}
 $taskDirectory=[IO.Path]::GetFullPath($EvidenceDirectory)
-if(-not $taskDirectory.StartsWith($taskEvidenceRoot+'\',[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $taskDirectory)){throw 'Fresh task evidence subdirectory required; inspect any previous outcome before retry'}
+if(-not $taskDirectory.StartsWith($taskEvidenceRoot+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Exact task evidence subdirectory required'}
+if($ResumeAfterUploads){
+    foreach($taskRequired in @('before-snapshot.json','previous.signed.json','uploaded-resources.json')){
+        if(-not (Test-Path -LiteralPath (Join-Path $taskDirectory $taskRequired) -PathType Leaf)){throw 'Verified post-upload records required for resume'}
+    }
+    foreach($taskForbidden in @('signing-snapshot.json','payload.json','catalog.signed.json','activation-intent.json','published.json','resume-snapshot.json')){
+        if(Test-Path -LiteralPath (Join-Path $taskDirectory $taskForbidden)){throw 'Resume only before signing/payload; inspect later outcome read-only'}
+    }
+}elseif(Test-Path -LiteralPath $taskDirectory){throw 'Fresh task evidence required; inspect any previous outcome'}
 if((git -C $taskCheckout rev-parse HEAD).Trim() -ne $Commit -or (git -C $taskCheckout status --porcelain=v1 --untracked-files=all)){throw 'Clean exact producer checkout required'}
 if((git -C $taskCheckout remote get-url origin).Trim() -ne 'https://github.com/xiaoxuhui/game-hub.git'){throw 'Wrong producer remote'}
 $taskRemote=@(git -C $taskCheckout ls-remote origin refs/heads/main)
@@ -25,12 +34,14 @@ function Assert-FixedTags {
     if($LASTEXITCODE -ne 0 -or $resource.Count -ne 1 -or ($resource[0] -split '\s+')[0] -ne 'e694efaed707bd852cc48ea78e31c3ed198731c0'){throw 'Immutable v1 lightweight tag moved; no write permitted'}
 }
 Assert-FixedTags
-New-Item -ItemType Directory -Path $taskDirectory | Out-Null
+if(-not $ResumeAfterUploads){New-Item -ItemType Directory -Path $taskDirectory | Out-Null}
 Push-Location -LiteralPath $taskCheckout
 try {
-    node scripts/resource-v1-successor.mjs preflight $taskDirectory $ExpectedPreviousSha $NextSequence
+    $taskAdmissionMode=if($ResumeAfterUploads){'resume'}else{'preflight'}
+    node scripts/resource-v1-successor.mjs $taskAdmissionMode $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Anonymous history/candidate admission failed before credentials'}
-    $taskBefore=Get-Content -LiteralPath (Join-Path $taskDirectory 'before-snapshot.json') -Raw | ConvertFrom-Json
+    $taskSnapshotName=if($ResumeAfterUploads){'resume-snapshot.json'}else{'before-snapshot.json'}
+    $taskBefore=Get-Content -LiteralPath (Join-Path $taskDirectory $taskSnapshotName) -Raw | ConvertFrom-Json
     $taskAssets=@($taskBefore.assetPages | ForEach-Object {$_.assets})
     $taskOld=@($taskAssets | Where-Object name -CEQ 'catalog.signed.json')
     if($taskOld.Count -ne 1){throw 'Current catalog identity missing'}
@@ -54,13 +65,15 @@ try {
         if($asset.state -ne 'uploaded' -or $asset.digest -ne "sha256:$hash" -or $asset.size -ne $size){throw 'Upload outcome unverified; inspect before retry'}
         return $asset
     }
-    $games=Get-Content -LiteralPath '.build\resource-candidate\games.unsigned.json' -Raw | ConvertFrom-Json
-    $uploads=@()
-    foreach($game in $games){
-        $name="game-$($game.id)-$($game.contentCode)-$($game.archiveSha256.Substring(0,12)).zip"
-        $uploads+=Upload-Asset (Join-Path "$taskCheckout\.build\resource-candidate" $name) $name
+    if(-not $ResumeAfterUploads){
+        $games=Get-Content -LiteralPath '.build\resource-candidate\games.unsigned.json' -Raw | ConvertFrom-Json
+        $uploads=@()
+        foreach($game in $games){
+            $name="game-$($game.id)-$($game.contentCode)-$($game.archiveSha256.Substring(0,12)).zip"
+            $uploads+=Upload-Asset (Join-Path "$taskCheckout\.build\resource-candidate" $name) $name
+        }
+        $uploads | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $taskDirectory 'uploaded-resources.json') -Encoding utf8
     }
-    $uploads | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $taskDirectory 'uploaded-resources.json') -Encoding utf8
     node scripts/resource-v1-successor.mjs payload $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Fresh complete asset-bound payload failed'}
     $taskEncrypted=[IO.File]::ReadAllBytes('D:\aiden\game-hub-resource-signing\resource-private-key.dpapi')

@@ -54,6 +54,18 @@ export function v1PublicDownloadUrl(asset){
  if(url.origin!=='https://github.com'||url.pathname!==`/xiaoxuhui/game-hub/releases/download/${tag}/${asset.name}`)throw new Error('Public asset URL changed');
  url.searchParams.set('verified_asset_id',String(asset.id));return url;
 }
+export function validateV1UploadedResume(old,games,snapshot,uploads,expected,catalogId){
+ const assets=snapshot.assetPages.flatMap(p=>p.assets),current=assets.filter(a=>a.name==='catalog.signed.json');
+ if(current.length!==1||current[0].id!==catalogId||current[0].digest!==`sha256:${expected}`||current[0].state!=='uploaded')throw new Error('Resume current catalog moved');
+ validateReleaseSnapshot(old,snapshot,tag);
+ const bound=attachAssets(games,snapshot.release,assets,tag);
+ if(!Array.isArray(uploads)||uploads.length!==4||new Set(uploads.map(a=>a.name)).size!==4)throw new Error('Resume requires four verified uploaded records');
+ for(const game of bound){
+  const upload=uploads.find(a=>a.name===assetName(game));
+  if(!upload||upload.id!==game.assetId||upload.state!=='uploaded'||upload.size!==game.archiveBytes||upload.digest!==`sha256:${game.archiveSha256}`)throw new Error('Resume uploaded identity differs');
+ }
+ return snapshot;
+}
 async function download(asset){
  const response=await fetch(v1PublicDownloadUrl(asset),{headers:{'User-Agent':'game-hub-v1-successor','Cache-Control':'no-cache'},signal:AbortSignal.timeout(60000)});
  if(!response.ok)throw new Error(`Asset HTTP ${response.status}`);
@@ -74,8 +86,17 @@ function previous(directory,expected){
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  try{
   const [mode,directory,expected,sequence]=process.argv.slice(2);
-  if(process.argv.length!==6||!directory||!expected||!sequence)throw new Error('Usage: resource-v1-successor.mjs preflight|payload|sign|online directory previous-sha next-sequence');
-  if(mode==='preflight'){
+  if(process.argv.length!==6||!directory||!expected||!sequence)throw new Error('Usage: resource-v1-successor.mjs preflight|resume|payload|sign|online directory previous-sha next-sequence');
+  if(mode==='resume'){
+   const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,tag),before=json(directory,'before-snapshot.json');
+   const originals=before.assetPages.flatMap(p=>p.assets).filter(a=>a.name==='catalog.signed.json');
+   if(originals.length!==1||originals[0].digest!==`sha256:${expected}`)throw new Error('Original current catalog record differs');
+   const games=verifyResources();
+   validateV1UploadedResume(old,games,snapshot,json(directory,'uploaded-resources.json'),expected,originals[0].id);
+   v1SuccessorPayload(old,games,snapshot,sequence);
+   put(directory,'resume-snapshot.json',JSON.stringify(snapshot,null,2)+'\n');
+   console.log('Resume admission verified existing uploads and unchanged production current; no write to remote');
+  }else if(mode==='preflight'){
    const snapshot=await captureReleaseSnapshot(fetch,tag);
    if(snapshot.release.id!==releaseId)throw new Error('Fixed release changed');
    const assets=snapshot.assetPages.flatMap(p=>p.assets),current=assets.filter(a=>a.name==='catalog.signed.json');

@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {assetName,mime,CONTRACTS} from '../scripts/resource-protocol.mjs';
-import {v1SuccessorPayload,validateV1SigningInput,validateV1History,v1PublicDownloadUrl} from '../scripts/resource-v1-successor.mjs';
+import {v1SuccessorPayload,validateV1SigningInput,validateV1History,v1PublicDownloadUrl,validateV1UploadedResume} from '../scripts/resource-v1-successor.mjs';
 function fixture(){
  const sources=JSON.parse(readFileSync(new URL('../sources.lock.json',import.meta.url))).sources;
  const games=sources.map((s,i)=>({id:s.id,version:s.version,contentCode:1,sourceRepository:s.repository,sourceRevision:s.revision,
@@ -47,4 +47,14 @@ test('v1 anonymous download only accepts fixed release URL and binds immutable a
  assert.equal(v1PublicDownloadUrl(asset).searchParams.get('verified_asset_id'),'101');assert.notEqual(String(v1PublicDownloadUrl(asset)),String(v1PublicDownloadUrl({...asset,id:102})));
  for(const url of ['https://example.com/catalog.signed.json',asset.browser_download_url.replace('v1/','v2/')])assert.throws(()=>v1PublicDownloadUrl({...asset,browser_download_url:url}));
  assert.throws(()=>v1PublicDownloadUrl({...asset,id:0}));
+});
+test('post-upload resume requires unchanged current identity and four exact existing upload bindings',()=>{
+ const {old,snapshot}=fixture(),expected='e'.repeat(64),current={id:999,name:'catalog.signed.json',size:100,state:'uploaded',digest:`sha256:${expected}`};
+ snapshot.assetPages[0].assets.push(current);const uploads=structuredClone(snapshot.assetPages[0].assets.slice(0,4));
+ assert.equal(validateV1UploadedResume(old,old.games,snapshot,uploads,expected,999),snapshot);
+ assert.throws(()=>validateV1UploadedResume(old,old.games,snapshot,uploads,expected,998),/current/);
+ assert.throws(()=>validateV1UploadedResume(old,old.games,snapshot,uploads,'f'.repeat(64),999),/current/);
+ assert.throws(()=>validateV1UploadedResume(old,old.games,snapshot,uploads.slice(0,3),expected,999),/four/);
+ for(const [field,value] of [['id',666],['size',101],['state','starter'],['digest','sha256:'+'f'.repeat(64)]]){const changed=structuredClone(uploads);changed[0][field]=value;assert.throws(()=>validateV1UploadedResume(old,old.games,snapshot,changed,expected,999),/uploaded identity/);}
+ snapshot.assetPages[0].assets.shift();assert.throws(()=>validateV1UploadedResume(old,old.games,snapshot,uploads,expected,999),/Asset identity/);
 });
