@@ -175,7 +175,7 @@ class DynamicCoordinatorDeviceTest {
         assertTrue(ResourceDiskBudget.usedBytes(h.builtinRoot)+ResourceDiskBudget.usedBytes(h.dynamicRoot)<=ResourcePolicy.MAX_STORE)
     }}
     @Test fun incompatibleNewGameIsVisibleButCannotDownloadAndCorruptInstalledUpdateKeepsOld(){harness().use {h->
-        h.current=h.fixture.dynamicRelease(minHost=5);val owner=h.owner();owner.presence(true,true);checked(owner)
+        h.current=h.fixture.dynamicRelease(minHost=6);val owner=h.owner();owner.presence(true,true);checked(owner)
         assertEquals(1,owner.snapshot().dynamicCatalogGames.size);assertTrue(owner.snapshot().dynamicResources.isEmpty())
         assertFalse(owner.downloadResource("memory-demo",true));assertEquals(0,h.zipCount())
     };harness().use {h->

@@ -11,3 +11,5 @@
 实际最终Node53/0失败/0跳过。独立检出 `gradle -p android testDebugUnitTest assembleDebug assembleDebugAndroidTest --no-daemon` BUILD SUCCESSFUL 44秒；JVM XML95/0失败/0跳过。aapt编译输出为`com.xiaoxuhui.gamehub`、code5、0.4.1。没有运行设备suite或安装debug APK，没有改变旧正式存档现场。
 
 公开日志副本只规范行尾空白及单EOF换行，私有原始日志保留；不是正式发布或真机验收结论。
+
+首审P1 OPEN：DynamicCoordinatorDeviceTest第178行另一未来主机夹具仍minHost5，hostCode5下已兼容。单独改为minHost6，保留原拒下载、零ZIP请求及损坏更新保旧断言；首审意见随记录提交留痕。该实际设备用例将于D旧正式存档验收后，在0.4.1调试检出设备门禁中重跑，当前仅编译不冒称设备通过。
