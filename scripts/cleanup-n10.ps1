@@ -62,6 +62,13 @@ $actual=@(Get-ChildItem -LiteralPath $evidence -File -Recurse -Force | ForEach-O
 $expected=@($index.evidenceFiles | ForEach-Object {$_.path} | Sort-Object)
 if(($actual -join "`n") -cne ($expected -join "`n")){throw 'Evidence file set changed after archive'}
 foreach($file in $index.evidenceFiles){
+    if([IO.Path]::IsPathRooted($file.path) -or ($file.path -split '/') -contains '..' -or ($file.path -split '/') -contains '.' -or ($file.path -split '/') -contains ''){throw 'Unsafe original evidence path'}
+    $pathHasher=[Security.Cryptography.SHA256]::Create()
+    try {$pathHash=[BitConverter]::ToString($pathHasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($file.path))).Replace('-','').ToLowerInvariant()}finally{$pathHasher.Dispose()}
+    $extension=[IO.Path]::GetExtension($file.path);if($extension -notmatch '^\.[A-Za-z0-9]{1,12}$'){$extension='.bin'}
+    if($file.archivePath -cne ('evidence/'+$pathHash+$extension)){throw 'Evidence archive alias differs from original path'}
+    $binding=@($index.artifacts | Where-Object path -CEQ $file.archivePath)
+    if($binding.Count -ne 1 -or $binding[0].bytes -ne $file.bytes -or $binding[0].sha256 -cne $file.sha256){throw 'Evidence archive bytes binding missing or differs'}
     $path=[IO.Path]::GetFullPath((Join-Path $evidence $file.path))
     if(-not $path.StartsWith($evidence+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Evidence path escaped'}
     $item=Get-Item -LiteralPath $path

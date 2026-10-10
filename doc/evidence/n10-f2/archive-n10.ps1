@@ -35,6 +35,17 @@ while($taskStack.Count){
   if($taskItem.PSIsContainer){$taskStack.Push($taskItem.FullName)}else{$taskEvidenceInputs.Add($taskItem)}
  }
 }
+$taskEvidenceMap=@();$taskAliasSet=New-Object 'System.Collections.Generic.HashSet[string]'
+foreach($taskFile in $taskEvidenceInputs){
+ $taskRelative=$taskFile.FullName.Substring($taskEvidence.Length+1).Replace('\','/')
+ if([IO.Path]::IsPathRooted($taskRelative) -or ($taskRelative -split '/') -contains '..' -or ($taskRelative -split '/') -contains '.' -or ($taskRelative -split '/') -contains ''){throw 'Unsafe original evidence path'}
+ $taskHasher=[Security.Cryptography.SHA256]::Create()
+ try {$taskPathHash=[BitConverter]::ToString($taskHasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($taskRelative))).Replace('-','').ToLowerInvariant()}finally{$taskHasher.Dispose()}
+ $taskExtension=[IO.Path]::GetExtension($taskRelative);if($taskExtension -notmatch '^\.[A-Za-z0-9]{1,12}$'){$taskExtension='.bin'}
+ $taskAlias='evidence/'+$taskPathHash+$taskExtension
+ if(-not $taskAliasSet.Add($taskAlias)){throw 'Evidence alias collision'}
+ $taskEvidenceMap+=[ordered]@{input=$taskFile.FullName;original=$taskRelative;archive=$taskAlias}
+}
 $taskManifest=Get-Content -LiteralPath (Join-Path $taskWork 'doc\evidence\n10-d-complete\candidate-hashes.json') -Raw | ConvertFrom-Json
 if($taskManifest.producer -ne 'fc9da9be6a238018d86f2085facd5b8085e68cf8' -or @($taskManifest.files).Count -ne 12){throw 'Reviewed 12-file candidate manifest required'}
 foreach($taskPath in @((Join-Path $taskWork '.build'),(Join-Path $taskWork '.build\resource-candidate'),(Join-Path $taskWork '.build\dynamic-candidate'))){
@@ -56,11 +67,10 @@ foreach($taskCandidate in @('resource-candidate','dynamic-candidate')){
  }
 }
 New-Item -ItemType Directory -Path $taskArchive | Out-Null
-foreach($taskFile in $taskEvidenceInputs){
- $taskRelative=$taskFile.FullName.Substring($taskEvidence.Length+1).Replace('\','/')
- $taskRecord=Copy-ArchiveFile $taskFile.FullName ('evidence/'+$taskRelative)
+foreach($taskFile in $taskEvidenceMap){
+ $taskRecord=Copy-ArchiveFile $taskFile.input $taskFile.archive
  $taskArtifacts+=$taskRecord
- $taskEvidenceFiles+=[ordered]@{path=$taskRelative;bytes=$taskRecord.bytes;sha256=$taskRecord.sha256}
+ $taskEvidenceFiles+=[ordered]@{path=$taskFile.original;archivePath=$taskRecord.path;bytes=$taskRecord.bytes;sha256=$taskRecord.sha256}
 }
 foreach($taskInput in $taskCandidateInputs){$taskArtifacts+=Copy-ArchiveFile $taskInput.input $taskInput.relative}
 $taskBundle=Join-Path $taskArchive 'n10-source.bundle'
