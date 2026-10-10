@@ -1,0 +1,24 @@
+[
+  {
+    "kind": "app",
+    "unsignedSha256": "7b2e3312224d241637a9097cb34f1d3157f66789c8792c881e078f1feb3f1a58",
+    "signedSha256": "9f57c90af42efea54e4e079d637d964346a78e7e880493eac7887f9aaac323da",
+    "unchangedEntries": 170,
+    "extraSignatureEntries": [
+      "META-INF/GAME-HUB.RSA",
+      "META-INF/GAME-HUB.SF",
+      "META-INF/MANIFEST.MF"
+    ]
+  },
+  {
+    "kind": "test",
+    "unsignedSha256": "70976d21eed9aa546e19cb87cdb0e056f8f09a0dcf3d40e9fff99b04b5656463",
+    "signedSha256": "3ef81927a6b9e5ad006231bc9ceee5d8533d834e8699aca6322ab9cc948ab978",
+    "unchangedEntries": 9,
+    "extraSignatureEntries": [
+      "META-INF/GAME-HUB.RSA",
+      "META-INF/GAME-HUB.SF",
+      "META-INF/MANIFEST.MF"
+    ]
+  }
+]
