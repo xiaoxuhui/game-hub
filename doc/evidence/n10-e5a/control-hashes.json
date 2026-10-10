@@ -1,0 +1,14 @@
+[
+  {
+    "file": "publish-e4-apk.ps1",
+    "privateSha256": "fb76d7d343cea69b19de9c868e257715e1b5d4373c47b61d4bee7781a3b17401",
+    "publicSha256": "b787a65f821113df8192f47419d55cb72a72001069dcc4519348bbea0bed4135",
+    "normalization": "Public copy CRLF/line end/EOF only; private raw preserved"
+  },
+  {
+    "file": "verify-e4-public.mjs",
+    "privateSha256": "d6481e94a63874be92a563aed2dac8cdc3034aec3a47e9230b935f236576ae77",
+    "publicSha256": "d6481e94a63874be92a563aed2dac8cdc3034aec3a47e9230b935f236576ae77",
+    "normalization": "Public copy CRLF/line end/EOF only; private raw preserved"
+  }
+]

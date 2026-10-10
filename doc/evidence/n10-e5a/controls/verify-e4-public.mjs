@@ -1,0 +1,43 @@
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+const root='D:/soft/.ci-tmp/game-hub-n10/evidence';
+const publication=JSON.parse(readFileSync(`${root}/e4-release-published.json`,'utf8').replace(/^\uFEFF/,''));
+const expected='9f57c90af42efea54e4e079d637d964346a78e7e880493eac7887f9aaac323da';
+const response=await fetch('https://api.github.com/repos/xiaoxuhui/game-hub/releases/latest',{headers:{Accept:'application/vnd.github+json','User-Agent':'game-hub-n10-anonymous-verification','Cache-Control':'no-cache'}});
+if(response.status!==200)throw Error(`Anonymous latest HTTP ${response.status}`);
+const raw=await response.text(),release=JSON.parse(raw);
+writeFileSync(`${root}/e4-anonymous-release.json`,raw+'\n');
+if(release.id!==publication.id||release.tag_name!=='v0.4.1'||release.draft!==false||release.prerelease!==false)throw Error('Anonymous formal release identity mismatch');
+if(!Array.isArray(release.assets)||release.assets.length!==1)throw Error('Formal release must contain exactly the reviewed APK asset');
+const headers={Accept:'application/vnd.github+json','User-Agent':'game-hub-n10-anonymous-verification','Cache-Control':'no-cache'};
+const tagRefResponse=await fetch('https://api.github.com/repos/xiaoxuhui/game-hub/git/ref/tags/v0.4.1',{headers});
+if(tagRefResponse.status!==200)throw Error(`Public tag ref HTTP ${tagRefResponse.status}`);
+const tagRef=await tagRefResponse.json();
+if(tagRef.ref!=='refs/tags/v0.4.1'||tagRef.object?.type!=='tag'||!/^[0-9a-f]{40}$/.test(tagRef.object.sha))throw Error('Exact annotated public tag required');
+const tagObjectResponse=await fetch(`https://api.github.com/repos/xiaoxuhui/game-hub/git/tags/${tagRef.object.sha}`,{headers});
+if(tagObjectResponse.status!==200)throw Error(`Public annotated tag HTTP ${tagObjectResponse.status}`);
+const tagObject=await tagObjectResponse.json();
+if(tagObject.tag!=='v0.4.1'||tagObject.object?.type!=='commit'||tagObject.object.sha!=='fc9da9be6a238018d86f2085facd5b8085e68cf8')throw Error('Public peeled tag moved away from reviewed built source');
+writeFileSync(`${root}/e4-anonymous-tag.json`,JSON.stringify({ref:tagRef,object:tagObject},null,2)+'\n');
+const assets=release.assets.filter(a=>a.name==='game-hub.apk');
+if(assets.length!==1)throw Error('Unique APK required');
+const a=assets[0];
+if(a.state!=='uploaded'||a.size!==2654159||a.digest!==`sha256:${expected}`||!Number.isSafeInteger(a.id)||a.id<1)throw Error('Public APK metadata mismatch');
+const allowed=new Set(['github.com','api.github.com','release-assets.githubusercontent.com','objects.githubusercontent.com']);
+let url=`${a.browser_download_url}?verified_asset_id=${a.id}`,bytes;
+for(let attempt=0;attempt<6;attempt++){
+ const u=new URL(url);if(u.protocol!=='https:'||!allowed.has(u.hostname)||u.username||u.password||(u.port&&u.port!=='443'))throw Error('Untrusted public download URL');
+ const r=await fetch(url,{redirect:'manual',headers:{Accept:'application/octet-stream','User-Agent':'game-hub-n10-anonymous-verification','Cache-Control':'no-cache'}});
+ if([301,302,303,307,308].includes(r.status)){url=new URL(r.headers.get('location'),url).href;continue}
+ if(r.status!==200)throw Error(`Anonymous APK HTTP ${r.status}`);
+ bytes=Buffer.from(await r.arrayBuffer());break;
+}
+if(!bytes)throw Error('Public redirect limit');
+const hash=createHash('sha256').update(bytes).digest('hex');
+if(bytes.length!==a.size||hash!==expected)throw Error(`Public APK bytes mismatch: ${bytes.length}/${hash}`);
+const output=`${root}/e4-anonymous-game-hub.apk`;
+if(existsSync(output)&&createHash('sha256').update(readFileSync(output)).digest('hex')!==expected)throw Error('Prior download outcome differs');
+if(!existsSync(output))writeFileSync(output,bytes);
+const result={releaseId:release.id,assetId:a.id,tag:release.tag_name,bytes:bytes.length,sha256:hash,anonymous:true,releaseUrl:release.html_url,downloadUrl:a.browser_download_url};
+writeFileSync(`${root}/e4-anonymous-verified.json`,JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));

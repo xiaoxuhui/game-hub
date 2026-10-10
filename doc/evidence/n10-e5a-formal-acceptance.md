@@ -15,3 +15,7 @@ E4独立CLOSED归档437b394后，关闭专属debug AVD正常重启原正式AVD�
 OSS当前437b394扫描1101文件，指定秘密/禁跟踪构建项0、README30链接0失效，治理文件齐备；扫描只覆盖指定模式。E5剩余fresh→offline及正式发行/匿名复核保留未完成。
 
 待审私有发行器 publish-e4-apk.ps1：要求精确reviewed/pushed clean接受提交、fc9为祖先、e4-release-ready实际PASS/CLOSED及exactCI、APK尺寸/全SHA；无旧发行意图/新tag才运行，内存wincred认证，记录意图、固定fc9 annotated tag、新draft→上传唯一game-hub.apk及平台digest/size/state核对→publish。任何未知结果停止只读协调。verify-e4-public.mjs匿名实际latest身份/元数据与可接受TLS重定向主机、完整APK字节SHA核对。脚本语法通过；尚未执行写远端，须本切片审阅与E5最终实测CLOSED后执行。原始助手启动/参数错误留E4，不用外部限流改产品代码。
+
+## 发行设计OPEN后的批改
+
+首审意见与实际验收CLOSED/发行器OPEN分开保留。发行器在读取凭证/意图前严格固定origin=https://github.com/xiaoxuhui/game-hub.git及已推送ReviewedCommit。匿名复核要求Release资产总集恰一，并匿名读公开annotated tag/ref对象，peeled commit必须fc9。公开前新增auth GET同一draft：release ID/tag/draft true/prerelease false、资产全集恰1及APK id/name/size/state/full平台digest与已审上传项完全绑定，不符停止保留draft，不公开。公开代码副本及私有原始完整hash见controls/control-hashes；仅语法检查通过，未创建tag/Release、未取发行凭证。本批改提交后复审，不能代替fresh→offline最终验收。
