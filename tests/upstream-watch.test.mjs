@@ -54,6 +54,14 @@ test('unreleased main changes are pending review, not automatically published', 
   assert.equal(result.consumers[0].status, 'resource-change-pending-review');
   assert.equal(result.release.status, 'same-version');
 });
+test('reviewed baseline ahead of main is not a new update or a failure', async () => {
+  const result = await checkSource(source, async path => path.includes('/compare/') ? {
+    status: 'behind', base_commit: {sha: pinned}, merge_base_commit: {sha: main}, files: []
+  } : getter({main})(path));
+  assert.equal(result.status, 'checked');
+  assert.equal(result.consumers[0].status, 'baseline-ahead-of-main');
+  assert.equal(result.consumers[0].baselineRevision, pinned);
+});
 test('no formal release stays distinct from failures', async () => {
   const result = await checkSource(source, getter({release: null}));
   assert.equal(result.release.status, 'no-release');

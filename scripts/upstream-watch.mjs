@@ -104,8 +104,15 @@ export async function checkSource(source, get) {
       else {
         // Always compare immutable SHAs, never a moving branch ref.
         const diff = await get(`${base}/compare/${consumer.revision}...${result.mainRevision}`);
-        requireValue(diff.status === 'ahead' && diff.base_commit?.sha === consumer.revision && diff.merge_base_commit?.sha === consumer.revision, 'Non-linear or invalid upstream history');
-        Object.assign(item, classifyChanges(diff.files, consumer.inputs));
+        requireValue(diff.base_commit?.sha === consumer.revision, 'Invalid comparison baseline');
+        if (diff.status === 'behind' && diff.merge_base_commit?.sha === result.mainRevision) {
+          // A reviewed source can come from a release/APK branch ahead of main.
+          // This is not a new main update and must never rewind the pinned source.
+          item.status = 'baseline-ahead-of-main';
+        } else {
+          requireValue(diff.status === 'ahead' && diff.merge_base_commit?.sha === consumer.revision, 'Non-linear or invalid upstream history');
+          Object.assign(item, classifyChanges(diff.files, consumer.inputs));
+        }
       }
     } catch (error) { item.error = error.message; result.errors.push(`${consumer.id}: ${error.message}`); }
     result.consumers.push(item);
