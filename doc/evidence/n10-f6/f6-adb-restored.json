@@ -1,0 +1,18 @@
+{
+  "oldPid": 30648,
+  "oldPidAbsent": true,
+  "newPid": 29260,
+  "binary": "D:\\soft\\game-hub-toolchain\\android-sdk\\platform-tools\\adb.exe",
+  "listeners": [
+    {
+      "LocalAddress": "127.0.0.1",
+      "LocalPort": 5037,
+      "OwningProcess": 29260
+    }
+  ],
+  "devices": [
+    "List of devices attached",
+    ""
+  ],
+  "permanentWorkingDirectory": "D:\\soft\\game-hub-toolchain\\android-sdk\\platform-tools"
+}

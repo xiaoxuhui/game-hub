@@ -1,0 +1,13 @@
+{
+  "taskRoot": "D:\\soft\\.ci-tmp\\game-hub-n10",
+  "removed": true,
+  "files": 17870,
+  "logicalBytes": 7348387960,
+  "freeBytesBefore": null,
+  "freeBytesAfter": 184164167680,
+  "indexSha256": "e3ded2b9f419879ef094d4478814db42073f34ec202c26ceaef535a1d6cf926b",
+  "verifiedCommit": "14174d29b372a123fb009c4cb77329d7370ed037",
+  "resumeReviewedCommit": "0cdf721a98c222310ecc4d858e7df55ed7a46078",
+  "resume": "Exact own empty-device ADB restarted from permanent toolchain; all469 artifacts rehashed; remaining two fixed empty directories Directory.Delete(false), nonrecursive",
+  "completedAtUtc": "2026-10-10T18:50:01.5914665Z"
+}
