@@ -37,7 +37,7 @@ jobs:
       - name: Audit shared-origin storage keys
         run: pnpm run audit:storage
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
