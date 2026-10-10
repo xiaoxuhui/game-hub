@@ -13,3 +13,12 @@ v1seq2首次发行：匿名preflight验原seq1/完整候选通过；两个新ZIP
 ```
 
 该记录不将上传完成冒称目录发行或设备升级通过。新资源的正式UI激活、存档verify、离线restart与APK0.4.1仍待后续执行。见本次原始publisher/reconcile/seed与生产摘要日志。
+
+## 首审批改：公开日志格式
+
+保留私有原始输出不变；仅将两份公开日志副本逐行去除末尾空白、文件末尾保留单个换行。文本结果与测试结论未变，`git diff --check` 退出 0。私有原始文件 SHA256：
+
+- `d3-companion-build.log`：`f76dba7ae1741c783a274027972e5be6f38af6e3c5c376011d02fbd29c75224f`。
+- `d3-seed.log`：`19faf49281218c28c071120533838410be12ab805b89a37deb15a39eba54cb10`。
+
+首审 P3 OPEN 原意见随独立审阅记录保留；批改提交后复审。
