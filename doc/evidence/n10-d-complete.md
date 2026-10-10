@@ -14,6 +14,6 @@ v2 使用已审阅的 ResumeAfterUploads 参数（TaskScope n10、NextSequence 5
 
 ## 独立OPEN后的补跑批改
 
-原d4离线测试命令没有单独转录网络回读，不能仅由JUnit通过证明断网。保留原结果后补跑d5（d5-offline-control.log）：精确own AVD身份，旧PID11349；svc wifi/data disable；wifi_on=0、dumpsys connectivity `Active default network: none`；force-stop，正常Activity冷启动新PID11439；严格三存档verify 12.552秒OK1，三项实际PASS见d5-three-save-pass.log。finally恢复wifi/data，wifi_on=1并后续默认网络100恢复。mobile_data通用设置读回仍为1，因此不将该设置当蜂窝断网断言，以实际无默认网络回读为证；转录原标签“must be 0”不作为已通过断言。telephony后续回读发生恢复后，明确只作恢复诊断。
+原d4离线测试命令没有单独转录网络回读，不能仅由JUnit通过证明断网。保留原结果后补跑d5（d5-offline-control.log）：精确own AVD身份，旧PID11349；svc wifi/data disable；wifi_on=0、dumpsys connectivity `Active default network: none`；force-stop，正常Activity冷启动新PID11439；严格三存档verify 12.552秒OK1，三项实际PASS见d5-three-save-pass.log。finally恢复wifi/data，wifi_on=1并后续默认网络104恢复。mobile_data通用设置读回仍为1，因此不将该设置当蜂窝断网断言，以实际无默认网络回读为证；转录原标签“must be 0”不作为已通过断言。telephony后续回读发生恢复后，明确只作恢复诊断。
 
 计划过期“配额等待/尚未签名”已改为真实已发行状态。独立OPEN意见保留在n10-d-independent-review.md，批改提交后再复审，CLOSED前继续保留正式旧存档现场。
