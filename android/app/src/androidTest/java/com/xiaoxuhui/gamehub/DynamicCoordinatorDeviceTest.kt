@@ -53,7 +53,7 @@ class DynamicCoordinatorDeviceTest {
         private fun connection(address:String):HttpURLConnection {
             requests.add(address);var status=200
             val bytes=when {
-                address.endsWith("/releases/latest")->{status=apkStatus;JSONObject().put("draft",false).put("prerelease",false).put("tag_name","v0.4.1").put("assets",JSONArray().put(JSONObject().put("id",900).put("name","game-hub.apk").put("size",1234).put("digest","sha256:${"a".repeat(64)}"))).toString().toByteArray()}
+                address.endsWith("/releases/latest")->{status=apkStatus;JSONObject().put("draft",false).put("prerelease",false).put("tag_name","v0.4.2").put("assets",JSONArray().put(JSONObject().put("id",900).put("name","game-hub.apk").put("size",1234).put("digest","sha256:${"a".repeat(64)}"))).toString().toByteArray()}
                 address.endsWith("/releases/tags/game-resources-v1")->JSONObject().put("id",1).put("draft",false).put("prerelease",true).put("tag_name","game-resources-v1").toString().toByteArray()
                 address.endsWith("/releases/tags/game-resources-v2")->{status=dynamicStatus;JSONObject().put("id",2).put("draft",false).put("prerelease",true).put("tag_name","game-resources-v2").toString().toByteArray()}
                 address.endsWith("/releases/1/assets?per_page=100&page=1")->JSONArray().put(JSONObject().put("id",50).put("name","catalog.signed.json").put("size",builtinEnvelope.size).put("digest","sha256:${ResourcePolicy.sha256(builtinEnvelope)}").put("state","uploaded")).apply {builtinCatalog.games.forEach {put(asset(it))}}.toString().toByteArray()
@@ -103,7 +103,7 @@ class DynamicCoordinatorDeviceTest {
         assertTrue(owner.changeLocal("memory-demo",LocalResourceAction.REMOVE));await("removed"){!owner.snapshot().busy && !h.dynamic.installed("memory-demo")}
         assertEquals(1,h.dynamic.selection("memory-demo").highestCode)
         assertTrue(owner.check(true));checked(owner);assertEquals(1,h.zipCount());assertFalse(h.dynamic.installed("memory-demo"))
-        assertEquals("0.4.1",owner.snapshot().apk!!.version);assertFalse(h.requests.any {it.endsWith("/releases/assets/900")})
+        assertEquals("0.4.2",owner.snapshot().apk!!.version);assertFalse(h.requests.any {it.endsWith("/releases/assets/900")})
     }}
     @Test fun installedCompatibleGameUpdatesAutomaticallyAndRetirementClearsOnlyReady(){harness().use {h->
         h.installFirst();h.current=h.fixture.dynamicRelease(2,2)
@@ -129,7 +129,7 @@ class DynamicCoordinatorDeviceTest {
     @Test fun dynamic429BackoffPersistsWhileV1AndApkRemainAvailable(){harness().use {h->
         h.dynamicStatus=429;val owner=h.owner();owner.presence(true,true)
         await("independent failure"){!owner.snapshot().busy && owner.snapshot().resourcesCheckedAt!=null && owner.snapshot().apkCheckedAt!=null}
-        assertNull(owner.snapshot().dynamicCheckedAt);assertEquals(0,h.zipCount());assertEquals("0.4.1",owner.snapshot().apk!!.version)
+        assertNull(owner.snapshot().dynamicCheckedAt);assertEquals(0,h.zipCount());assertEquals("0.4.2",owner.snapshot().apk!!.version)
         val before=h.requests.count {it.endsWith("/releases/tags/game-resources-v2")}
         assertTrue(owner.check(true));await("recheck done"){!owner.snapshot().busy};assertEquals(before,h.requests.count {it.endsWith("/releases/tags/game-resources-v2")})
         val next=h.owner();next.presence(true,true);await("owner restart"){!next.snapshot().busy && next.snapshot().resourcesCheckedAt!=null}

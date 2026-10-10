@@ -57,7 +57,7 @@ class UpdateCoordinatorDeviceTest {
             val bytes = when {
                 url == "${PublicReleaseHttp.API_ROOT}/releases/latest" -> {
                     status = apkStatus
-                    JSONObject().put("draft", false).put("prerelease", false).put("tag_name", "v0.4.1")
+                    JSONObject().put("draft", false).put("prerelease", false).put("tag_name", "v0.4.2")
                         .put("assets", JSONArray().put(JSONObject().put("name", "game-hub.apk").put("id", 900).put("size", 1234).put("digest", "sha256:" + "a".repeat(64)))).toString().toByteArray()
                 }
                 UpstreamReleasePolicy.repositories.any { it.latestUrl == url } -> {
@@ -138,7 +138,7 @@ class UpdateCoordinatorDeviceTest {
         Harness().use { h ->
             val owner = h.owner(); owner.presence(true, true)
             await("Light ready") { !owner.snapshot().busy && owner.snapshot().localResources["light"]?.ready?.contentCode == 2 }
-            assertOnlyLight(h); assertEquals("0.4.1", owner.snapshot().apk!!.version)
+            assertOnlyLight(h); assertEquals("0.4.2", owner.snapshot().apk!!.version)
             assertTrue(owner.snapshot().resources.isEmpty())
             val session = h.fixture.store.openSession("light", true)
             try { assertEquals(h.light.identity, h.fixture.store.selection("light").active) } finally { session.close() }
@@ -221,7 +221,7 @@ class UpdateCoordinatorDeviceTest {
             reopened.presence(true, true)
             await("restored resource backoff") { !reopened.snapshot().busy && reopened.snapshot().resourceStatus.contains("限流") }
             assertEquals(1, h.requests.count { it.endsWith("/releases/tags/game-resources-v1") })
-            assertEquals("0.4.1", reopened.snapshot().apk!!.version); assertFalse(reopened.snapshot().apkRemembered)
+            assertEquals("0.4.2", reopened.snapshot().apk!!.version); assertFalse(reopened.snapshot().apkRemembered)
         }
     }
 
@@ -256,7 +256,7 @@ class UpdateCoordinatorDeviceTest {
             assertTrue(owner.snapshot().upstreamResults["abelian-sandpile"]!!.issue!!.contains("未找到正式发布"))
             assertTrue(owner.snapshot().upstreamResults["light"]!!.issue!!.contains("超时"))
             assertTrue(owner.snapshot().resources.any { it.id == "light" }); assertFalse(owner.snapshot().resourcesRemembered)
-            assertEquals("0.4.1", owner.snapshot().apk!!.version); assertEquals(h.requests.size, h.disconnected.size)
+            assertEquals("0.4.2", owner.snapshot().apk!!.version); assertEquals(h.requests.size, h.disconnected.size)
         }
     }
 
@@ -270,7 +270,7 @@ class UpdateCoordinatorDeviceTest {
             owner.closeVerification(); h.sourceStatuses.clear()
             val reopened = h.owner(h.fixture.reopenedStore()); reopened.presence(true, true); checked(reopened)
             assertEquals(sourceQueries, h.requests.count { url -> UpstreamReleasePolicy.repositories.any { it.latestUrl == url } })
-            assertEquals("0.4.1", reopened.snapshot().apk!!.version); assertTrue(reopened.snapshot().resources.any { it.id == "light" })
+            assertEquals("0.4.2", reopened.snapshot().apk!!.version); assertTrue(reopened.snapshot().resources.any { it.id == "light" })
         }
     }
 }

@@ -1,0 +1,147 @@
+✖ Android application identity and minimum API stay independent of source APKs (4.0328ms)
+✔ Manifest has one launcher and only the planned update permission (1.1894ms)
+✔ compact lobby uses four fixed source icons and clickable cards (1.3298ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.4641ms)
+✔ four original export bridge names and a file chooser are wired (0.9267ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: 5d786ccc8505924f4336ff8a17476de1370f0986b02a0fed1b4ff2be1f8d2f54
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (2.3449ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (1.9677ms)
+✔ HTML references exclude external and fragment links while preserving local assets (1.5188ms)
+✔ missing local HTML reference stops bundling (29.2249ms)
+✔ manifest hashes are stable and change when a resource changes (13.0422ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (8522.6831ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (9.9521ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (16.266ms)
+✔ higher content accepts new bytes only with new exact public asset identity (0.8094ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (1753.2892ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (496.0041ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (4.8996ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (549.9872ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (21.2548ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (12.0838ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (1.4715ms)
+✔ detached programmatic Blob click saves content before immediate revoke (9.4894ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (2.7155ms)
+✔ demo preserves progress, counts wins once and validates imported state (4.2924ms)
+✔ actual import handler never claims durable success after storage write failure (6.1498ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.5526ms)
+(node:32524) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/soft/.ci-tmp/game-hub-n10/work/examples/red-green-puzzle/core.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\soft\.ci-tmp\game-hub-n10\work\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ adaptation retains exact frozen HTML fixture, full MIT and reviewed output hashes (15.0128ms)
+✔ every supported size preserves frozen algorithm, legal edges and independent BFS distance (4.2539ms)
+✔ invalid sizes are rejected before building and bounded text remains complete (1.2842ms)
+✔ only valid versioned parameters restore, invalid storage defaults safely (0.3363ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (3.1473ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (1.3904ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (3.0321ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (1.3719ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (10.4669ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (117.2914ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.911ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (1.4528ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (592.4897ms)
+✔ successor retains identities omitted from candidate and binds new resources to public assets (29.474ms)
+✔ successor refuses skipped sequences, same-code metadata changes and incomplete historical snapshot (4.3772ms)
+✔ successor rejects forged asset bytes and duplicate candidate identities before signing (2.779ms)
+✔ complete signed history audit detects earliest missing ZIP, sequence gaps and historical identity mutation (11.3535ms)
+✔ public download binds same-name CDN cache key to immutable asset ID and rejects foreign URLs (1.2125ms)
+✔ uploaded resume binds original current ID and digest plus complete actual upload records (5.8967ms)
+✔ v1 successor binds two actual code increases while preserving other full identities (43.9733ms)
+✔ v1 successor refuses sequence skips, same-code source/notes/archive changes and rollback (4.645ms)
+✔ v1 refuses wrong contract, repository, duplicate identities, asset IDs and pagination (2.4628ms)
+✔ v1 full signed history requires initial one, every sequence, and unchanged same-code metadata (2.6392ms)
+✔ v1 anonymous download only accepts fixed release URL and binds immutable asset ID cache key (0.7516ms)
+✔ post-upload resume requires unchanged current identity and four exact existing upload bindings (3.8379ms)
+✔ abelian-sandpile committed integration bytes bind to exact upstream identity and reject forged proof (11.8924ms)
+✔ lambda-diagram-game committed integration bytes bind to exact upstream identity and reject forged proof (3.5268ms)
+ℹ tests 53
+ℹ suites 0
+ℹ pass 52
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9916.3122
+
+✖ failing tests:
+
+test at tests\android-shell.test.mjs:10:1
+✖ Android application identity and minimum API stay independent of source APKs (4.0328ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /versionCode\s*=\s*4/. Input:
+
+  'plugins {\n' +
+    '    id("com.android.application")\n' +
+    '    id("org.jetbrains.kotlin.android")\n' +
+    '}\n' +
+    '\n' +
+    'android {\n' +
+    '    namespace = "com.xiaoxuhui.gamehub"\n' +
+    '    compileSdk = 34\n' +
+    '    // Match Kotlin friend-module names when manually verifying signed release APKs.\n' +
+    '    testBuildType = providers.gradleProperty("gameHubTestBuildType").orElse("debug").get().also {\n' +
+    '        require(it == "debug" || it == "release") { "gameHubTestBuildType must be debug or release" }\n' +
+    '    }\n' +
+    '\n' +
+    '    defaultConfig {\n' +
+    '        applicationId = "com.xiaoxuhui.gamehub"\n' +
+    '        minSdk = 24\n' +
+    '        targetSdk = 34\n' +
+    '        versionCode = 5\n' +
+    '        versionName = "0.4.1"\n' +
+    '        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"\n' +
+    '        resourceConfigurations += listOf("zh", "en")\n' +
+    '    }\n' +
+    '\n' +
+    '    buildTypes {\n' +
+    '        debug { isMinifyEnabled = false }\n' +
+    '        release {\n' +
+    '            isMinifyEnabled = false\n' +
+    '            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")\n' +
+    '        }\n' +
+    '    }\n' +
+    '\n' +
+    '    compileOptions {\n' +
+    '        sourceCompatibility = JavaVersion.VERSION_17\n' +
+    '        targetCompatibility = JavaVersion.VERSION_17\n' +
+    '    }\n' +
+    '    kotlinOptions { jvmTarget = "17" }\n' +
+    '    // Optional independently produced demo fixture is packaged only in the instrumentation APK.\n' +
+    '    sourceSets.getByName("androidTest").assets.srcDir("build/generated/dynamic-device-assets")\n' +
+    '}\n' +
+    '\n' +
+    'dependencies {\n' +
+    '    implementation("androidx.core:core-ktx:1.13.1")\n' +
+    '    implementation("androidx.activity:activity-ktx:1.9.2")\n' +
+    '    implementation("androidx.webkit:webkit:1.11.0")\n' +
+    '    testImplementation("junit:junit:4.13.2")\n' +
+    '    testImplementation("org.json:json:20240303")\n' +
+    '    androidTestImplementation("androidx.test.ext:junit:1.2.1")\n' +
+    '    androidTestImplementation("androidx.test:runner:1.6.2")\n' +
+    '}\n'
+
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-n10/work/tests/android-shell.test.mjs:15:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'plugins {\n    id("com.android.application")\n    id("org.jetbrains.kotlin.android")\n}\n\nandroid {\n    namespace = "com.xiaoxuhui.gamehub"\n    compileSdk = 34\n    // Match Kotlin friend-module names when manually verifying signed release APKs.\n    testBuildType = providers.gradleProperty("gameHubTestBuildType").orElse("debug").get().also {\n        require(it == "debug" || it == "release") { "gameHubTestBuildType must be debug or release" }\n    }\n\n    defaultConfig {\n        applicationId = "com.xiaoxuhui.gamehub"\n        minSdk = 24\n        targetSdk = 34\n        versionCode = 5\n        versionName = "0.4.1"\n        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"\n        resourceConfigurations += listOf("zh", "en")\n    }\n\n    buildTypes {\n        debug { isMinifyEnabled = false }\n        release {\n            isMinifyEnabled = false\n            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")\n        }\n    }\n\n    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions { jvmTarget = "17" }\n    // Optional independently produced demo fixture is packaged only in the instrumentation APK.\n    sourceSets.getByName("androidTest").assets.srcDir("build/generated/dynamic-device-assets")\n}\n\ndependencies {\n    implementation("androidx.core:core-ktx:1.13.1")\n    implementation("androidx.activity:activity-ktx:1.9.2")\n    implementation("androidx.webkit:webkit:1.11.0")\n    testImplementation("junit:junit:4.13.2")\n    testImplementation("org.json:json:20240303")\n    androidTestImplementation("androidx.test.ext:junit:1.2.1")\n    androidTestImplementation("androidx.test:runner:1.6.2")\n}\n',
+    expected: /versionCode\s*=\s*4/,
+    operator: 'match',
+    diff: 'simple'
+  }

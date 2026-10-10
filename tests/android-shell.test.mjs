@@ -12,7 +12,8 @@ test('Android application identity and minimum API stay independent of source AP
   assert.match(gradle, /applicationId\s*=\s*"com\.xiaoxuhui\.gamehub"/);
   assert.match(gradle, /minSdk\s*=\s*24/);
   assert.equal(gradle.match(/versionName\s*=\s*"([^"]+)"/)[1], JSON.parse(text('package.json')).version);
-  assert.match(gradle, /versionCode\s*=\s*4/);
+  assert.match(gradle, /versionCode\s*=\s*5\b/);
+  assert.match(gradle, /versionName\s*=\s*"0\.4\.1"/);
   assert.doesNotMatch(gradle, /storeFile\s*=\s*file\("debug\.keystore"\)/);
 });
 

@@ -132,7 +132,7 @@ class DynamicLobbyDeviceTest {
             await("real large font landscape"){var good=false;scenario.onActivity {good=it.resources.configuration.fontScale>=1.5f && it.resources.configuration.orientation==Configuration.ORIENTATION_LANDSCAPE};good}
             // Presentation-only synthetic entries; signed producer/network installation is tested above.
             val sample=h.current.first.games.single()
-            val remotes=(1..8).map {sample.copy(id="layout-$it",displayName="布局验证游戏 $it",minHost=5)}
+            val remotes=(1..8).map {sample.copy(id="layout-$it",displayName="布局验证游戏 $it",minHost=6)}
             val locals=remotes.associate {game->game.id to LocalResourceInfo(ResourceSelection(active=game.identity,highestCode=1),game,null,null,null,null,true)}
             val snapshot=owner.snapshot().copy(dynamicCatalogGames=remotes,localDynamicResources=locals,dynamicResources=emptyList(),dynamicStatus="布局夹具：8 项，不可安装")
             UpdateCoordinator::class.java.getDeclaredField("state").apply {isAccessible=true}.set(owner,snapshot)
@@ -152,7 +152,7 @@ class DynamicLobbyDeviceTest {
             }
         }
     }}
-    @Test fun futureHostGameExplainsCompatibilityAndOffersNoInstall(){withUi({h->h.current=h.fixture.dynamicRelease(minHost=5)}) {h,owner,_->
+    @Test fun futureHostGameExplainsCompatibilityAndOffersNoInstall(){withUi({h->h.current=h.fixture.dynamicRelease(minHost=6)}) {h,owner,_->
         await("future game query"){!owner.snapshot().busy && owner.snapshot().dynamicCheckedAt!=null}
         click("游戏目录",false)
         await("actual compatibility explanation"){visible("此游戏与当前大厅不兼容。请在更新详情检查大厅升级；升级前不会下载此游戏。")}
