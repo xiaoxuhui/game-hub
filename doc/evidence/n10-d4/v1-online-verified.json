@@ -1,0 +1,54 @@
+{
+  "catalogSequence": "2",
+  "catalogAssetId": 628440780,
+  "catalogSha256": "972f58066a0ebf2aad8180318783a0ae33a449a1285cde01239b17886d3b86de",
+  "historyAssetId": 623110620,
+  "verifiedHistorySequences": [
+    "1",
+    "2"
+  ],
+  "resources": [
+    {
+      "id": "conway",
+      "contentCode": 1,
+      "assetId": 623110366,
+      "bytes": 269135,
+      "sha256": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65"
+    },
+    {
+      "id": "eml",
+      "contentCode": 1,
+      "assetId": 623110443,
+      "bytes": 106336,
+      "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6"
+    },
+    {
+      "id": "light",
+      "contentCode": 1,
+      "assetId": 623110476,
+      "bytes": 114919,
+      "sha256": "9df0cadcfc979a355df2b07e6f0d0aff5c09fd8a0669b33324eef176b42530c0"
+    },
+    {
+      "id": "turing",
+      "contentCode": 1,
+      "assetId": 623110526,
+      "bytes": 83347,
+      "sha256": "e633a50595e969d6fd96b52c0d1d5380a17220b0a0acad88055549c570339ce1"
+    },
+    {
+      "id": "light",
+      "contentCode": 2,
+      "assetId": 628400804,
+      "bytes": 115671,
+      "sha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267"
+    },
+    {
+      "id": "turing",
+      "contentCode": 2,
+      "assetId": 628400874,
+      "bytes": 86435,
+      "sha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43"
+    }
+  ]
+}

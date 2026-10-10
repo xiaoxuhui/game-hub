@@ -33,6 +33,18 @@ export function successorPayload(old,games,snapshot,sequence,now=Date.now()){
     issuedAt:new Date(now).toISOString(),expiresAt:new Date(now+89*86400000).toISOString(),games:merged};
   validateSigningInput(payload,snapshot,old,now);return payload;
 }
+export function validateUploadedResume(old,games,snapshot,uploads,expected,catalogId){
+  const assets=snapshot.assetPages.flatMap(p=>p.assets),current=assets.filter(a=>a.name==='catalog.signed.json');
+  if(current.length!==1||current[0].id!==catalogId||current[0].digest!==`sha256:${expected}`||current[0].state!=='uploaded')throw new Error('Resume current catalog moved');
+  validateReleaseSnapshot(old,snapshot,'game-resources-v2');
+  const bound=attachAssets(games,snapshot.release,assets,'game-resources-v2');
+  if(!Array.isArray(uploads)||uploads.length!==games.length||new Set(uploads.map(a=>a.name)).size!==games.length)throw new Error('Resume requires complete unique uploaded records');
+  for(const game of bound){
+    const upload=uploads.find(a=>a.name===assetName(game));
+    if(!upload||upload.id!==game.assetId||upload.state!=='uploaded'||upload.size!==game.archiveBytes||upload.digest!==`sha256:${game.archiveSha256}`)throw new Error('Resume uploaded identity differs');
+  }
+  return snapshot;
+}
 export function validateHistoryCatalogs(history,current,snapshot){
   const catalogs=[...history,current].sort((a,b)=>BigInt(a.catalogSequence)<BigInt(b.catalogSequence)?-1:1);
   if(BigInt(current.catalogSequence)!==BigInt(catalogs.length))throw new Error('Incomplete signed history chain');
@@ -62,8 +74,17 @@ async function download(asset){
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
     const [mode,directory,expected,sequence]=process.argv.slice(2);
-    if(!directory||!expected||!sequence)throw new Error('Usage: resource-successor.mjs preflight|payload|online directory previous-sha next-sequence');
-    if(mode==='preflight'){
+    if(process.argv.length!==6||!directory||!expected||!sequence)throw new Error('Usage: resource-successor.mjs preflight|resume|payload|online directory previous-sha next-sequence');
+    if(mode==='resume'){
+      const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2'),before=json(directory,'before-snapshot.json');
+      const originals=before.assetPages.flatMap(p=>p.assets).filter(a=>a.name==='catalog.signed.json');
+      if(originals.length!==1||originals[0].digest!==`sha256:${expected}`)throw new Error('Original current catalog record differs');
+      const games=verifyDynamicResources();
+      validateUploadedResume(old,games,snapshot,json(directory,'uploaded-resources.json'),expected,originals[0].id);
+      successorPayload(old,games,snapshot,sequence);
+      put(directory,'resume-snapshot.json',JSON.stringify(snapshot,null,2)+'\n');
+      console.log('Resume admission verified existing uploads and unchanged production current; no write to remote');
+    }else if(mode==='preflight'){
       const snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2');
       if(snapshot.release.id!==releaseId)throw new Error('Fixed resource release changed');
       const assets=snapshot.assetPages.flatMap(p=>p.assets),current=assets.filter(a=>a.name==='catalog.signed.json');

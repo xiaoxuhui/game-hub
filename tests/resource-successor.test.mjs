@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {packDynamic,dynamicSources} from '../scripts/dynamic-resources.mjs';
 import {assetName} from '../scripts/resource-protocol.mjs';
-import {successorPayload,validateHistoryCatalogs,publicDownloadUrl} from '../scripts/resource-successor.mjs';
+import {successorPayload,validateHistoryCatalogs,publicDownloadUrl,validateUploadedResume} from '../scripts/resource-successor.mjs';
 function fixture(){
   const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
   const entries=source.files.map(path=>({path,data:readFileSync(new URL(`../examples/memory-demo/${path}`,import.meta.url))}));
@@ -55,4 +55,19 @@ test('public download binds same-name CDN cache key to immutable asset ID and re
   assert.notEqual(String(publicDownloadUrl(a)),String(publicDownloadUrl({...a,id:102})));
   assert.throws(()=>publicDownloadUrl({...a,browser_download_url:'https://example.com/catalog.signed.json'}));
   assert.throws(()=>publicDownloadUrl({...a,id:0}));
+});
+test('uploaded resume binds original current ID and digest plus complete actual upload records',()=>{
+  const {game,old,snapshot}=fixture(),expected='a'.repeat(64);
+  snapshot.assetPages[0].assets.push({id:200,name:'catalog.signed.json',state:'uploaded',size:123,digest:`sha256:${expected}`});
+  const uploads=[structuredClone(snapshot.assetPages[0].assets[0])];
+  assert.equal(validateUploadedResume(old,[game],snapshot,uploads,expected,200),snapshot);
+  assert.throws(()=>validateUploadedResume(old,[game],snapshot,uploads,expected,201),/current catalog moved/);
+  assert.throws(()=>validateUploadedResume(old,[game],snapshot,uploads,'b'.repeat(64),200),/current catalog moved/);
+  assert.throws(()=>validateUploadedResume(old,[game],snapshot,[],expected,200),/complete unique/);
+  assert.throws(()=>validateUploadedResume(old,[game],snapshot,[...uploads,...uploads],expected,200),/complete unique/);
+  for(const change of [{id:101},{size:1},{state:'new'},{digest:'sha256:'+'0'.repeat(64)}]){
+    assert.throws(()=>validateUploadedResume(old,[game],snapshot,[{...uploads[0],...change}],expected,200),/uploaded identity differs/);
+  }
+  const missing=structuredClone(snapshot);missing.assetPages[0].assets.shift();
+  assert.throws(()=>validateUploadedResume(old,[game],missing,uploads,expected,200),/Asset identity/);
 });
