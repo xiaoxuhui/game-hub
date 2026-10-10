@@ -1,0 +1,20 @@
+{
+  "marker": {
+    "pid": 33176,
+    "name": "gamehub-n10-20261010",
+    "serial": "emulator-5566",
+    "data": "D:\\soft\\.ci-tmp\\game-hub-n10\\avd\\gamehub-n10-20261010.avd",
+    "mode": "formal"
+  },
+  "command": "adb -s emulator-5566 emu kill",
+  "reply": [
+    "OK: killing emulator, bye bye",
+    "",
+    "OK",
+    ""
+  ],
+  "remainingOwnProcesses": 0,
+  "serialAbsent": true,
+  "originalsMatched": 7,
+  "completedAtUtc": "2026-10-10T18:30:12.0229231Z"
+}

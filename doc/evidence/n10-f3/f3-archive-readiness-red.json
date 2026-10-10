@@ -1,0 +1,9 @@
+{
+  "failedOperation": "archive-n10.ps1 copy source hash",
+  "reason": "Own emulator stopped but redirected stderr handle released after shutdown; original hash now readable",
+  "partialRoot": "D:\\soft\\game-hub-archives\\n10-20261010-incomplete-20261011-0230",
+  "partialFilesVerified": 159,
+  "completeIndexAbsent": true,
+  "originalSourceRetained": true,
+  "noCleanupExecuted": true
+}

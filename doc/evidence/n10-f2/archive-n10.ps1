@@ -44,7 +44,8 @@ foreach($taskFile in $taskEvidenceInputs){
  $taskExtension=[IO.Path]::GetExtension($taskRelative);if($taskExtension -notmatch '^\.[A-Za-z0-9]{1,12}$'){$taskExtension='.bin'}
  $taskAlias='evidence/'+$taskPathHash+$taskExtension
  if(-not $taskAliasSet.Add($taskAlias)){throw 'Evidence alias collision'}
- $taskEvidenceMap+=[ordered]@{input=$taskFile.FullName;original=$taskRelative;archive=$taskAlias}
+ $taskInputHash=(Get-FileHash -LiteralPath $taskFile.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+ $taskEvidenceMap+=[ordered]@{input=$taskFile.FullName;original=$taskRelative;archive=$taskAlias;bytes=$taskFile.Length;sha256=$taskInputHash}
 }
 $taskManifest=Get-Content -LiteralPath (Join-Path $taskWork 'doc\evidence\n10-d-complete\candidate-hashes.json') -Raw | ConvertFrom-Json
 if($taskManifest.producer -ne 'fc9da9be6a238018d86f2085facd5b8085e68cf8' -or @($taskManifest.files).Count -ne 12){throw 'Reviewed 12-file candidate manifest required'}
@@ -69,6 +70,7 @@ foreach($taskCandidate in @('resource-candidate','dynamic-candidate')){
 New-Item -ItemType Directory -Path $taskArchive | Out-Null
 foreach($taskFile in $taskEvidenceMap){
  $taskRecord=Copy-ArchiveFile $taskFile.input $taskFile.archive
+ if($taskRecord.bytes -ne $taskFile.bytes -or $taskRecord.sha256 -cne $taskFile.sha256){throw 'Evidence changed after readiness precheck'}
  $taskArtifacts+=$taskRecord
  $taskEvidenceFiles+=[ordered]@{path=$taskFile.original;archivePath=$taskRecord.path;bytes=$taskRecord.bytes;sha256=$taskRecord.sha256}
 }
