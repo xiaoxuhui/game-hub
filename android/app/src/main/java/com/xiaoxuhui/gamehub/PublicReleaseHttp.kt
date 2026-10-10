@@ -20,6 +20,12 @@ internal class PublicReleaseHttp(private val connections: (String) -> HttpURLCon
     private val cache = LinkedHashMap<String, Cached>()
     fun metadata(url: String, limit: Int, deadline: Long, cancelled: () -> Boolean = { false }): PublicBytes {
         require(url.startsWith(API_ROOT + "/")) { "Metadata endpoint outside fixed repository" }
+        return queryMetadata(url, limit, deadline, cancelled)
+    }
+    fun upstreamMetadata(id: String, limit: Int, deadline: Long, cancelled: () -> Boolean): PublicBytes =
+        queryMetadata(UpstreamReleasePolicy.repository(id).latestUrl, limit, deadline, cancelled)
+
+    private fun queryMetadata(url: String, limit: Int, deadline: Long, cancelled: () -> Boolean): PublicBytes {
         val cached = cache[url]
         val connection = open(url, "application/vnd.github+json", cached?.etag)
         try {
