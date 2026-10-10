@@ -23,7 +23,8 @@ class UpstreamReleaseClientTest {
     }
     @Test fun sourceHintsRejectUnpublishedForeignAndMalformedMetadata() {
         val invalid = listOf(release().put("draft", true), release().put("prerelease", true),
-            release().put("draft", "false"), release().put("id", 0), release().put("html_url", "https://evil.example/"),
+            release().put("draft", "false"), release().put("id", 0), release().put("id", "42"), release().put("id", 42.5),
+            release().put("html_url", "https://evil.example/"),
             release().put("html_url", "https://github.com/xiaoxuhui/EML/releases/tag/v1.2.1"),
             release().put("tag_name", "1.2.1"), release(version = "1.2.1-rc1"), release(version = "01.2.1"),
             release(version = "9999999999999999999999.2.1"), release().apply { remove("prerelease") })
@@ -35,10 +36,11 @@ class UpstreamReleaseClientTest {
     @Test fun onlyFixedLatestMetadataIsQueriedAndSource404IsUnknown() {
         val requests = mutableListOf<String>()
         var status = 200
+        var bodyOverride: ByteArray? = null
         val http = PublicReleaseHttp({ url ->
             requests.add(url)
             object : HttpURLConnection(URL(url)) {
-                val body = release().toString().toByteArray()
+                val body = bodyOverride ?: release().toString().toByteArray()
                 override fun getResponseCode() = status
                 override fun getContentLengthLong() = body.size.toLong()
                 override fun getInputStream() = ByteArrayInputStream(body)
@@ -54,11 +56,25 @@ class UpstreamReleaseClientTest {
             UpstreamReleaseClient(http).query("light", PublicReleaseHttp.deadline()) { false }
         }
         assertEquals("未找到正式发布，待检查", failure.message)
+        status = 200
+        bodyOverride = release().toString().dropLast(1).toByteArray() + ",\"ignored\":\"".toByteArray() +
+            byteArrayOf(0xc3.toByte(), 0x28) + "\"}".toByteArray()
+        assertThrows(Exception::class.java) {
+            UpstreamReleaseClient(http).query("light", PublicReleaseHttp.deadline()) { false }
+        }
         val before = requests.size
         assertThrows(IllegalStateException::class.java) { UpstreamReleaseClient(http).query("evil", PublicReleaseHttp.deadline()) { false } }
         assertThrows(IllegalArgumentException::class.java) {
             http.metadata("https://api.github.com/repos/xiaoxuhui/light_game/releases/latest", 1000, PublicReleaseHttp.deadline())
         }
         assertEquals(before, requests.size)
+    }
+
+    @Test fun duplicateKeysTrailingJsonAndResponseBudgetFailClosed() {
+        val normal = release().toString()
+        for (raw in listOf(normal.dropLast(1) + ",\"id\":43}", normal + "{}", "[$normal]")) {
+            assertThrows(Exception::class.java) { UpstreamReleasePolicy.parse("light", raw) }
+        }
+        assertThrows(Exception::class.java) { UpstreamReleasePolicy.parse("light", ByteArray(1_000_001)) }
     }
 }
