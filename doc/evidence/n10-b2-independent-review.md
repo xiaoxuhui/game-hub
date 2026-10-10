@@ -13,6 +13,12 @@
 - 上游入口调用现有 `queryMetadata`，故共用 1 MB 实际字节预算、总 deadline、每次读的取消检查、无 HTTP 缓存、ETag/304 内存重验证与 403/429 退避；禁止自动重定向。新增测试直接覆盖固定 URL、未知源和 404；时限/取消/ETag 的底层逻辑未改，但 N10-B3 接入时仍需验证单项超时不妨碍其它源和两条更新通道。
 - 归档报告的 JVM 87/0/0/0 和 Node 46/0 与日志相符；文档如实标本切片尚未接协调/UI、未发行。此审阅不把底层接口通过当整项 N10-B 或设备行为通过。
 
+## P1 批改复审（2026-10-10）
+
+修订提交 `3de9c8a29ca1455d459b317e65f2cf4936cf03b0` 已推送；复审时独立检出 HEAD 对应此提交且工作树干净。`UpstreamReleaseClient.kt` 生产查询现在把原始 `ByteArray` 直接交给 `StrictJson.parse(bytes, 1_000_000)`，以 `ResourcePolicy.integer(...,"id",1)` 和有界严格字符串读取 tag/URL；没有宽松 UTF-8 转换。测试增加字符串/小数 ID、坏 UTF-8、重复键、尾部 JSON、数组根和超预算负例。归档红日志为旧实现 3 项中 2 个断言失败，绿日志为全量 JVM 88 项、0 失败/错误/跳过；`git diff --check` 无问题。
+
+**首审 P1 已闭合，复审结论 CLOSED。** 可进入 N10-B3 协调器/UI 集成；本结论不将六源查询、隔离、设备表现或新版本发行视为已完成。
+
 ## 实施者批改记录
 
 - 先扩展受审代码回归：字符串/小数ID、坏UTF-8。执行 gradle -p android testDebugUnitTest --tests com.xiaoxuhui.gamehub.UpstreamReleaseClientTest --console=plain，实际3项2断言失败exit1，见 [批改红日志](n10-b2-review-red.log)。
