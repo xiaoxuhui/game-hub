@@ -1,0 +1,71 @@
+✔ Android application identity and minimum API stay independent of source APKs (2.1251ms)
+✔ Manifest has one launcher and only the planned update permission (2.0497ms)
+✔ compact lobby uses four fixed source icons and clickable cards (1.2997ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.4704ms)
+✔ four original export bridge names and a file chooser are wired (1.0439ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: accbb3f305e023c00f66f67b0d68ae807f4b218356281f84f193736e4cfa3abd
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.9129ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (2.2358ms)
+✔ HTML references exclude external and fragment links while preserving local assets (1.6753ms)
+✔ missing local HTML reference stops bundling (24.9744ms)
+✔ manifest hashes are stable and change when a resource changes (11.7755ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (6310.976ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (8.3474ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (17.9252ms)
+✔ higher content accepts new bytes only with new exact public asset identity (1.2654ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (1993.9818ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (56.6509ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (3.3841ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (304.835ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (21.4761ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (5.7453ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (2.0102ms)
+✔ detached programmatic Blob click saves content before immediate revoke (6.5948ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (2.6439ms)
+✔ demo preserves progress, counts wins once and validates imported state (4.1827ms)
+✔ actual import handler never claims durable success after storage write failure (6.8016ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.3605ms)
+(node:30788) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/soft/.ci-tmp/game-hub-n10/work/examples/red-green-puzzle/core.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\soft\.ci-tmp\game-hub-n10\work\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ adaptation retains exact frozen HTML fixture, full MIT and reviewed output hashes (12.7513ms)
+✔ every supported size preserves frozen algorithm, legal edges and independent BFS distance (6.389ms)
+✔ invalid sizes are rejected before building and bounded text remains complete (2.5169ms)
+✔ only valid versioned parameters restore, invalid storage defaults safely (0.7261ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (3.1199ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (1.2571ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (1.9891ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.905ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (8.1706ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (183.4554ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.8261ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (1.3607ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (733.4604ms)
+✔ successor retains identities omitted from candidate and binds new resources to public assets (47.0884ms)
+✔ successor refuses skipped sequences, same-code metadata changes and incomplete historical snapshot (8.288ms)
+✔ successor rejects forged asset bytes and duplicate candidate identities before signing (5.5478ms)
+✔ complete signed history audit detects earliest missing ZIP, sequence gaps and historical identity mutation (11.4674ms)
+✔ public download binds same-name CDN cache key to immutable asset ID and rejects foreign URLs (1.2479ms)
+✔ abelian-sandpile committed integration bytes bind to exact upstream identity and reject forged proof (12.475ms)
+✔ lambda-diagram-game committed integration bytes bind to exact upstream identity and reject forged proof (3.5383ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 46
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7433.9676

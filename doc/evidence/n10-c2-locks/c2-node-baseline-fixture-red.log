@@ -1,0 +1,77 @@
+✔ Android application identity and minimum API stay independent of source APKs (2.8211ms)
+✔ Manifest has one launcher and only the planned update permission (2.8706ms)
+✔ compact lobby uses four fixed source icons and clickable cards (2.2615ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.806ms)
+✔ four original export bridge names and a file chooser are wired (0.9747ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: b283f20ca7c9f50743cdff7ea0fecb977744890a6a1c0a3461af9c982b31aec7
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.8279ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (3.2574ms)
+✔ HTML references exclude external and fragment links while preserving local assets (1.5637ms)
+✔ missing local HTML reference stops bundling (45.9695ms)
+✔ manifest hashes are stable and change when a resource changes (13.7213ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (6141.4239ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (11.7199ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (16.0084ms)
+✔ higher content accepts new bytes only with new exact public asset identity (0.8004ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (1763.5978ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (164.8661ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (7.0183ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (162.0209ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (19.6092ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (8.3694ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (2.2255ms)
+✔ detached programmatic Blob click saves content before immediate revoke (15.1661ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (3.7156ms)
+✔ demo preserves progress, counts wins once and validates imported state (4.6384ms)
+✔ actual import handler never claims durable success after storage write failure (7.531ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.8362ms)
+(node:9544) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/soft/.ci-tmp/game-hub-n10/work/examples/red-green-puzzle/core.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\soft\.ci-tmp\game-hub-n10\work\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ adaptation retains exact frozen HTML fixture, full MIT and reviewed output hashes (14.6431ms)
+✔ every supported size preserves frozen algorithm, legal edges and independent BFS distance (5.7721ms)
+✔ invalid sizes are rejected before building and bounded text remains complete (2.0235ms)
+✔ only valid versioned parameters restore, invalid storage defaults safely (0.588ms)
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (5.3908ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (2.4529ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (3.7738ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (1.7067ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (6.4148ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (67.7198ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (1.565ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (2.7767ms)
+✖ resource generation failure preserves previous complete candidate and rejects stale commit (133.7557ms)
+✔ successor retains identities omitted from candidate and binds new resources to public assets (41.6358ms)
+✔ successor refuses skipped sequences, same-code metadata changes and incomplete historical snapshot (5.0057ms)
+✔ successor rejects forged asset bytes and duplicate candidate identities before signing (6.5238ms)
+✔ complete signed history audit detects earliest missing ZIP, sequence gaps and historical identity mutation (7.9347ms)
+✔ public download binds same-name CDN cache key to immutable asset ID and rejects foreign URLs (1.454ms)
+✔ abelian-sandpile committed integration bytes bind to exact upstream identity and reject forged proof (15.2807ms)
+✔ lambda-diagram-game committed integration bytes bind to exact upstream identity and reject forged proof (3.3654ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 45
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7226.7037
+
+✖ failing tests:
+
+test at tests\resource-bundle.test.mjs:79:1
+✖ resource generation failure preserves previous complete candidate and rejects stale commit (133.7557ms)
+  Error: Resource release lock mismatch
+      at resourceInputs (file:///D:/soft/.ci-tmp/game-hub-n10/work/scripts/resource-sources.mjs:20:205)
+      at buildResources (file:///D:/soft/.ci-tmp/game-hub-n10/work/scripts/resource-bundle.mjs:72:46)
+      at TestContext.<anonymous> (file:///D:/soft/.ci-tmp/game-hub-n10/work/tests/resource-bundle.test.mjs:94:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
