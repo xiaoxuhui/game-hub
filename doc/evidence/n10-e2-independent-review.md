@@ -14,3 +14,9 @@
 - 归档日志只证明 `assembleDebugAndroidTest` **BUILD SUCCESSFUL in 30s**，未声称正式设备测试已运行。受审提交 `git diff --check` 通过。当前旧正式现场和 D 限额等待均未被本审阅改变。
 
 批改该离线覆盖缺口并再次编译/运行相应设备门禁后复审；此控制器仍须在正式同证书 0.4.1 候选上实际执行，才能证明运行时结果。
+
+## P2 批改复审：f2de2adba21aecf23bdd511fd68629f1a1a1d879
+
+**CLOSED（控制器源码与测试设计）。** `offline` 已改为同一 instrument 进程先通过真实 `fresh(startedAt)`、五个已装版本 `sourceMessage`、APK 与 v1/v2 非历史检查，明确要求六源键和断网前非空动态目录候选，再打印 `WAITING_FOR_OWN_DEVICE_DISCONNECT` 供外部只对自有模拟器断网。回调后断言六键不变、每项 publication/checkedAt 保留且 issue 含“离线”、三通道转 remembered、资源候选列表清空。另设 `coldOffline`，明确只验证冷启动离线和空源历史，消除了空 map 全称断言造成的伪通过。文档要求外部从 logcat 观察握手、在 finally 恢复网络，不把 JUnit 最终输出当实时门闩。
+
+本修订仅改变该测试、文档并归档首审和重新编译日志；`git diff 819d6ad..f2de2ad --check` 通过。批改后 `assembleDebugAndroidTest` 日志为 **BUILD SUCCESSFUL in 33s**，尚未运行正式设备测试。此 CLOSED 只允许后续按计划执行真实 0.4.1 仪器验收，不能将编译成功写成在线→离线设备 PASS。
