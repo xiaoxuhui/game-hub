@@ -1,0 +1,17 @@
+{
+  "status": 200,
+  "now": "2026-10-10T17:41:44.332Z",
+  "headers": {
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "0",
+    "x-ratelimit-reset": "1791656171",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "60"
+  },
+  "core": {
+    "limit": 60,
+    "remaining": 0,
+    "reset": 1791656171,
+    "used": 60
+  }
+}

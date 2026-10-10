@@ -1,0 +1,19 @@
+
+com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest:
+Error in realFormalHallChecksAndPreservesActivatedResources(com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest):
+java.lang.AssertionError: Actual formal check timed out: real startup five publications and sixth explicit issue
+	at org.junit.Assert.fail(Assert.java:89)
+	at com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest.await(ProductionHallUpdateDeviceTest.kt:25)
+	at com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest.realFormalHallChecksAndPreservesActivatedResources(ProductionHallUpdateDeviceTest.kt:89)
+
+
+Time: 181.43
+There was 1 failure:
+1) realFormalHallChecksAndPreservesActivatedResources(com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest)
+java.lang.AssertionError: Actual formal check timed out: real startup five publications and sixth explicit issue
+	at org.junit.Assert.fail(Assert.java:89)
+	at com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest.await(ProductionHallUpdateDeviceTest.kt:25)
+	at com.xiaoxuhui.gamehub.ProductionHallUpdateDeviceTest.realFormalHallChecksAndPreservesActivatedResources(ProductionHallUpdateDeviceTest.kt:89)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

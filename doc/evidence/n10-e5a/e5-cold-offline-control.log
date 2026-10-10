@@ -1,0 +1,11 @@
+Own AVD gamehub-n10-20261010
+COMMAND: disable own wifi and data
+0
+Active default network: none
+COMMAND: start old offline process, read PID, force-stop then normal cold start new PID
+Starting: Intent { cmp=com.xiaoxuhui.gamehub/.MainActivity }
+3595
+Starting: Intent { cmp=com.xiaoxuhui.gamehub/.MainActivity }
+3645
+COMMAND: finally restore wifi/data
+1
