@@ -1,0 +1,8 @@
+Own AVD: gamehub-n10-20261010
+Actual six fresh results and directory offers reached WAITING signal
+COMMAND: svc wifi/data disable (own serial only)
+COMMAND: wifi_on and active default network readback
+0
+Active default network: none
+COMMAND: finally restore wifi/data
+1

@@ -1,0 +1,9 @@
+--------- beginning of main
+10-10 18:16:32.232  4422  4442 I System.out: WAITING_FOR_OWN_DEVICE_DISCONNECT: six real results and fresh directory offers recorded
+10-10 18:17:37.859  4422  4442 I System.out: Formal 0.4.1 offline production checks PASS: 大厅检查：离线，历史结果待检查; 源仓库检查：离线，历史结果待检查
+10-10 18:17:37.859  4422  4442 I System.out: Actual source conway: version=0.17.0, checkedAt=1791656189935, issue=离线，历史结果待检查
+10-10 18:17:37.859  4422  4442 I System.out: Actual source eml: version=1.3.0, checkedAt=1791656190270, issue=离线，历史结果待检查
+10-10 18:17:37.859  4422  4442 I System.out: Actual source light: version=1.2.1, checkedAt=1791656190570, issue=离线，历史结果待检查
+10-10 18:17:37.859  4422  4442 I System.out: Actual source turing: version=0.5.1, checkedAt=1791656190940, issue=离线，历史结果待检查
+10-10 18:17:37.859  4422  4442 I System.out: Actual source abelian-sandpile: version=null, checkedAt=null, issue=离线，历史结果待检查
+10-10 18:17:37.859  4422  4442 I System.out: Actual source lambda-diagram-game: version=0.3.1, checkedAt=1791656192144, issue=离线，历史结果待检查
