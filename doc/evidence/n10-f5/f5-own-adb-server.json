@@ -1,0 +1,7 @@
+{
+  "ProcessId": 30648,
+  "ParentProcessId": 28336,
+  "ExecutablePath": "D:\\soft\\game-hub-toolchain\\android-sdk\\platform-tools\\adb.exe",
+  "CreationDate": "2026-10-10T22:20:02.595024+08:00",
+  "CommandLine": "adb -L tcp:5037 fork-server server --reply-fd 712"
+}

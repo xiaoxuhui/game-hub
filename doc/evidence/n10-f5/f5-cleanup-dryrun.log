@@ -1,0 +1,14 @@
+The bundle contains these 9 refs:
+b46d90ef1d428898d32c94f258141694f90d671d refs/heads/main
+b46d90ef1d428898d32c94f258141694f90d671d refs/remotes/origin/HEAD
+b46d90ef1d428898d32c94f258141694f90d671d refs/remotes/origin/main
+6fecaa096b02119176124e020f57ca6090bc70ba refs/tags/game-resources-v2
+8190cba6485498ff496dae5579f9f3fb20989d06 refs/tags/v0.2.0
+7bda2e7e28be4febe74b06baa8c09b5b0427dbae refs/tags/v0.3.0
+46dd2157c2e945c6be484bc2d3f0b52a0286972b refs/tags/v0.4.0
+d33b0503b905b677bb04d3087beafbca6295f239 refs/tags/v0.4.1
+b46d90ef1d428898d32c94f258141694f90d671d HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+D:/soft/game-hub-archives/n10-20261010/n10-source.bundle is okay
+Verified exact N10 target: 17870 files, 7348387960 logical bytes; archive index e3ded2b9f419879ef094d4478814db42073f34ec202c26ceaef535a1d6cf926b

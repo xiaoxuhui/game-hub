@@ -1,0 +1,21 @@
+{
+  "taskRoot": "D:\\soft\\.ci-tmp\\game-hub-n10",
+  "initialVerifiedCommit": "14174d29b372a123fb009c4cb77329d7370ed037",
+  "initialFiles": 17870,
+  "initialLogicalBytes": 7348387960,
+  "indexSha256": "e3ded2b9f419879ef094d4478814db42073f34ec202c26ceaef535a1d6cf926b",
+  "dryRunExit": 0,
+  "executeSucceeded": false,
+  "error": "Remove-Item work directory in use; no cleanup-result created",
+  "remaining": [
+    {
+      "FullName": "D:\\soft\\.ci-tmp\\game-hub-n10\\work",
+      "PSIsContainer": true,
+      "Length": null
+    }
+  ],
+  "remainingFiles": 0,
+  "allOriginalEvidenceStillArchived": true,
+  "ownCuaRuntimeReset": true,
+  "recordedAtUtc": "2026-10-10T18:39:56.7198700Z"
+}

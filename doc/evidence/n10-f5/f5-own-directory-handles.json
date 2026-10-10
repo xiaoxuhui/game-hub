@@ -1,0 +1,7 @@
+{
+  "pid": 30648,
+  "parent": 28336,
+  "name": "adb.exe",
+  "handle": "30648|\\\\?\\D:\\soft\\.ci-tmp\\game-hub-n10\\work",
+  "command": "adb -L tcp:5037 fork-server server --reply-fd 712"
+}
