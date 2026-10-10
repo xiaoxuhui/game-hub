@@ -2,7 +2,10 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = fileURLToPath(new URL('../android/app/src/main/assets/games/', import.meta.url));
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 1 || args[0] !== '--resources')) throw new Error('Usage: audit-storage.mjs [--resources]');
+const resourceMode = args.length === 1;
+const root = fileURLToPath(new URL(resourceMode ? '../.build/resource-source-assets/games/' : '../android/app/src/main/assets/games/', import.meta.url));
 const expected = {
   conway: ['conway-life-game.custom-patterns.v1', 'conway-life-game.logic-functions.v1'],
   eml: ['eml_workbench_v2'],
@@ -30,4 +33,4 @@ for (const [game, names] of Object.entries(expected)) {
     keys.set(name, game);
   }
 }
-console.log(`Verified ${keys.size} distinct storage keys in four pinned bundles; no direct broad clear`);
+console.log(`Verified ${keys.size} distinct storage keys in four ${resourceMode ? 'independent resource' : 'pinned APK'} bundles; no direct broad clear`);

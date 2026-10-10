@@ -83,7 +83,9 @@ test('resource generation failure preserves previous complete candidate and reje
     const assets = join(root, 'android/app/src/main/assets');
     const lockBytes = readFileSync(new URL('../sources.lock.json', import.meta.url));
     writeFileSync(join(root, 'sources.lock.json'), lockBytes);
-    writeFileSync(join(root, 'resource-releases.lock.json'), readFileSync(new URL('../resource-releases.lock.json', import.meta.url)));
+    // The synthetic baseline is content #1; production release locks evolve independently.
+    const baselineCodes = { schemaVersion: 1, games: Object.fromEntries(sources.map(source => [source.id, { contentCode: 1, sourceRevision: source.revision, storageContract: CONTRACTS[source.id], releaseNotes: 'Baseline test fixture' }])) };
+    writeFileSync(join(root, 'resource-releases.lock.json'), JSON.stringify(baselineCodes));
     for (const source of sources) {
       const gameRoot = join(assets, 'games', source.id); mkdirSync(gameRoot, { recursive: true });
       writeFileSync(join(gameRoot, source.entryPage), '<html>baseline</html>'); writeFileSync(join(gameRoot, 'LICENSE'), 'MIT License');

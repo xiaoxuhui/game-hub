@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "c46ec6d3cabc6df9ecd90409649b89d765a0a5a9",
+      "revision": "64c8932af9a0b5cc886db25910b3923a16aa0677",
       "directory": "examples/lambda-diagram-game",
-      "version": "0.3.0",
-      "contentCode": 1,
+      "version": "0.3.1",
+      "contentCode": 2,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "首次动态资源接入；原游戏固定来源 11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2，原玩法和存档格式保持。来源与MIT许可随资源包附带。"
+      "releaseNotes": "正式版本0.3.1兼容资源更新：归约性能、图示视口及清空前备份；固定上游a75d180193fbe7298709298102c8c6008d1353cd，沿用动态存档合同，完整MIT与构建证明随包。"
     },
     {
       "id": "red-green-puzzle",
@@ -83,7 +83,13 @@
       "contentCode": 1,
       "entryPage": "index.html",
       "storageContract": "red-green-puzzle-dynamic-v1",
-      "files": ["LICENSE", "app.js", "core.js", "index.html", "upstream-source.json"],
+      "files": [
+        "LICENSE",
+        "app.js",
+        "core.js",
+        "index.html",
+        "upstream-source.json"
+      ],
       "releaseNotes": "红绿变换首次接入：数量限1到10、最多683行，恢复本机数量参数；复制不可用时可选全文手动复制。固定图灵上游592027，适配源码与完整MIT许可随包。"
     }
   ]
