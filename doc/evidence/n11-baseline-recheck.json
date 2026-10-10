@@ -1,0 +1,37 @@
+[
+  {
+    "repository": "conway-life-game",
+    "headUnchanged": true,
+    "statusUnchanged": true
+  },
+  {
+    "repository": "EML",
+    "headUnchanged": true,
+    "statusUnchanged": true
+  },
+  {
+    "repository": "light_game",
+    "headUnchanged": true,
+    "statusUnchanged": true
+  },
+  {
+    "repository": "turing-machine-simulator",
+    "headUnchanged": true,
+    "statusUnchanged": true
+  },
+  {
+    "repository": "abelian-sandpile",
+    "headUnchanged": true,
+    "statusUnchanged": true
+  },
+  {
+    "repository": "lambda-diagram-game",
+    "headUnchanged": true,
+    "statusUnchanged": true
+  },
+  {
+    "repository": "mini-app-harness",
+    "headUnchanged": true,
+    "statusUnchanged": true
+  }
+]
