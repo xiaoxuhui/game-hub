@@ -1,0 +1,11 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at D:\soft\.ci-tmp\game-hub-n10\evidence\c3-browser.mjs:31:15 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0

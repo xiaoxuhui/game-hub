@@ -1,0 +1,62 @@
+{
+  "browser": "151.0.7922.34",
+  "cases": [
+    {
+      "id": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "origin": "http://127.0.0.1:18417",
+      "checks": [
+        "old actual level progress, canvas placement and named snapshot",
+        "same-origin new load preserves progress/board/snapshot",
+        "new actual snapshot restore and clear/undo"
+      ],
+      "boundary": "Desktop Chromium with actual frozen bundle bytes; Android formal resource install is a separate gate"
+    },
+    {
+      "id": "turing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "origin": "http://127.0.0.1:18417",
+      "checks": [
+        "old actual input/apply/single step and campaign draft",
+        "same-origin new load preserves project and campaign",
+        "new actual step and reset"
+      ],
+      "boundary": "Desktop Chromium with actual frozen bundle bytes; Android formal resource install is a separate gate"
+    },
+    {
+      "id": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "origin": "http://127.0.0.1:18417",
+      "checks": [
+        "old actual level progress, canvas placement and named snapshot",
+        "same-origin new load preserves progress/board/snapshot",
+        "new actual snapshot restore and clear/undo"
+      ],
+      "boundary": "Desktop Chromium with actual frozen bundle bytes; Android formal resource install is a separate gate"
+    },
+    {
+      "id": "turing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "origin": "http://127.0.0.1:18417",
+      "checks": [
+        "old actual input/apply/single step and campaign draft",
+        "same-origin new load preserves project and campaign",
+        "new actual step and reset"
+      ],
+      "boundary": "Desktop Chromium with actual frozen bundle bytes; Android formal resource install is a separate gate"
+    }
+  ],
+  "pageErrors": []
+}

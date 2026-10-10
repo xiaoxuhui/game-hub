@@ -1,0 +1,74 @@
+[
+  {
+    "bytes": 380,
+    "candidate": "resource-candidate",
+    "sha256": "aee5a33ade93d106caf5db49736b69f997c78720ffe4cf398eb80ee81405cd9f",
+    "file": "candidate.json"
+  },
+  {
+    "bytes": 269135,
+    "candidate": "resource-candidate",
+    "sha256": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65",
+    "file": "game-conway-1-77af28d46a71.zip"
+  },
+  {
+    "bytes": 106336,
+    "candidate": "resource-candidate",
+    "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+    "file": "game-eml-1-20205b0dfba4.zip"
+  },
+  {
+    "bytes": 115671,
+    "candidate": "resource-candidate",
+    "sha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267",
+    "file": "game-light-2-19adc2db9b14.zip"
+  },
+  {
+    "bytes": 86435,
+    "candidate": "resource-candidate",
+    "sha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43",
+    "file": "game-turing-2-ad26e84c8b60.zip"
+  },
+  {
+    "bytes": 10073,
+    "candidate": "resource-candidate",
+    "sha256": "005f03cfcaed9d7fbdcc44ea819ef67e06602861db0ad3986144002d02930319",
+    "file": "games.unsigned.json"
+  },
+  {
+    "bytes": 164,
+    "candidate": "dynamic-candidate",
+    "sha256": "9da9f231aaa6eba1048d66a2e98638030b526d4372b2f6e78bdf303530e287c7",
+    "file": "candidate.json"
+  },
+  {
+    "bytes": 83690,
+    "candidate": "dynamic-candidate",
+    "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5",
+    "file": "game-abelian-sandpile-1-8e9db7fc8720.zip"
+  },
+  {
+    "bytes": 102362,
+    "candidate": "dynamic-candidate",
+    "sha256": "0ee2f0ef41545e2364172a3ec2c74481c9cb16ae3c6361a66786f24d0594cdb9",
+    "file": "game-lambda-diagram-game-2-0ee2f0ef4154.zip"
+  },
+  {
+    "bytes": 9510,
+    "candidate": "dynamic-candidate",
+    "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+    "file": "game-memory-demo-2-178d01e9ee05.zip"
+  },
+  {
+    "bytes": 14620,
+    "candidate": "dynamic-candidate",
+    "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62",
+    "file": "game-red-green-puzzle-1-81edc7c967f7.zip"
+  },
+  {
+    "bytes": 8659,
+    "candidate": "dynamic-candidate",
+    "sha256": "e1375de070704f6d1009d92113b1a144d4f4591f24247150792b45545afc83b0",
+    "file": "games.unsigned.json"
+  }
+]

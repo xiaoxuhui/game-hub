@@ -1,0 +1,30 @@
+light initial {
+  storage: null,
+  level: 't01',
+  result: {
+    grid: { cols: 8, rows: 5, cells: [Array] },
+    segments: [
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object]
+    ],
+    targets: [ [Object] ],
+    allLit: true,
+    placedCount: 0,
+    rejected: [],
+    overflow: false
+  },
+  stars: { t01: 3 }
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at D:\soft\.ci-tmp\game-hub-n10\evidence\c3-browser.mjs:25:15 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0
