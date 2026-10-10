@@ -6,7 +6,7 @@ import {sha256,strictJson,safePath,LIMITS} from './resource-protocol.mjs';
 import {inspectResources} from './resource-bundle.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const staticFiles=['index.html','src/styles.css','src/project-config.js','src/domain/sandpile.js','src/domain/challenge.js','src/domain/lesson.js','src/domain/levels.js','src/storage/persistence.js','src/controller.js','src/renderer.js','src/teaching.js','src/app.js','LICENSE'];
-const lambdaInputs=['index.html','src/style.css',...['core','diagram','presets','library','snapshot','download','workspace-tools','viewport','app'].map(n=>`src/${n}.js`),'LICENSE'];
+const lambdaInputs=['index.html','src/style.css',...['core','diagram','diagram-view','presets','library','snapshot','download','workspace-tools','viewport','app'].map(n=>`src/${n}.js`),'LICENSE'];
 const git=(directory,args,bytes=false)=>execFileSync('git',args,{cwd:directory,maxBuffer:LIMITS.file+1,encoding:bytes?undefined:'utf8',env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_TERMINAL_PROMPT:'0'}});
 function regular(path){if(!lstatSync(path).isFile()||realpathSync(path)!==resolve(path))throw new Error('Upstream input link or special file');return readFileSync(path);}
 function committed(source,directory,path){

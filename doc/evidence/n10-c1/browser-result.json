@@ -1,0 +1,41 @@
+{
+  "browser": "151.0.7922.34",
+  "cases": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "origin": "http://127.0.0.1:18416",
+      "checks": [
+        "0.3.0 actual convert/step/checkpoint/export",
+        "same-origin 0.3.1 reload restores current frame and old checkpoint",
+        "actual old export imports into 0.3.1",
+        "new full backup / clear exports first and preserves unrelated storage",
+        "new full backup imports and restores current expression"
+      ],
+      "oldSaveSha256": "5efbce42597bc6c1562ec5acd2d57de14e5917c06656f516d3f9d20e93ab5322",
+      "newSaveSha256": "f2343218bceebb75d1bcf13b0a4ea1d1854f849077f3f8508a16c793969c72f7",
+      "fullBackupSha256": "cd8d956631787742cf58c12a80d3d428ecbfe7f789c26b896d3d92ab7a8a6c15"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "origin": "http://127.0.0.1:18416",
+      "checks": [
+        "0.3.0 actual convert/step/checkpoint/export",
+        "same-origin 0.3.1 reload restores current frame and old checkpoint",
+        "actual old export imports into 0.3.1",
+        "new full backup / clear exports first and preserves unrelated storage",
+        "new full backup imports and restores current expression"
+      ],
+      "oldSaveSha256": "4397cbfc6e73c9526f07065e45ae103df21468678944d9105edb352d38ccf416",
+      "newSaveSha256": "aa09b3589869545c31a4a1d96b944edc447434fce3a59e15db4d527ecf161c1b",
+      "fullBackupSha256": "967c72675993cddebd68443062ff2740366f105fc402a4ce7bbf39455e6c0bc8"
+    }
+  ],
+  "pageErrors": [],
+  "boundary": "Fresh desktop Chromium with routed exact frozen HTML, Android formal WebView tested separately"
+}

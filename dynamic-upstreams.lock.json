@@ -1,7 +1,21 @@
 {
   "schemaVersion": 1,
   "sources": [
-    {"id":"abelian-sandpile","repository":"https://github.com/xiaoxuhui/abelian-sandpile.git","revision":"d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f","version":"0.1.2","kind":"static-copy","entryPage":"index.html"},
-    {"id":"lambda-diagram-game","repository":"https://github.com/xiaoxuhui/lambda-diagram-game.git","revision":"11b0aef6dcac9a37abdc08cde25ea0efd1f8f6a2","version":"0.3.0","kind":"inline-html","entryPage":"lambda-lab.html"}
+    {
+      "id": "abelian-sandpile",
+      "repository": "https://github.com/xiaoxuhui/abelian-sandpile.git",
+      "revision": "d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f",
+      "version": "0.1.2",
+      "kind": "static-copy",
+      "entryPage": "index.html"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+      "revision": "a75d180193fbe7298709298102c8c6008d1353cd",
+      "version": "0.3.1",
+      "kind": "inline-html",
+      "entryPage": "lambda-lab.html"
+    }
   ]
 }
