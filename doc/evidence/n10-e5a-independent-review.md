@@ -31,3 +31,11 @@
 **P2 待批改：发行文案未固定。** 新 draft 的 POST 回执只核 tag/draft，公开前 GET 未核 `name`、`body` 是否等于脚本构建的正式候选文案，匿名复核也未核公开版的 `name`、`body`。若 draft 在检查前更改名称或正文，当前脚本仍会公开；应在 POST 回执和公开前 GET 比较固定标题与完整正文，匿名复核再将公开版与受审文案比较。更改这两个字段时停在 draft 供核查。该项批改后才能关闭发行器设计。
 
 脚本未执行，未调用 GitHub API、读取凭证或发布；仍须实际 online fresh→offline 控制器通过、最终 ready/CI/独立审核状态满足脚本门禁，并在发行执行及匿名下载后核对实际结果。不能把本次批改复审记作 E 整体完成。
+
+## 文案批改复审：`94e2af588c5c79525eaa0b5e7c6f08ed2b6928ec`
+
+**发行器设计 CLOSED（静态审阅）；E5 fresh→offline 与正式发行仍 PENDING。** 发行脚本将固定 `taskReleaseName`、`taskBody` 和 fc9 `target_commitish` 发给创建 draft 的请求，并对 POST 回执与公开前同一 draft 的 GET 再核这些值。正文只归一 CRLF；大小写及其他正文变化均拒绝。公开前的资产全集与完整 digest 门禁仍在。脚本在创建 draft 前保存 `e4-release-expected.json`；匿名验收要求公开版名称、完整正文与该候选相等，目标提交为固定 fc9，并继续要求唯一 APK 完整 SHA、公开注释标签解引用到 fc9。
+
+重新计算 `control-hashes.json` 的两组私有与公开 SHA-256 均匹配，PowerShell 脚本规范化换行/末尾后内容一致，Node 脚本逐字节一致。PowerShell AST 解析 0 错误、Node `--check` 退出 0，`git show --check 94e2af5` 无错误。没有执行发行脚本、取凭证、访问线上接口或修改设备。若 GitHub 对已有标签返回不同 `target_commitish` 表示，严格检查会安全地保留 draft 并要求人工核查；不能因该可能性放宽固定源提交门禁。
+
+此结论只关闭发行器设计批改。在线取得新鲜结果后断网的正式设备控制器尚未通过，发行与匿名核对均未发生，故 N10-E 不得标为通过或已发布。
