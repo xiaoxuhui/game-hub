@@ -1,0 +1,38 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:extractProguardFiles
+> Task :app:preReleaseUnitTestBuild UP-TO-DATE
+> Task :app:processReleaseManifestForPackage
+> Task :app:processReleaseResources
+> Task :app:compileReleaseKotlin UP-TO-DATE
+> Task :app:compileReleaseJavaWithJavac NO-SOURCE
+> Task :app:generateReleaseLintReportModel
+> Task :app:bundleReleaseClassesToCompileJar UP-TO-DATE
+> Task :app:generateReleaseUnitTestLintModel
+> Task :app:lintAnalyzeRelease
+> Task :app:lintAnalyzeReleaseUnitTest
+
+> Task :app:lintReportRelease
+Wrote HTML report to file:///D:/soft/.ci-tmp/game-hub-n10/work/android/app/build/reports/lint-results-release.html
+
+> Task :app:lintRelease
+
+BUILD SUCCESSFUL in 1m 55s
+25 actionable tasks: 13 executed, 12 up-to-date

@@ -1,0 +1,77 @@
+{
+  "sourceCommit": "f2de2adba21aecf23bdd511fd68629f1a1a1d879",
+  "trackedFiles": 1062,
+  "forbiddenTrackedFiles": [],
+  "secretPatternFiles": [],
+  "readmeLocalLinks": [
+    "doc/evidence/n5-v040-release-20261009.md",
+    "doc/evidence/n7-two-game-release-20261009.md",
+    "doc/测试报告-v0.4.0.md",
+    "doc/开源就绪度审计-v0.4.0.md",
+    "doc/screenshots/lobby.png",
+    "doc/测试报告.md",
+    "doc/来源基线.md",
+    "sources.lock.json",
+    ".github/workflows/android-check.yml",
+    ".github/workflows/android-emulator-smoke.yml",
+    "doc/迁移说明.md",
+    "doc/资源发布手册.md",
+    "doc/测试报告-v0.3.0.md",
+    "doc/版本待办清单.md",
+    "doc/需求与测试用例.md",
+    "doc/设计文档.md",
+    "doc/实施计划.md",
+    "doc/阶段审阅记录.md",
+    "doc/测试报告.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "doc/开源就绪度审计-v0.4.0.md",
+    "doc/evidence/n8-cleanup-report-20261010.md",
+    "doc/evidence/n9-red-green-release-20261010.md",
+    "doc/evidence/n9-cleanup-complete-20261010.md"
+  ],
+  "missingReadmeLinks": [],
+  "community": [
+    {
+      "path": "LICENSE",
+      "exists": true
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "exists": true
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "exists": true
+    },
+    {
+      "path": "SECURITY.md",
+      "exists": true
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "exists": true
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "exists": true
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "exists": true
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "exists": true
+    }
+  ],
+  "tags": [
+    "game-resources-v2",
+    "v0.2.0",
+    "v0.3.0",
+    "v0.4.0"
+  ]
+}
