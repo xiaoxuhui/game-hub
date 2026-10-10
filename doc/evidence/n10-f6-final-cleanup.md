@@ -1,6 +1,6 @@
 # N10-F6 最终实际清理与完整性
 
-Status: COMPLETE（提交后最终独立复审待归档）。F5 plan OPEN→监听owner与参数批改→p1 CLOSED，归档0cdf721后实际执行。原始清理失败/续作完整保留，不重复使用已删work依赖的原cleanup脚本。
+Status: VERIFIED（最终独立复审CLOSED，见n10-f6-independent-review.md）。F5 plan OPEN→监听owner与参数批改→p1 CLOSED，归档0cdf721后实际执行。原始清理失败/续作完整保留，不重复使用已删work依赖的原cleanup脚本。
 
 own ADB操作前PID30648、精确永久toolchain binary/cmd、5037 loopback全部监听owner、devices全集为空、原index fullSHA、仅root/work两个普通空目录全部PASS。从永久platform-tools cwd显式adb -P 5037 kill-server/start-server，旧PID消失，新唯一同binary的loopback5037 server验证与空devices通过（实际新PID见f6-adb-restored.json）。服务恢复可用，无用户设备连接被中断；未关闭用户终端/8000服务或其他进程。
 
@@ -10,4 +10,4 @@ own ADB操作前PID30648、精确永久toolchain binary/cmd、5037 loopback全�
 
 永久恢复目录D:\soft\game-hub-archives\n10-20261010（456原始证据+12候选+完整bundle），首次失败归档n10-20261010-incomplete-20261011-0230保留历史旧helper/失败现场，属于审阅记录，不是活动构建检出。可通过index.evidenceFiles原path找到safe archivePath恢复；源b46完整历史含固定fc9源码与v0.4.1 tag。所有可变工作与构建目录已移除，主仓仅文档与恢复脚本，不在主仓重新构建。
 
-v0.4.1真实发行/匿名完整字节/原签名/版本/发布后实际启动检查已E6独立CLOSED。最终F结果提交推送并切换另一独立视角CLOSED后，global COMPLETE与F VERIFIED。真机人工安装与签名密钥异机备份按授权留后续；不当作本轮验证完成项。
+v0.4.1真实发行/匿名完整字节/原签名/版本/发布后实际启动检查已E6独立CLOSED。最终F结果提交推送，另一独立视角3f9e3b3首审发现CHANGELOG残留待验收措辞，18efb18纯文案批改后CLOSED；global COMPLETE与F VERIFIED，完整意见和批改见n10-f6-independent-review.md。真机人工安装与签名密钥异机备份按授权留后续；不当作本轮验证完成项。

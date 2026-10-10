@@ -13,3 +13,7 @@
 - `f3-own-emulator-stopped.json` 记录固定 AVD `gamehub-n10-20261010`、专用 serial `emulator-5566`、停止回执、serial 消失与 own 进程 0；`f3-originals-before-archive.json` 逐列七原仓完整 HEAD 与原有状态（EML 22 项保留）均标匹配。E/D 计划当前为 VERIFIED，未把第一次残留目录或 F3 预备称为 F 完成。
 
 实际再次归档时若任何预检或复制失败，仍须保留结果并只读协调；本次 CLOSED 不授权自动覆盖或删除 incomplete 目录。
+
+## 文字精度复审 `21f36099e870440e6a480675bc6e0f3442973435`
+
+`n10-f3-archive-readiness.md` 已明确 159 项同源摘要指**移动当时**，本次 helper 修订后当前为 158/159，唯一差异是旧 helper 历史版本。与保留的 incomplete 文件 SHA 和后续 helper SHA 一致。文字问题闭环，无新增阻塞；后续正式归档和清理另有独立门禁。
