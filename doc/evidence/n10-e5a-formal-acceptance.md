@@ -19,3 +19,5 @@ OSS当前437b394扫描1101文件，指定秘密/禁跟踪构建项0、README30�
 ## 发行设计OPEN后的批改
 
 首审意见与实际验收CLOSED/发行器OPEN分开保留。发行器在读取凭证/意图前严格固定origin=https://github.com/xiaoxuhui/game-hub.git及已推送ReviewedCommit。匿名复核要求Release资产总集恰一，并匿名读公开annotated tag/ref对象，peeled commit必须fc9。公开前新增auth GET同一draft：release ID/tag/draft true/prerelease false、资产全集恰1及APK id/name/size/state/full平台digest与已审上传项完全绑定，不符停止保留draft，不公开。公开代码副本及私有原始完整hash见controls/control-hashes；仅语法检查通过，未创建tag/Release、未取发行凭证。本批改提交后复审，不能代替fresh→offline最终验收。
+
+第二次复审资产全集门禁已CLOSED，但发行说明name/body一致性为OPEN；已进一步固定名称、完整body及target_commitish，在POST回执和公开前GET逐项比对（body仅允许CRLF归一），匿名公开复核也对照执行前生成的expected文案。任何变更停在draft或只读失败，不盲目重复发行。完整脚本副本及摘要已更新，待提交后复审。

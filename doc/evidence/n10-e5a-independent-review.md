@@ -21,3 +21,13 @@
 **P1 批改：发布前复核 draft 的资产全集。** 当前 `publish-e4-apk.ps1` 只核本次上传返回的 `$taskAsset`，随后直接 `PATCH draft=false`。若 draft 在创建或上传期间出现另一资产，或返回资产与 draft 当前列表不一致，脚本会先公开，匿名脚本才发现异常。应在 `PATCH` 前对同一 release ID 再 `GET`，要求仍为 `draft=true`、tag/name/id 正确、资产总数恰好 1，且唯一资产的 id/name/state/size/digest 与已审核 APK 和上传回执一致；任一不符停在 draft 供只读核查。此门禁修正后再复审发行器，且仍须等待在线新鲜→断网控制器实际通过，才可把 E 的发行前置记为完成。
 
 首审时发现的 origin 目标、匿名资产全集与标签目标核验缺口，已由审阅期间的私有脚本修订补齐；上述 P1 是当前尚存阻断。脚本当前不在受审提交内，发行前需把最终脚本哈希与静审版本及执行版本对应存档。
+
+## 批改复审：`0b106864c7dc702a1bbcccb404159f147bc2a158`
+
+**资产全集 P1 已修正；发行器设计仍 OPEN；E5 在线新鲜→断网验收与正式发行 PENDING。** 新版私有 `publish-e4-apk.ps1` 在 APK 上传并验证回执后、`PATCH draft=false` 前，对相同 release ID 做认证 `GET`。它要求 release 的 id/tag/draft/prerelease 正确、资产全集恰好一个、唯一 APK 的 id/name/state/size/完整平台 digest 与上传回执及固定 APK 完全相符；不符抛错并保留 draft。`e4-release-prepublication.json` 记录此时的只读快照。此前 origin 精确目标、匿名资产总数及公开 annotated tag→固定 fc9 的门禁均保留。
+
+重新对私有 PowerShell 脚本做 AST 解析为 0 错误，对私有 Node 脚本 `node --check` 退出 0。独立计算的私有/公开 SHA-256 与 `control-hashes.json` 一致；PowerShell 公开副本仅 CRLF/末尾空白规范化后与私有执行副本内容一致，Node 副本逐字节一致。`git show --check 0b106864` 无错误，复审时工作区干净。公开副本与 hash 清单保存了可复查的发行设计版本。
+
+**P2 待批改：发行文案未固定。** 新 draft 的 POST 回执只核 tag/draft，公开前 GET 未核 `name`、`body` 是否等于脚本构建的正式候选文案，匿名复核也未核公开版的 `name`、`body`。若 draft 在检查前更改名称或正文，当前脚本仍会公开；应在 POST 回执和公开前 GET 比较固定标题与完整正文，匿名复核再将公开版与受审文案比较。更改这两个字段时停在 draft 供核查。该项批改后才能关闭发行器设计。
+
+脚本未执行，未调用 GitHub API、读取凭证或发布；仍须实际 online fresh→offline 控制器通过、最终 ready/CI/独立审核状态满足脚本门禁，并在发行执行及匿名下载后核对实际结果。不能把本次批改复审记作 E 整体完成。
