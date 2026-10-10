@@ -11,3 +11,9 @@ v2 使用已审阅的 ResumeAfterUploads 参数（TaskScope n10、NextSequence 5
 展开验收命令：`adb -s emulator-5566 shell am instrument -w -e class com.xiaoxuhui.gamehub.ProductionUpdateSaveDeviceTest -e productionUpdateSaves verify com.xiaoxuhui.gamehub.test/androidx.test.runner.AndroidJUnitRunner`，在线/离线各一次。正式旧APK版本身份保持4/0.4.0；它的旧“最新版”UI不能用来声称N10新版状态已验收，后续E必须覆盖升级实际验证。
 
 私有完整证据位于本轮 evidence，最终F归档；不包含签名密钥。D发行与存档实际结果完成，进入独立复审；CLOSED前不替换正式旧AVD现场。
+
+## 独立OPEN后的补跑批改
+
+原d4离线测试命令没有单独转录网络回读，不能仅由JUnit通过证明断网。保留原结果后补跑d5（d5-offline-control.log）：精确own AVD身份，旧PID11349；svc wifi/data disable；wifi_on=0、dumpsys connectivity `Active default network: none`；force-stop，正常Activity冷启动新PID11439；严格三存档verify 12.552秒OK1，三项实际PASS见d5-three-save-pass.log。finally恢复wifi/data，wifi_on=1并后续默认网络100恢复。mobile_data通用设置读回仍为1，因此不将该设置当蜂窝断网断言，以实际无默认网络回读为证；转录原标签“must be 0”不作为已通过断言。telephony后续回读发生恢复后，明确只作恢复诊断。
+
+计划过期“配额等待/尚未签名”已改为真实已发行状态。独立OPEN意见保留在n10-d-independent-review.md，批改提交后再复审，CLOSED前继续保留正式旧存档现场。
