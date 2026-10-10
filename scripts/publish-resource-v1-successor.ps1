@@ -3,19 +3,11 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('legacy','n9','n10')][string]$TaskScope='legacy'
+    [ValidateSet('n10')][string]$TaskScope='n10'
 )
 $ErrorActionPreference='Stop'
-$taskCheckout='D:\soft\.ci-tmp\game-hub-work\v030-final'
-$taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-work\v030-evidence\v040-resource-update'
-if($TaskScope -ieq 'n9'){
-    $taskCheckout='D:\soft\.ci-tmp\game-hub-n9\work'
-    $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n9\evidence\publication'
-}
-if($TaskScope -ieq 'n10'){
-    $taskCheckout='D:\soft\.ci-tmp\game-hub-n10\work'
-    $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n10\evidence\publication'
-}
+$taskCheckout='D:\soft\.ci-tmp\game-hub-n10\work'
+$taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n10\evidence\publication'
 $taskApi='https://api.github.com/repos/xiaoxuhui/game-hub'
 $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resource-successor';'X-GitHub-Api-Version'='2022-11-28'}
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null
@@ -27,16 +19,16 @@ if((git -C $taskCheckout remote get-url origin).Trim() -ne 'https://github.com/x
 $taskRemote=@(git -C $taskCheckout ls-remote origin refs/heads/main)
 if($LASTEXITCODE -ne 0 -or $taskRemote.Count -ne 1 -or ($taskRemote[0] -split '\s+')[0] -ne $Commit){throw 'Exact pushed main required'}
 function Assert-FixedTags {
-    foreach($tag in @('v0.4.0','game-resources-v2')){
-        $refs=@(git -C $taskCheckout ls-remote origin "refs/tags/$tag^{}")
-        if($LASTEXITCODE -ne 0 -or $refs.Count -ne 1 -or ($refs[0] -split '\s+')[0] -ne '4aacb1f81b7fc381d2ca7fd725fd93dd109e390e'){throw 'Published tag moved or missing; no write permitted'}
-    }
+    $formal=@(git -C $taskCheckout ls-remote origin 'refs/tags/v0.4.0^{}')
+    if($LASTEXITCODE -ne 0 -or $formal.Count -ne 1 -or ($formal[0] -split '\s+')[0] -ne '4aacb1f81b7fc381d2ca7fd725fd93dd109e390e'){throw 'Formal tag moved; no write permitted'}
+    $resource=@(git -C $taskCheckout ls-remote origin 'refs/tags/game-resources-v1')
+    if($LASTEXITCODE -ne 0 -or $resource.Count -ne 1 -or ($resource[0] -split '\s+')[0] -ne 'e694efaed707bd852cc48ea78e31c3ed198731c0'){throw 'Immutable v1 lightweight tag moved; no write permitted'}
 }
 Assert-FixedTags
 New-Item -ItemType Directory -Path $taskDirectory | Out-Null
 Push-Location -LiteralPath $taskCheckout
 try {
-    node scripts/resource-successor.mjs preflight $taskDirectory $ExpectedPreviousSha $NextSequence
+    node scripts/resource-v1-successor.mjs preflight $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Anonymous history/candidate admission failed before credentials'}
     $taskBefore=Get-Content -LiteralPath (Join-Path $taskDirectory 'before-snapshot.json') -Raw | ConvertFrom-Json
     $taskAssets=@($taskBefore.assetPages | ForEach-Object {$_.assets})
@@ -58,26 +50,26 @@ try {
             if($matches[0].state -ne 'uploaded' -or $matches[0].digest -ne "sha256:$hash" -or $matches[0].size -ne $size){throw 'Existing immutable asset differs; inspect outcome'}
             return $matches[0]
         }
-        $asset=Invoke-RestMethod -Method Post -Uri ("https://uploads.github.com/repos/xiaoxuhui/game-hub/releases/407394942/assets?name="+[Uri]::EscapeDataString($name)) -Headers $taskHeaders -ContentType 'application/octet-stream' -InFile $file
+        $asset=Invoke-RestMethod -Method Post -Uri ("https://uploads.github.com/repos/xiaoxuhui/game-hub/releases/407293817/assets?name="+[Uri]::EscapeDataString($name)) -Headers $taskHeaders -ContentType 'application/octet-stream' -InFile $file
         if($asset.state -ne 'uploaded' -or $asset.digest -ne "sha256:$hash" -or $asset.size -ne $size){throw 'Upload outcome unverified; inspect before retry'}
         return $asset
     }
-    $games=Get-Content -LiteralPath '.build\dynamic-candidate\games.unsigned.json' -Raw | ConvertFrom-Json
+    $games=Get-Content -LiteralPath '.build\resource-candidate\games.unsigned.json' -Raw | ConvertFrom-Json
     $uploads=@()
     foreach($game in $games){
         $name="game-$($game.id)-$($game.contentCode)-$($game.archiveSha256.Substring(0,12)).zip"
-        $uploads+=Upload-Asset (Join-Path "$taskCheckout\.build\dynamic-candidate" $name) $name
+        $uploads+=Upload-Asset (Join-Path "$taskCheckout\.build\resource-candidate" $name) $name
     }
     $uploads | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $taskDirectory 'uploaded-resources.json') -Encoding utf8
-    node scripts/resource-successor.mjs payload $taskDirectory $ExpectedPreviousSha $NextSequence
+    node scripts/resource-v1-successor.mjs payload $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Fresh complete asset-bound payload failed'}
     $taskEncrypted=[IO.File]::ReadAllBytes('D:\aiden\game-hub-resource-signing\resource-private-key.dpapi')
     $taskDer=[Security.Cryptography.ProtectedData]::Unprotect($taskEncrypted,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
     $taskPem="-----BEGIN PRIVATE KEY-----`n"+[Convert]::ToBase64String($taskDer,[Base64FormattingOptions]::InsertLineBreaks)+"`n-----END PRIVATE KEY-----`n"
     $signed=Join-Path $taskDirectory 'catalog.signed.json'
-    $taskPem | node scripts/dynamic-catalog.mjs sign (Join-Path $taskDirectory 'payload.json') - resources-20261008 $signed (Join-Path $taskDirectory 'signing-snapshot.json') (Join-Path $taskDirectory 'previous.signed.json')
-    if($LASTEXITCODE -ne 0){throw 'History-aware signing failed; old catalog remains current'}
-    node scripts/dynamic-catalog.mjs verify $signed android/app/src/main/res/raw/resource_public_key.der resources-20261008
+    $taskPem | node scripts/resource-v1-successor.mjs sign $taskDirectory $ExpectedPreviousSha $NextSequence
+    if($LASTEXITCODE -ne 0){throw 'Production authenticated history-aware v1 signing failed; old catalog remains current'}
+    node scripts/resource-catalog.mjs verify $signed android/app/src/main/res/raw/resource_public_key.der resources-20261008
     if($LASTEXITCODE -ne 0){throw 'Production public verification failed'}
     Assert-FixedTags
     $current=Invoke-RestMethod -Uri "$taskApi/releases/assets/$taskOldId" -Headers $taskHeaders
@@ -91,8 +83,8 @@ try {
     if($renamed.name -cne $historyName -or $renamed.digest -ne "sha256:$ExpectedPreviousSha"){throw 'History rename outcome unknown; inspect, never delete or re-sign'}
     $taskAssets=@($taskAssets | Where-Object id -NE $taskOldId)
     $catalog=Upload-Asset $signed 'catalog.signed.json'
-    @{releaseId=407394942;sequence=$NextSequence;catalogAssetId=$catalog.id;catalogDigest=$catalog.digest;historyAssetId=$taskOldId;historyName=$historyName} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskDirectory 'published.json') -Encoding utf8
-    node scripts/resource-successor.mjs online $taskDirectory $ExpectedPreviousSha $NextSequence
+    @{releaseId=407293817;sequence=$NextSequence;catalogAssetId=$catalog.id;catalogDigest=$catalog.digest;historyAssetId=$taskOldId;historyName=$historyName} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskDirectory 'published.json') -Encoding utf8
+    node scripts/resource-v1-successor.mjs online $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Publication completed but anonymous final verification failed; inspect outcome'}
 } finally {
     if($taskDer){[Array]::Clear($taskDer,0,$taskDer.Length)}
