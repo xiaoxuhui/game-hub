@@ -9,3 +9,7 @@ Status: COMPLETE（准备切片；提交后独立复审待归档；N10-F实际�
 最后一次写cleanup-index.json schema1/taskRoot/archiveRoot/sourceCommit/artifacts与evidenceFiles，逐项ASCII相对路径/bytes/fullSHA。索引本身不纳入其自引用清单；完整索引SHA作为已审cleanup-n10.ps1的显式参数。生成后冻结现场evidence；后续审阅/只读dryrun/实际清理原始日志写永久归档，避免证据集合变动。未知归档结果或复制不一致停止核查，不覆盖重试。
 
 实际F下一切片必须检查归档索引完整性/恢复必要文件/源bundle绑定、永久与现场逐项一致并提交独立审阅CLOSED，主仓与工作检出精确同clean pushed HEAD，只读cleanup退出0后才Execute删除限定根。实际释放字节/目录不在/七原仓SHA与工作树不变须发行后归档结果与独立复审，预备语法成功不能替代任何删除验收。工具链、主仓、归档、签名目录/备份均永久保留。
+
+## 首审OPEN后的批改
+
+两项P1与首审报告保留。evidence改为显式栈：先检查当前子项无reparse、绝对路径仍在evidence，再入下一层，禁用递归展开后才拒绝的模式。候选`.build`和两目录逐级检查普通目录、无reparse、精确canonical路径；以已提交审阅的fc9 candidate-hashes.json锁定6+6共12唯一文件集合，包含隐藏/目录额外项也拒绝，逐文件类型/大小/完整SHA一致后才归档。全部输入预查完才创建永久目录。公开/私有helper与摘要同步，纯语法门禁通过，未运行归档或清理；提交后复审CLOSED仍必需。

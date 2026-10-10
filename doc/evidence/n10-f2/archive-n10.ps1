@@ -13,7 +13,6 @@ if($taskBusy.Count){throw 'Stop only own task processes before freezing evidence
 $taskSource=(git -C $taskWork rev-parse HEAD).Trim()
 if(git -C $taskWork status --porcelain=v1 --untracked-files=all){throw 'Clean source required before final archive'}
 $taskArtifacts=@();$taskEvidenceFiles=@()
-New-Item -ItemType Directory -Path $taskArchive | Out-Null
 function Copy-ArchiveFile([string]$taskInput,[string]$taskRelative){
  if($taskRelative -notmatch '^[A-Za-z0-9][A-Za-z0-9._/-]*$' -or ($taskRelative -split '/') -contains '..'){throw 'Unsafe relative archive path'}
  $taskItem=Get-Item -LiteralPath $taskInput -Force
@@ -28,14 +27,42 @@ function Copy-ArchiveFile([string]$taskInput,[string]$taskRelative){
  return [ordered]@{path=$taskRelative;bytes=$taskItem.Length;sha256=$taskHash}
 }
 $taskEvidence=Join-Path $taskRoot 'evidence'
-foreach($taskItem in Get-ChildItem -LiteralPath $taskEvidence -Recurse -Force){if($taskItem.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Evidence links refused'}}
-foreach($taskFile in Get-ChildItem -LiteralPath $taskEvidence -Recurse -File -Force){
+$taskEvidenceInputs=New-Object 'System.Collections.Generic.List[System.IO.FileInfo]'
+$taskStack=New-Object 'System.Collections.Generic.Stack[string]';$taskStack.Push($taskEvidence)
+while($taskStack.Count){
+ foreach($taskItem in Get-ChildItem -LiteralPath $taskStack.Pop() -Force){
+  if(($taskItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -or -not $taskItem.FullName.StartsWith($taskEvidence+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Evidence traversal link or boundary refused before descent'}
+  if($taskItem.PSIsContainer){$taskStack.Push($taskItem.FullName)}else{$taskEvidenceInputs.Add($taskItem)}
+ }
+}
+$taskManifest=Get-Content -LiteralPath (Join-Path $taskWork 'doc\evidence\n10-d-complete\candidate-hashes.json') -Raw | ConvertFrom-Json
+if($taskManifest.producer -ne 'fc9da9be6a238018d86f2085facd5b8085e68cf8' -or @($taskManifest.files).Count -ne 12){throw 'Reviewed 12-file candidate manifest required'}
+foreach($taskPath in @((Join-Path $taskWork '.build'),(Join-Path $taskWork '.build\resource-candidate'),(Join-Path $taskWork '.build\dynamic-candidate'))){
+ $taskItem=Get-Item -LiteralPath $taskPath -Force
+ if(-not $taskItem.PSIsContainer -or ($taskItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -or [IO.Path]::GetFullPath($taskItem.FullName).TrimEnd('\') -ine [IO.Path]::GetFullPath($taskPath).TrimEnd('\')){throw 'Plain canonical candidate ancestor required'}
+}
+$taskCandidateInputs=@()
+foreach($taskCandidate in @('resource-candidate','dynamic-candidate')){
+ $taskExpected=@($taskManifest.files | Where-Object candidate -CEQ $taskCandidate)
+ if($taskExpected.Count -ne 6 -or @($taskExpected.file | Select-Object -Unique).Count -ne 6){throw 'Exact six unique candidate files required'}
+ $taskDirectory=Join-Path $taskWork ('.build\'+$taskCandidate)
+ $taskActual=@(Get-ChildItem -LiteralPath $taskDirectory -Force)
+ if((($taskActual.Name | Sort-Object) -join "`n") -cne (($taskExpected.file | Sort-Object) -join "`n")){throw 'Candidate file set differs from reviewed manifest'}
+ foreach($taskSpec in $taskExpected){
+  if($taskSpec.file -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]*$' -or $taskSpec.sha256 -notmatch '^[0-9a-f]{64}$'){throw 'Unsafe candidate manifest entry'}
+  $taskInput=Join-Path $taskDirectory $taskSpec.file;$taskItem=Get-Item -LiteralPath $taskInput -Force
+  if($taskItem.PSIsContainer -or ($taskItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $taskItem.Length -ne $taskSpec.bytes -or (Get-FileHash -LiteralPath $taskInput -Algorithm SHA256).Hash.ToLowerInvariant() -cne $taskSpec.sha256){throw 'Candidate bytes differ from reviewed manifest'}
+  $taskCandidateInputs+=[ordered]@{input=$taskInput;relative=('candidates/'+$taskCandidate+'/'+$taskSpec.file)}
+ }
+}
+New-Item -ItemType Directory -Path $taskArchive | Out-Null
+foreach($taskFile in $taskEvidenceInputs){
  $taskRelative=$taskFile.FullName.Substring($taskEvidence.Length+1).Replace('\','/')
  $taskRecord=Copy-ArchiveFile $taskFile.FullName ('evidence/'+$taskRelative)
  $taskArtifacts+=$taskRecord
  $taskEvidenceFiles+=[ordered]@{path=$taskRelative;bytes=$taskRecord.bytes;sha256=$taskRecord.sha256}
 }
-foreach($taskCandidate in @('resource-candidate','dynamic-candidate')){foreach($taskFile in Get-ChildItem -LiteralPath (Join-Path $taskWork ('.build\'+$taskCandidate)) -File){$taskArtifacts+=Copy-ArchiveFile $taskFile.FullName ('candidates/'+$taskCandidate+'/'+$taskFile.Name)}}
+foreach($taskInput in $taskCandidateInputs){$taskArtifacts+=Copy-ArchiveFile $taskInput.input $taskInput.relative}
 $taskBundle=Join-Path $taskArchive 'n10-source.bundle'
 git -C $taskWork bundle create $taskBundle --all
 if($LASTEXITCODE -ne 0){throw 'Source bundle creation failed'}
