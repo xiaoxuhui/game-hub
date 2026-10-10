@@ -1,0 +1,39 @@
+name: Daily upstream resource check
+
+on:
+  schedule:
+    - cron: '17 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-upstream-resource-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - name: Test upstream detector
+        run: node --test tests/upstream-watch.test.mjs
+      - name: Check public upstreams
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/upstream-watch.mjs
+      - name: Preserve detection report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: upstream-check-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .build/upstream-watch/
+          if-no-files-found: error
+          retention-days: 30
