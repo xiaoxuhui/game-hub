@@ -15,3 +15,13 @@
 - 文档把 E 新 APK 覆盖升级及新版状态查询保持 PENDING，未将 D 的旧包结果冒称 E 完成。正式 0.4.1 尚未安装，旧 AVD 现场仍应保留到本轮问题闭环。
 
 待上述两项批改后复审。此审阅未修改产品代码或发布资产。
+
+## 复审：`056a77ca127031e2cff61975732579744a742c86`、`34a9a6f72addbf291fdc544a16d35fe72aa79c19`
+
+**结论：CLOSED，前述 P1/P2 已闭环；可进入 E 旧 APK 现场切换。** 本轮仍只读本地证据，没有操作 AVD 或请求 GitHub API。
+
+- 新的 `d5-offline-control.log` 和私有同名原始转录在去 CRLF、行尾空格及末尾换行后逐行一致；`d5-three-save-offline.log`、`d5-three-save-pass.log` 也同样逐行一致。转录固定 own AVD 名称，旧 PID 11349；关闭 wifi/data 后 `wifi_on=0`、`Active default network: none`；force-stop 后正常 Activity 冷启动 PID 11439。严格 verify 运行 12.552 秒、`OK (1 test)`，同轮 logcat 三游戏 PASS；finally 开启 wifi/data 后 `wifi_on=1`，后续默认 Wi-Fi 网络 ID 104。不同 PID、无默认网络和测试结果共同补足了原先缺失的离线控制链。`mobile_data` 设置仍为 1，文档已明确不以该字段声称蜂窝断开；恢复后 telephony 回读只作恢复诊断。转录没有逐命令退出码，但有效网络状态、进程切换与最终结果足以支持本次狭义离线验收。
+- `doc/evidence/n10-d-complete.md` 把原 d4 结果保留为历史，并单独记录 d5 补跑，没有追认原 d4 已有控制证据。恢复网络 ID 曾误写 100，已在 `34a9a6f` 改为转录所示 104。
+- `doc/N10-更新检查修复实施计划.md` 删除了“尚未签名/等待配额”的过期叙述，改为实际 seq5 已签名发行、在线完整验收和补跑待复审的事实；E 仍保持 PENDING。两批改提交格式检查无问题。
+
+此 CLOSED 限于 N10-D：旧 0.4.0 真实资源更新与存档验收。新版 0.4.1 的覆盖升级、在线版本状态、公开 APK 发行与用户真机验收仍按 E 阶段分别验证。
