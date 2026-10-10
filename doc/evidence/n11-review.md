@@ -25,4 +25,7 @@
 
 ## C 收尾
 
-待最终证据审阅；归档目录 D:\soft\game-hub-archives\n11-20261011，限定清理 D:\soft\.ci-tmp\game-hub-n11。
+- review_p2 在 5a6329f587ae0264056bab364d25370eb34f7eee 提交后只读审阅 CLOSED：六上游/七消费者、64/64 测试、云端 11 项及 artifact SHA 吻合；七原仓含 EML 既有 22 项变动原样保留；源码 bundle 验证指向该提交；临时根仅预期三直接子项/1325 文件且无 reparse，清理范围可接受。
+- 永久归档 D:\soft\game-hub-archives\n11-20261011 保留源码 bundle、Actions artifact ZIP 与 JSON/测试输出。认证查询确认工作流 active/default main，见 n11-workflow-state.json；匿名 API 后续限流不作为版本判断。
+- 审阅 CLOSED 后重新解析目标并检查无 reparse，使用单一 PowerShell Remove-Item -LiteralPath 删除 D:\soft\.ci-tmp\game-hub-n11；Test-Path 确认不存在，见 n11-cleanup.json。原游戏仓库、大厅主仓库、永久归档与工具链保留。
+- 定时首次触发尚未观测，自动生产/签名发行仍 PENDING；本轮每日检测已实际手动验收，后续工作不混入本轮 VERIFIED 范围。
