@@ -48,8 +48,18 @@ class ProductionUpdateSaveDeviceTest {
             "lambda-diagram-game" to ("0ee2f0ef41545e2364172a3ec2c74481c9cb16ae3c6361a66786f24d0594cdb9" to "64c8932af9a0b5cc886db25910b3923a16aa0677"))
         for ((id, identity) in identities) {
             val store = runtime.storeFor(id)
-            // Opening only promotes a genuinely downloaded, verified production ready version.
-            store.openSession(id, true).use { session ->
+            // Verify the normal UI already activated the release; the test must not promote ready.
+            val before = store.describeAll().getValue(id)
+            assertNull(before.stateError); assertNull(before.activeError); assertNull(before.readyError)
+            if (mode == "verify") {
+                val selected = requireNotNull(before.active)
+                assertEquals(2, selected.contentCode)
+                assertEquals(identity.first, selected.archiveSha256)
+                assertEquals(identity.second, selected.sourceRevision)
+                assertEquals(selected.identity, before.selection.active)
+                assertNull("Normal UI has already activated $id", before.selection.ready)
+            }
+            store.openSession(id, false).use { session ->
             val active = session.game
             if (mode == "verify") {
                 assertNotNull("Downloaded $id active", active)
