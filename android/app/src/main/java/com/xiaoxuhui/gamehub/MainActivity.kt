@@ -375,8 +375,8 @@ class MainActivity : ComponentActivity() {
         updateLink.text = if (state.busy) "更新详情" else "检查更新"
         updateSummary.text = if (state.task != null) {
             "${state.task} · ${if (state.total > 0) "${state.done * 100 / state.total}%" else "查询中"} · 点击查看"
-        } else "${state.apkStatus}\n${state.resourceStatus}\n${state.dynamicStatus} · 点击查看"
-        updateSummary.contentDescription = "更新状态：${state.apkStatus}；${state.resourceStatus}；${state.dynamicStatus}；点击查看详情"
+        } else "${sourceSummary(state)}\n${state.apkStatus}\n签名游戏资源与新游戏目录 · 点击查看详情"
+        updateSummary.contentDescription = "更新状态：${state.apkStatus}；${state.resourceStatus}；${state.dynamicStatus}；${sourceSummary(state)}；点击查看详情"
         renderDynamicLobby(state)
         for (game in games) {
             val local = state.localResources[game.id]
@@ -402,6 +402,40 @@ class MainActivity : ComponentActivity() {
             }
             gameVersionLabels[game.id]?.text = actual + (marker?.let { "\n$it" } ?: "")
             gameCards[game.id]?.contentDescription = "${game.name}，$actual，${marker ?: "打开"}"
+        }
+    }
+    private fun sourceMessage(id: String, state: UpdateSnapshot): SourceVersionMessage {
+        val builtin = games.singleOrNull { it.id == id }
+        val dynamic = builtin == null
+        val local = (if (dynamic) state.localDynamicResources else state.localResources)[id]
+        val remote = (if (dynamic) state.dynamicCatalogGames else state.catalogGames).singleOrNull { it.id == id }
+        val remembered = if (dynamic) state.dynamicRemembered else state.resourcesRemembered
+        val policy = if (dynamic) ResourceStorePolicy.DYNAMIC else ResourceStorePolicy.BUILTIN
+        val known = state.localLoaded && local?.stateError == null && local?.activeError == null &&
+            (if (dynamic) state.dynamicReadError == null else state.localReadError == null && local != null)
+        val actual = when { builtin != null && local?.selection?.active == "builtin" -> builtin.version; else -> local?.active?.version }
+        val issue = when {
+            remembered -> "目录是历史结果，待检查"
+            remote == null -> "尚无经过本次验证的签名资源"
+            !remote.available -> "资源已停用，不可下载"
+            !remote.compatible(hostVersionCode, policy.contract(id)) -> "与当前大厅或存档合同不兼容"
+            local?.selection?.pinned == true -> "当前固定版本，自动更新暂停"
+            remote.contentCode in local?.selection?.quarantine.orEmpty() -> "此资源已隔离，暂不可下载"
+            else -> null
+        }
+        return UpstreamUpdatePresentation.describe(state.upstreamResults[id], actual, known,
+            remote?.version, issue, (if (dynamic) state.dynamicResources else state.resources).any { it.id == id },
+            local?.ready?.version, local?.readyFresh == true && local.readyError == null && !remembered)
+    }
+    private fun sourceSummary(state: UpdateSnapshot): String {
+        val count = UpstreamReleasePolicy.repositories.count { sourceMessage(it.gameId, state).update }
+        val resources = state.resources.size + state.dynamicResources.count { state.localDynamicResources[it.id]?.active != null }
+        val ready = (state.localResources.values + state.localDynamicResources.values).count { it.ready != null }
+        return when {
+            count > 0 -> "$count 个游戏源仓库有新发布，查看资源状态"
+            resources > 0 -> "$resources 个已安装游戏有签名资源更新"
+            ready > 0 -> "$ready 个游戏资源待生效，点击查看状态"
+            else -> state.upstreamStatus
         }
     }
 
@@ -468,6 +502,8 @@ class MainActivity : ComponentActivity() {
                 else->"尚未安装"
             })
             local?.ready?.let {description("候选 v${it.version}"+if(local.readyFresh) " · 下次打开生效" else " · 已过期，请检查")}
+            if (UpstreamReleasePolicy.repositories.any { it.gameId == id }) description(sourceMessage(id, state).text)
+            else description("此游戏通过大厅签名资源目录更新")
             local?.activeError?.let {description("当前资源：$it")};local?.readyError?.let {description("候选：$it")};local?.stateError?.let {description("状态异常：$it")}
             if(remote!=null){
                 description("目录 v${remote.version} · ${remote.archiveBytes/1024} KiB\n${remote.notes}")
@@ -512,6 +548,10 @@ class MainActivity : ComponentActivity() {
         description("大厅：${state.apkStatus}\n最后成功检查：${checkedTime(state.apkCheckedAt)}")
         description("游戏：${state.resourceStatus}\n最后成功检查：${checkedTime(state.resourcesCheckedAt)}")
         description("新游戏：${state.dynamicStatus}\n最后成功检查：${checkedTime(state.dynamicCheckedAt)}")
+        description("源仓库正式发布（只读提示）：")
+        for (source in UpstreamReleasePolicy.repositories) {
+            description("${source.name}：${sourceMessage(source.gameId, state).text}\n最后成功核对源发布：${checkedTime(state.upstreamResults[source.gameId]?.checkedAt)}")
+        }
         detailButton(column,"查看游戏目录与已安装游戏"){dialog.dismiss();showGameCatalog()}
         state.localDiagnostic?.let { description("本地资源诊断：$it；存档未删除") }
         state.localReadError?.let { description("本地资源读取失败：$it；存档未删除") }

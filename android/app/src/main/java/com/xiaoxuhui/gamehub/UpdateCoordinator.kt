@@ -25,7 +25,8 @@ internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: L
     val dynamicResources: List<ResourceGame> = emptyList(), val dynamicCatalogGames: List<ResourceGame> = emptyList(),
     val localDynamicResources: Map<String, LocalResourceInfo> = emptyMap(), val dynamicCheckedAt: Long? = null,
     val dynamicRemembered: Boolean = false, val dynamicStatus: String = "尚未检查新游戏目录",
-    val dynamicDiagnostic: String? = null, val dynamicReadError: String? = null)
+    val dynamicDiagnostic: String? = null, val dynamicReadError: String? = null,
+    val upstreamResults: Map<String, UpstreamCheck> = emptyMap(), val upstreamStatus: String = "尚未检查源仓库发布")
 
 /** Package-only verification dependencies; production always uses its fixed repository and pinned key. */
 internal data class CoordinatorVerificationEnvironment(val store: GameResourceStore, val publicKey: ByteArray,
@@ -106,10 +107,14 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         val supplied = verification?.network?.invoke()
         val online = supplied?.online ?: (capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))
         if (!online) checkCancelled = true
-        if (!online) publish { it.copy(
-            apkStatus = if (it.apkCheckedAt == null) "大厅未检查：离线" else it.apkStatus,
-            resourceStatus = if (it.resourcesCheckedAt == null) "游戏未检查：离线" else it.resourceStatus,
-            dynamicStatus = if (it.dynamicCheckedAt == null) "新游戏目录未检查：离线" else it.dynamicStatus) }
+        if (!online) {
+            offer = null; dynamicOffer = null
+            publish { it.copy(apkRemembered = true, resourcesRemembered = true, dynamicRemembered = true,
+                resources = emptyList(), dynamicResources = emptyList(),
+                apkStatus = "大厅检查：离线，历史结果待检查", resourceStatus = "游戏资源检查：离线，历史结果待检查",
+                dynamicStatus = "新游戏目录：离线，历史结果待检查", upstreamStatus = "源仓库检查：离线，历史结果待检查",
+                upstreamResults = it.upstreamResults.mapValues { (_, result) -> result.copy(issue = "离线，历史结果待检查") }) }
+        }
         gate.setNetwork(supplied ?: UpdateNetwork(online, online && capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)))
         // Reconnection may start a due check; existing cancelled attempts are never restarted this round.
         if (foreground) { if (checkEligible) check(false); if (hall) automaticNext() }
@@ -136,22 +141,36 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         if (!manual && !checkEligible) return false
         if (!gate.beginCheck(manual)) return false
         checkCancelled = false
-        publish { it.copy(busy = true, task = "检查更新", done = 0, total = 0) }
+        publish { it.copy(busy = true, task = "检查更新", done = 0, total = 0, apkRemembered = true,
+            resourcesRemembered = true, dynamicRemembered = true,
+            upstreamResults = it.upstreamResults.mapValues { (_, result) -> result.copy(issue = "正在重新检查，旧结果仅供参考") }) }
         worker.execute {
             try {
                 if (gate.channelAllowed("apk")) {
                     try {
                         val version = app.packageManager.getPackageInfo(app.packageName, 0).versionName ?: ""
                         val response = http.metadata("${PublicReleaseHttp.API_ROOT}/releases/latest", 1000000, PublicReleaseHttp.deadline(), { checkCancelled || !foreground })
-                        val release = UpdatePolicy.parseLatest(response.bytes.toString(Charsets.UTF_8), version)
+                        val raw = response.bytes.toString(Charsets.UTF_8)
+                        val publication = UpdatePolicy.parsePublication(raw)
+                        val release = UpdatePolicy.parseLatest(raw, version)
                         val checkedAt = System.currentTimeMillis()
                         val saved = runCatching { metadataCache.saveApk(release, checkedAt) }.isSuccess
-                        publish { it.copy(apk = release, apkRemembered = false, apkCheckedAt = checkedAt, apkStatus = (if (release == null) "大厅已是最新版本" else "大厅 ${release.version} 可更新") + if (saved) "" else "；历史提醒保存失败") }
-                    } catch (error: Exception) { channelFailure("apk", error) }
-                } else publish { it.copy(apkStatus = "大厅查询限流，稍后可重试") }
+                        publish { it.copy(apk = release, apkRemembered = false, apkCheckedAt = checkedAt,
+                            apkStatus = (if (release == null) "已安装大厅 $version；正式发布 ${publication.version}，已核对" else "大厅 ${release.version} 可更新") + if (saved) "" else "；历史提醒保存失败") }
+                    } catch (error: Exception) { channelFailure("apk", error, checking = true) }
+                } else publish { it.copy(apkRemembered = true, apkStatus = "大厅查询限流，旧结果待检查") }
                 checkResourceChannel(ResourceStorePolicy.BUILTIN)
                 if (dynamicStore != null) checkResourceChannel(ResourceStorePolicy.DYNAMIC)
+                checkUpstreamPublications()
             } finally {
+                if (checkCancelled || !foreground) {
+                    offer = null; dynamicOffer = null
+                    publish { it.copy(apkRemembered = true, resourcesRemembered = true, dynamicRemembered = true,
+                        resources = emptyList(), dynamicResources = emptyList(),
+                        apkStatus = "大厅本次检查未完成，旧结果待检查", resourceStatus = "游戏本次检查未完成，旧结果待检查",
+                        dynamicStatus = "目录本次检查未完成，旧结果待检查", upstreamStatus = "源本次检查未完成，旧结果待检查",
+                        upstreamResults = it.upstreamResults.mapValues { (_, result) -> result.copy(issue = "本次检查未完成，旧结果待检查") }) }
+                }
                 synchronized(stateLock) { gate.endCheck(); publish(::idleStatus) }
                 automaticNext()
             }
@@ -161,10 +180,37 @@ internal class UpdateCoordinator private constructor(context: Context, private v
     private fun resourceStatus(policy: ResourceStorePolicy, message: String) {
         publish { if (policy == ResourceStorePolicy.BUILTIN) it.copy(resourceStatus = message) else it.copy(dynamicStatus = message) }
     }
+    private fun historicalResources(policy: ResourceStorePolicy, message: String) {
+        if (policy == ResourceStorePolicy.BUILTIN) offer = null else dynamicOffer = null
+        publish { if (policy == ResourceStorePolicy.BUILTIN) it.copy(resources = emptyList(), resourcesRemembered = true, resourceStatus = message)
+            else it.copy(dynamicResources = emptyList(), dynamicRemembered = true, dynamicStatus = message) }
+    }
+    private fun checkUpstreamPublications() {
+        val client = UpstreamReleaseClient(http)
+        val deadline = PublicReleaseHttp.deadline(60)
+        for (source in UpstreamReleasePolicy.repositories) {
+            val previous = snapshot().upstreamResults[source.gameId] ?: UpstreamCheck()
+            val result = try {
+                check(!checkCancelled && foreground) { "本次检查已取消，待重新检查" }
+                check(gate.channelAllowed("upstream")) { "源查询限流，旧结果待检查" }
+                UpstreamCheck(client.query(source.gameId, deadline) { checkCancelled || !foreground }, System.currentTimeMillis(), null)
+            } catch (error: Exception) {
+                var message = error.message ?: "源发布查询失败，待检查"
+                if (error is UpdateRateLimited) try { gate.rateLimited("upstream", error.until) }
+                    catch (saveError: Exception) { message += "；${saveError.message}" }
+                previous.copy(issue = message.take(200))
+            }
+            publish { it.copy(upstreamResults = it.upstreamResults + (source.gameId to result)) }
+        }
+        publish { current ->
+            val valid = current.upstreamResults.values.count { it.issue == null && it.publication != null }
+            current.copy(upstreamStatus = "已获得 $valid/6 项源仓库正式发布；" + if (valid < 6) "其余待检查，点击查看详情" else "点击查看版本对比")
+        }
+    }
     private fun checkResourceChannel(policy: ResourceStorePolicy) {
         val channel = policy.updateChannel
         if (checkCancelled || !foreground || !gate.channelAllowed(channel)) {
-            if (foreground) resourceStatus(policy, if(checkCancelled) "游戏检查已取消，已安装资源保留" else "游戏查询限流，稍后可重试")
+            historicalResources(policy, if(checkCancelled) "游戏检查已取消，旧结果待检查；已安装资源保留" else "游戏查询限流，旧结果待检查")
             return
         }
         try {
@@ -194,14 +240,16 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                     publish {it.copy(dynamicResources=available,dynamicCatalogGames=next.catalog.games,dynamicRemembered=false,dynamicCheckedAt=checkedAt,dynamicStatus=status)}
                 }
             }
-        } catch(error:Exception) {channelFailure(channel,error)}
+        } catch(error:Exception) {channelFailure(channel,error, checking = true)}
     }
-    private fun channelFailure(channel: String, error: Exception) {
+    private fun channelFailure(channel: String, error: Exception, checking: Boolean = false) {
         var message = error.message ?: "查询失败，已安装内容仍可使用"
         if (error is UpdateRateLimited) {
             try { gate.rateLimited(channel, error.until) } catch (saveError: Exception) { message += "；${saveError.message}" }
         }
-        publish { when(channel) {"apk" -> it.copy(apkStatus=message);"resources" -> it.copy(resourceStatus=message);else -> it.copy(dynamicStatus=message)} }
+        if (checking && channel != "apk") {
+            historicalResources(if (channel == "resources") ResourceStorePolicy.BUILTIN else ResourceStorePolicy.DYNAMIC, "$message；旧结果待检查")
+        } else publish { when(channel) {"apk" -> it.copy(apkStatus=message, apkRemembered=it.apkRemembered || checking);"resources" -> it.copy(resourceStatus=message);else -> it.copy(dynamicStatus=message)} }
     }
     private fun automaticNext() {
         synchronized(stateLock) {

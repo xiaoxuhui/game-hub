@@ -5,6 +5,8 @@ internal data class UpstreamRepository(val gameId: String, val repository: Strin
     val latestUrl get() = "https://api.github.com/repos/xiaoxuhui/$repository/releases/latest"
 }
 internal data class UpstreamPublication(val version: String, val releaseId: Long)
+internal data class UpstreamCheck(val publication: UpstreamPublication? = null, val checkedAt: Long? = null,
+    val issue: String? = "尚未检查")
 
 internal object UpstreamReleasePolicy {
     val repositories = listOf(

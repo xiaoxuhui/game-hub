@@ -1,0 +1,77 @@
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stream=
+com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest:
+INSTRUMENTATION_STATUS: test=goingOfflineMarksSuccessfulResultsAsHistorical
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest.goingOfflineMarksSuccessfulResultsAsHistorical(UpdateCoordinatorDeviceTest.kt:228)
+
+INSTRUMENTATION_STATUS: stream=
+Error in goingOfflineMarksSuccessfulResultsAsHistorical(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest):
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest.goingOfflineMarksSuccessfulResultsAsHistorical(UpdateCoordinatorDeviceTest.kt:228)
+
+INSTRUMENTATION_STATUS: test=goingOfflineMarksSuccessfulResultsAsHistorical
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=manualAndStartupQueriesIncludeAllRegisteredGameRepositories
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: conway expected:<1> but was:<0>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest.manualAndStartupQueriesIncludeAllRegisteredGameRepositories(UpdateCoordinatorDeviceTest.kt:216)
+
+INSTRUMENTATION_STATUS: stream=
+Error in manualAndStartupQueriesIncludeAllRegisteredGameRepositories(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest):
+java.lang.AssertionError: conway expected:<1> but was:<0>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest.manualAndStartupQueriesIncludeAllRegisteredGameRepositories(UpdateCoordinatorDeviceTest.kt:216)
+
+INSTRUMENTATION_STATUS: test=manualAndStartupQueriesIncludeAllRegisteredGameRepositories
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 2.514
+There were 2 failures:
+1) goingOfflineMarksSuccessfulResultsAsHistorical(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest.goingOfflineMarksSuccessfulResultsAsHistorical(UpdateCoordinatorDeviceTest.kt:228)
+2) manualAndStartupQueriesIncludeAllRegisteredGameRepositories(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+java.lang.AssertionError: conway expected:<1> but was:<0>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest.manualAndStartupQueriesIncludeAllRegisteredGameRepositories(UpdateCoordinatorDeviceTest.kt:216)
+
+FAILURES!!!
+Tests run: 2,  Failures: 2
+
+
+INSTRUMENTATION_CODE: -1

@@ -35,6 +35,8 @@ class UpdateCoordinatorDeviceTest {
         @Volatile var network = UpdateNetwork(true, true)
         @Volatile var apkStatus = 200
         @Volatile var resourceStatus = 200
+        val sourceStatuses = java.util.concurrent.ConcurrentHashMap<String, Int>()
+        @Volatile var sourceTimeout: String? = null
         @Volatile var corruptArchive = false
         @Volatile var blockArchive = false
         val entered = CountDownLatch(1)
@@ -53,10 +55,20 @@ class UpdateCoordinatorDeviceTest {
             requests.add(url)
             var status = 200
             val bytes = when {
-                url.endsWith("/releases/latest") -> {
+                url == "${PublicReleaseHttp.API_ROOT}/releases/latest" -> {
                     status = apkStatus
                     JSONObject().put("draft", false).put("prerelease", false).put("tag_name", "v0.4.1")
                         .put("assets", JSONArray().put(JSONObject().put("name", "game-hub.apk").put("id", 900).put("size", 1234).put("digest", "sha256:" + "a".repeat(64)))).toString().toByteArray()
+                }
+                UpstreamReleasePolicy.repositories.any { it.latestUrl == url } -> {
+                    val source = UpstreamReleasePolicy.repositories.single { it.latestUrl == url }
+                    status = sourceStatuses[source.gameId] ?: 200
+                    val version = when(source.gameId) {
+                        "conway" -> "0.17.0"; "eml" -> "1.3.0"; "light" -> "1.2.1"; "turing" -> "0.5.1"
+                        "abelian-sandpile" -> "0.1.2"; else -> "0.3.1"
+                    }
+                    JSONObject().put("id", 100).put("draft", false).put("prerelease", false).put("tag_name", "v$version")
+                        .put("html_url", "https://github.com/xiaoxuhui/${source.repository}/releases/tag/v$version").toString().toByteArray()
                 }
                 url.endsWith("/releases/tags/game-resources-v1") -> {
                     status = resourceStatus
@@ -76,7 +88,11 @@ class UpdateCoordinatorDeviceTest {
                 override fun connect() {}
                 override fun usingProxy() = false
                 override fun disconnect() { disconnected.add(url) }
-                override fun getResponseCode() = status
+                override fun getResponseCode(): Int {
+                    if (sourceTimeout?.let { UpstreamReleasePolicy.repository(it).latestUrl == url } == true)
+                        throw java.net.SocketTimeoutException("源查询超时")
+                    return status
+                }
                 override fun getContentLengthLong() = bytes.size.toLong()
                 override fun getHeaderField(name: String?) = if (name == "Retry-After") "60" else null
                 override fun getInputStream(): InputStream {
@@ -188,9 +204,9 @@ class UpdateCoordinatorDeviceTest {
             val owner = h.owner(); owner.presence(true, true)
             await("resource despite APK $status") { !owner.snapshot().busy && owner.snapshot().localResources["light"]?.ready != null }
             assertNull(owner.snapshot().apkCheckedAt); assertOnlyLight(h)
-            val apkQueries = h.requests.count { it.endsWith("/releases/latest") }
+            val apkQueries = h.requests.count { it == "${PublicReleaseHttp.API_ROOT}/releases/latest" }
             assertTrue(owner.check(true)); await("manual query ended") { !owner.snapshot().busy }
-            assertEquals(if (status == 404) apkQueries + 1 else apkQueries, h.requests.count { it.endsWith("/releases/latest") })
+            assertEquals(if (status == 404) apkQueries + 1 else apkQueries, h.requests.count { it == "${PublicReleaseHttp.API_ROOT}/releases/latest" })
             assertEquals(1, h.zipRequests().size)
         }
     }
@@ -206,6 +222,55 @@ class UpdateCoordinatorDeviceTest {
             await("restored resource backoff") { !reopened.snapshot().busy && reopened.snapshot().resourceStatus.contains("限流") }
             assertEquals(1, h.requests.count { it.endsWith("/releases/tags/game-resources-v1") })
             assertEquals("0.4.1", reopened.snapshot().apk!!.version); assertFalse(reopened.snapshot().apkRemembered)
+        }
+    }
+
+    @Test fun manualAndStartupQueriesIncludeAllRegisteredGameRepositories() {
+        Harness().use { h ->
+            h.network = UpdateNetwork(true, false)
+            val owner = h.owner(); owner.presence(true, true); checked(owner)
+            for (source in UpstreamReleasePolicy.repositories) assertEquals(source.gameId, 1, h.requests.count { it == source.latestUrl })
+            assertTrue(owner.check(true)); await("manual query finished") { !owner.snapshot().busy }
+            for (source in UpstreamReleasePolicy.repositories) assertEquals(source.gameId, 2, h.requests.count { it == source.latestUrl })
+        }
+    }
+
+    @Test fun goingOfflineMarksSuccessfulResultsAsHistorical() {
+        Harness().use { h ->
+            h.network = UpdateNetwork(true, false)
+            val owner = h.owner(); owner.presence(true, true); checked(owner)
+            assertFalse(owner.snapshot().apkRemembered); assertFalse(owner.snapshot().resourcesRemembered)
+            h.network = UpdateNetwork(false, false); owner.presence(true, true)
+            assertTrue(owner.snapshot().apkRemembered); assertTrue(owner.snapshot().resourcesRemembered)
+            assertTrue(owner.snapshot().apkStatus.contains("离线")); assertTrue(owner.snapshot().resourceStatus.contains("离线"))
+            assertFalse(owner.downloadApk(false)); assertEquals("builtin", h.fixture.store.selection("light").active)
+        }
+    }
+
+    @Test fun source404AndTimeoutDoNotHideOtherVersionsOrSignedResources() {
+        Harness().use { h ->
+            h.network = UpdateNetwork(true, false); h.sourceStatuses["abelian-sandpile"] = 404; h.sourceTimeout = "light"
+            val owner = h.owner(); owner.presence(true, true); checked(owner)
+            assertEquals("0.5.1", owner.snapshot().upstreamResults["turing"]!!.publication!!.version)
+            assertEquals("0.3.1", owner.snapshot().upstreamResults["lambda-diagram-game"]!!.publication!!.version)
+            assertTrue(owner.snapshot().upstreamResults["abelian-sandpile"]!!.issue!!.contains("未找到正式发布"))
+            assertTrue(owner.snapshot().upstreamResults["light"]!!.issue!!.contains("超时"))
+            assertTrue(owner.snapshot().resources.any { it.id == "light" }); assertFalse(owner.snapshot().resourcesRemembered)
+            assertEquals("0.4.1", owner.snapshot().apk!!.version); assertEquals(h.requests.size, h.disconnected.size)
+        }
+    }
+
+    @Test fun sourceRateLimitIsDurableAndDoesNotBlockOtherUpdateChannels() {
+        Harness().use { h ->
+            h.network = UpdateNetwork(true, false); h.sourceStatuses["light"] = 429
+            val owner = h.owner(); owner.presence(true, true); checked(owner)
+            assertTrue(owner.snapshot().upstreamResults["light"]!!.issue!!.contains("受限"))
+            assertTrue(owner.snapshot().upstreamResults["turing"]!!.issue!!.contains("限流"))
+            val sourceQueries = h.requests.count { url -> UpstreamReleasePolicy.repositories.any { it.latestUrl == url } }
+            owner.closeVerification(); h.sourceStatuses.clear()
+            val reopened = h.owner(h.fixture.reopenedStore()); reopened.presence(true, true); checked(reopened)
+            assertEquals(sourceQueries, h.requests.count { url -> UpstreamReleasePolicy.repositories.any { it.latestUrl == url } })
+            assertEquals("0.4.1", reopened.snapshot().apk!!.version); assertTrue(reopened.snapshot().resources.any { it.id == "light" })
         }
     }
 }

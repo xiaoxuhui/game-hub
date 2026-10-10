@@ -84,7 +84,7 @@ internal class UpdateTaskGate(private val elapsed: () -> Long, private val epoch
     @Synchronized fun finish(token: UpdateDownloadToken) { if (active === token) { active = null; automaticTask = false } }
     @Synchronized fun busy(): Boolean = active != null || checking || pendingRepairs > 0
     companion object {
-        val channels = setOf("apk", "resources", "dynamic")
+        val channels = setOf("apk", "resources", "dynamic", "upstream")
         private val resourceKinds = setOf(UpdateDownloadKind.RESOURCE, UpdateDownloadKind.DYNAMIC)
         private val networkKinds = resourceKinds + UpdateDownloadKind.APK
     }
