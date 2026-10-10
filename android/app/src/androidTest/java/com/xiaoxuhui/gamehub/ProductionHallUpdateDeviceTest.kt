@@ -33,7 +33,7 @@ class ProductionHallUpdateDeviceTest {
         val arguments = InstrumentationRegistry.getArguments()
         val mode = arguments.getString("formalHallMode")
         Assume.assumeTrue("Explicit real formal 0.4.1 controller required", mode != null)
-        require(mode in setOf("startup", "manual", "offline", "stageFuture"))
+        require(mode in setOf("startup", "manual", "offline", "coldOffline", "stageFuture"))
         val context = instrumentation.targetContext
         val expectedApk = requireNotNull(arguments.getString("formalApkSha256"))
         require(Regex("^[0-9a-f]{64}$").matches(expectedApk))
@@ -79,12 +79,12 @@ class ProductionHallUpdateDeviceTest {
                     result?.issue == null && result?.publication?.version == version && (result?.checkedAt ?: 0) >= after
                 }
             }
-            if (mode == "offline") {
+            if (mode == "coldOffline") {
                 await("offline state") { owner.snapshot().localLoaded && owner.snapshot().upstreamStatus.contains("离线") && !owner.snapshot().busy }
                 val state = owner.snapshot()
                 assertTrue(state.apkRemembered); assertTrue(state.resourcesRemembered); assertTrue(state.dynamicRemembered)
                 assertTrue(state.resources.isEmpty()); assertTrue(state.dynamicResources.isEmpty())
-                assertTrue(state.upstreamResults.values.all { it.issue != null })
+                assertTrue("Cold process has no persisted upstream publications", state.upstreamResults.isEmpty())
             } else {
                 await("real startup five publications and sixth explicit issue") { fresh(startedAt) }
                 if (mode == "manual") {
@@ -113,6 +113,23 @@ class ProductionHallUpdateDeviceTest {
                             .apply { isAccessible = true }.invoke(activity, id, state) as SourceVersionMessage
                         assertFalse(message.update); assertTrue(message.text.contains("已安装 v$version（已核对发布）"))
                     }
+                }
+                if (mode == "offline") {
+                    // The external controller disconnects only its marked owned emulator after this line.
+                    assertEquals(6, state.upstreamResults.size)
+                    assertTrue("Real uninstalled directory offers exist before disconnect", state.dynamicResources.isNotEmpty())
+                    println("WAITING_FOR_OWN_DEVICE_DISCONNECT: six real results and fresh directory offers recorded")
+                    await("actual online-to-offline transition") { owner.snapshot().upstreamStatus.contains("离线") && !owner.snapshot().busy }
+                    val disconnected = owner.snapshot()
+                    assertEquals(state.upstreamResults.keys, disconnected.upstreamResults.keys)
+                    for ((id, original) in state.upstreamResults) {
+                        val retained = disconnected.upstreamResults.getValue(id)
+                        assertEquals(original.publication, retained.publication)
+                        assertEquals(original.checkedAt, retained.checkedAt)
+                        assertTrue("$id explicitly historical", retained.issue.orEmpty().contains("离线"))
+                    }
+                    assertTrue(disconnected.apkRemembered); assertTrue(disconnected.resourcesRemembered); assertTrue(disconnected.dynamicRemembered)
+                    assertTrue(disconnected.resources.isEmpty()); assertTrue(disconnected.dynamicResources.isEmpty())
                 }
             }
             println("Formal 0.4.1 $mode production checks PASS: ${owner.snapshot().apkStatus}; ${owner.snapshot().upstreamStatus}")
