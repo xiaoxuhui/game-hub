@@ -78,6 +78,8 @@ internal class PublicReleaseHttp(private val connections: (String) -> HttpURLCon
     }
     private fun open(url: String, accept: String, etag: String?) = connections(url).apply {
         connectTimeout = 10000; readTimeout = if (accept == "application/octet-stream") 30000 else 15000; instanceFollowRedirects = false
+        useCaches = false
+        setRequestProperty("Cache-Control", "no-cache")
         setRequestProperty("Accept", accept); setRequestProperty("User-Agent", "game-hub-android")
         if (etag != null) setRequestProperty("If-None-Match", etag)
     }

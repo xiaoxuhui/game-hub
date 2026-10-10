@@ -19,7 +19,6 @@ internal object UpdatePolicy {
         val tag = release.optString("tag_name")
         val latest = versionParts(tag) ?: error("发布版本号格式错误")
         val current = versionParts("v$installedVersion") ?: error("当前版本号格式错误")
-        if (compareVersions(latest, current) <= 0) return null
         val assets = release.optJSONArray("assets") ?: error("发布缺少 APK 文件")
         val matches = (0 until assets.length()).map { assets.getJSONObject(it) }
             .filter { it.optString("name") == "game-hub.apk" }
@@ -30,6 +29,7 @@ internal object UpdatePolicy {
         val digest = digestPattern.matchEntire(asset.optString("digest"))?.groupValues?.get(1)
             ?: error("发布 APK 缺少有效的 SHA-256")
         if (id <= 0 || size <= 0 || size > MAX_APK_BYTES) error("发布 APK 的编号或大小无效")
+        if (compareVersions(latest, current) <= 0) return null
         return ReleaseApk(tag.removePrefix("v"), id, size, digest.lowercase())
     }
 

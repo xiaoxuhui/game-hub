@@ -29,6 +29,15 @@ class UpdatePolicyTest {
         }
     }
 
+    @Test fun validatesEqualAndOlderPublicationBeforeCallingItCurrent() {
+        for (tag in listOf("v0.2.0", "v0.1.9")) {
+            for (raw in listOf(release(tag = tag, name = "missing.apk"), release(tag = tag, digest = ""),
+                               release(tag = tag, size = 0), release(tag = tag, id = 0))) {
+                assertThrows(IllegalStateException::class.java) { UpdatePolicy.parseLatest(raw, "0.2.0") }
+            }
+        }
+    }
+
     @Test fun allowsOnlyHttpsGithubAssetRedirectHosts() {
         for (url in listOf("https://api.github.com/repos/xiaoxuhui/game-hub/releases/assets/42",
                            "https://release-assets.githubusercontent.com/a?token=123")) {
