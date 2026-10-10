@@ -178,7 +178,9 @@ class UpdateLifecycleTest {
             fixture.install("light")
             ActivityScenario.launch(MainActivity::class.java).use { scenario ->
                 val render = MainActivity::class.java.getDeclaredMethod("renderUpdates", UpdateSnapshot::class.java).apply { isAccessible = true }
-                var snapshot = UpdateCoordinator.get(context).snapshot().copy(localResources = fixture.store.describeAll(), catalogGames = fixture.catalog.games)
+                // Each branch below supplies a controlled fresh result; never inherit live network history.
+                var snapshot = UpdateCoordinator.get(context).snapshot().copy(localResources = fixture.store.describeAll(), catalogGames = fixture.catalog.games,
+                    apkRemembered = false, resourcesRemembered = false)
                 scenario.onActivity { activity ->
                     render.invoke(activity, snapshot)
                     assertTrue(texts(activity.window.decorView).any { it.contains("#2 待生效") })
