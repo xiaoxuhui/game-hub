@@ -35,3 +35,5 @@
 - D1提交8823213bd418de3ad1c9597bdcc50ff9f8728a67，review_p0初审OPEN：必须强制12候选/四上游bundle精确集合及原件字节绑定，不能只索引现存文件；删除门禁还需查暂未连接ADB的明确本轮AVD进程。批改增加公共verify-n12-recovery.ps1、逐原件与已审SHA/size、四bundle完整来源验证及index必需路径；增加明确AVD emulator/qemu进程门禁。
 - 收尾另读到图灵机HEAD推进ffca；真实old/new reader实验确认Max存档不兼容，资源不更新。保留初始基线，六仓初始HEAD及七原工作树相同；追加独立审阅清理观测值，不假称七SHA未变。归档/删除仍未执行，批改提交后复审待。
 - D1批改21508e60a2b4ba5d8b278b713f105030f218eb7a，review_p0复审仍OPEN：新增late-turing-source.bundle也必须强制核验，不能只信索引现存文件。追加固定名称/1645647字节/完整SHA38885df7486f4cfa58e45fbf7fcdf39b3d6717d5dc21fd82dfa4760ad621cb6d、verify/HEAD与main=ffca及index唯一条目；所有上游/生产/late bundle检查无外部prerequisites的完整历史，待提交后复审。实际只读七仓比对确认仅图灵HEAD推进，原始SHA字段/七status保持。
+- D1第2批改b74737aa2fa31b36d67d17b4410b57e2737eb3a6，review_p0独立只读CLOSED：必需集合及六bundle完整历史、late来源/全SHA、初始/新观测状态准确；完整补丁diff --check、精确HEAD/remote/干净工作树确认。原始审阅记录已冻结归档并公开入n12-d2。
+- D2已冻结129份原始evidence/148资产，原始index SHA c44021fdc3f7b2b21f56aa0f7a992c96685cdf99541b148d574ddac5d56a29c1，最终源码bundle指向b74737a；只读dry-run及提交后独立索引/清理门禁审阅待执行，删除未执行。冻结后不再写临时evidence。
