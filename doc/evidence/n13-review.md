@@ -24,3 +24,11 @@
 - 部署后首审OPEN：大厅验收证据dd2beeb未推送，远端还在f8ef2ba；按意见正常push，不强推，复审git ls-remote=dd2beebc2af26685ab1f2bd09123c6350721c1a1，工作树干净。
 - 最终review_p0 CLOSED：8原始run-metadata为对应仓/分支/调用SHA、workflow_dispatch、completed/success；8 artifact-metadata的ID/run ID/size/digest与ZIP一致；ZIP内JSON与外部原件一致；8报告实现450432e、checked无errors、blocked未尝试发行。公开7仓14文件与原件同摘要，没有私有第8SHA/执行ID/摘要。原始完整私有文件保留。
 - 首次schedule及候选/迁移/签名自动发行不属于本次已验范围。
+
+## C2：06:00、双向存档与资源触发规则 — CLOSED
+
+- 修改提交cc9be47→1a56030→0696f99；默认分支资源触发规则f8629f48d0a4fd1817cedd1b7452a222b0ffca86；部署证据b5b1a55d33f096ab4dc27c93ae3f91f29e3ea1ba。
+- review_p0提交后部署前复审CLOSED：九cron0 22，七源各仅修改wrapper一行；读取固定450432e、只读令牌、不继承秘密；新版读旧档/旧版读新基础及扩展保护为真实reader验证目标，历史选择器/迁移/自动签名发行均PENDING。
+- f8629追加复审CLOSED：默认分支资源/构建输入变化触发，不等待Release/tag/功能版本号；文档/测试不重发，未知依赖/新输入审查；递增contentCode/sequence，不发布不兼容候选；U10未发行提交到大厅安装仍为后续验收。
+- 部署后CLOSED：八仓现时ls-remote/本地分支、九文件Git blob/cron复算一致。大厅b5是f862之后仅文档提交，工作流blob相同。公开七仓八行与私有原件对应行一致，无私有源revision。
+- 只读查询尚未观测今天06:00 schedule事件，未以配置核验冒充实际定时执行；每日自动候选/签名发行仍PENDING。
