@@ -1,0 +1,43 @@
+name: Reusable repository maintenance check
+
+on:
+  workflow_call:
+    inputs:
+      implementation-sha:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: xiaoxuhui/game-hub
+          ref: ${{ inputs.implementation-sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Verify fixed implementation and detector tests
+        env:
+          IMPLEMENTATION_SHA: ${{ inputs.implementation-sha }}
+        run: |
+          node --input-type=module -e 'import {execFileSync} from "node:child_process"; const sha=process.env.IMPLEMENTATION_SHA; if(!/^[a-f0-9]{40}$/.test(sha)||execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim()!==sha) throw new Error("Implementation SHA mismatch");'
+          node --test tests/repository-watch.test.mjs
+      - name: Check calling repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          IMPLEMENTATION_SHA: ${{ inputs.implementation-sha }}
+        run: node scripts/repository-watch.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: repository-check-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .build/repository-watch/
+          if-no-files-found: error
+          retention-days: 30
