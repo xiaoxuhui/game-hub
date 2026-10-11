@@ -37,3 +37,5 @@
 - D1批改21508e60a2b4ba5d8b278b713f105030f218eb7a，review_p0复审仍OPEN：新增late-turing-source.bundle也必须强制核验，不能只信索引现存文件。追加固定名称/1645647字节/完整SHA38885df7486f4cfa58e45fbf7fcdf39b3d6717d5dc21fd82dfa4760ad621cb6d、verify/HEAD与main=ffca及index唯一条目；所有上游/生产/late bundle检查无外部prerequisites的完整历史，待提交后复审。实际只读七仓比对确认仅图灵HEAD推进，原始SHA字段/七status保持。
 - D1第2批改b74737aa2fa31b36d67d17b4410b57e2737eb3a6，review_p0独立只读CLOSED：必需集合及六bundle完整历史、late来源/全SHA、初始/新观测状态准确；完整补丁diff --check、精确HEAD/remote/干净工作树确认。原始审阅记录已冻结归档并公开入n12-d2。
 - D2已冻结129份原始evidence/148资产，原始index SHA c44021fdc3f7b2b21f56aa0f7a992c96685cdf99541b148d574ddac5d56a29c1，最终源码bundle指向b74737a；只读dry-run及提交后独立索引/清理门禁审阅待执行，删除未执行。冻结后不再写临时evidence。
+- D2提交eaeedccd0d598466f7c9d3da6c9c73debc9e20a5，review_p0独立CLOSED：148资产/129原始evidence/12候选独立size/SHA/映射全同，raw/public索引字段相同，bundle/source/原仓/HEAD/remote/clean/diff通过。实际dry-run15262文件/3724065769字节，提交后才复审，未提前删除；详见n12-d3/d2-independent-review.md。
+- D3在同一index完整SHA和已推送eae提交实际Execute，02:53:45仅本轮根删除，root=False；清理后七原仓HEAD/status仍匹配已审观测，约释放3.68GB。公开结果/原始运行日志规范化副本入n12-d3；永久归档保留原始字节。收尾提交后最终复审另存永久final-independent-review.md，不改已核验提交自身，追加最终bundle覆盖收尾文档。

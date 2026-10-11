@@ -1,0 +1,79 @@
+The bundle contains this ref:
+b74737aa2fa31b36d67d17b4410b57e2737eb3a6 refs/heads/main
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+D:/soft/game-hub-archives/n12-20261012/n12-source.bundle is okay
+D:/soft/game-hub-archives/n12-20261012/n12-producer-2afb.bundle is okay
+The bundle contains this ref:
+2afbda179f8924d57e029d5cdddb0ca416729c90 refs/heads/main
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+D:/soft/game-hub-archives/n12-20261012/upstream-conway.bundle is okay
+The bundle contains these 8 refs:
+7d857cc9b9eb6a9ccf55afc15f05b0a2079970be refs/heads/main
+7d857cc9b9eb6a9ccf55afc15f05b0a2079970be refs/remotes/origin/HEAD
+9ccffd209e225448f40a4de5d97ad5c73fb94ee9 refs/remotes/origin/feat-android-apk
+7d857cc9b9eb6a9ccf55afc15f05b0a2079970be refs/remotes/origin/main
+6033f10e9408d6bc271271dc3e9e42cbca5a2063 refs/tags/v0.15.0
+8ad5285db0a44a533d0656c6bfb33d895e569a8c refs/tags/v0.16.0
+0b82514d29b6b0001913362b6a96b6bd3999459a refs/tags/v0.17.0
+7d857cc9b9eb6a9ccf55afc15f05b0a2079970be HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+The bundle contains these 10 refs:
+D:/soft/game-hub-archives/n12-20261012/upstream-eml.bundle is okay
+76cdd75bc26fc7d1dc23a2a4b19e74857c9c430c refs/heads/main
+76cdd75bc26fc7d1dc23a2a4b19e74857c9c430c refs/remotes/origin/HEAD
+a2df575e0152d007803fe1bbc901847d68b2ff4a refs/remotes/origin/feat/android-apk
+0ae124ee0f48586563536808c022b41cf53967f5 refs/remotes/origin/feat/touch-responsive
+76cdd75bc26fc7d1dc23a2a4b19e74857c9c430c refs/remotes/origin/main
+7a63a051f704767720e939acc8136f444319da60 refs/tags/v1.0.0
+514cae1b717a3d30fad9266f131f2a0a9094278a refs/tags/v1.1.0
+41310cbf870e128cf09ba48ebf407901696540d6 refs/tags/v1.2.0
+e32d845efbaf72b7cd4cbe3720a83941e9026d23 refs/tags/v1.3.0
+76cdd75bc26fc7d1dc23a2a4b19e74857c9c430c HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+D:/soft/game-hub-archives/n12-20261012/upstream-abelian-sandpile.bundle is okay
+The bundle contains these 6 refs:
+c4290283b1109e13e37d6f696b83fefd3b7a6855 refs/heads/main
+c4290283b1109e13e37d6f696b83fefd3b7a6855 refs/remotes/origin/HEAD
+5f95b1ad31befea93328317e8a24a14406f8f3f8 refs/remotes/origin/feat-android-apk
+c4290283b1109e13e37d6f696b83fefd3b7a6855 refs/remotes/origin/main
+b7044cd2f66891b4e333fffc44cf1ea2cd48d526 refs/tags/v0.1.2
+c4290283b1109e13e37d6f696b83fefd3b7a6855 HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+The bundle contains these 8 refs:
+5f5ec5561be70716c22be62797c808aa0db9a960 refs/heads/master
+5f5ec5561be70716c22be62797c808aa0db9a960 refs/remotes/origin/HEAD
+538bd3ae546022f4b29f6ddb0b0f11281af9bc5f refs/remotes/origin/feat-android-apk
+5f5ec5561be70716c22be62797c808aa0db9a960 refs/remotes/origin/master
+a75d180193fbe7298709298102c8c6008d1353cd refs/remotes/origin/release-android-v0.3.1
+60a12296609eab4c3b41f475afb80bacc7786c3a refs/tags/v0.3.0
+f44403e599b51e12b40905701f01e30e1c8fedee refs/tags/v0.3.1
+5f5ec5561be70716c22be62797c808aa0db9a960 HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+D:/soft/game-hub-archives/n12-20261012/upstream-lambda-diagram-game.bundle is okay
+The bundle contains this ref:
+D:/soft/game-hub-archives/n12-20261012/n12-producer-2afb.bundle is okay
+2afbda179f8924d57e029d5cdddb0ca416729c90 refs/heads/main
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+The bundle contains these 10 refs:
+ffca525f838101151c9e1a6a8c6cb8798aa7d936 refs/heads/main
+ffca525f838101151c9e1a6a8c6cb8798aa7d936 refs/remotes/origin/HEAD
+5b9f19d37d04b2216ce63456a3b11a8e3624a4c5 refs/remotes/origin/android-apk
+592027dbc5cab9cb83f91b904f4f23a9e3cbe24b refs/remotes/origin/campaign-undo
+ffca525f838101151c9e1a6a8c6cb8798aa7d936 refs/remotes/origin/main
+6c6478d56b845e04eae35c12d1666ab9d4e86eef refs/tags/v0.3.0
+7fd983eb689bb1ff36f298a1a6ecf330c7fc4204 refs/tags/v0.3.1
+4633cba7e99039812ba5fa74b5ae76869491e7e0 refs/tags/v0.5.0
+2ec19f14f35ee6dd89fc64aa61230d6db7689060 refs/tags/v0.5.1
+ffca525f838101151c9e1a6a8c6cb8798aa7d936 HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+D:/soft/game-hub-archives/n12-20261012/late-turing-source.bundle is okay
+Twelve exact producer candidates, four exact upstream bundles, immutable producer and late Turing complete bundles verified.
+Verified exact N12 target: 15262 files, 3724065769 logical bytes; archive index c44021fdc3f7b2b21f56aa0f7a992c96685cdf99541b148d574ddac5d56a29c1

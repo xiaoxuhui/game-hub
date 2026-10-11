@@ -26,7 +26,7 @@
 - [x] 新生产目录自动检查实得，两个checkedAt不早于本轮开始且remembered=false，正式大厅成功识别两code2。
 - [x] 实际下载/玩家激活新资源并完整对比旧存档：重置后update29.2s，OK(1 test)。首次Conway下载被服务器匿名限流拒绝、ready=null的失败记录保留；沿用原seed数据，无清数据重造成功。
 - [x] 实际断网、force-stop、不同进程重新打开code2和旧存档：offline19.606s，OK(1 test)。测试入口真实activeNetwork=null；旧PID3492已停止、新PID3554；WiFi/mobile实际服务与global设置均按原值恢复。
-- [ ] 两项实测完成后的证据/独立复审与本轮唯一临时根清理。
+- [x] 两项实测完成后的证据/独立复审与本轮唯一临时根清理；129原始证据/148资产存档，删除前独立全摘要复算，实际root=False，见[n12-d3/closure.md](n12-d3/closure.md)。
 
 2026-10-12 01:48服务器真实core remaining=0、reset=1791743469，即02:31:09+08:00；实际02:31:22开始update并通过，02:32:03开始offline并通过。无需用户提前验收，真机仍可在发行后额外验证。真实失败与恢复证据均保留。
 
