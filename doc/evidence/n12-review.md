@@ -20,3 +20,4 @@
 - C2 首次设备seed在阿贝尔下载ready=null失败，随后实际UI显示“游戏查询限流，旧结果待检查”；公共rate_limit实际remaining=0、reset=2026-10-12 01:30:46+08:00。保留失败日志。控制器批改为每轮复用启动后实得的自动查询：两个checkedAt均不早于本次startedAt、两个remembered=false、idle，禁止读旧缓存当通过，避免每游戏重复查询。自动下载通过真实设置先关闭，下载失败补实际状态诊断。待提交后复审和额度恢复重验。
 - C2批改2afbda179f8924d57e029d5cdddb0ca416729c90，review_p0复审CLOSED；生产/发行准备review_p1再次复算12候选/24份size+SHA、8ZIP与B3相同、64/64、最终CI38158736828success、OSS30链接/治理/无私钥、七原仓相同，CLOSED仅准备范围；详细审阅归档n12-c3/prepublish-independent-review.md。
 - C3实际两通道签名公开与匿名全历史验证已完成，旧seed32.545s PASS；首次update真实匿名限流失败，实际激活/离线仍待。证据提交后独立审阅待执行，不冒称整个C阶段完成。
+- C3证据提交3dce46520af4495eefa6d54942e1ce2a41dbec90，review_p1初审OPEN：四份current/previous目录离线验签、历史9目录/14 ZIP、正式APK绑定与实际失败SHA均匹配；唯一批改为首次update摘要第2行尾空格。批改将SHA合并到标签同行，并通过diff --check；正式下载/离线仍保持待验。
