@@ -1,0 +1,166 @@
+{
+  "readmeLinks": [
+    {
+      "path": "doc/N10-更新检查修复实施计划.md",
+      "exists": true
+    },
+    {
+      "path": "doc/测试报告-v0.4.1.md",
+      "exists": true
+    },
+    {
+      "path": "doc/evidence/n5-v040-release-20261009.md",
+      "exists": true
+    },
+    {
+      "path": "doc/evidence/n7-two-game-release-20261009.md",
+      "exists": true
+    },
+    {
+      "path": "doc/测试报告-v0.4.0.md",
+      "exists": true
+    },
+    {
+      "path": "doc/开源就绪度审计-v0.4.0.md",
+      "exists": true
+    },
+    {
+      "path": "doc/screenshots/lobby.png",
+      "exists": true
+    },
+    {
+      "path": "doc/测试报告.md",
+      "exists": true
+    },
+    {
+      "path": "doc/来源基线.md",
+      "exists": true
+    },
+    {
+      "path": "sources.lock.json",
+      "exists": true
+    },
+    {
+      "path": ".github/workflows/android-check.yml",
+      "exists": true
+    },
+    {
+      "path": ".github/workflows/android-emulator-smoke.yml",
+      "exists": true
+    },
+    {
+      "path": "doc/迁移说明.md",
+      "exists": true
+    },
+    {
+      "path": "doc/资源发布手册.md",
+      "exists": true
+    },
+    {
+      "path": "doc/测试报告-v0.3.0.md",
+      "exists": true
+    },
+    {
+      "path": "doc/版本待办清单.md",
+      "exists": true
+    },
+    {
+      "path": "doc/需求与测试用例.md",
+      "exists": true
+    },
+    {
+      "path": "doc/设计文档.md",
+      "exists": true
+    },
+    {
+      "path": "doc/实施计划.md",
+      "exists": true
+    },
+    {
+      "path": "doc/阶段审阅记录.md",
+      "exists": true
+    },
+    {
+      "path": "doc/测试报告.md",
+      "exists": true
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "exists": true
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "exists": true
+    },
+    {
+      "path": "SECURITY.md",
+      "exists": true
+    },
+    {
+      "path": "LICENSE",
+      "exists": true
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "exists": true
+    },
+    {
+      "path": "doc/开源就绪度审计-v0.4.0.md",
+      "exists": true
+    },
+    {
+      "path": "doc/evidence/n8-cleanup-report-20261010.md",
+      "exists": true
+    },
+    {
+      "path": "doc/evidence/n9-red-green-release-20261010.md",
+      "exists": true
+    },
+    {
+      "path": "doc/evidence/n9-cleanup-complete-20261010.md",
+      "exists": true
+    }
+  ],
+  "privateCredentialPatternFiles": [
+    "doc/evidence/n5-issuance-preparation/publish_v040.ps1",
+    "doc/evidence/n5-v040-online-20261009/publish_v040.ps1",
+    "scripts/publish-resource-successor.ps1",
+    "scripts/publish-resource-v1-successor.ps1"
+  ],
+  "governance": [
+    {
+      "path": "CONTRIBUTING.md",
+      "exists": true
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "exists": true
+    },
+    {
+      "path": "SECURITY.md",
+      "exists": true
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "exists": true
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "exists": true
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "exists": true
+    }
+  ],
+  "gitStatus": [],
+  "tags": [
+    "game-resources-v1",
+    "game-resources-v2",
+    "v0.2.0",
+    "v0.3.0",
+    "v0.4.0",
+    "v0.4.1"
+  ],
+  "note": "Resource-only publication; latest CI not assumed green."
+}

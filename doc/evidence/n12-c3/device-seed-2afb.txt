@@ -1,0 +1,6 @@
+
+com.xiaoxuhui.gamehub.N12ProductionResourceDeviceTest:.
+
+Time: 32.545
+
+OK (1 test)

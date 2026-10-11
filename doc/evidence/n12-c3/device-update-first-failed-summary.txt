@@ -1,0 +1,7 @@
+Actual formal v0.4.1 first update FAIL (expected ready Conway#2; actual ready=null).
+Raw private evidence SHA256: 
+7ee861ad92ded3701e5dad35b6d3eabe40dc4898be6c4adf92cfb28159afb5cd
+apkStatus=已安装大厅 0.4.1；正式发布 0.4.1，已核对
+resourceStatus=查询次数受限，按服务器要求稍后重试
+dynamicStatus=发现 3 个目录游戏（3 个可安装），1 个已装游戏有更新
+Both catalog freshness assertions passed; download failed with actual rate-limit status. Seeded data retained; retry scheduled 02:31:21. Not claimed compatible update/offline PASS.

@@ -1,0 +1,7 @@
+Verified 4 resource ZIPs and complete file manifests; source commit 2afbda179f8924d57e029d5cdddb0ca416729c90
+Resume admission verified existing uploads and unchanged production current; no write to remote
+Verified 4 resource ZIPs and complete file manifests; source commit 2afbda179f8924d57e029d5cdddb0ca416729c90
+Prepared asset-bound v1 sequence 3
+Signed verified v1 sequence 3
+Verified catalog sequence 3; 80f403c5ccfb75bd7f121386811629d7b286874735e4e804f7421c9334aacf76
+Public asset bytes mismatch

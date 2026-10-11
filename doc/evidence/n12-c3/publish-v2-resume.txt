@@ -1,0 +1,7 @@
+Verified 4 dynamic resource ZIPs; 2afbda179f8924d57e029d5cdddb0ca416729c90
+Resume admission verified existing uploads and unchanged production current; no write to remote
+Verified 4 dynamic resource ZIPs; 2afbda179f8924d57e029d5cdddb0ca416729c90
+Prepared asset-bound successor sequence 6
+Signed v2 sequence 6; dcf53f3801f4774dabc0a2755d5d52b996726ca0991b00ca92e3b5e9519d4064
+Verified v2 sequence 6; dcf53f3801f4774dabc0a2755d5d52b996726ca0991b00ca92e3b5e9519d4064
+Online signed bytes differ from reviewed issuance

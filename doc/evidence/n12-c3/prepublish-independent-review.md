@@ -1,0 +1,9 @@
+# N12 发行前独立复审
+
+C1 review_p0：165b27e81bafa23516e9e8a980f4aa664b23d676 CLOSED，offline真实默认网络断言、完整APK/DER/ZIP/source/storage门禁保留，公开日志格式修复。
+
+C2 review_p0：a3f2e04200276bd394a3598d9aa961376f361339 OPEN仅失败日志EOF；2afbda179f8924d57e029d5cdddb0ca416729c90复审CLOSED。设置先持久化、启动后自动查询两个checkedAt>=本次startedAt且remembered=false、idle，不把旧缓存与限流失败当通过；初失败正文保留。实际seed尚未绿。
+
+生产/发行准备 review_p1：受审2afbda179f8924d57e029d5cdddb0ca416729c90 CLOSED（仅准备）。两干净同HEAD独立目录12候选24份size/fullSHA复算一致，8ZIP与B3相同，两个prepare+verify、64/64、companion构建成功、实际CI38158736828success。README30本地链接、治理文件、四PS模板误命中/实际0凭据、七原仓完整SHA/status相同。OSS草稿第3项滞后OPEN，据最终CI实际结果更正后CLOSED；第4项与结尾依然明确seed失败/未发行，不把准备CLOSED称为C阶段完成。
+
+仍待发行门禁：额度恢复后的真实正式0.4.1 seed；两目录历史绑定签署及匿名验收；实际生产update和真实断网force-stop新进程offline。无任何审阅者改文件、构建或发布。

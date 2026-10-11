@@ -1,0 +1,20 @@
+{
+  "core": {
+    "limit": 60,
+    "remaining": 0,
+    "reset": 1791743469,
+    "used": 60
+  },
+  "checkedAtUtc": "2026-10-11T17:48:05.6091889Z",
+  "headers": {
+    "remaining": [
+      "0"
+    ],
+    "date": [
+      "Sun, 11 Oct 2026 17:48:04 GMT"
+    ],
+    "reset": [
+      "1791743469"
+    ]
+  }
+}

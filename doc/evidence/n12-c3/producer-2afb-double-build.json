@@ -1,0 +1,98 @@
+[
+  {
+    "bytes": 380,
+    "repeatSha256": "ff573fc8b7a1485391c555f6fb4ef651b06049f4f90b3847e2e3612c7d3dee8b",
+    "name": "candidate.json",
+    "sha256": "ff573fc8b7a1485391c555f6fb4ef651b06049f4f90b3847e2e3612c7d3dee8b",
+    "kind": "resource-candidate",
+    "zipMatchesReviewedB3": null
+  },
+  {
+    "bytes": 297262,
+    "repeatSha256": "54e9dc88bcc90f426075d16d2037c50b1f992c87f3525aa599c7d8f9bc19629f",
+    "name": "game-conway-2-54e9dc88bcc9.zip",
+    "sha256": "54e9dc88bcc90f426075d16d2037c50b1f992c87f3525aa599c7d8f9bc19629f",
+    "kind": "resource-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 106336,
+    "repeatSha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+    "name": "game-eml-1-20205b0dfba4.zip",
+    "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+    "kind": "resource-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 115671,
+    "repeatSha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267",
+    "name": "game-light-2-19adc2db9b14.zip",
+    "sha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267",
+    "kind": "resource-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 86435,
+    "repeatSha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43",
+    "name": "game-turing-2-ad26e84c8b60.zip",
+    "sha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43",
+    "kind": "resource-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 10667,
+    "repeatSha256": "872eb61277a1b1048d589b971043d2bba287e1f6c1dce1d970435f87bae3dba5",
+    "name": "games.unsigned.json",
+    "sha256": "872eb61277a1b1048d589b971043d2bba287e1f6c1dce1d970435f87bae3dba5",
+    "kind": "resource-candidate",
+    "zipMatchesReviewedB3": null
+  },
+  {
+    "bytes": 164,
+    "repeatSha256": "694f2913ecd32f0ff860cb8ec31cfce3df2f30329bcc2612562777c0416600ef",
+    "name": "candidate.json",
+    "sha256": "694f2913ecd32f0ff860cb8ec31cfce3df2f30329bcc2612562777c0416600ef",
+    "kind": "dynamic-candidate",
+    "zipMatchesReviewedB3": null
+  },
+  {
+    "bytes": 83688,
+    "repeatSha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3",
+    "name": "game-abelian-sandpile-2-47a35517606c.zip",
+    "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3",
+    "kind": "dynamic-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 102362,
+    "repeatSha256": "0ee2f0ef41545e2364172a3ec2c74481c9cb16ae3c6361a66786f24d0594cdb9",
+    "name": "game-lambda-diagram-game-2-0ee2f0ef4154.zip",
+    "sha256": "0ee2f0ef41545e2364172a3ec2c74481c9cb16ae3c6361a66786f24d0594cdb9",
+    "kind": "dynamic-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 9510,
+    "repeatSha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+    "name": "game-memory-demo-2-178d01e9ee05.zip",
+    "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+    "kind": "dynamic-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 14620,
+    "repeatSha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62",
+    "name": "game-red-green-puzzle-1-81edc7c967f7.zip",
+    "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62",
+    "kind": "dynamic-candidate",
+    "zipMatchesReviewedB3": true
+  },
+  {
+    "bytes": 8707,
+    "repeatSha256": "98e6be28cb55408f74d8f07b4369df60ecc9afcf8d33b25108ceeda643f7effb",
+    "name": "games.unsigned.json",
+    "sha256": "98e6be28cb55408f74d8f07b4369df60ecc9afcf8d33b25108ceeda643f7effb",
+    "kind": "dynamic-candidate",
+    "zipMatchesReviewedB3": null
+  }
+]
