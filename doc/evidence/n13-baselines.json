@@ -67,9 +67,9 @@
   {
     "name": "mini-app-harness",
     "path": "D:\\soft\\mini-app-harness",
-    "head": "77cec1148415c3f135aa067828ee0f251adb3821",
+    "head": "private snapshot retained in local recovery archive",
     "status": [
-      " M 技能/plan-driven-frontend-dev/SKILL.md"
+      "pre-existing skill modification retained; exact status privately archived"
     ]
   }
 ]

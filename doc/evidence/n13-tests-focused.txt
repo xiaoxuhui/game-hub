@@ -1,0 +1,18 @@
+✔ scope is exactly eight repositories and rejects other accounts/repos before API use (4.5987ms)
+✔ actual master branch and lightweight release tag commit distinguish source changes (17.7928ms)
+✔ annotated tag resolves commit rather than using mutable target_commitish (0.5164ms)
+✔ nested tag cycles, missing objects, wrong SHA/type and depth fail closed (0.9921ms)
+✔ no release is explicit initial release pending; private source stays private (0.4114ms)
+✔ malformed release/version, repository identity and network fail without credential leakage (2.4403ms)
+✔ diverged histories, invalid baseline and 300-file truncation cannot pass (1.1321ms)
+✔ docs-only remains an unpublished change; HTML/dependencies/CI/renames need contract (8.2823ms)
+✔ summary escapes API fields and makes publication distinction visible (1.7636ms)
+✔ reusable workflow restricts token, checkout credentials and report retention (2.0955ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 327.5206

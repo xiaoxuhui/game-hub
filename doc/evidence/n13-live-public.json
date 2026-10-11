@@ -1,0 +1,1083 @@
+[
+  {
+    "schemaVersion": 1,
+    "repository": "xiaoxuhui/game-hub",
+    "checkedAt": "2026-10-11T21:26:15.894Z",
+    "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+    "invocationRevision": null,
+    "artifactKinds": [
+      "hall-apk",
+      "signed-resource-catalogs"
+    ],
+    "publication": {
+      "status": "blocked",
+      "reason": "release-contract-not-configured",
+      "attempted": false
+    },
+    "status": "checked",
+    "errors": [],
+    "private": false,
+    "defaultBranch": "main",
+    "defaultRevision": "465b9c115fa5d73ffa1504c92bc1227ec7ff7f29",
+    "release": {
+      "status": "formal-release",
+      "tag": "v0.4.1",
+      "revision": "fc9da9be6a238018d86f2085facd5b8085e68cf8",
+      "publishedAt": "2026-10-10T18:25:32Z",
+      "url": "https://github.com/xiaoxuhui/game-hub/releases/tag/v0.4.1"
+    },
+    "change": {
+      "status": "source-change-pending-contract",
+      "files": [
+        {
+          "path": ".github/workflows/upstream-watch.yml"
+        },
+        {
+          "path": "CHANGELOG.md"
+        },
+        {
+          "path": "README.md"
+        },
+        {
+          "path": "android/app/src/androidTest/java/com/xiaoxuhui/gamehub/N12ProductionResourceDeviceTest.kt"
+        },
+        {
+          "path": "doc/N10-更新检查修复实施计划.md"
+        },
+        {
+          "path": "doc/N11-每日资源巡检.md"
+        },
+        {
+          "path": "doc/N12-资源巡检与更新实施计划.md"
+        },
+        {
+          "path": "doc/N12-资源巡检与更新需求设计.md"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete.md"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/candidate-hashes.json"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/d4-three-save-all-pass.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/d4-three-save-offline.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/d4-three-save-online.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/d5-offline-control.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/d5-three-save-offline.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/d5-three-save-pass.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/e4-v2-online-readonly.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/e4-v2-resume.log"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/v2-online-verified.json"
+        },
+        {
+          "path": "doc/evidence/n10-d-complete/v2-published.json"
+        },
+        {
+          "path": "doc/evidence/n10-d-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-e4-full-candidate.md"
+        },
+        {
+          "path": "doc/evidence/n10-e4-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-apk-identities.json"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-apk-verification.log"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-debug-build.log"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-debug-fixtures-build.log"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-final-ci.json"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-full-device-controller-red.log"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-full-device-counts.json"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-full-device.log"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-full-device.xml"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-jvm-counts.json"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-originals-readonly-check.json"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-release-build.log"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-release-signature.log"
+        },
+        {
+          "path": "doc/evidence/n10-e4/e4-signed-payload-binding.json"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final-acceptance.md"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-offline-actual-sources.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-offline-control-timeout-red.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-offline-control.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-offline-control.ps1"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-offline-timeout-red-actual-sources.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-online-before-disconnect.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-online-to-offline-timeout-red.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e4-online-to-offline.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e5-final-oss-scan.json"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e5-lambda-host5-loaded.xml"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e5-lambda-host5-restored.png"
+        },
+        {
+          "path": "doc/evidence/n10-e5-final/e5-lambda-host5-restored.xml"
+        },
+        {
+          "path": "doc/evidence/n10-e5a-formal-acceptance.md"
+        },
+        {
+          "path": "doc/evidence/n10-e5a-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/control-hashes.json"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/controls/publish-e4-apk.ps1"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/controls/verify-e4-public.mjs"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e4-offline-control-quota-red.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e4-online-to-offline-quota-red.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e4-online-to-offline-stderr-quota-red.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-anonymous-quota.json"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-cold-offline-actual-sources.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-cold-offline-control.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-install-companion.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-install-upgrade.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-new-save-offline-verify.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-new-save-verify.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-old-save-seed.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-oss-scan.json"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-production-cold-offline.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-production-future-preflight.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-production-future-stage.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-production-startup-manual.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-query-detail-errors.xml"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-query-ui.xml"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-startup-manual-actual-sources.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-upgrade-new-identity.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5a/e5-upgrade-old-identity.log"
+        },
+        {
+          "path": "doc/evidence/n10-e5b-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-e5b-offline-control.md"
+        },
+        {
+          "path": "doc/evidence/n10-e6-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release.md"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e4-anonymous-release.json"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e4-anonymous-tag.json"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e4-anonymous-verified.json"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e4-release-expected.json"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e4-release-published.json"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e4-release-ready.json"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e6-postrelease-actual-sources.log"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e6-postrelease-startup.log"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e6-public-apk-badging.log"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e6-public-apk-signature.log"
+        },
+        {
+          "path": "doc/evidence/n10-e6-release/e6-public-apk-verify.log"
+        },
+        {
+          "path": "doc/evidence/n10-f2-archive-preparation.md"
+        },
+        {
+          "path": "doc/evidence/n10-f2-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-f2/archive-n10.ps1"
+        },
+        {
+          "path": "doc/evidence/n10-f2/controller-hashes.json"
+        },
+        {
+          "path": "doc/evidence/n10-f3-archive-readiness.md"
+        },
+        {
+          "path": "doc/evidence/n10-f3-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-f3/f3-archive-readiness-red.json"
+        },
+        {
+          "path": "doc/evidence/n10-f3/f3-originals-before-archive.json"
+        },
+        {
+          "path": "doc/evidence/n10-f3/f3-own-emulator-stopped.json"
+        },
+        {
+          "path": "doc/evidence/n10-f4-archive.md"
+        },
+        {
+          "path": "doc/evidence/n10-f4-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-f4/cleanup-index.json"
+        },
+        {
+          "path": "doc/evidence/n10-f4/f4-readonly-archive-validation.json"
+        },
+        {
+          "path": "doc/evidence/n10-f5-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-f5-partial-cleanup.md"
+        },
+        {
+          "path": "doc/evidence/n10-f5/f5-adb-devices-before.log"
+        },
+        {
+          "path": "doc/evidence/n10-f5/f5-cleanup-dryrun.log"
+        },
+        {
+          "path": "doc/evidence/n10-f5/f5-cleanup-execute.log"
+        },
+        {
+          "path": "doc/evidence/n10-f5/f5-own-adb-server.json"
+        },
+        {
+          "path": "doc/evidence/n10-f5/f5-own-directory-handles.json"
+        },
+        {
+          "path": "doc/evidence/n10-f5/f5-partial-cleanup-red.json"
+        },
+        {
+          "path": "doc/evidence/n10-f6-final-cleanup.md"
+        },
+        {
+          "path": "doc/evidence/n10-f6-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n10-f6/cleanup-result.json"
+        },
+        {
+          "path": "doc/evidence/n10-f6/f6-adb-listeners-before.json"
+        },
+        {
+          "path": "doc/evidence/n10-f6/f6-adb-restored.json"
+        },
+        {
+          "path": "doc/evidence/n10-f6/f6-final-integrity.json"
+        },
+        {
+          "path": "doc/evidence/n10-f6/f6-own-adb-resume.log"
+        },
+        {
+          "path": "doc/evidence/n11-actions-verification.json"
+        },
+        {
+          "path": "doc/evidence/n11-baseline-recheck.json"
+        },
+        {
+          "path": "doc/evidence/n11-baselines.json"
+        },
+        {
+          "path": "doc/evidence/n11-cleanup.json"
+        },
+        {
+          "path": "doc/evidence/n11-cloud-report.json"
+        },
+        {
+          "path": "doc/evidence/n11-live-report.json"
+        },
+        {
+          "path": "doc/evidence/n11-node-tests.txt"
+        },
+        {
+          "path": "doc/evidence/n11-review.md"
+        },
+        {
+          "path": "doc/evidence/n11-workflow-state.json"
+        },
+        {
+          "path": "doc/evidence/n12-b1-hall-tests.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/README.md"
+        },
+        {
+          "path": "doc/evidence/n12-b3/abel-tests-after-build.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/abel-tests.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/b2-full-tests.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser-first-run.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser/desktop-abelian-sandpile.png"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser/desktop-conway.png"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser/desktop-patterns.json"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser/mobile-abelian-sandpile.png"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser/mobile-conway.png"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser/mobile-patterns.json"
+        },
+        {
+          "path": "doc/evidence/n12-b3/browser/result.json"
+        },
+        {
+          "path": "doc/evidence/n12-b3/c-regression.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/companion-build.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/conway-android-tests.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/conway-tests.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/device-seed-first-failed.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/double-build.json"
+        },
+        {
+          "path": "doc/evidence/n12-b3/dynamic-build.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/dynamic-repeat.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/publisher-scopes.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/resource-build.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/resource-repeat.txt"
+        },
+        {
+          "path": "doc/evidence/n12-b3/verify-browser.cjs"
+        },
+        {
+          "path": "doc/evidence/n12-baselines.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/ci-producer-2afb.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/companion-2afb-build.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/companion-2afb-cert.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/device-seed-2afb-run.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/device-seed-2afb.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/device-update-first-failed-summary.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/formal-apk.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/oss-release-readiness.md"
+        },
+        {
+          "path": "doc/evidence/n12-c3/oss-scan.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/oss-secret-resolution.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/prepublish-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n12-c3/producer-2afb-double-build.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/producer-2afb-repeat-v1.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/producer-2afb-repeat-v2.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/producer-2afb-storage.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/producer-2afb-tests.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/producer-2afb-work-v1.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/producer-2afb-work-v2.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/activation-intent.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/before-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/catalog.signed.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/online-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/online-verified.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/payload.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/previous.signed.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/published.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/resume-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/signing-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v1-seq3/uploaded-resources.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/activation-intent.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/before-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/catalog.signed.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/online-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/online-verified.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/payload.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/previous.signed.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/published.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/resume-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/signing-snapshot.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publication/v2-seq6/uploaded-resources.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publish-v1-resume.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publish-v1.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publish-v2-resume.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/publish-v2.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/rate-limit-after-publication.json"
+        },
+        {
+          "path": "doc/evidence/n12-c3/v1-online-readonly-recheck.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c3/v2-online-readonly-recheck.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c5/acceptance.md"
+        },
+        {
+          "path": "doc/evidence/n12-c5/c4-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n12-c5/c5-evidence-manifest.json"
+        },
+        {
+          "path": "doc/evidence/n12-c5/ci-c4-a8ccc9f.json"
+        },
+        {
+          "path": "doc/evidence/n12-c5/device-offline-run.json"
+        },
+        {
+          "path": "doc/evidence/n12-c5/device-offline-stderr.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c5/device-offline.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c5/device-update-after-reset-run.json"
+        },
+        {
+          "path": "doc/evidence/n12-c5/device-update-after-reset.txt"
+        },
+        {
+          "path": "doc/evidence/n12-c5/upstream-archive-bundles.json"
+        },
+        {
+          "path": "doc/evidence/n12-cleanup-plan.md"
+        },
+        {
+          "path": "doc/evidence/n12-d2/archive-and-cleanup-gate.md"
+        },
+        {
+          "path": "doc/evidence/n12-d2/ci-d1-21508e6.json"
+        },
+        {
+          "path": "doc/evidence/n12-d2/cleanup-index.json"
+        },
+        {
+          "path": "doc/evidence/n12-d2/cleanup-preflight.json"
+        },
+        {
+          "path": "doc/evidence/n12-d2/d1-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n12-d2/emulator-stopped.json"
+        },
+        {
+          "path": "doc/evidence/n12-d2/recovery-verification-complete.txt"
+        },
+        {
+          "path": "doc/evidence/n12-d3/cleanup-dry-run.txt"
+        },
+        {
+          "path": "doc/evidence/n12-d3/cleanup-execute.txt"
+        },
+        {
+          "path": "doc/evidence/n12-d3/cleanup-result.json"
+        },
+        {
+          "path": "doc/evidence/n12-d3/closure.md"
+        },
+        {
+          "path": "doc/evidence/n12-d3/d2-independent-review.md"
+        },
+        {
+          "path": "doc/evidence/n12-d3/originals-after-cleanup.json"
+        },
+        {
+          "path": "doc/evidence/n12-late-turing-compatibility.json"
+        },
+        {
+          "path": "doc/evidence/n12-late-turing-observation.md"
+        },
+        {
+          "path": "doc/evidence/n12-late-turing-probe.cjs"
+        },
+        {
+          "path": "doc/evidence/n12-old-reader-compatibility-probe.cjs"
+        },
+        {
+          "path": "doc/evidence/n12-old-reader-compatibility-probe.json"
+        },
+        {
+          "path": "doc/evidence/n12-originals-cleanup-baselines.json"
+        },
+        {
+          "path": "doc/evidence/n12-originals-late-observation.json"
+        },
+        {
+          "path": "doc/evidence/n12-resource-release.md"
+        },
+        {
+          "path": "doc/evidence/n12-review.md"
+        },
+        {
+          "path": "doc/evidence/n12-watch-report.json"
+        },
+        {
+          "path": "doc/开源就绪度审计-v0.4.1.md"
+        },
+        {
+          "path": "doc/测试报告-v0.4.1.md"
+        },
+        {
+          "path": "doc/版本待办清单.md"
+        },
+        {
+          "path": "dynamic-sources.lock.json"
+        },
+        {
+          "path": "dynamic-upstreams.lock.json"
+        },
+        {
+          "path": "examples/abelian-sandpile/index.html"
+        },
+        {
+          "path": "examples/abelian-sandpile/upstream-source.json"
+        },
+        {
+          "path": "resource-releases.lock.json"
+        },
+        {
+          "path": "resource-sources.lock.json"
+        },
+        {
+          "path": "scripts/archive-n12.ps1"
+        },
+        {
+          "path": "scripts/cleanup-n10.ps1"
+        },
+        {
+          "path": "scripts/cleanup-n12.ps1"
+        },
+        {
+          "path": "scripts/publish-resource-successor.ps1"
+        },
+        {
+          "path": "scripts/publish-resource-v1-successor.ps1"
+        },
+        {
+          "path": "scripts/upstream-watch.mjs"
+        },
+        {
+          "path": "scripts/verify-n12-offline.ps1"
+        },
+        {
+          "path": "scripts/verify-n12-recovery.ps1"
+        },
+        {
+          "path": "tests/upstream-watch.test.mjs"
+        }
+      ]
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "repository": "xiaoxuhui/conway-life-game",
+    "checkedAt": "2026-10-11T21:26:20.424Z",
+    "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+    "invocationRevision": null,
+    "artifactKinds": [
+      "web",
+      "game-apk",
+      "hall-resource-source"
+    ],
+    "publication": {
+      "status": "blocked",
+      "reason": "release-contract-not-configured",
+      "attempted": false
+    },
+    "status": "checked",
+    "errors": [],
+    "private": false,
+    "defaultBranch": "main",
+    "defaultRevision": "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be",
+    "release": {
+      "status": "formal-release",
+      "tag": "v0.17.0",
+      "revision": "38df33b193fee838522c024d40987d867ceab845",
+      "publishedAt": "2026-09-28T14:15:38Z",
+      "url": "https://github.com/xiaoxuhui/conway-life-game/releases/tag/v0.17.0"
+    },
+    "change": {
+      "status": "source-change-pending-contract",
+      "files": [
+        {
+          "path": "README.md"
+        },
+        {
+          "path": "docs/record-export-delete-plan.md"
+        },
+        {
+          "path": "docs/requirements.md"
+        },
+        {
+          "path": "docs/technical-design.md"
+        },
+        {
+          "path": "docs/安卓发版核对报告-v0.17.0.md"
+        },
+        {
+          "path": "docs/安卓打包实施计划.md"
+        },
+        {
+          "path": "e2e/bulk-export-delete.spec.js"
+        },
+        {
+          "path": "e2e/bulk-import.spec.js"
+        },
+        {
+          "path": "e2e/record-export-delete.spec.js"
+        },
+        {
+          "path": "index.html"
+        },
+        {
+          "path": "package.json"
+        },
+        {
+          "path": "scripts/app.js"
+        },
+        {
+          "path": "scripts/dialogs.js"
+        },
+        {
+          "path": "scripts/file-backup.js"
+        },
+        {
+          "path": "scripts/record-import.js"
+        },
+        {
+          "path": "styles/main.css"
+        },
+        {
+          "path": "tests/file-backup.test.js"
+        },
+        {
+          "path": "tests/record-import.test.js"
+        },
+        {
+          "path": "tests/static-app.test.js"
+        }
+      ]
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "repository": "xiaoxuhui/EML",
+    "checkedAt": "2026-10-11T21:26:22.857Z",
+    "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+    "invocationRevision": null,
+    "artifactKinds": [
+      "web",
+      "game-apk",
+      "hall-resource-source"
+    ],
+    "publication": {
+      "status": "blocked",
+      "reason": "release-contract-not-configured",
+      "attempted": false
+    },
+    "status": "checked",
+    "errors": [],
+    "private": false,
+    "defaultBranch": "main",
+    "defaultRevision": "327789afdad36d9ed9c593c09adff7f9fa855444",
+    "release": {
+      "status": "formal-release",
+      "tag": "v1.3.1",
+      "revision": "327789afdad36d9ed9c593c09adff7f9fa855444",
+      "publishedAt": "2026-10-11T21:13:08Z",
+      "url": "https://github.com/xiaoxuhui/EML/releases/tag/v1.3.1"
+    },
+    "change": {
+      "status": "same-revision"
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "repository": "xiaoxuhui/light_game",
+    "checkedAt": "2026-10-11T21:26:24.616Z",
+    "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+    "invocationRevision": null,
+    "artifactKinds": [
+      "web",
+      "game-apk",
+      "hall-resource-source"
+    ],
+    "publication": {
+      "status": "blocked",
+      "reason": "release-contract-not-configured",
+      "attempted": false
+    },
+    "status": "checked",
+    "errors": [],
+    "private": false,
+    "defaultBranch": "main",
+    "defaultRevision": "5b89d598a131ff9680363a02d4749a94181413bf",
+    "release": {
+      "status": "formal-release",
+      "tag": "v1.2.1",
+      "revision": "85163534ccae2b023928c877e002581a8f35f0cb",
+      "publishedAt": "2026-10-01T04:59:03Z",
+      "url": "https://github.com/xiaoxuhui/light_game/releases/tag/v1.2.1"
+    },
+    "change": {
+      "status": "documentation-change",
+      "files": [
+        {
+          "path": "doc/安卓打包实施计划.md"
+        },
+        {
+          "path": "doc/安卓真机验证记录-v1.2.0.md"
+        },
+        {
+          "path": "doc/安卓真机验证记录-v1.2.1.md"
+        },
+        {
+          "path": "doc/安卓真机验证记录.md"
+        },
+        {
+          "path": "doc/实施计划.md"
+        }
+      ]
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "repository": "xiaoxuhui/turing-machine-simulator",
+    "checkedAt": "2026-10-11T21:26:27.408Z",
+    "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+    "invocationRevision": null,
+    "artifactKinds": [
+      "web",
+      "game-apk",
+      "hall-resource-source"
+    ],
+    "publication": {
+      "status": "blocked",
+      "reason": "release-contract-not-configured",
+      "attempted": false
+    },
+    "status": "checked",
+    "errors": [],
+    "private": false,
+    "defaultBranch": "main",
+    "defaultRevision": "c3047285ea5209964b268e479dad6f449dfe9bf4",
+    "release": {
+      "status": "formal-release",
+      "tag": "v0.6.0",
+      "revision": "cea23ffb6a3b01ec2a386363d98a427c2a2c564b",
+      "publishedAt": "2026-10-11T21:19:23Z",
+      "url": "https://github.com/xiaoxuhui/turing-machine-simulator/releases/tag/v0.6.0"
+    },
+    "change": {
+      "status": "documentation-change",
+      "files": [
+        {
+          "path": "doc/实施计划-v0.6.0发布.md"
+        },
+        {
+          "path": "doc/测试报告-v0.6.0发布.md"
+        },
+        {
+          "path": "doc/设计文档-v0.6.0发布.md"
+        }
+      ]
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "repository": "xiaoxuhui/abelian-sandpile",
+    "checkedAt": "2026-10-11T21:26:29.677Z",
+    "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+    "invocationRevision": null,
+    "artifactKinds": [
+      "web",
+      "game-apk",
+      "hall-resource-source"
+    ],
+    "publication": {
+      "status": "blocked",
+      "reason": "release-contract-not-configured",
+      "attempted": false
+    },
+    "status": "checked",
+    "errors": [],
+    "private": false,
+    "defaultBranch": "main",
+    "defaultRevision": "c4290283b1109e13e37d6f696b83fefd3b7a6855",
+    "release": {
+      "status": "no-release"
+    },
+    "change": {
+      "status": "initial-release-contract-required"
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "repository": "xiaoxuhui/lambda-diagram-game",
+    "checkedAt": "2026-10-11T21:26:30.948Z",
+    "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+    "invocationRevision": null,
+    "artifactKinds": [
+      "web",
+      "game-apk",
+      "hall-resource-source"
+    ],
+    "publication": {
+      "status": "blocked",
+      "reason": "release-contract-not-configured",
+      "attempted": false
+    },
+    "status": "checked",
+    "errors": [],
+    "private": false,
+    "defaultBranch": "master",
+    "defaultRevision": "bc3586d3b2cf28d06b0b48bd952483bf86f19385",
+    "release": {
+      "status": "formal-release",
+      "tag": "v0.3.2",
+      "revision": "2d1947aaa6721878d8e68c70f270910d716e6a83",
+      "publishedAt": "2026-10-11T21:13:26Z",
+      "url": "https://github.com/xiaoxuhui/lambda-diagram-game/releases/tag/v0.3.2"
+    },
+    "change": {
+      "status": "documentation-change",
+      "files": [
+        {
+          "path": "doc/安卓升级发布计划-v0.3.2.md"
+        },
+        {
+          "path": "doc/安卓发版核对报告-v0.3.2.md"
+        },
+        {
+          "path": "doc/开源发布审计-v0.3.2.md"
+        }
+      ]
+    }
+  }
+]
