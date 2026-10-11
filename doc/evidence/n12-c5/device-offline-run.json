@@ -1,0 +1,31 @@
+{
+  "startedAtUtc": "2026-10-11T18:32:03.1956177Z",
+  "serial": "emulator-5566",
+  "avd": "gamehub-n12-20261012",
+  "producer": "2afbda179f8924d57e029d5cdddb0ca416729c90",
+  "networkCommands": [
+    "svc wifi disable",
+    "svc data disable"
+  ],
+  "originalNetwork": {
+    "wifiService": "1",
+    "dataService": "0",
+    "wifi": "1",
+    "data": "1"
+  },
+  "restoredNetwork": {
+    "wifiService": "1",
+    "dataService": "0",
+    "wifi": "1",
+    "data": "1"
+  },
+  "restorationErrors": [],
+  "restorationCompleted": true,
+  "acceptancePassed": true,
+  "oldPid": "3492",
+  "newPid": "3554",
+  "oldProcessAbsent": true,
+  "actualDefaultNetworkNullAssertedByController": true,
+  "result": "PASS",
+  "completedAtUtc": "2026-10-11T18:32:33.1609445Z"
+}

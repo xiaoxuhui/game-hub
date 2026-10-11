@@ -1,0 +1,30 @@
+[
+  {
+    "sha256": "9d4f4387f664900d3d1c52c4170b19c30be0fc5f198766b1fcd6e767fd84ebf5",
+    "sourceRevision": "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be",
+    "bundle": "upstream-conway.bundle",
+    "bytes": 2927060,
+    "repository": "conway"
+  },
+  {
+    "sha256": "31fa356709c8f52df766c302bb22f2da6b0846c14e5071bb3134a07205e9a278",
+    "sourceRevision": "76cdd75bc26fc7d1dc23a2a4b19e74857c9c430c",
+    "bundle": "upstream-eml.bundle",
+    "bytes": 3404605,
+    "repository": "eml"
+  },
+  {
+    "sha256": "355a5c37a385f12b26e4561642222030dd6d08fbc3371fcf41f39b4a193a7c07",
+    "sourceRevision": "c4290283b1109e13e37d6f696b83fefd3b7a6855",
+    "bundle": "upstream-abelian-sandpile.bundle",
+    "bytes": 3433264,
+    "repository": "abelian-sandpile"
+  },
+  {
+    "sha256": "f20118932ad7d6fce56424242b96f1713e8f13e427993384463994af7844ba05",
+    "sourceRevision": "5f5ec5561be70716c22be62797c808aa0db9a960",
+    "bundle": "upstream-lambda-diagram-game.bundle",
+    "bytes": 486770,
+    "repository": "lambda-diagram-game"
+  }
+]

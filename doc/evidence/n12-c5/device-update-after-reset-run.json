@@ -1,0 +1,8 @@
+{
+  "serial": "emulator-5566",
+  "startedAtUtc": "2026-10-11T18:31:22.2307615Z",
+  "note": "Retain all seeded data; wait for actual server rate-limit reset.",
+  "mode": "update",
+  "source": "2afbda179f8924d57e029d5cdddb0ca416729c90",
+  "avd": "gamehub-n12-20261012"
+}

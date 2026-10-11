@@ -25,3 +25,5 @@
 - C4追加独立离线执行脚本：在线update真实OK后才允许执行，固定本轮AVD，真实关WiFi/data，记录旧PID/force-stop消失/新PID；未注入网络或资源状态，原控制器检查activeNetwork=null与新code/旧存档。finally恢复自己的网络。仅语法解析已过，提交后独立复审待执行，未冒称已运行成功。
 - C4脚本61be3271ec6320fa2d089712f8d22d9338dc5b25，review_p0初审OPEN：finally先写PASS再恢复，且双开会改变原开关。批改为断网前读取实际WiFi service及wifi_on/mobile_data开关、finally逐项按原值恢复并复核；恢复失败写FAIL和errors，全部完成才写终态。语法解析与diff --check通过，真实执行仍待。
 - C4批改296992c04c5c7e3d73888540b1a116f60bd3d40e复审仍OPEN：global mobile_data不是telephony实际开关，旧N5和本轮只读AVD均验证global=1/actual=false。追加读取唯一mUserMobileDataState，按实际service原值恢复，终态同时核对原global值及WiFi/mobile实际服务；超时先停止自己的仪器目标进程再恢复网络。语法与diff --check通过，待复审。
+- C4第2批改a8ccc9f690b4941e0967bbb20b2b672ffbfaf7fe，review_p0只读复审CLOSED：完整补丁、实际service恢复/错误终态、own AVD超时停止链路正确，精确HEAD/远端与空工作树确认；详细记录见n12-c5/c4-independent-review.md，CI38163226798success。
+- C5沿用同一seed安装，在02:31:22真实update29.2s PASS，02:32:03真实offline19.606s PASS；旧PID3492→新3554、actualNetwork=null、code2/完整来源与旧存档/无关键保持，恢复原实际网络状态已复核。公开规范化日志、原始/公开双SHA清单及完整运行记录入n12-c5，提交后独立复审待执行，D尚未清理。
