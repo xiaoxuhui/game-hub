@@ -22,7 +22,12 @@ function Read-N12Network {
     if($LASTEXITCODE -ne 0 -or $status -notmatch '(?m)^Wifi is (enabled|disabled)\s*$'){throw 'Cannot read actual WiFi service state'}
     $service=if($Matches[1] -ceq 'enabled'){'1'}else{'0'}
     if($service -cne $wifi){throw 'WiFi service is transitioning; refusing ambiguous state'}
-    return @{wifi=$wifi;data=$data;wifiService=$service}
+    $mobile=@(& $n12Adb -s $n12Serial shell dumpsys telephony.registry)
+    if($LASTEXITCODE -ne 0){throw 'Cannot read actual mobile-data service state'}
+    $mobileState=@($mobile | Where-Object {$_ -match '^\s*mUserMobileDataState=\s*(true|false)\s*$'})
+    if($mobileState.Count -ne 1){throw 'Ambiguous actual mobile-data service state'}
+    $dataService=if($mobileState[0] -match 'true\s*$'){'1'}else{'0'}
+    return @{wifi=$wifi;data=$data;wifiService=$service;dataService=$dataService}
 }
 $n12Original=Read-N12Network
 $n12Record=[ordered]@{startedAtUtc=[DateTime]::UtcNow.ToString('o');serial=$n12Serial;avd='gamehub-n12-20261012';producer='2afbda179f8924d57e029d5cdddb0ca416729c90';networkCommands=@('svc wifi disable','svc data disable');originalNetwork=$n12Original;restoredNetwork=$null;restorationErrors=@();restorationCompleted=$false;acceptancePassed=$false;oldPid=$null;newPid=$null;oldProcessAbsent=$false;actualDefaultNetworkNullAssertedByController=$false;result='PENDING'}
@@ -47,7 +52,7 @@ try {
     while(-not $n12Run.HasExited){
         $n12NewPid=((& $n12Adb -s $n12Serial shell pidof $n12Package) -join '').Trim()
         if($n12NewPid -match '^\d+$' -and $n12NewPid -cne $n12OldPid){$n12Record.newPid=$n12NewPid}
-        if([DateTime]::UtcNow -gt $n12Deadline){$n12Run.Kill();throw 'Owned offline instrument exceeded four minutes'}
+        if([DateTime]::UtcNow -gt $n12Deadline){Assert-N12Emulator;Invoke-N12Adb -Arguments @('shell','am','force-stop',$n12Package);$n12Run.Kill();$n12Run.WaitForExit();throw 'Owned offline instrument exceeded four minutes'}
         Start-Sleep -Milliseconds 300
         $n12Run.Refresh()
     }
@@ -63,7 +68,8 @@ try {
         Assert-N12Emulator
         foreach($n12Service in @('wifi','data')){
             try {
-                $n12Action=if($n12Original[$n12Service] -ceq '1'){'enable'}else{'disable'}
+                $n12ServiceKey=$n12Service+'Service'
+                $n12Action=if($n12Original[$n12ServiceKey] -ceq '1'){'enable'}else{'disable'}
                 Invoke-N12Adb -Arguments @('shell','svc',$n12Service,$n12Action)
             } catch {$n12Record.restorationErrors+=($_.Exception.Message+': '+$n12Service)}
         }
@@ -72,7 +78,7 @@ try {
             try {
                 $n12Restored=Read-N12Network
                 $n12Record.restoredNetwork=$n12Restored
-                if($n12Restored.wifi -ceq $n12Original.wifi -and $n12Restored.data -ceq $n12Original.data){$n12Record.restorationCompleted=$true;break}
+                if($n12Restored.wifi -ceq $n12Original.wifi -and $n12Restored.data -ceq $n12Original.data -and $n12Restored.wifiService -ceq $n12Original.wifiService -and $n12Restored.dataService -ceq $n12Original.dataService){$n12Record.restorationCompleted=$true;break}
             } catch {$n12LastRestoreError=$_.Exception.Message}
             Start-Sleep -Milliseconds 300
         } while([DateTime]::UtcNow -lt $n12RestoreDeadline)

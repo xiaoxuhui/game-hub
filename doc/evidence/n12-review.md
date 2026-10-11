@@ -24,3 +24,4 @@
 - C3批改32d9e17b757c409d58aee4aea8215ff3c32f1556，review_p1复审CLOSED：正式DER离线验签、2afb八ZIP完整SHA/size、9目录/14 ZIP历史、正式失败原始SHA均匹配；七原仓未变，只有发行证据切片关闭，C整体仍待实测。
 - C4追加独立离线执行脚本：在线update真实OK后才允许执行，固定本轮AVD，真实关WiFi/data，记录旧PID/force-stop消失/新PID；未注入网络或资源状态，原控制器检查activeNetwork=null与新code/旧存档。finally恢复自己的网络。仅语法解析已过，提交后独立复审待执行，未冒称已运行成功。
 - C4脚本61be3271ec6320fa2d089712f8d22d9338dc5b25，review_p0初审OPEN：finally先写PASS再恢复，且双开会改变原开关。批改为断网前读取实际WiFi service及wifi_on/mobile_data开关、finally逐项按原值恢复并复核；恢复失败写FAIL和errors，全部完成才写终态。语法解析与diff --check通过，真实执行仍待。
+- C4批改296992c04c5c7e3d73888540b1a116f60bd3d40e复审仍OPEN：global mobile_data不是telephony实际开关，旧N5和本轮只读AVD均验证global=1/actual=false。追加读取唯一mUserMobileDataState，按实际service原值恢复，终态同时核对原global值及WiFi/mobile实际服务；超时先停止自己的仪器目标进程再恢复网络。语法与diff --check通过，待复审。
