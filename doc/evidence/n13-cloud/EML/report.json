@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "repository": "xiaoxuhui/EML",
+  "checkedAt": "2026-10-11T21:33:29.601Z",
+  "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+  "invocationRevision": "6a1cfc4b7ab5655a28e474a944e6c57aec2babd4",
+  "artifactKinds": [
+    "web",
+    "game-apk",
+    "hall-resource-source"
+  ],
+  "publication": {
+    "status": "blocked",
+    "reason": "release-contract-not-configured",
+    "attempted": false
+  },
+  "status": "checked",
+  "errors": [],
+  "private": false,
+  "defaultBranch": "main",
+  "defaultRevision": "6a1cfc4b7ab5655a28e474a944e6c57aec2babd4",
+  "release": {
+    "status": "formal-release",
+    "tag": "v1.3.1",
+    "revision": "327789afdad36d9ed9c593c09adff7f9fa855444",
+    "publishedAt": "2026-10-11T21:13:08Z",
+    "url": "https://github.com/xiaoxuhui/EML/releases/tag/v1.3.1"
+  },
+  "change": {
+    "status": "source-change-pending-contract",
+    "files": [
+      {
+        "path": ".github/workflows/daily-maintenance.yml"
+      }
+    ]
+  }
+}

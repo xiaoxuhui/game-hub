@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "repository": "xiaoxuhui/lambda-diagram-game",
+  "checkedAt": "2026-10-11T21:33:44.524Z",
+  "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+  "invocationRevision": "fd0be3741c537454a7f16a38354359ba36973d6c",
+  "artifactKinds": [
+    "web",
+    "game-apk",
+    "hall-resource-source"
+  ],
+  "publication": {
+    "status": "blocked",
+    "reason": "release-contract-not-configured",
+    "attempted": false
+  },
+  "status": "checked",
+  "errors": [],
+  "private": false,
+  "defaultBranch": "master",
+  "defaultRevision": "fd0be3741c537454a7f16a38354359ba36973d6c",
+  "release": {
+    "status": "formal-release",
+    "tag": "v0.3.2",
+    "revision": "2d1947aaa6721878d8e68c70f270910d716e6a83",
+    "publishedAt": "2026-10-11T21:13:26Z",
+    "url": "https://github.com/xiaoxuhui/lambda-diagram-game/releases/tag/v0.3.2"
+  },
+  "change": {
+    "status": "source-change-pending-contract",
+    "files": [
+      {
+        "path": ".github/workflows/daily-maintenance.yml"
+      },
+      {
+        "path": "doc/安卓升级发布计划-v0.3.2.md"
+      },
+      {
+        "path": "doc/安卓发版核对报告-v0.3.2.md"
+      },
+      {
+        "path": "doc/开源发布审计-v0.3.2.md"
+      }
+    ]
+  }
+}

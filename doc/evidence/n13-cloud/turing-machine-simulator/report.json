@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "repository": "xiaoxuhui/turing-machine-simulator",
+  "checkedAt": "2026-10-11T21:33:36.087Z",
+  "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+  "invocationRevision": "c54f38324f831c5ff5fbc19faf6fd910e984ca84",
+  "artifactKinds": [
+    "web",
+    "game-apk",
+    "hall-resource-source"
+  ],
+  "publication": {
+    "status": "blocked",
+    "reason": "release-contract-not-configured",
+    "attempted": false
+  },
+  "status": "checked",
+  "errors": [],
+  "private": false,
+  "defaultBranch": "main",
+  "defaultRevision": "c54f38324f831c5ff5fbc19faf6fd910e984ca84",
+  "release": {
+    "status": "formal-release",
+    "tag": "v0.6.0",
+    "revision": "cea23ffb6a3b01ec2a386363d98a427c2a2c564b",
+    "publishedAt": "2026-10-11T21:19:23Z",
+    "url": "https://github.com/xiaoxuhui/turing-machine-simulator/releases/tag/v0.6.0"
+  },
+  "change": {
+    "status": "source-change-pending-contract",
+    "files": [
+      {
+        "path": ".github/workflows/daily-maintenance.yml"
+      },
+      {
+        "path": "doc/实施计划-v0.6.0发布.md"
+      },
+      {
+        "path": "doc/测试报告-v0.6.0发布.md"
+      },
+      {
+        "path": "doc/设计文档-v0.6.0发布.md"
+      }
+    ]
+  }
+}

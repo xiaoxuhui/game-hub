@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "repository": "xiaoxuhui/abelian-sandpile",
+  "checkedAt": "2026-10-11T21:33:39.730Z",
+  "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+  "invocationRevision": "6db1198ed878b502b4e6e6bae1f49ceb4ef7b3ba",
+  "artifactKinds": [
+    "web",
+    "game-apk",
+    "hall-resource-source"
+  ],
+  "publication": {
+    "status": "blocked",
+    "reason": "release-contract-not-configured",
+    "attempted": false
+  },
+  "status": "checked",
+  "errors": [],
+  "private": false,
+  "defaultBranch": "main",
+  "defaultRevision": "6db1198ed878b502b4e6e6bae1f49ceb4ef7b3ba",
+  "release": {
+    "status": "no-release"
+  },
+  "change": {
+    "status": "initial-release-contract-required"
+  }
+}

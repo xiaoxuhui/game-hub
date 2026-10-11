@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "repository": "xiaoxuhui/light_game",
+  "checkedAt": "2026-10-11T21:33:31.565Z",
+  "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+  "invocationRevision": "4a789cd6a43bcbb4db1e481c5cf9ae3896b89d7f",
+  "artifactKinds": [
+    "web",
+    "game-apk",
+    "hall-resource-source"
+  ],
+  "publication": {
+    "status": "blocked",
+    "reason": "release-contract-not-configured",
+    "attempted": false
+  },
+  "status": "checked",
+  "errors": [],
+  "private": false,
+  "defaultBranch": "main",
+  "defaultRevision": "4a789cd6a43bcbb4db1e481c5cf9ae3896b89d7f",
+  "release": {
+    "status": "formal-release",
+    "tag": "v1.2.1",
+    "revision": "85163534ccae2b023928c877e002581a8f35f0cb",
+    "publishedAt": "2026-10-01T04:59:03Z",
+    "url": "https://github.com/xiaoxuhui/light_game/releases/tag/v1.2.1"
+  },
+  "change": {
+    "status": "source-change-pending-contract",
+    "files": [
+      {
+        "path": ".github/workflows/daily-maintenance.yml"
+      },
+      {
+        "path": "doc/安卓打包实施计划.md"
+      },
+      {
+        "path": "doc/安卓真机验证记录-v1.2.0.md"
+      },
+      {
+        "path": "doc/安卓真机验证记录-v1.2.1.md"
+      },
+      {
+        "path": "doc/安卓真机验证记录.md"
+      },
+      {
+        "path": "doc/实施计划.md"
+      }
+    ]
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "repository": "xiaoxuhui/conway-life-game",
+  "checkedAt": "2026-10-11T21:33:24.674Z",
+  "implementationRevision": "450432e130976320de469fa4dff9c0a1a33381cb",
+  "invocationRevision": "f1e357f2a1c2618241ed58985101da6beb00d263",
+  "artifactKinds": [
+    "web",
+    "game-apk",
+    "hall-resource-source"
+  ],
+  "publication": {
+    "status": "blocked",
+    "reason": "release-contract-not-configured",
+    "attempted": false
+  },
+  "status": "checked",
+  "errors": [],
+  "private": false,
+  "defaultBranch": "main",
+  "defaultRevision": "f1e357f2a1c2618241ed58985101da6beb00d263",
+  "release": {
+    "status": "formal-release",
+    "tag": "v0.17.0",
+    "revision": "38df33b193fee838522c024d40987d867ceab845",
+    "publishedAt": "2026-09-28T14:15:38Z",
+    "url": "https://github.com/xiaoxuhui/conway-life-game/releases/tag/v0.17.0"
+  },
+  "change": {
+    "status": "source-change-pending-contract",
+    "files": [
+      {
+        "path": ".github/workflows/daily-maintenance.yml"
+      },
+      {
+        "path": "README.md"
+      },
+      {
+        "path": "docs/record-export-delete-plan.md"
+      },
+      {
+        "path": "docs/requirements.md"
+      },
+      {
+        "path": "docs/technical-design.md"
+      },
+      {
+        "path": "docs/安卓发版核对报告-v0.17.0.md"
+      },
+      {
+        "path": "docs/安卓打包实施计划.md"
+      },
+      {
+        "path": "e2e/bulk-export-delete.spec.js"
+      },
+      {
+        "path": "e2e/bulk-import.spec.js"
+      },
+      {
+        "path": "e2e/record-export-delete.spec.js"
+      },
+      {
+        "path": "index.html"
+      },
+      {
+        "path": "package.json"
+      },
+      {
+        "path": "scripts/app.js"
+      },
+      {
+        "path": "scripts/dialogs.js"
+      },
+      {
+        "path": "scripts/file-backup.js"
+      },
+      {
+        "path": "scripts/record-import.js"
+      },
+      {
+        "path": "styles/main.css"
+      },
+      {
+        "path": "tests/file-backup.test.js"
+      },
+      {
+        "path": "tests/record-import.test.js"
+      },
+      {
+        "path": "tests/static-app.test.js"
+      }
+    ]
+  }
+}
