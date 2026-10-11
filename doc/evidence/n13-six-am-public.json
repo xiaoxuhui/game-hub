@@ -1,0 +1,98 @@
+[
+  {
+    "repository": "game-hub",
+    "private": false,
+    "branch": "main",
+    "sourceRevision": "f8629f48d0a4fd1817cedd1b7452a222b0ffca86",
+    "path": ".github/workflows/daily-maintenance.yml",
+    "blobSha": "bf00ee2f04f22fc1fa3893dc2e93b9b94b7af472",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:48.7916667Z",
+    "remoteEqualsLocal": true
+  },
+  {
+    "repository": "game-hub",
+    "private": false,
+    "branch": "main",
+    "sourceRevision": "f8629f48d0a4fd1817cedd1b7452a222b0ffca86",
+    "path": ".github/workflows/upstream-watch.yml",
+    "blobSha": "04cba1110cc1d934e04c5981d8a769467297df9b",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:49.6537506Z",
+    "remoteEqualsLocal": true
+  },
+  {
+    "repository": "conway-life-game",
+    "private": false,
+    "branch": "main",
+    "sourceRevision": "be1fca17cbe9385de1cc053bb9b1b3e8ba5420c5",
+    "path": ".github/workflows/daily-maintenance.yml",
+    "blobSha": "bf00ee2f04f22fc1fa3893dc2e93b9b94b7af472",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:50.5187662Z",
+    "remoteEqualsLocal": true
+  },
+  {
+    "repository": "EML",
+    "private": false,
+    "branch": "main",
+    "sourceRevision": "5da3778ec8c6eff65108c88112df1f21bdbe7a56",
+    "path": ".github/workflows/daily-maintenance.yml",
+    "blobSha": "bf00ee2f04f22fc1fa3893dc2e93b9b94b7af472",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:51.4577949Z",
+    "remoteEqualsLocal": true
+  },
+  {
+    "repository": "light_game",
+    "private": false,
+    "branch": "main",
+    "sourceRevision": "6adff61adfddae5c2ee38f41b18934570dce3423",
+    "path": ".github/workflows/daily-maintenance.yml",
+    "blobSha": "bf00ee2f04f22fc1fa3893dc2e93b9b94b7af472",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:52.2875802Z",
+    "remoteEqualsLocal": true
+  },
+  {
+    "repository": "turing-machine-simulator",
+    "private": false,
+    "branch": "main",
+    "sourceRevision": "cb2d33bac808372c21e845480275278de66ae2f0",
+    "path": ".github/workflows/daily-maintenance.yml",
+    "blobSha": "bf00ee2f04f22fc1fa3893dc2e93b9b94b7af472",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:53.1304909Z",
+    "remoteEqualsLocal": true
+  },
+  {
+    "repository": "abelian-sandpile",
+    "private": false,
+    "branch": "main",
+    "sourceRevision": "ed21e96e7b08a7628784ad4d0d95b9c61a2d02e6",
+    "path": ".github/workflows/daily-maintenance.yml",
+    "blobSha": "bf00ee2f04f22fc1fa3893dc2e93b9b94b7af472",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:53.9497904Z",
+    "remoteEqualsLocal": true
+  },
+  {
+    "repository": "lambda-diagram-game",
+    "private": false,
+    "branch": "master",
+    "sourceRevision": "934c303eca5601add64be2bf1aa77149865bfdcc",
+    "path": ".github/workflows/daily-maintenance.yml",
+    "blobSha": "bf00ee2f04f22fc1fa3893dc2e93b9b94b7af472",
+    "cron": "0 22 * * *",
+    "beijingTime": "06:00",
+    "verifiedAt": "2026-10-11T21:58:54.8344060Z",
+    "remoteEqualsLocal": true
+  }
+]
