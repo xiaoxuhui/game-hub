@@ -21,3 +21,5 @@
 - C2批改2afbda179f8924d57e029d5cdddb0ca416729c90，review_p0复审CLOSED；生产/发行准备review_p1再次复算12候选/24份size+SHA、8ZIP与B3相同、64/64、最终CI38158736828success、OSS30链接/治理/无私钥、七原仓相同，CLOSED仅准备范围；详细审阅归档n12-c3/prepublish-independent-review.md。
 - C3实际两通道签名公开与匿名全历史验证已完成，旧seed32.545s PASS；首次update真实匿名限流失败，实际激活/离线仍待。证据提交后独立审阅待执行，不冒称整个C阶段完成。
 - C3证据提交3dce46520af4495eefa6d54942e1ce2a41dbec90，review_p1初审OPEN：四份current/previous目录离线验签、历史9目录/14 ZIP、正式APK绑定与实际失败SHA均匹配；唯一批改为首次update摘要第2行尾空格。批改将SHA合并到标签同行，并通过diff --check；正式下载/离线仍保持待验。
+- C3批改32d9e17b757c409d58aee4aea8215ff3c32f1556，review_p1复审CLOSED：正式DER离线验签、2afb八ZIP完整SHA/size、9目录/14 ZIP历史、正式失败原始SHA均匹配；七原仓未变，只有发行证据切片关闭，C整体仍待实测。
+- C4追加独立离线执行脚本：在线update真实OK后才允许执行，固定本轮AVD，真实关WiFi/data，记录旧PID/force-stop消失/新PID；未注入网络或资源状态，原控制器检查activeNetwork=null与新code/旧存档。finally恢复自己的网络。仅语法解析已过，提交后独立复审待执行，未冒称已运行成功。
