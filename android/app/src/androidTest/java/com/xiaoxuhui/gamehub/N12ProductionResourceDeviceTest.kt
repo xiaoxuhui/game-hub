@@ -1,5 +1,7 @@
 package com.xiaoxuhui.gamehub
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.SystemClock
 import android.webkit.WebView
@@ -34,6 +36,10 @@ class N12ProductionResourceDeviceTest {
         Assume.assumeTrue("Explicit N12 formal-host controller", mode != null)
         require(mode in setOf("seed", "update", "offline"))
         val ctx = inst.targetContext
+        if (mode == "offline") {
+            val network = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            assertNull("Offline run requires actual absence of a default network", network.activeNetwork)
+        }
         assertEquals("0.4.1", ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName)
         val apkSha = MessageDigest.getInstance("SHA-256").digest(File(ctx.applicationInfo.sourceDir).readBytes()).joinToString("") { "%02x".format(it) }
         assertEquals("9f57c90af42efea54e4e079d637d964346a78e7e880493eac7887f9aaac323da", apkSha)
