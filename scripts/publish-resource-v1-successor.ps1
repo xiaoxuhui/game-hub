@@ -3,12 +3,16 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('n10')][string]$TaskScope='n10',
+    [ValidateSet('n10','n12')][string]$TaskScope='n10',
     [switch]$ResumeAfterUploads
 )
 $ErrorActionPreference='Stop'
 $taskCheckout='D:\soft\.ci-tmp\game-hub-n10\work'
 $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n10\evidence\publication'
+if($TaskScope -ieq 'n12'){
+    $taskCheckout='D:\soft\.ci-tmp\game-hub-n12\work'
+    $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n12\evidence\publication'
+}
 $taskApi='https://api.github.com/repos/xiaoxuhui/game-hub'
 $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resource-successor';'X-GitHub-Api-Version'='2022-11-28'}
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null

@@ -1,0 +1,2 @@
+scripts\publish-resource-v1-successor.ps1 syntax PASS; other-task scope rejected before producer/credentials
+scripts\publish-resource-successor.ps1 syntax PASS; other-task scope rejected before producer/credentials

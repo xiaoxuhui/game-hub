@@ -1,0 +1,81 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+> Task :app:buildKotlinToolingMetadata
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:checkReleaseAarMetadata
+> Task :app:generateReleaseResValues FROM-CACHE
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources FROM-CACHE
+> Task :app:mergeReleaseResources FROM-CACHE
+> Task :app:packageReleaseResources FROM-CACHE
+> Task :app:parseReleaseLocalResources FROM-CACHE
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease FROM-CACHE
+> Task :app:processReleaseMainManifest FROM-CACHE
+> Task :app:processReleaseManifest FROM-CACHE
+> Task :app:processReleaseManifestForPackage FROM-CACHE
+> Task :app:processReleaseResources FROM-CACHE
+> Task :app:compileReleaseKotlin FROM-CACHE
+> Task :app:javaPreCompileRelease FROM-CACHE
+> Task :app:compileReleaseJavaWithJavac NO-SOURCE
+> Task :app:preReleaseAndroidTestBuild SKIPPED
+> Task :app:checkReleaseAndroidTestAarMetadata
+> Task :app:generateReleaseAndroidTestResValues FROM-CACHE
+> Task :app:mapReleaseAndroidTestSourceSetPaths
+> Task :app:generateReleaseAndroidTestResources FROM-CACHE
+> Task :app:bundleReleaseClassesToCompileJar
+> Task :app:mergeReleaseAndroidTestResources FROM-CACHE
+> Task :app:processReleaseAndroidTestManifest
+> Task :app:processReleaseAndroidTestResources FROM-CACHE
+> Task :app:javaPreCompileReleaseAndroidTest FROM-CACHE
+> Task :app:mergeReleaseAndroidTestShaders
+> Task :app:compileReleaseAndroidTestShaders NO-SOURCE
+> Task :app:generateReleaseAndroidTestAssets UP-TO-DATE
+> Task :app:mergeReleaseAndroidTestAssets
+> Task :app:compressReleaseAndroidTestAssets FROM-CACHE
+> Task :app:desugarReleaseAndroidTestFileDependencies FROM-CACHE
+> Task :app:mergeReleaseAndroidTestJniLibFolders
+> Task :app:checkReleaseAndroidTestDuplicateClasses
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeExtDexReleaseAndroidTest FROM-CACHE
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:mergeReleaseAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripReleaseAndroidTestDebugSymbols NO-SOURCE
+> Task :app:writeReleaseAndroidTestSigningConfigVersions
+> Task :app:compileReleaseAndroidTestKotlin
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DocumentExportTest.kt:104:32 Variable 'text' initializer is redundant
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicDemoDeviceTest.kt:82:71 Variable 'text' initializer is redundant
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicDemoDeviceTest.kt:126:49 Variable 'saved' initializer is redundant
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:152:21 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:153:28 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:154:57 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:154:106 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:158:53 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:158:102 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:159:59 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/DynamicOriginWebViewTest.kt:161:31 Elvis operator (?:) always returns the left operand of non-nullable type WebView?
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ProductionHallUpdateDeviceTest.kt:79:96 Unnecessary safe call on a non-null receiver of type UpstreamCheck?
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceProcessRecoveryTest.kt:154:65 Unnecessary non-null assertion (!!) on a non-null receiver of type ResourceGame
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceWebViewTest.kt:132:24 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceWebViewTest.kt:134:54 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceWebViewTest.kt:135:45 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceWebViewTest.kt:139:45 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceWebViewTest.kt:140:53 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/ResourceWebViewTest.kt:141:57 Unnecessary non-null assertion (!!) on a non-null receiver of type WebView
+w: file:///D:/soft/.ci-tmp/game-hub-n12/work/android/app/src/androidTest/java/com/xiaoxuhui/gamehub/UpdateFixtureTest.kt:25:29 'ACTION_INSTALL_PACKAGE: String' is deprecated. Deprecated in Java
+
+> Task :app:compileReleaseAndroidTestJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderReleaseAndroidTest
+> Task :app:mergeReleaseAndroidTestGlobalSynthetics FROM-CACHE
+> Task :app:processReleaseAndroidTestJavaRes
+> Task :app:mergeReleaseAndroidTestJavaResource
+> Task :app:mergeDexReleaseAndroidTest
+> Task :app:packageReleaseAndroidTest
+> Task :app:createReleaseAndroidTestApkListingFileRedirect
+> Task :app:assembleReleaseAndroidTest
+
+BUILD SUCCESSFUL in 1m 34s
+43 actionable tasks: 22 executed, 21 from cache
