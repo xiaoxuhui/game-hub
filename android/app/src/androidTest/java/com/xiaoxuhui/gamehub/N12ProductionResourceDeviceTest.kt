@@ -48,6 +48,13 @@ class N12ProductionResourceDeviceTest {
         val keySha = MessageDigest.getInstance("SHA-256").digest(runtime.publicKey).joinToString("") { "%02x".format(it) }
         assertEquals("649107df10ad8f48e8da1d4f992fe652a63fea448fa17dce081b87333a892673", keySha)
         val updates = UpdateCoordinator.get(ctx)
+        val startedAt = System.currentTimeMillis()
+        if (mode != "offline") {
+            waitFor("idle before settings") { !updates.snapshot().busy }
+            assertTrue(updates.settings(false, false))
+            waitFor("settings persisted") { !updates.snapshot().settingsSaving }
+        }
+        var checked = false
         val expected = mapOf(
             "conway" to ("54e9dc88bcc90f426075d16d2037c50b1f992c87f3525aa599c7d8f9bc19629f" to "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be"),
             "abelian-sandpile" to ("47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3" to "06febcbf7ae9a16ed40cb10aa6507ce6e1ceb4cc"))
@@ -55,12 +62,17 @@ class N12ProductionResourceDeviceTest {
             ActivityScenario.launch(MainActivity::class.java).use { s ->
                 // Normal setting disables automatic downloads so this explicit manual flow is observable.
                 if (mode != "offline") {
-                    waitFor("idle before settings") { !updates.snapshot().busy }
-                    assertTrue(updates.settings(false, false))
-                    waitFor("settings persisted") { !updates.snapshot().settingsSaving }
-                    waitFor("idle before public check") { !updates.snapshot().busy }
-                    assertTrue(updates.check(true))
-                    waitFor("public check completed") { !updates.snapshot().busy }
+                    if (!checked) {
+                        // The real foreground handler starts this check. Reuse this run's completed
+                        // result, never a remembered catalog, and do not query once per game.
+                        waitFor("this run's automatic public check") {
+                            val current = updates.snapshot()
+                            !current.busy && (current.resourcesCheckedAt ?: 0) >= startedAt &&
+                                (current.dynamicCheckedAt ?: 0) >= startedAt &&
+                                !current.resourcesRemembered && !current.dynamicRemembered
+                        }
+                        checked = true
+                    }
                     val snapshot = updates.snapshot()
                     assertFalse(snapshot.resourcesRemembered); assertFalse(snapshot.dynamicRemembered)
                     val catalogGame = (snapshot.catalogGames + snapshot.dynamicCatalogGames).single { it.id == id }
@@ -70,7 +82,8 @@ class N12ProductionResourceDeviceTest {
                     if (needDownload) {
                         assertTrue("Normal public download handler for $id", updates.downloadResource(id, true))
                         waitFor("$id download finished") { !updates.snapshot().busy }
-                        assertEquals(catalogGame.archiveSha256, runtime.storeFor(id).describeAll().getValue(id).ready?.archiveSha256)
+                        assertEquals("$id download status: ${updates.snapshot()}", catalogGame.archiveSha256,
+                            runtime.storeFor(id).describeAll().getValue(id).ready?.archiveSha256)
                     }
                 }
                 // Invoke the same player handler used by the card; it performs the real cache guard and activation.

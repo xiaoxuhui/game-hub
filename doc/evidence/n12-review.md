@@ -16,4 +16,5 @@
 ## C 签名发行与正式宿主
 
 - C1提交3ec793f8451164e02de5909fdd1233fadfec72d6，review_p0初审OPEN：offline仅跳过查询，须在测试入口证明真实无默认网络；公开companion构建日志行尾空格须清理。
-- 批改：offline读取真实ConnectivityManager并断言activeNetwork=null；公开日志逐行去行尾空格，原始日志保留私有证据。复审待提交。
+- 批改165b27e81bafa23516e9e8a980f4aa664b23d676，review_p0复审CLOSED：offline真实activeNetwork=null门禁与ZIP/存档检查同时保留，日志rstrip，完整最终补丁diff --check通过。此结论仅控制器，设备尚未通过。
+- C2 首次设备seed在阿贝尔下载ready=null失败，随后实际UI显示“游戏查询限流，旧结果待检查”；公共rate_limit实际remaining=0、reset=2026-10-12 01:30:46+08:00。保留失败日志。控制器批改为每轮复用启动后实得的自动查询：两个checkedAt均不早于本次startedAt、两个remembered=false、idle，禁止读旧缓存当通过，避免每游戏重复查询。自动下载通过真实设置先关闭，下载失败补实际状态诊断。待提交后复审和额度恢复重验。
