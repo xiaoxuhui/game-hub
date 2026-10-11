@@ -13,7 +13,19 @@ function Invoke-N12Adb([string[]]$Arguments) {
     if($LASTEXITCODE -ne 0){throw 'Owned-device command failed'}
 }
 Assert-N12Emulator
-$n12Record=[ordered]@{startedAtUtc=[DateTime]::UtcNow.ToString('o');serial=$n12Serial;avd='gamehub-n12-20261012';producer='2afbda179f8924d57e029d5cdddb0ca416729c90';networkCommands=@('svc wifi disable','svc data disable');oldPid=$null;newPid=$null;oldProcessAbsent=$false;actualDefaultNetworkNullAssertedByController=$false;result='PENDING'}
+function Read-N12Network {
+    $wifi=((& $n12Adb -s $n12Serial shell settings get global wifi_on) -join '').Trim()
+    if($LASTEXITCODE -ne 0 -or $wifi -notmatch '^[01]$'){throw 'Cannot read exact WiFi switch'}
+    $data=((& $n12Adb -s $n12Serial shell settings get global mobile_data) -join '').Trim()
+    if($LASTEXITCODE -ne 0 -or $data -notmatch '^[01]$'){throw 'Cannot read exact mobile-data switch'}
+    $status=((& $n12Adb -s $n12Serial shell cmd wifi status) -join "`n")
+    if($LASTEXITCODE -ne 0 -or $status -notmatch '(?m)^Wifi is (enabled|disabled)\s*$'){throw 'Cannot read actual WiFi service state'}
+    $service=if($Matches[1] -ceq 'enabled'){'1'}else{'0'}
+    if($service -cne $wifi){throw 'WiFi service is transitioning; refusing ambiguous state'}
+    return @{wifi=$wifi;data=$data;wifiService=$service}
+}
+$n12Original=Read-N12Network
+$n12Record=[ordered]@{startedAtUtc=[DateTime]::UtcNow.ToString('o');serial=$n12Serial;avd='gamehub-n12-20261012';producer='2afbda179f8924d57e029d5cdddb0ca416729c90';networkCommands=@('svc wifi disable','svc data disable');originalNetwork=$n12Original;restoredNetwork=$null;restorationErrors=@();restorationCompleted=$false;acceptancePassed=$false;oldPid=$null;newPid=$null;oldProcessAbsent=$false;actualDefaultNetworkNullAssertedByController=$false;result='PENDING'}
 try {
     Invoke-N12Adb -Arguments @('shell','svc','wifi','disable')
     Invoke-N12Adb -Arguments @('shell','svc','data','disable')
@@ -43,15 +55,32 @@ try {
     if(-not $n12Record.newPid){throw 'New actual process PID not observed'}
     if($n12Run.ExitCode -ne 0 -or -not (Select-String -LiteralPath $n12Stdout -SimpleMatch 'OK (1 test)' -Quiet)){throw 'Actual offline controller failed; inspect saved raw logs'}
     $n12Record.actualDefaultNetworkNullAssertedByController=$true
-    $n12Record.result='PASS'
+    $n12Record.acceptancePassed=$true
 } catch {
     $n12Record.result='FAIL';$n12Record.failure=$_.Exception.Message
-    throw
 } finally {
+    try {
+        Assert-N12Emulator
+        foreach($n12Service in @('wifi','data')){
+            try {
+                $n12Action=if($n12Original[$n12Service] -ceq '1'){'enable'}else{'disable'}
+                Invoke-N12Adb -Arguments @('shell','svc',$n12Service,$n12Action)
+            } catch {$n12Record.restorationErrors+=($_.Exception.Message+': '+$n12Service)}
+        }
+        $n12RestoreDeadline=[DateTime]::UtcNow.AddSeconds(20)
+        do {
+            try {
+                $n12Restored=Read-N12Network
+                $n12Record.restoredNetwork=$n12Restored
+                if($n12Restored.wifi -ceq $n12Original.wifi -and $n12Restored.data -ceq $n12Original.data){$n12Record.restorationCompleted=$true;break}
+            } catch {$n12LastRestoreError=$_.Exception.Message}
+            Start-Sleep -Milliseconds 300
+        } while([DateTime]::UtcNow -lt $n12RestoreDeadline)
+        if(-not $n12Record.restorationCompleted){$n12Record.restorationErrors+=('Original network switches not restored: '+$n12LastRestoreError)}
+    } catch {$n12Record.restorationErrors+=$_.Exception.Message}
+    $n12Record.result=if($n12Record.acceptancePassed -and $n12Record.restorationCompleted -and $n12Record.restorationErrors.Count -eq 0){'PASS'}else{'FAIL'}
     $n12Record.completedAtUtc=[DateTime]::UtcNow.ToString('o')
     $n12Record | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $n12Evidence 'device-offline-run.json') -Encoding utf8
-    Assert-N12Emulator
-    Invoke-N12Adb -Arguments @('shell','svc','wifi','enable')
-    Invoke-N12Adb -Arguments @('shell','svc','data','enable')
 }
+if($n12Record.result -cne 'PASS'){throw 'Offline acceptance or original network restoration failed; inspect saved evidence'}
 Get-Content -LiteralPath (Join-Path $n12Evidence 'device-offline.txt')
