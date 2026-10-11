@@ -32,3 +32,11 @@
 - f8629追加复审CLOSED：默认分支资源/构建输入变化触发，不等待Release/tag/功能版本号；文档/测试不重发，未知依赖/新输入审查；递增contentCode/sequence，不发布不兼容候选；U10未发行提交到大厅安装仍为后续验收。
 - 部署后CLOSED：八仓现时ls-remote/本地分支、九文件Git blob/cron复算一致。大厅b5是f862之后仅文档提交，工作流blob相同。公开七仓八行与私有原件对应行一致，无私有源revision。
 - 只读查询尚未观测今天06:00 schedule事件，未以配置核验冒充实际定时执行；每日自动候选/签名发行仍PENDING。
+
+## D：追加归档及精确根清理 — 删除前CLOSED，删除后待审
+
+- 准备提交cfb9217d683dc44e42522c84c083639ecb0ffc9c已推main、主仓快进同步。
+- review_p1删除前CLOSED：旧65/新20项索引逐项size/SHA复算0错，两代16仓bundle及两份补充预清理bundle均complete/verify exit0。cfb补充bundle覆盖新代hall bundle之后的文档提交；八检出clean/HEAD=origin，七源完整工作树状态同固定观测。
+- 初始4123、删除旧refs后4114、追加提交后4213均为历史采样；即时删除前冻结4211文件、69267085逻辑字节，记录在永久归档cleanup-preflight.json。只删除解析后精确根D:\soft\.ci-tmp\game-hub-n13，没有reparse/alternates/任务工作进程。
+- 实际Remove-Item -LiteralPath根 -Recurse -Force后Test-Path=False，13个受保护路径均存在；结果见n13-cleanup.json及私有归档cleanup-result.json。逻辑字节数不冒充磁盘实测净释放量。
+- 删除后最终审阅待记录。自动候选、存档实装、签名服务及资源自动发行仍PENDING，未以检测交付代替。
