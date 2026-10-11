@@ -1,0 +1,32 @@
+{
+  "status": "prepared-not-deleted",
+  "scope": "D:\\soft\\.ci-tmp\\game-hub-n13",
+  "archive": "D:\\soft\\game-hub-archives\\n13-20261012",
+  "archivedItems": 65,
+  "frozenIndexSha256": "7e02bdcce0919bdb27cf2c3b1c02acabd2caac475045c9941fa3f7969f64f032",
+  "sourceFiles": 4123,
+  "sourceBytes": 69063954.0,
+  "bundlesVerified": 8,
+  "rawEvidenceItems": 49,
+  "reparsePoints": 0,
+  "originalSourceWorktreeStatesSame": 7,
+  "externallyAdvancedSources": [
+    "turing-machine-simulator",
+    "lambda-diagram-game"
+  ],
+  "protected": [
+    "D:\\soft\\game-hub",
+    "D:\\soft\\conway-life-game",
+    "D:\\soft\\EML",
+    "D:\\soft\\light_game",
+    "D:\\soft\\turing-machine-simulator",
+    "D:\\soft\\abelian-sandpile",
+    "D:\\soft\\lambda-diagram-game",
+    "D:\\soft\\mini-app-harness",
+    "D:\\soft\\game-hub-toolchain",
+    "D:\\soft\\game-hub-signing-backup",
+    "D:\\aiden\\game-hub-resource-signing",
+    "D:\\aiden\\game-hub-release-signing"
+  ],
+  "processesStarted": 0
+}
