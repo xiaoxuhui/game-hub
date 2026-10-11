@@ -1,0 +1,75 @@
+[
+  {
+    "name": "game-hub",
+    "path": "D:\\soft\\game-hub",
+    "head": "465b9c115fa5d73ffa1504c92bc1227ec7ff7f29",
+    "status": []
+  },
+  {
+    "name": "conway-life-game",
+    "path": "D:\\soft\\conway-life-game",
+    "head": "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be",
+    "status": []
+  },
+  {
+    "name": "EML",
+    "path": "D:\\soft\\EML",
+    "head": "327789afdad36d9ed9c593c09adff7f9fa855444",
+    "status": [
+      " D tests/android-shell.test.js",
+      " D tests/custom-function-ui.test.js",
+      " D tests/derivation-trace.test.js",
+      " D tests/eml-composition.test.js",
+      " D tests/interaction-fixture.json",
+      " D tests/invalid-import.json",
+      " D tests/rule-registry.test.js",
+      " D tests/unit.test.js",
+      " D tests/validation.test.js",
+      " D tests/value-tree.test.js",
+      "?? eml-workbench-v2-rebuilt-pi.json",
+      "?? eml-workbench-v2-reconstructed-pi-tree.json",
+      "?? src/tests/android-shell.test.js",
+      "?? src/tests/custom-function-ui.test.js",
+      "?? src/tests/derivation-trace.test.js",
+      "?? src/tests/eml-composition.test.js",
+      "?? src/tests/interaction-fixture.json",
+      "?? src/tests/invalid-import.json",
+      "?? src/tests/rule-registry.test.js",
+      "?? src/tests/unit.test.js",
+      "?? src/tests/validation.test.js",
+      "?? src/tests/value-tree.test.js"
+    ]
+  },
+  {
+    "name": "light_game",
+    "path": "D:\\soft\\light_game",
+    "head": "5b89d598a131ff9680363a02d4749a94181413bf",
+    "status": []
+  },
+  {
+    "name": "turing-machine-simulator",
+    "path": "D:\\soft\\turing-machine-simulator",
+    "head": "cea23ffb6a3b01ec2a386363d98a427c2a2c564b",
+    "status": []
+  },
+  {
+    "name": "abelian-sandpile",
+    "path": "D:\\soft\\abelian-sandpile",
+    "head": "c4290283b1109e13e37d6f696b83fefd3b7a6855",
+    "status": []
+  },
+  {
+    "name": "lambda-diagram-game",
+    "path": "D:\\soft\\lambda-diagram-game",
+    "head": "d308dca201c24e19d4a16cf8e6fc98028498ea18",
+    "status": []
+  },
+  {
+    "name": "mini-app-harness",
+    "path": "D:\\soft\\mini-app-harness",
+    "head": "77cec1148415c3f135aa067828ee0f251adb3821",
+    "status": [
+      " M 技能/plan-driven-frontend-dev/SKILL.md"
+    ]
+  }
+]
