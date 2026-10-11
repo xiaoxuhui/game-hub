@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "games": {
     "conway": {
-      "contentCode": 1,
-      "sourceRevision": "87027a69ff93cb517c262a5010c342b7ac32b7d6",
+      "contentCode": 2,
+      "sourceRevision": "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be",
       "storageContract": "conway-baseline-v1",
-      "releaseNotes": "首份兼容资源，沿用锁定离线基准。"
+      "releaseNotes": "康威同版资源修订：批量导入与记录管理，原图案/函数存档格式保持；不支持安全文件保存接口的设备会保留记录并提示使用原有导出。固定上游7d857cc9，完整MIT随包。"
     },
     "eml": {
       "contentCode": 1,

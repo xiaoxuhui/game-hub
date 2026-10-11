@@ -28,10 +28,10 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "c46ec6d3cabc6df9ecd90409649b89d765a0a5a9",
+      "revision": "06febcbf7ae9a16ed40cb10aa6507ce6e1ceb4cc",
       "directory": "examples/abelian-sandpile",
       "version": "0.1.2",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "abelian-sandpile-dynamic-v1",
       "files": [
@@ -50,7 +50,7 @@
         "src/teaching.js",
         "upstream-source.json"
       ],
-      "releaseNotes": "首次动态资源接入；原游戏固定来源 d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f，原玩法和存档格式保持。来源与MIT许可随资源包附带。"
+      "releaseNotes": "阿贝尔同版资源修订：动画间隔允许100到5000范围内任意整数毫秒，修复250ms等合法输入被拒绝；玩法与存档格式不变。固定上游c4290283，来源证明与完整MIT随包。"
     },
     {
       "id": "lambda-diagram-game",

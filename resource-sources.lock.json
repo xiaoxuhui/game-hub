@@ -5,7 +5,7 @@
       "id": "conway",
       "displayName": "康威生命游戏",
       "repository": "https://github.com/xiaoxuhui/conway-life-game.git",
-      "revision": "87027a69ff93cb517c262a5010c342b7ac32b7d6",
+      "revision": "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be",
       "version": "0.17.0",
       "buildKind": "static",
       "entryPage": "index.html",
@@ -23,6 +23,8 @@
         "scripts/logic-safety.js",
         "scripts/logic-code.js",
         "scripts/logic-function-library.js",
+        "scripts/record-import.js",
+        "scripts/file-backup.js",
         "scripts/renderer.js",
         "scripts/dialogs.js",
         "scripts/app.js"
