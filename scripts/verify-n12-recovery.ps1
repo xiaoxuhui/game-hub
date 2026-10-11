@@ -3,6 +3,19 @@ $ErrorActionPreference='Stop'
 $n12Main='D:\soft\game-hub'
 $n12Root='D:\soft\.ci-tmp\game-hub-n12'
 $n12Archive='D:\soft\game-hub-archives\n12-20261012'
+function Assert-N12CompleteBundle([string]$Path) {
+    $reader=[IO.StreamReader]::new($Path,[Text.Encoding]::UTF8)
+    try {
+        if($reader.ReadLine() -notmatch '^# v[23] git bundle$'){throw 'Invalid source bundle header'}
+        $ended=$false
+        while(-not $reader.EndOfStream){
+            $line=$reader.ReadLine()
+            if($line -ceq ''){$ended=$true;break}
+            if($line.StartsWith('-',[StringComparison]::Ordinal)){throw 'Recovery source bundle has external prerequisites'}
+        }
+        if(-not $ended){throw 'Incomplete source bundle header'}
+    } finally {$reader.Dispose()}
+}
 $n12Required=@()
 $n12Candidates=@(Get-Content -LiteralPath (Join-Path $n12Main 'doc\evidence\n12-c3\producer-2afb-double-build.json') -Raw | ConvertFrom-Json)
 if($n12Candidates.Count -ne 12){throw 'Exactly twelve reviewed candidate identities required'}
@@ -34,6 +47,7 @@ foreach($n12Row in $n12Bundles){
     $n12Path=Join-Path $n12Archive $n12Row.bundle
     $n12Item=Get-Item -LiteralPath $n12Path -Force
     if(($n12Item.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $n12Item.Length -ne $n12Row.bytes -or (Get-FileHash -LiteralPath $n12Path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $n12Row.sha256){throw 'Mandatory upstream bundle bytes differ'}
+    Assert-N12CompleteBundle $n12Path
     git -C (Join-Path $n12Root ('upstreams\'+$n12Row.repository)) bundle verify $n12Path
     if($LASTEXITCODE -ne 0){throw 'Mandatory upstream bundle invalid'}
     $n12Heads=@(git -C $n12Main bundle list-heads $n12Path HEAD)
@@ -41,11 +55,21 @@ foreach($n12Row in $n12Bundles){
     $n12Required+=$n12Row.bundle
 }
 $n12ProducerPath=Join-Path $n12Archive 'n12-producer-2afb.bundle'
+Assert-N12CompleteBundle $n12ProducerPath
 git -C $n12Main bundle verify $n12ProducerPath
 if($LASTEXITCODE -ne 0){throw 'Mandatory producer bundle invalid'}
 $n12Heads=@(git -C $n12Main bundle list-heads $n12ProducerPath refs/heads/main)
 if($LASTEXITCODE -ne 0 -or $n12Heads.Count -ne 1 -or ($n12Heads[0] -split '\s+')[0] -cne '2afbda179f8924d57e029d5cdddb0ca416729c90'){throw 'Immutable producer bundle differs'}
 $n12Required+='n12-producer-2afb.bundle'
+$n12LatePath=Join-Path $n12Archive 'late-turing-source.bundle'
+$n12Late=Get-Item -LiteralPath $n12LatePath -Force
+if(($n12Late.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $n12Late.Length -ne 1645647 -or (Get-FileHash -LiteralPath $n12LatePath -Algorithm SHA256).Hash.ToLowerInvariant() -cne '38885df7486f4cfa58e45fbf7fcdf39b3d6717d5dc21fd82dfa4760ad621cb6d'){throw 'Mandatory late Turing bundle differs'}
+Assert-N12CompleteBundle $n12LatePath
+git -C (Join-Path $n12Root 'late-turing') bundle verify $n12LatePath
+if($LASTEXITCODE -ne 0){throw 'Mandatory late Turing bundle invalid'}
+$n12Heads=@(git -C $n12Main bundle list-heads $n12LatePath HEAD refs/heads/main)
+if($LASTEXITCODE -ne 0 -or $n12Heads.Count -ne 2 -or @($n12Heads | Where-Object {($_ -split '\s+')[0] -cne 'ffca525f838101151c9e1a6a8c6cb8798aa7d936'}).Count){throw 'Late Turing bundle full source differs'}
+$n12Required+='late-turing-source.bundle'
 if($Index){
     foreach($n12Path in $n12Required){if(@($Index.artifacts | Where-Object path -CEQ $n12Path).Count -ne 1){throw 'Mandatory recovery artifact missing from reviewed index'}}
     foreach($n12Kind in @('resource-candidate','dynamic-candidate')){
@@ -53,4 +77,4 @@ if($Index){
         if($n12Indexed.Count -ne 6){throw 'Indexed mandatory candidate set differs'}
     }
 }
-'Twelve exact producer candidates, four exact upstream bundles and immutable producer bundle verified.'
+'Twelve exact producer candidates, four exact upstream bundles, immutable producer and late Turing complete bundles verified.'
