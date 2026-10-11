@@ -27,3 +27,8 @@
 - C4批改296992c04c5c7e3d73888540b1a116f60bd3d40e复审仍OPEN：global mobile_data不是telephony实际开关，旧N5和本轮只读AVD均验证global=1/actual=false。追加读取唯一mUserMobileDataState，按实际service原值恢复，终态同时核对原global值及WiFi/mobile实际服务；超时先停止自己的仪器目标进程再恢复网络。语法与diff --check通过，待复审。
 - C4第2批改a8ccc9f690b4941e0967bbb20b2b672ffbfaf7fe，review_p0只读复审CLOSED：完整补丁、实际service恢复/错误终态、own AVD超时停止链路正确，精确HEAD/远端与空工作树确认；详细记录见n12-c5/c4-independent-review.md，CI38163226798success。
 - C5沿用同一seed安装，在02:31:22真实update29.2s PASS，02:32:03真实offline19.606s PASS；旧PID3492→新3554、actualNetwork=null、code2/完整来源与旧存档/无关键保持，恢复原实际网络状态已复核。公开规范化日志、原始/公开双SHA清单及完整运行记录入n12-c5，提交后独立复审待执行，D尚未清理。
+- C5提交dada963351a833f37aa450b5db906b5a1cebb67d，review_p1只读复审C范围CLOSED：八项raw/public完整size/SHA匹配；update/offline硬断言与实际日志、PID及原网络恢复匹配；正式APK/DER与code2两ZIP/source/旧存档/无关键均验证，HEAD/远端/干净工作树与diff --check通过。D建议明确README历史时态及旧offline草稿未执行，收尾已采纳。
+
+## D 归档与清理
+
+- D1提交清理/归档脚本及限定范围：本轮唯一根D:\soft\.ci-tmp\game-hub-n12；永久归档保留12候选、固定2afb生产bundle、四上游bundle、全部原始evidence和最终源码bundle。root旧offline-run.ps1未执行，实际offline使用a8ccc9f仓内脚本。模拟器已停止、reparse=0、ownedProcesses=0；归档freeze、清理dry-run/execute均尚未执行，提交后独立复审待。
