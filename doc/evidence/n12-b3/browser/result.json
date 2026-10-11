@@ -1,0 +1,33 @@
+{
+  "browser": "151.0.7922.34",
+  "results": [
+    {
+      "id": "conway",
+      "viewport": "desktop",
+      "status": "PASS",
+      "pageErrors": [],
+      "httpErrors": []
+    },
+    {
+      "id": "abelian-sandpile",
+      "viewport": "desktop",
+      "status": "PASS",
+      "pageErrors": [],
+      "httpErrors": []
+    },
+    {
+      "id": "conway",
+      "viewport": "mobile",
+      "status": "PASS",
+      "pageErrors": [],
+      "httpErrors": []
+    },
+    {
+      "id": "abelian-sandpile",
+      "viewport": "mobile",
+      "status": "PASS",
+      "pageErrors": [],
+      "httpErrors": []
+    }
+  ]
+}

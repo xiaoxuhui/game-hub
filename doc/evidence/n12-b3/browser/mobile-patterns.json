@@ -1,0 +1,60 @@
+{
+  "format": "conway-life-pattern-library",
+  "version": 1,
+  "patterns": [
+    {
+      "id": "custom-n12-old",
+      "name": "N12旧方块",
+      "description": "旧资源真实导入",
+      "width": 2,
+      "height": 2,
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "createdAt": "2026-10-12T00:00:00.000Z",
+      "updatedAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "custom-n12-import",
+      "name": "N12新增方块",
+      "description": "旧资源真实导入",
+      "width": 2,
+      "height": 2,
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "createdAt": "2026-10-12T00:00:00.000Z",
+      "updatedAt": "2026-10-12T00:00:00.000Z"
+    }
+  ]
+}

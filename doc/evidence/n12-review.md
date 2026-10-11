@@ -10,4 +10,5 @@
 ## B 资源候选
 
 - B1 来源集成提交06febcbf7ae9a16ed40cb10aa6507ce6e1ceb4cc，review_p1独立CLOSED：Abel实际源码与集成同字节，仅index step修订，15项输入/13输出证明逐字节及SHA匹配，原存储模块/七原仓HEAD与状态保持，64/64大厅测试；未将来源集成代替B2生产或实际兼容验收。
-- B2发行锁与生产验收待提交后独立审阅。
+- B2发行锁提交ef41c24584a970fafcfae635ae7db15d694059de，review_p1独立CLOSED：康威18资源与新增脚本引用顺序匹配，编号2；Abel锁指向06febcb完整适配提交、编号2；六游戏锁与原APK sources.lock保持。此结论只覆盖锁，不代替生产/浏览器验收。
+- B3 双独立生产与真实浏览器证据提交后待独立审阅，见n12-b3/README.md。

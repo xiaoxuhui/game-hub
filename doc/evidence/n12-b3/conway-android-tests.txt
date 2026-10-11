@@ -1,0 +1,21 @@
+(node:33836) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/soft/.ci-tmp/game-hub-n12/upstreams/conway/tests/android-shell.test.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\soft\.ci-tmp\game-hub-n12\upstreams\conway\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ U03 assets 中的网页与源产物字节一致 (13.9693ms)
+✔ 入口页存在于 assets 中 (0.375ms)
+✔ 应用身份与需求一致（包名/SDK/版本） (2.9237ms)
+✔ 固定 debug 签名存在且被 gradle 引用（否则新包无法覆盖安装） (0.855ms)
+✔ 应用显示名正确 (0.758ms)
+✔ 清单声明启动入口且不申请任何权限（离线运行） (0.6335ms)
+✔ 旋转屏幕不重建 Activity 且不锁定方向 (0.696ms)
+✔ WebView 关键配置齐备（JS/本地存储/离线资源/返回键） (0.7173ms)
+✔ 图标资源齐全（各密度传统图标 + 自适应图标前景） (0.8377ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 140.2923
