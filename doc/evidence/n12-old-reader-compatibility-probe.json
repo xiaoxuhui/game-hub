@@ -1,0 +1,45 @@
+{
+  "synthetic": true,
+  "userDataRead": false,
+  "revisions": {
+    "eml": {
+      "released": "2616c9e9b081762b01599cc79da919d20340d0a2",
+      "target": "76cdd75bc26fc7d1dc23a2a4b19e74857c9c430c"
+    },
+    "lambda": {
+      "released": "a75d180193fbe7298709298102c8c6008d1353cd",
+      "target": "5f5ec5561be70716c22be62797c808aa0db9a960"
+    }
+  },
+  "lambda": {
+    "newSavedVersion": 3,
+    "newReadNew": {
+      "ok": true,
+      "value": 3
+    },
+    "oldReadNew": {
+      "ok": false,
+      "error": "存档无效：不支持这个存档版本。"
+    },
+    "oldReadWithoutManualPaths": {
+      "ok": true,
+      "value": 2
+    }
+  },
+  "eml": {
+    "newOperation": "EML_COMPOSITION",
+    "newReadNew": {
+      "ok": true,
+      "error": null
+    },
+    "oldReadNew": {
+      "ok": false,
+      "error": "公式引用了不存在的数值"
+    },
+    "newReadOld": {
+      "ok": true,
+      "error": null
+    }
+  },
+  "passed": true
+}

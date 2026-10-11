@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "abelian-sandpile",
   "repository": "https://github.com/xiaoxuhui/abelian-sandpile.git",
-  "revision": "d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f",
+  "revision": "c4290283b1109e13e37d6f696b83fefd3b7a6855",
   "version": "0.1.2",
   "buildKind": "static-copy",
   "entryPage": "index.html",
@@ -14,8 +14,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 8734,
-      "sha256": "63b38dd8416716da0b9ef546e948e2d7ce0aff631b1473ade950df67f2156da3"
+      "bytes": 8732,
+      "sha256": "43bdf7989421dcc8a3473e4015a4df98342c638db40a24225f6f4a5ca91b644c"
     },
     {
       "path": "package.json",
@@ -91,8 +91,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 8734,
-      "sha256": "63b38dd8416716da0b9ef546e948e2d7ce0aff631b1473ade950df67f2156da3"
+      "bytes": 8732,
+      "sha256": "43bdf7989421dcc8a3473e4015a4df98342c638db40a24225f6f4a5ca91b644c"
     },
     {
       "path": "src/app.js",

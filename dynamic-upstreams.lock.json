@@ -4,7 +4,7 @@
     {
       "id": "abelian-sandpile",
       "repository": "https://github.com/xiaoxuhui/abelian-sandpile.git",
-      "revision": "d58e2b1d06c3dfdf6cd25b65986c1d494759ed7f",
+      "revision": "c4290283b1109e13e37d6f696b83fefd3b7a6855",
       "version": "0.1.2",
       "kind": "static-copy",
       "entryPage": "index.html"
