@@ -31,3 +31,5 @@
 2026-10-12 01:48服务器真实core remaining=0、reset=1791743469，即02:31:09+08:00；实际02:31:22开始update并通过，02:32:03开始offline并通过。无需用户提前验收，真机仍可在发行后额外验证。真实失败与恢复证据均保留。
 
 实际成功日志/运行记录、C4两轮OPEN批改到CLOSED、辅助脚本CI38163226798success见[n12-c5](n12-c5/)。原始update日志SHA256为9c5e86f64217a585fa17ab5bdd32702f564add6082fc722dde681280e6315608，offline为02856723bae38255338389ce765f3b51b4254c2093c98a722e641d312ff1beb6；公开文本只规范化换行，永久归档保留原始字节。康威缺失文件API时的提示/不删除行为也已在实际WebView通过；不承诺支持文件夹备份。
+
+收尾观测到图灵机在本轮执行期间新增Max模式；实际新null步数存档被已发行旧reader拒绝，保持原code2，另列兼容迁移待办。初始发行来源不移动，原仓最新HEAD变化单独存档，见[n12-late-turing-observation.md](n12-late-turing-observation.md)。

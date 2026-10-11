@@ -1,0 +1,7 @@
+# N12 收尾时图灵机来源推进
+
+初始只读基线2eb41868c374224ae4576c7f22d528380e667b9c保持在n12-baselines.json。02:08仍七仓相同；收尾02:39只读观测图灵机HEAD已为ffca525f838101151c9e1a6a8c6cb8798aa7d936，GitHub默认main也为此SHA。其提交时间02:15～02:16，新增Max不限步数。它是初始基线的后继，工作树仍干净；其余六仓HEAD与原工作树状态相同，七仓工作树状态全相同。本轮所有原仓操作为读取，本次变化单独记录，不回退原仓、不移动既定资源来源。
+
+在本轮根独立clone并抽取实际已发行32eb3b95eb78eab703abe8e64214bd8dbbb939c7与新ffca的core/examples/project-codec。TypeScript库仅只读载入，编译输出只写独立目录；实际旧/新reader实验见n12-late-turing-probe.cjs和n12-late-turing-compatibility.json：新reader读取旧存档成功；新Max存档maxSteps=null同version1，新reader接受、已发行旧reader拒绝“最大步数必须是1–1000000的整数”。因此新图灵资源同EML/Lambda留待兼容迁移与回退设计，现code2不重打包。
+
+清理门禁使用单独审阅的n12-originals-cleanup-baselines.json：仅图灵机期望HEAD改为这次观测值，初始基线不改，七仓完整状态仍逐项核验。永久late-turing-source.bundle保存该来源；实际已有两资源发行和固定2afb生产检出不变。此调整不把原仓的变化记成本任务写入，也不假称最终七仓SHA全与初始相同。

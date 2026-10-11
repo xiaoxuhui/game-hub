@@ -7,6 +7,7 @@ $n12Evidence=Join-Path $n12Root 'evidence'
 if($SourceCommit -notmatch '^[0-9a-f]{40}$' -or (git -C $n12Main rev-parse HEAD).Trim() -cne $SourceCommit -or (git -C $n12Main status --porcelain=v1 --untracked-files=all)){throw 'Exact clean source commit required'}
 $n12Index=Join-Path $n12Archive 'cleanup-index.json'
 if(Test-Path -LiteralPath $n12Index){throw 'Archive index exists; do not overwrite'}
+& (Join-Path $PSScriptRoot 'verify-n12-recovery.ps1')
 foreach($n12Directory in @($n12Root,$n12Archive,$n12Evidence)){
     $n12Item=Get-Item -LiteralPath $n12Directory -Force
     if(-not $n12Item.PSIsContainer -or ($n12Item.Attributes -band [IO.FileAttributes]::ReparsePoint)){throw 'Plain exact directories required'}
@@ -41,5 +42,5 @@ foreach($n12File in Get-ChildItem -LiteralPath $n12Archive -File -Recurse -Force
     if($n12File.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Archive link refused'}
     $n12Artifacts+=@{path=$n12File.FullName.Substring($n12Archive.Length+1).Replace('\','/');bytes=$n12File.Length;sha256=(Get-FileHash -LiteralPath $n12File.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
 }
-@{schemaVersion=1;taskRoot=$n12Root;archiveRoot=$n12Archive;sourceCommit=$SourceCommit;producerCommit='2afbda179f8924d57e029d5cdddb0ca416729c90';notes=@('evidence/offline-run.ps1 is an unexecuted initial draft. Actual offline acceptance used scripts/verify-n12-offline.ps1 at a8ccc9f690b4941e0967bbb20b2b672ffbfaf7fe.','Producer checkout remains fixed at 2afb. Later source bundle records reviewed test helpers and closure documentation; resources were not rebuilt or republished.');createdAtUtc=[DateTime]::UtcNow.ToString('o');artifacts=$n12Artifacts;evidenceFiles=$n12Files} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $n12Index -Encoding utf8
+@{schemaVersion=1;taskRoot=$n12Root;archiveRoot=$n12Archive;sourceCommit=$SourceCommit;producerCommit='2afbda179f8924d57e029d5cdddb0ca416729c90';notes=@('evidence/offline-run.ps1 is an unexecuted initial draft. Actual offline acceptance used scripts/verify-n12-offline.ps1 at a8ccc9f690b4941e0967bbb20b2b672ffbfaf7fe.','Producer checkout remains fixed at 2afb. Later source bundle records reviewed test helpers and closure documentation; resources were not rebuilt or republished.','Turing original main advanced during this run. Initial baseline is retained; separately reviewed cleanup observation is used. New Max saves fail the published old reader, so Turing resources stay unchanged.');createdAtUtc=[DateTime]::UtcNow.ToString('o');artifacts=$n12Artifacts;evidenceFiles=$n12Files} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $n12Index -Encoding utf8
 'N12 archive index SHA256: '+(Get-FileHash -LiteralPath $n12Index -Algorithm SHA256).Hash.ToLowerInvariant()

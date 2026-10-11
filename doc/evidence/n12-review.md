@@ -32,3 +32,5 @@
 ## D 归档与清理
 
 - D1提交清理/归档脚本及限定范围：本轮唯一根D:\soft\.ci-tmp\game-hub-n12；永久归档保留12候选、固定2afb生产bundle、四上游bundle、全部原始evidence和最终源码bundle。root旧offline-run.ps1未执行，实际offline使用a8ccc9f仓内脚本。模拟器已停止、reparse=0、ownedProcesses=0；归档freeze、清理dry-run/execute均尚未执行，提交后独立复审待。
+- D1提交8823213bd418de3ad1c9597bdcc50ff9f8728a67，review_p0初审OPEN：必须强制12候选/四上游bundle精确集合及原件字节绑定，不能只索引现存文件；删除门禁还需查暂未连接ADB的明确本轮AVD进程。批改增加公共verify-n12-recovery.ps1、逐原件与已审SHA/size、四bundle完整来源验证及index必需路径；增加明确AVD emulator/qemu进程门禁。
+- 收尾另读到图灵机HEAD推进ffca；真实old/new reader实验确认Max存档不兼容，资源不更新。保留初始基线，六仓初始HEAD及七原工作树相同；追加独立审阅清理观测值，不假称七SHA未变。归档/删除仍未执行，批改提交后复审待。

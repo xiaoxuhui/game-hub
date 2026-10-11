@@ -22,7 +22,7 @@ if((Get-FileHash -LiteralPath $n12Index -Algorithm SHA256).Hash.ToLowerInvariant
 $index=Get-Content -LiteralPath $n12Index -Raw | ConvertFrom-Json
 if($index.schemaVersion -ne 1 -or $index.taskRoot -cne $n12Root -or $index.archiveRoot -cne $n12Archive){throw 'Wrong archive scope'}
 $env:GIT_OPTIONAL_LOCKS='0'
-$baselines=Get-Content -LiteralPath (Join-Path $n12Main 'doc\evidence\n12-baselines.json') -Raw | ConvertFrom-Json
+$baselines=Get-Content -LiteralPath (Join-Path $n12Main 'doc\evidence\n12-originals-cleanup-baselines.json') -Raw | ConvertFrom-Json
 if(@($baselines).Count -ne 7){throw 'Exactly seven original baseline records required'}
 foreach($baseline in $baselines){
     if($baseline.repository -notmatch '^[A-Za-z0-9_-]+$' -or $baseline.sha -notmatch '^[0-9a-f]{40}$'){throw 'Invalid original baseline identity'}
@@ -65,6 +65,7 @@ git -C $n12Main bundle verify $producerBundle
 if($LASTEXITCODE -ne 0){throw 'Immutable producer bundle invalid'}
 $producerHeads=@(git -C $n12Main bundle list-heads $producerBundle refs/heads/main)
 if($LASTEXITCODE -ne 0 -or $producerHeads.Count -ne 1 -or ($producerHeads[0] -split '\s+')[0] -cne $n12Producer){throw 'Producer bundle identity differs'}
+& (Join-Path $PSScriptRoot 'verify-n12-recovery.ps1') -Index $index
 $stack=New-Object 'System.Collections.Generic.Stack[string]';$stack.Push($n12Root)
 $logicalBytes=[long]0;$files=[long]0
 while($stack.Count){
@@ -98,6 +99,8 @@ $apk='D:\soft\game-hub-archives\final-cleanup-20261009\formal-assets\v0.4.0--gam
 if((Get-FileHash -LiteralPath $apk -Algorithm SHA256).Hash.ToLowerInvariant() -cne 'c6e071e18eac1cb97f3d898d6eb4dab2c790b8d9310a907a7e44e3c34a78ee39'){throw 'Original formal APK changed'}
 $busy=@(Get-CimInstance Win32_Process | Where-Object {$_.ProcessId -ne $PID -and $_.CommandLine -and $_.CommandLine.IndexOf($n12Root,[StringComparison]::OrdinalIgnoreCase) -ge 0})
 if($busy.Count){throw 'Task process still running; stop only owned process and archive after exit'}
+$ownAvd=@(Get-CimInstance Win32_Process | Where-Object {$_.Name -match '^(emulator|qemu-system[^.]*)\.exe$' -and $_.CommandLine -match '(?:^|\s)-avd\s+"?gamehub-n12-20261012"?(?:\s|$)'})
+if($ownAvd.Count){throw 'Own emulator/qemu AVD process still running, including disconnected instance'}
 $devices=@(& 'D:\soft\game-hub-toolchain\android-sdk\platform-tools\adb.exe' devices)
 if($LASTEXITCODE -ne 0 -or ($devices -match '^emulator-5566\s')){throw 'Own emulator still present'}
 $result=Join-Path $n12Archive 'cleanup-result.json'
