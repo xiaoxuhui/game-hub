@@ -4,6 +4,7 @@ import {join,resolve,dirname,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {sha256,strictJson,safePath,LIMITS} from './resource-protocol.mjs';
 import {inspectResources} from './resource-bundle.mjs';
+import {integrateLambdaHtml,integrationProof,LAMBDA_INTEGRATION} from './lambda-storage-integration.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const staticFiles=['index.html','src/styles.css','src/project-config.js','src/domain/sandpile.js','src/domain/challenge.js','src/domain/lesson.js','src/domain/levels.js','src/storage/persistence.js','src/controller.js','src/renderer.js','src/teaching.js','src/app.js','LICENSE'];
 const lambdaInputs=['index.html','src/style.css',...['core','diagram','diagram-view','presets','library','snapshot','download','workspace-tools','viewport','app'].map(n=>`src/${n}.js`),'LICENSE'];
@@ -18,7 +19,13 @@ function committed(source,directory,path){
 export function validateProof(proof,source,inputs,outputs){
   if(proof.schemaVersion!==1||proof.id!==source.id||proof.repository!==source.repository||proof.revision!==source.revision||proof.version!==source.version||proof.buildKind!==source.kind||proof.entryPage!==source.entryPage)throw new Error('Upstream proof identity');
   if(JSON.stringify(proof.inputs)!==JSON.stringify(inputs)||JSON.stringify(proof.outputs)!==JSON.stringify(outputs))throw new Error('Upstream proof immutable byte manifests');
-  if(source.kind==='inline-html'&&(!proof.trackedArtifact||proof.trackedArtifact.matchesRebuild!==true||proof.trackedArtifact.sha256!==outputs.find(o=>o.path===source.entryPage)?.sha256))throw new Error('Frozen tracked artifact differs from rebuild; explicit reviewed difference needed');
+  if(source.kind==='inline-html'){
+    const outputSha=outputs.find(o=>o.path===source.entryPage)?.sha256;
+    const adapted=source.integration!==undefined;
+    if(adapted&&(source.integration!==LAMBDA_INTEGRATION||source.id!=='lambda-diagram-game'||!proof.adaptation||proof.adaptation.id!==LAMBDA_INTEGRATION||proof.adaptation.outputSha256!==outputSha||proof.adaptation.adapterSha256!==integrationProof(Buffer.alloc(0),Buffer.alloc(0)).adapterSha256))throw new Error('Reviewed Lambda adaptation proof differs');
+    if(!proof.trackedArtifact||proof.trackedArtifact.matchesRebuild!==true||proof.trackedArtifact.sha256!==(adapted?proof.adaptation.inputSha256:outputSha))throw new Error('Frozen tracked artifact differs from rebuild; explicit reviewed difference needed');
+    if(!adapted&&proof.adaptation!==undefined)throw new Error('Unexpected adaptation');
+  }
   return proof;
 }
 function outputFiles(directory,base=directory){return readdirSync(directory).sort().flatMap(name=>{const path=join(directory,name);if(lstatSync(path).isDirectory()){if(realpathSync(path)!==resolve(path))throw new Error('Integration directory link');return outputFiles(path,base);}const data=regular(path);return [{path:relative(base,path).split(sep).join('/'),bytes:data.length,sha256:sha256(data)}];});}
@@ -45,12 +52,18 @@ export function stageUpstreams(output){
     const entries=(source.kind==='static-copy'?staticFiles:[source.entryPage,'LICENSE']).map(path=>({path,data:regular(join(directory,path==='LICENSE'&&source.kind==='inline-html'?'LICENSE':`dist/${path}`))}));
     if(source.kind==='static-copy')for(const entry of entries){if(!entry.data.equals(git(directory,['show',`${source.revision}:${entry.path}`],true)))throw new Error('Copied runtime differs from fixed Git blob');}
     inspectResources(entries,source.id);
-    const outputs=entries.map(e=>({path:e.path,bytes:e.data.length,sha256:sha256(e.data)})).sort((a,b)=>a.path<b.path?-1:1);
-    const proof={schemaVersion:1,id:source.id,repository:source.repository,revision:source.revision,version:source.version,buildKind:source.kind,entryPage:source.entryPage,inputs,outputs};
+    let trackedArtifact,adaptation;
     if(source.kind==='inline-html'){
       const original=git(directory,['show',`${source.revision}:dist/lambda-lab.html`],true);
-      proof.trackedArtifact={path:'dist/lambda-lab.html',bytes:original.length,sha256:sha256(original),matchesRebuild:original.equals(entries.find(e=>e.path===source.entryPage).data)};
+      const entry=entries.find(e=>e.path===source.entryPage);
+      trackedArtifact={path:'dist/lambda-lab.html',bytes:original.length,sha256:sha256(original),matchesRebuild:original.equals(entry.data)};
+      if(source.integration!==undefined){
+        if(source.integration!==LAMBDA_INTEGRATION||source.id!=='lambda-diagram-game')throw new Error('Unsupported upstream adaptation');
+        const integrated=integrateLambdaHtml(entry.data);adaptation=integrationProof(entry.data,integrated);entry.data=integrated;
+      }
     }
+    const outputs=entries.map(e=>({path:e.path,bytes:e.data.length,sha256:sha256(e.data)})).sort((a,b)=>a.path<b.path?-1:1);
+    const proof={schemaVersion:1,id:source.id,repository:source.repository,revision:source.revision,version:source.version,buildKind:source.kind,entryPage:source.entryPage,inputs,outputs,...(trackedArtifact?{trackedArtifact}:{}),...(adaptation?{adaptation}:{})};
     validateProof(proof,source,inputs,outputs);
     const target=join(output,source.id);mkdirSync(target);
     for(const entry of entries){mkdirSync(dirname(join(target,entry.path)),{recursive:true});writeFileSync(join(target,entry.path),entry.data,{flag:'wx'});}
