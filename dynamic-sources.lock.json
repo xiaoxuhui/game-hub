@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "64c8932af9a0b5cc886db25910b3923a16aa0677",
+      "revision": "a7d3027cf6da87b16ad81ea9ee371b8c84f14989",
       "directory": "examples/lambda-diagram-game",
-      "version": "0.3.1",
-      "contentCode": 2,
+      "version": "0.3.3",
+      "contentCode": 3,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "正式版本0.3.1兼容资源更新：归约性能、图示视口及清空前备份；固定上游a75d180193fbe7298709298102c8c6008d1353cd，沿用动态存档合同，完整MIT与构建证明随包。"
+      "releaseNotes": "0.3.3源码修订：原文编辑、20px点击容差、手动归约、正规序/应用序及从右到左。固定上游a5eab9f5。首次复制旧进度至独立存储，旧数据保留；回退旧资源读取更新前进度，返回新版读取新版进度，两边后续进度不合并。完整轨迹、MIT及适配前后摘要随包。"
     },
     {
       "id": "red-green-puzzle",

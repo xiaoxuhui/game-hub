@@ -4,7 +4,7 @@ on:
     paths:
       - 'examples/lambda-diagram-game/**'
       - 'scripts/lambda-storage-integration.mjs'
-      - 'scripts/test-lambda-hall-browser.cjs'
+      - 'scripts/lambda-hall-browser.cjs'
       - 'scripts/stage-upstreams.mjs'
       - 'tests/lambda-storage-integration.test.mjs'
       - '.github/workflows/lambda-resource-check.yml'
@@ -25,7 +25,7 @@ jobs:
       - run: node --test
       - run: npm install --no-save --package-lock=false playwright@1.56.1
       - run: npx playwright install --with-deps chromium
-      - run: node scripts/test-lambda-hall-browser.cjs
+      - run: node scripts/lambda-hall-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
