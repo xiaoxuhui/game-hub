@@ -15,6 +15,9 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6
+        with:
+          # Compatibility tests execute the fixed, already published historical reader.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
