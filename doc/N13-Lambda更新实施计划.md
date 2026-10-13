@@ -1,6 +1,6 @@
 # N13 Lambda 更新实施计划
 
-- **Status**: COMPLETE
+- **Status**: VERIFIED
 - **Approved**: 2026-10-13 用户要求启动服务并上传大厅
 - **Type**: release
 
@@ -16,8 +16,8 @@
 - **Files**：动态来源锁、发行器、新测试、报告。
 - **Verification**：独立精确主分支ff8ec076两次资源构建/verify均通过，四ZIP及unsigned描述重复相等；其它3资源字节与描述未变。Lambda云端38406282183、修复浅检出后的Android38406745755均SUCCESS，失败复现见evidence/n13-ci-triage.md。
 
-## C 公网发行 `[COMPLETE]`
+## C 公网发行 `[VERIFIED]`
 - **Objective**：大厅联网获得当前Lambda资源，保留历史。
 - **Definition of Done**：精确当前签名下一序列、完整公网历史/ZIP/新目录签名校验、正式宿主验收可行范围记录；主分支推送核对、本次分支清理。
 - **Files**：发行证据、README/CHANGELOG、报告和计划。
-- **Verification**：发行代码和门禁已提交；当前执行固定生产提交、上一目录摘要、序列7与独立证据目录的生产发行。公网最终结果核验后再标VERIFIED。本轮正式设备验收未执行，按范围如实记录。
+- **Verification**：固定生产ff8ec076发行序列7成功；当前目录asset637160386、Lambda资源asset637155800。`resource-successor.mjs online`匿名下载验证7份签名目录/8累计引用ZIP通过；原其它3资源保持，旧序列6保留。源码及文档主分支已提交，远端最终SHA另行回读核对；本次功能分支在已合入后安全删除。见evidence/n13-lambda-release.md及n13-release/公开原始证据。本轮正式设备验收未执行，按范围如实记录。
