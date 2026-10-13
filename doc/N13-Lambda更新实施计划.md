@@ -4,11 +4,11 @@
 - **Approved**: 2026-10-13 用户要求启动服务并上传大厅
 - **Type**: release
 
-## A 来源适配 `[COMPLETE]`
+## A 来源适配 `[VERIFIED]`
 - **Objective**：固定最新源码并保护旧存档。
 - **Definition of Done**：适配/来源证明测试、真实浏览器旧→新→旧→新、162 上游检查、重复产物摘要与大厅检查通过。
 - **Files**：migration/集成脚本、动态上游锁、Lambda examples、需求/设计/证据。
-- **Verification**：上游162、大厅80、两视口浏览器10项通过，重复适配三文件SHA相等；详见evidence/n13-preparation.md。
+- **Verification**：上游162、大厅85、两视口及存储不可用浏览器11项通过，最终重复适配三文件SHA相等；详见evidence/n13-preparation.md。
 
 ## B 候选与发布工具 `[COMPLETE]`
 - **Objective**：固定contentCode3，独立生产并严格发行。
