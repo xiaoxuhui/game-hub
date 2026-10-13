@@ -14,15 +14,15 @@ const server=http.createServer((req,res)=>res.writeHead(200,{'Content-Type':'tex
   const check=async(label,fn)=>{await fn();console.log(`PASS H${++count} ${width}px ${label}`);};
   const source=async(text)=>{await page.locator('#expression').fill(text);await page.locator('#convert').click();};
   const current=()=>page.locator('#current-expression').textContent();
-  let legacyBytes;
+  let originalBackup;
   await page.goto(base+'/old');
   await check('old progress and checkpoint migrate while legacy bytes stay preserved',async()=>{
    await page.locator('#function-name').fill('ID');await page.locator('#function-source').fill('λx.x');await page.locator('#function-add').click();
    await source('(λx.x) ((λy.y) z)');await page.locator('#step').click();await page.locator('#save-state').click();
    await page.goto(base+'/new');assert.equal(await current(),'(λy.y) z');assert.equal(await page.locator('#step-count').textContent(),'1');assert.equal(await page.locator('#function-count').textContent(),'1 个函数');
-   const data=await page.evaluate(({oldAuto,oldCp,auto,cp})=>({a:localStorage.getItem(oldAuto),c:localStorage.getItem(oldCp),n:localStorage.getItem(auto),nc:localStorage.getItem(cp)}),{oldAuto,oldCp,auto,cp});
-   assert.deepEqual(JSON.parse(data.n).session,JSON.parse(data.a).session);assert.equal(data.nc,data.c);
-   legacyBytes=[data.a,data.c];await page.evaluate(()=>localStorage.setItem('other-game-sentinel','safe'));
+   const data=await page.evaluate(({oldAuto,oldCp,auto,cp})=>({a:localStorage.getItem(oldAuto),c:localStorage.getItem(oldCp),n:localStorage.getItem(auto),nc:localStorage.getItem(cp),backup:localStorage.getItem('lambda-lab-hub-upgrade-backup-v2')}),{oldAuto,oldCp,auto,cp});
+   const originals=JSON.parse(data.backup);assert.deepEqual(JSON.parse(data.n).session,JSON.parse(originals.auto).session);assert.equal(data.nc,originals.checkpoint);
+   originalBackup=data.backup;await page.evaluate(()=>localStorage.setItem('other-game-sentinel','safe'));
   });
   let newSave;
   await check('full right/applicative/manual history and original function source survive reload',async()=>{
@@ -31,28 +31,32 @@ const server=http.createServer((req,res)=>res.writeHead(200,{'Content-Type':'tex
    await page.locator('#save-state').click();await page.reload();assert.equal(await current(),'(λa.a) u v');assert.equal(await page.locator('#reduction-direction').inputValue(),'right');assert.equal(await page.locator('#reduction-order').inputValue(),'applicative');
    await page.getByRole('button',{name:'编辑函数 RAW',exact:true}).click();assert.equal(await page.locator('#function-source').inputValue(),'ID 3');await page.locator('#function-cancel').click();
    newSave=await page.evaluate(key=>localStorage.getItem(key),auto);assert.equal(JSON.parse(newSave).version,3);assert.deepEqual(JSON.parse(newSave).session.paths,[['arg']]);
-   const oldBytes=await page.evaluate(({oldAuto,oldCp})=>[localStorage.getItem(oldAuto),localStorage.getItem(oldCp)],{oldAuto,oldCp});assert.deepEqual(oldBytes,legacyBytes);
+   assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-upgrade-backup-v2')),originalBackup);
   });
-  await check('rollback reads old progress and returning to latest reads complete new progress',async()=>{
-   await page.goto(base+'/old');assert.equal(await current(),'(λy.y) z');assert.equal(await page.locator('#function-count').textContent(),'1 个函数');assert.ok(await page.locator('#save-feedback').isHidden());
-   await page.goto(base+'/new');assert.equal(await current(),'(λa.a) u v');assert.equal(await page.locator('#function-count').textContent(),'2 个函数');
-   await page.locator('#back').click();assert.equal(await current(),'(λa.a) u ((λb.b) v)');await page.locator('[data-redex-hit][aria-label^="点击 λa "]').click();assert.equal(await current(),'u ((λb.b) v)');
+  await check('old reader reads latest base and old steps merge into full history without dropping extensions',async()=>{
+   await page.goto(base+'/old');assert.equal(await current(),'(λa.a) u v');assert.equal(await page.locator('#function-count').textContent(),'2 个函数');assert.ok(await page.locator('#save-feedback').isHidden());
+   await page.locator('#step').click();assert.equal(await current(),'u v');await page.locator('#save-state').click();
+   await page.goto(base+'/new');assert.equal(await current(),'u v');assert.equal(await page.locator('#step-count').textContent(),'2');assert.equal(await page.locator('#reduction-direction').inputValue(),'right');
+   await page.getByRole('button',{name:'编辑函数 RAW',exact:true}).click();assert.equal(await page.locator('#function-source').inputValue(),'ID 3');await page.locator('#function-cancel').click();
+   await page.locator('#restore-state').click();assert.equal(await current(),'u v');assert.equal(await page.locator('#step-count').textContent(),'2');
+   await page.locator('#back').click();assert.equal(await current(),'(λa.a) u v');await page.locator('#back').click();assert.equal(await current(),'(λa.a) u ((λb.b) v)');await page.locator('[data-redex-hit][aria-label^="点击 λa "]').click();assert.equal(await current(),'u ((λb.b) v)');
   });
   await check('clear exports complete backup and never resurrects old saves or removes other data',async()=>{
    const oldBefore=await page.evaluate(({oldAuto,oldCp})=>[localStorage.getItem(oldAuto),localStorage.getItem(oldCp)],{oldAuto,oldCp});
    const event=page.waitForEvent('download');await page.locator('#clear-all').click();const file=await (await event).path();const backup=JSON.parse(fs.readFileSync(file));assert.equal(backup.version,3);assert.ok(backup.checkpoint);assert.deepEqual(backup.session.paths,[['fn']]);
    await page.reload();assert.equal(await page.locator('#expression').inputValue(),'');assert.equal(await page.locator('#function-count').textContent(),'0 个函数');
-   assert.deepEqual(await page.evaluate(({oldAuto,oldCp})=>[localStorage.getItem(oldAuto),localStorage.getItem(oldCp)],{oldAuto,oldCp}),oldBefore);assert.equal(await page.evaluate(()=>localStorage.getItem('other-game-sentinel')),'safe');
-   await page.locator('#import-file').setInputFiles(file);await page.waitForFunction(()=>document.getElementById('current-expression').textContent==='u ((λb.b) v)');await page.locator('#restore-state').click();assert.equal(await current(),'(λa.a) u v');
+   assert.equal(JSON.parse(await page.evaluate(key=>localStorage.getItem(key),oldAuto)).draft,'');assert.equal(await page.evaluate(key=>localStorage.getItem(key),oldCp),null);assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-upgrade-backup-v2')),originalBackup);assert.equal(await page.evaluate(()=>localStorage.getItem('other-game-sentinel')),'safe');
+   await page.locator('#import-file').setInputFiles(file);await page.waitForFunction(()=>document.getElementById('current-expression').textContent==='u ((λb.b) v)');await page.locator('#restore-state').click();assert.equal(await current(),'u v');
   });
   await check('native confirmed backup failure preserves state and mobile controls fit',async()=>{
-   await page.evaluate(()=>{window.LambdaAndroid={saveFile(){},saveFileConfirmed(){return false;}};});await page.locator('#clear-all').click();assert.equal(await current(),'(λa.a) u v');assert.match(await page.locator('#save-feedback').textContent(),/清空未完成/);
+   await page.evaluate(()=>{window.LambdaAndroid={saveFile(){},saveFileConfirmed(){return false;}};});await page.locator('#clear-all').click();assert.equal(await current(),'u v');assert.match(await page.locator('#save-feedback').textContent(),/清空未完成/);
    await page.evaluate(()=>{window.LambdaAndroid.saveFileConfirmed=(name,content)=>{window.testNativeBackup=JSON.parse(content);return true;};});await page.locator('#clear-all').click();assert.equal(await page.locator('#expression').inputValue(),'');assert.equal(await page.evaluate(()=>window.testNativeBackup.version),3);
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await source('(λa.a) u ((λb.b) v)');await page.locator('#reduction-direction').selectOption('right');await page.locator('#step').click();
    const dir=path.join(root,'doc/evidence/n13-browser');fs.mkdirSync(dir,{recursive:true});await page.locator('.execution-card').screenshot({path:path.join(dir,`lambda-${width}.png`)});
   });
   await context.close();
  }
+ const blocked=await browser.newContext(),p=await blocked.newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('blocked','SecurityError');}}));await p.goto(base+'/new');assert.equal(await p.locator('#convert').isEnabled(),true);assert.match(await p.locator('#storage-status').textContent(),/自动保存不可用/);await blocked.close();console.log(`PASS H${++count} blocked storage retains playable UI`);
  assert.deepEqual(errors,[]);console.log(`Hall Lambda checks: ${count} passed, 0 failed; browser ${browser.version()}; page errors 0.`);
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

@@ -22,13 +22,13 @@ export function createLambdaStorage(storage,S,migrate){
   const oldAuto='lambda-lab-v2',oldCp='lambda-lab-checkpoint-v2';
   const archives={[auto]:'lambda-lab-hub-old-edit-archive-v3',[cp]:'lambda-lab-hub-old-checkpoint-archive-v3'};
   const allowed=new Set([auto,cp,ready,backup,oldAuto,oldCp,...Object.values(archives)]);
-  const flags=()=>JSON.parse(storage.getItem(ready)||'{"auto":false,"checkpoint":false}');
+  const flags=()=>{const value=JSON.parse(storage.getItem(ready)||'{"auto":false,"checkpoint":false}');if(!value||typeof value.auto!=='boolean'||typeof value.checkpoint!=='boolean')throw Error('Invalid migration status');return value;};
   const archive=(key,text)=>[archives[key],JSON.stringify([...(JSON.parse(storage.getItem(archives[key])||'[]')),text])];
   function apply(changes){for(const [key,value] of changes){if(!allowed.has(key)||(value!==null&&typeof value!=='string'))throw Error('Invalid migration journal');if(value===null)storage.removeItem(key);else storage.setItem(key,value);}}
-  function recover(){const raw=storage.getItem(journal);if(raw!==null){const record=JSON.parse(raw);if(!Array.isArray(record.after))throw Error('Invalid migration journal');for(const [key,value] of record.after)if(!allowed.has(key)||(value!==null&&typeof value!=='string'))throw Error('Invalid migration journal');apply(record.after);storage.removeItem(journal);}}
+  function recover(){const raw=storage.getItem(journal);if(raw!==null){const record=JSON.parse(raw);if(record.schemaVersion!==1||!Array.isArray(record.after))throw Error('Invalid migration journal');for(const [key,value] of record.after){if(!allowed.has(key)||(value!==null&&typeof value!=='string'))throw Error('Invalid migration journal');if([auto,cp,oldAuto,oldCp].includes(key)&&value!==null)S.decode(value);}apply(record.after);storage.removeItem(journal);}}
   function transaction(changes){
     recover();const before=changes.map(([key])=>[key,storage.getItem(key)]);
-    storage.setItem(journal,JSON.stringify({before,after:changes}));
+    storage.setItem(journal,JSON.stringify({schemaVersion:1,before,after:changes}));
     try{apply(changes);storage.removeItem(journal);}
     catch(error){try{apply(before);storage.removeItem(journal);}catch{}throw error;}
   }

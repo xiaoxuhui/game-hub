@@ -65,9 +65,10 @@ test('failed base write rolls back full storage and next startup recovers an int
  const s=store(),w=createLambdaStorage(s,latest.S,migrateLambdaStorage);w.setItem(fresh,fixture());const before=new Map(s.map),set=s.setItem;
  s.setItem=(key,value)=>{if(key===old)throw Error('quota');set(key,value);};assert.throws(()=>w.setItem(fresh,fixture()),/quota/);
  assert.equal(s.getItem(fresh),before.get(fresh));assert.equal(s.getItem(old),before.get(old));
- s.setItem=set;s.setItem('lambda-lab-hub-journal-v3',JSON.stringify({after:[[fresh,before.get(fresh)],[old,before.get(old)]]}));
+ s.setItem=set;s.setItem('lambda-lab-hub-journal-v3',JSON.stringify({schemaVersion:1,after:[[fresh,before.get(fresh)],[old,before.get(old)]]}));
  createLambdaStorage(s,latest.S,migrateLambdaStorage).getItem(fresh);assert.equal(s.getItem('lambda-lab-hub-journal-v3'),null);
- s.setItem('lambda-lab-hub-journal-v3',JSON.stringify({after:[['other-game','bad']]}));assert.throws(()=>w.getItem(fresh),/Invalid migration journal/);assert.equal(s.getItem('other-game'),null);
+ s.setItem('lambda-lab-hub-journal-v3',JSON.stringify({schemaVersion:1,after:[['other-game','bad']]}));assert.throws(()=>w.getItem(fresh),/Invalid migration journal/);assert.equal(s.getItem('other-game'),null);
+ s.setItem('lambda-lab-hub-journal-v3',JSON.stringify({schemaVersion:1,after:[[fresh,before.get(fresh)],[old,'{"version":99}']]}));assert.throws(()=>w.getItem(fresh),/存档无效/);assert.equal(s.getItem(old),before.get(old));
 });
 test('concurrent old writes cannot be overwritten by a stale new capture',()=>{
  const s=store(),w=createLambdaStorage(s,latest.S,migrateLambdaStorage);w.setItem(fresh,fixture());const basic=historical.S.decode(s.getItem(old));basic.session.steps=1;const changed=historical.S.encode(basic);s.setItem(old,changed);
