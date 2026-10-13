@@ -14,6 +14,11 @@ for(const source of lock.sources){
     }
     if(source.kind==='inline-html'){
       const fake=structuredClone(proof);fake.trackedArtifact.matchesRebuild=false;assert.throws(()=>validateProof(fake,source,proof.inputs,outputs),/tracked artifact/);
+      if(source.integration){
+        for(const key of ['id','inputSha256','outputSha256','adapterSha256']){
+          const changed=structuredClone(proof);changed.adaptation[key]='forged';assert.throws(()=>validateProof(changed,source,proof.inputs,outputs));
+        }
+      }
     }
   });
 }
