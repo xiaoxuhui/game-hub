@@ -1,6 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {migrateLambdaStorage,integrateLambdaHtml,integrationProof} from '../scripts/lambda-storage-integration.mjs';
+import {migrateLambdaStorage,createLambdaStorage,integrateLambdaHtml,integrationProof} from '../scripts/lambda-storage-integration.mjs';
+import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
+import {execFileSync} from 'node:child_process';
 const old='lambda-lab-v2',cp='lambda-lab-checkpoint-v2',fresh='lambda-lab-hub-v3',newCp='lambda-lab-hub-checkpoint-v3';
 function store(entries={}){const map=new Map(Object.entries(entries));return {map,getItem:key=>map.get(key)??null,setItem:(key,value)=>map.set(key,value),removeItem:key=>map.delete(key)};}
 const decode=text=>{const x=JSON.parse(text);if(![1,2,3].includes(x.version))throw Error('invalid');return x;};
@@ -36,4 +39,37 @@ test('HTML adapter requires exact markers and records both source and integrated
   const output=integrateLambdaHtml(input);assert.match(output.toString(),/lambda-lab-hub-v3/);assert.match(output.toString(),/migrateLambdaStorage/);
   const p=integrationProof(input,output);assert.notEqual(p.inputSha256,p.outputSha256);assert.equal(p.adapterSha256.length,64);
   assert.throws(()=>integrateLambdaHtml(Buffer.from('unknown')),/exact reviewed/);assert.throws(()=>integrateLambdaHtml(Buffer.concat([input,input])),/exact reviewed/);
+});
+function engine(html){const ctx={TextEncoder};const scripts=[...html.matchAll(/<script>\s*([\s\S]*?)<\/script>/g)].map(m=>m[1]);for(const i of [0,4,5])runInNewContext(scripts[i],ctx);return {C:ctx.LambdaCore,S:ctx.LambdaSnapshot};}
+const latest=engine(readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.html',import.meta.url),'utf8'));
+const historical=engine(execFileSync('git',['show','64c8932af9a0b5cc886db25910b3923a16aa0677:examples/lambda-diagram-game/lambda-lab.html'],{maxBuffer:2000000}).toString());
+function fixture(){const {C,S}=latest;const full={version:3,draft:'(λa.a) u ((λb.b) v)',functions:[{name:'ID',term:C.parse('λx.x'),source:'λx.x'}],completed:[],mode:'free',level:0,session:{original:C.parse('(λa.a) u ((λb.b) v)'),steps:1,paths:[['arg']],dirty:false,halt:''},view:{speed:600,strategy:'applicative',direction:'right',scale:1,autoFit:true,historyOpen:false,helpOpen:false,hintOpen:false},selection:{start:0,end:0},error:''};return S.encode(full);}
+test('new full v3 persists while fixed old reader reads latest v2 base without losing extensions',()=>{
+ const s=store(),w=createLambdaStorage(s,latest.S,migrateLambdaStorage),text=fixture();w.setItem(fresh,text);w.setItem(newCp,text);
+ const basic=historical.S.decode(s.getItem(old));assert.equal(historical.C.format(basic.term),'(λa.a) u v');assert.equal(basic.version,2);
+ s.setItem(old,historical.S.encode(basic));assert.equal(w.getItem(fresh),text);
+ assert.equal(latest.S.decode(w.getItem(newCp)).view.direction,'right');assert.equal(historical.C.format(historical.S.decode(s.getItem(cp)).term),'(λa.a) u v');
+});
+test('old normal steps append to complete mixed history and preserve source and strategy extensions',()=>{
+ const s=store(),w=createLambdaStorage(s,latest.S,migrateLambdaStorage);w.setItem(fresh,fixture());const basic=historical.S.decode(s.getItem(old));basic.session.steps=1;basic.view.speed=123;s.setItem(old,historical.S.encode(basic));
+ const merged=latest.S.decode(w.getItem(fresh));assert.equal(latest.C.format(merged.term),'u v');assert.equal(merged.session.steps,2);
+ assert.equal(JSON.stringify(merged.session.paths),'[["arg"],null]');assert.equal(merged.functions[0].source,'λx.x');assert.equal(merged.view.strategy,'applicative');assert.equal(merged.view.direction,'right');assert.equal(merged.view.speed,123);
+ assert.equal(JSON.parse(s.getItem('lambda-lab-hub-old-edit-archive-v3')).length,1);
+});
+test('old expression replacement archives every prior full session and accepts the new base',()=>{
+ const s=store(),w=createLambdaStorage(s,latest.S,migrateLambdaStorage);w.setItem(fresh,fixture());
+ for(const expr of ['λq.q','λr.r']){const basic=historical.S.decode(s.getItem(old));basic.draft=expr;basic.session.original=historical.C.parse(expr);basic.session.steps=0;s.setItem(old,historical.S.encode(basic));assert.equal(latest.C.format(latest.S.decode(w.getItem(fresh)).term),expr);}
+ const all=JSON.parse(s.getItem('lambda-lab-hub-old-edit-archive-v3'));assert.equal(all.length,2);assert.equal(latest.S.decode(all[0]).session.paths[0][0],'arg');
+});
+test('failed base write rolls back full storage and next startup recovers an interrupted journal',()=>{
+ const s=store(),w=createLambdaStorage(s,latest.S,migrateLambdaStorage);w.setItem(fresh,fixture());const before=new Map(s.map),set=s.setItem;
+ s.setItem=(key,value)=>{if(key===old)throw Error('quota');set(key,value);};assert.throws(()=>w.setItem(fresh,fixture()),/quota/);
+ assert.equal(s.getItem(fresh),before.get(fresh));assert.equal(s.getItem(old),before.get(old));
+ s.setItem=set;s.setItem('lambda-lab-hub-journal-v3',JSON.stringify({after:[[fresh,before.get(fresh)],[old,before.get(old)]]}));
+ createLambdaStorage(s,latest.S,migrateLambdaStorage).getItem(fresh);assert.equal(s.getItem('lambda-lab-hub-journal-v3'),null);
+ s.setItem('lambda-lab-hub-journal-v3',JSON.stringify({after:[['other-game','bad']]}));assert.throws(()=>w.getItem(fresh),/Invalid migration journal/);assert.equal(s.getItem('other-game'),null);
+});
+test('concurrent old writes cannot be overwritten by a stale new capture',()=>{
+ const s=store(),w=createLambdaStorage(s,latest.S,migrateLambdaStorage);w.setItem(fresh,fixture());const basic=historical.S.decode(s.getItem(old));basic.session.steps=1;const changed=historical.S.encode(basic);s.setItem(old,changed);
+ assert.throws(()=>w.setItem(fresh,fixture()),/旧版进度发生变化/);assert.equal(s.getItem(old),changed);assert.equal(latest.C.format(latest.S.decode(w.getItem(fresh)).term),'u v');
 });

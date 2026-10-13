@@ -1,8 +1,12 @@
 # N13 Lambda 资源设计
 
-冻结上游正常构建，先核已追踪离线 HTML 原字节与重建一致，再应用明确的 lambda-storage-isolation-v1 适配。适配只替换 workspace 三个存储键并在 restoreInitial 内迁移旧数据；不修改引擎或游戏规则。proof 同时记录原产物、适配脚本和适配产物摘要，核验仍严格拒绝漂移。
+冻结上游正常构建，先核已追踪离线 HTML 原字节与重建一致，再应用明确的 lambda-storage-isolation-v1 适配。适配只替换 workspace 三个存储键并接入惰性存储层；不修改引擎或游戏规则。proof 同时记录原产物、适配脚本和适配产物摘要，核验仍严格拒绝漂移。
 
-旧键 lambda-lab-v2 / lambda-lab-checkpoint-v2 / lambda-lab-v1；新键 lambda-lab-hub-v3 / lambda-lab-hub-checkpoint-v3 / lambda-lab-hub-legacy-v3。AUTO 新键存在（包括空状态）时不再次迁移。先解码两个旧记录再写，写失败还原新键原值，旧键从不写入或删除。没有旧记录时沿用上游首次启动行为。
+旧键 lambda-lab-v2 / lambda-lab-checkpoint-v2 / lambda-lab-v1；新键 lambda-lab-hub-v3 / lambda-lab-hub-checkpoint-v3 / lambda-lab-hub-legacy-v3。AUTO 新键存在（包括空状态）时不再次迁移。迁移旧原档留在upgrade-backup键；完整快照和保存点保留原路径/原文/策略/方向。旧键新增基础视图用v2，original为当前帧、steps=0，旧reader只显示基础帧；完整历史另存未改。每次完整写入同时刷新基础视图，保存点同样适配。
+
+读取时比较固定旧reader规范化的基础字段，不比较savedAt；旧writer没有改变基本内容则直接返回完整原档，不能让旧writer删除未知扩展。旧版从基础帧继续归约时追加其普通步骤为null路径，保留完整起点和全部轨迹；旧版改写表达式则归档先前完整快照再合并新基础状态，同名同term函数保留source。归档列表累积，不覆盖唯一旧扩展。新偏好保留，速度/视口等旧已知字段接受旧修改。
+
+跨键写入先单键写before/after恢复日志，再提交全体数据；失败尝试还原before，日志未清理时启动重放after完成同一提交。所有日志写入只准预定义本游戏键。旧base偏离当前完整数据对应视图时，拒绝过时的新capture写入并要求重新打开，以免并发覆盖。没有旧记录时沿用上游首次启动行为；存储不可用不会使模块初始化提前失败。
 
 沿用同一游戏 ID、独立 origin、dynamic-v1 存储合同及桥协议，以旧数据保留和新版隔离满足回退保护。静态资源仍为 HTML、MIT、upstream-source.json 三文件。编号递增3，固定集成提交后独立生产四个动态候选，其它三候选须与线上原字节一致。
 
