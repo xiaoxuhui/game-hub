@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" tests="28" failures="0" errors="0" skipped="0" time="101.864" timestamp="2026-10-15T16:01:44" hostname="localhost">
+  <properties>
+    <property name="device" value="game-hub-n17(AVD) - 14" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby" classname="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" time="8.021" />
+  <testcase name="lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby" classname="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" time="4.893" />
+  <testcase name="firstActivatedDynamicUpdateReturnsToLobby" classname="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" time="3.042" />
+  <testcase name="repeatedBackgroundResumeAndRecreateKeepGameBackWorking" classname="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" time="8.962" />
+  <testcase name="loadingBackCancelsLateOpenAndNextOpenReturnsToLobby" classname="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" time="3.643" />
+  <testcase name="gameHistoryReturnsBeforeLobby" classname="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" time="3.691" />
+  <testcase name="firstActivatedBuiltinUpdateReturnsToLobby" classname="com.xiaoxuhui.gamehub.BackNavigationDeviceTest" time="2.899" />
+  <testcase name="loadingErrorDestroysActualViewRejectsOldBridgeAndKeepsActualLightSave" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="2.025" />
+  <testcase name="cardsDisplayActualCandidateAndActiveVersionsWithoutPromotingRemoteVersion" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.337" />
+  <testcase name="lobbyIsImmediatelyUsableAndRotationKeepsOneCoordinator" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="0.852" />
+  <testcase name="stoppedActivitySaveBridgeRejectsBeforeOpeningExternalFlow" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="46.055" />
+  <testcase name="oneOfFourRenewalFailuresDoesNotPreventOthersAndClearsAfterItsSuccess" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="2.128" />
+  <testcase name="startupChecksDoNotBlockOpeningActualOfflineGame" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.105" />
+  <testcase name="settingsPersistWithoutUiThreadDiskWrites" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="0.749" />
+  <testcase name="unknownAndFailedLocalScanNeverClaimBuiltinOrRemoteUpdates" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="0.93" />
+  <testcase name="localRecoveryCommitsOffUiAndPersistsAcrossStoreRecreation" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="0.703" />
+  <testcase name="blockedCrossGameNavigationKeepsVerifiedDownloadedSessionAndDoesNotQuarantineIt" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="1.842" />
+  <testcase name="trackedConfirmationIsDismissedOnStopAndDoesNotReopenOnRotation" classname="com.xiaoxuhui.gamehub.UpdateLifecycleTest" time="0.826" />
+  <testcase name="downloadedTuringWorkerUsesSessionResourcesAndCompletesActualProtocol" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="0.829" />
+  <testcase name="emlRealSelectionStateSurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="0.978" />
+  <testcase name="turingActualProjectEditorSurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="1.052" />
+  <testcase name="lightActualStarsSurviveResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="1.058" />
+  <testcase name="conwayPatternLibrarySurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="1.233" />
+  <testcase name="turingCampaignDraftSurvivesResourceUpgradeAndBuiltinRestore" classname="com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest" time="1.11" />
+  <testcase name="controllingWorkerCacheCannotSurviveFreshResolverSession" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.522" />
+  <testcase name="registeredCacheIsRemovedAndActualLightSaveIsPreservedButUnknownCacheBlocks" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.392" />
+  <testcase name="builtinResolverLoadsRealGameAtStableOriginAndRejectsOtherGameResources" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.161" />
+  <testcase name="forgedGuardPageFromRootWorkerCannotAuthorizeBuiltinOrActivation" classname="com.xiaoxuhui.gamehub.ResourceWebViewTest" time="0.244" />
+</testsuite>
