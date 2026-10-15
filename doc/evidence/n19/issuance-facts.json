@@ -1,0 +1,138 @@
+{
+  "catalogSequence": "12",
+  "catalogAssetId": 644646912,
+  "catalogSha256": "6aede403cda76fb941ed6680823aaae5a438aa3b9a6f58ce66636bc15818037c",
+  "previousCatalogAssetId": 644539134,
+  "previousCatalogName": "catalog-seq11-f5dcbee0336e.signed.json",
+  "oldGameDescriptorsUnchanged": true,
+  "miniScratch": {
+    "id": "mini-scratch",
+    "displayName": "灵感积木",
+    "iconKind": "generic",
+    "available": true,
+    "version": "0.3.0",
+    "contentCode": 5,
+    "sourceRepository": "https://github.com/xiaoxuhui/mini-scratch.git",
+    "sourceRevision": "e98545924338d66d716b44f3c1f75bf3f32f5556",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "mini-scratch-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 274032,
+    "archiveSha256": "ebb50a24d9f573256d31fd810617951b7e13944ca7b52f863d3ab21e2f74b1c1",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 11965,
+        "sha256": "ae83009015095520b5ab2b90944bcf7919ff80f4021b73fbeec161143a46f6c2",
+        "mime": "text/html"
+      },
+      {
+        "path": "play.html",
+        "bytes": 136321,
+        "sha256": "b278c4c9f15fb2844b4952095c2324c6039ba0cccf796e2bc7b2eaff6f1996bb",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 12863,
+        "sha256": "06dc9b08b0191ebd8c55ff6a57a3e9575d2dab282e261978150e7cc58bbd2439",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/asset-editor.js",
+        "bytes": 11206,
+        "sha256": "cfd6c31393e273fe0f91ae80975560d6a10c41d38bb5d94f0bf26f644e243ce3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/assets.js",
+        "bytes": 2858,
+        "sha256": "2cebcbff461b4d598818ec45914841fa745589814ebd043fe24a02098b465e79",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/audio.js",
+        "bytes": 2698,
+        "sha256": "d047a1d1a3e4bc59790a2cbf987bb6227fcb9f24a25faf9ac751a6f228f13232",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/blocks.js",
+        "bytes": 7058,
+        "sha256": "ac9a667f36233c12e13c91e91d21eea594ab2fc4c550b0ce332b3f04cca2033d",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 320,
+        "sha256": "73755eeb3c77a111c95fabdaa714fa0e64162fefba3fb6995d5420b12b81a3cb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/editor.js",
+        "bytes": 23973,
+        "sha256": "958aebba355e04ad999fba7e768e895a796cd7e8971287d52337d64de338b29f",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/expressions.js",
+        "bytes": 3559,
+        "sha256": "2f41342bbe141d8fcc48ab823a29086629dd50635003d150f59cebce12dbdac3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/persistence.js",
+        "bytes": 1069,
+        "sha256": "f177ac9c4e8792622e857a72778fa6ba2cbacf0f26640bee88d6c2ea4d1017d5",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/procedures.js",
+        "bytes": 3905,
+        "sha256": "81d26a61944c8f8237c1227c1c688687a67bc8559600052b16c28f9c968cacd7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/project.js",
+        "bytes": 8477,
+        "sha256": "e446ddf438b018651c3726570896e6411d1d858546c8ddb79238d014f5918855",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/recorder.js",
+        "bytes": 2337,
+        "sha256": "d0ac5a42daf67229b6271da8a2949ed7aa10277482a993fcb6023e769b433154",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/runtime.js",
+        "bytes": 9426,
+        "sha256": "0c4817085c729320244628a6b3a054a8f2d336d09d15734fb43d9c7d3590b468",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/sprites.js",
+        "bytes": 1850,
+        "sha256": "f534d58c66ce786a1bf2ba5283c8d8e9f284a454e6fb9858c6f25a67f19159a7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/style.css",
+        "bytes": 31211,
+        "sha256": "453e5313e25fd0a5a50319f38656574035cb0b300e0f1f278c2451f00c6b743e",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "0.3.0：自定义角色/背景可导入、绘画和保存；声音可录入、导入、试听与播放（旧大厅麦克风未开放时请导入系统录音）。自制积木支持多个具名数字、文字、布尔参数；真假积木六边形，当前坐标、方向、大小、音量等可直接运算。独立v3存档保留旧槽与备份，手柄图标保持。",
+    "assetId": 644643800
+  }
+}
