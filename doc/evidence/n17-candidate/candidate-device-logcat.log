@@ -1,0 +1,275 @@
+--------- beginning of main
+10-15 15:53:08.037  3582  3603 I TestRunner: run started: 7 tests
+10-15 15:53:08.038  3582  3603 I TestRunner: started: lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:10.396  3582  3603 I System.out: N17 builtin before first open: ResourceSelection(active=builtin, previous=builtin, ready=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 15:53:12.333  3582  3582 I System.out: N17 before lobby back: activity=2046953 task=24 pid=3582 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 15:53:12.869  3582  3603 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 15:53:14.331  3582  3582 I System.out: N17 resumed same activity=2046953 task=24 pid=3582
+10-15 15:53:16.131  3582  3603 I System.out: N17 after first open: id=light ResourceSelection(active=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, previous=builtin, ready=null, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 15:53:19.127  3582  3603 I System.out: N17 after updated game BACK: id=light activityState=RESUMED
+10-15 15:53:21.557  3582  3603 I TestRunner: finished: lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:21.564  3582  3603 I TestRunner: started: lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:23.344  3582  3603 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 15:53:24.498  3582  3582 I System.out: N17 before lobby back: activity=176162851 task=25 pid=3582 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 15:53:25.080  3582  3603 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 15:53:26.651  3582  3582 I System.out: N17 resumed same activity=176162851 task=25 pid=3582
+10-15 15:53:28.080  3582  3603 I System.out: N17 after first open: id=memory-demo ResourceSelection(active=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, previous=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, ready=null, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 15:53:28.297  3582  3603 I System.out: N17 after updated game BACK: id=memory-demo activityState=RESUMED
+10-15 15:53:30.066  3582  3603 I TestRunner: finished: lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:30.080  3582  3603 I TestRunner: started: firstActivatedDynamicUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:31.893  3582  3603 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 15:53:34.516  3582  3603 I System.out: N17 after first open: id=memory-demo ResourceSelection(active=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, previous=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, ready=null, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 15:53:34.663  3582  3603 I System.out: N17 after updated game BACK: id=memory-demo activityState=RESUMED
+10-15 15:53:36.168  3582  3603 I TestRunner: finished: firstActivatedDynamicUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:36.182  3582  3603 I TestRunner: started: repeatedBackgroundResumeAndRecreateKeepGameBackWorking(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:38.096  3582  3582 I System.out: N17 before lobby back: activity=153792771 task=27 pid=3582 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 15:53:38.649  3582  3603 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 15:53:40.085  3582  3582 I System.out: N17 resumed same activity=153792771 task=27 pid=3582
+10-15 15:53:42.465  3582  3582 I System.out: N17 before lobby back: activity=222856773 task=27 pid=3582 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 15:53:42.988  3582  3603 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 15:53:44.417  3582  3582 I System.out: N17 resumed same activity=222856773 task=27 pid=3582
+10-15 15:53:47.055  3582  3603 I TestRunner: finished: repeatedBackgroundResumeAndRecreateKeepGameBackWorking(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:47.058  3582  3603 I TestRunner: started: loadingBackCancelsLateOpenAndNextOpenReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:51.266  3582  3603 I TestRunner: finished: loadingBackCancelsLateOpenAndNextOpenReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:51.268  3582  3603 I TestRunner: started: gameHistoryReturnsBeforeLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:53:53.651  3582  3603 I System.out: N17 history before navigation: "{\"url\":\"https://appassets.androidplatform.net/assets/games/turing/index.html\",\"ready\":\"complete\",\"length\":1}"
+10-15 15:54:13.682  3582  3603 I System.out: N17 history after navigation: "{\"url\":\"https://appassets.androidplatform.net/assets/games/turing/campaign.html\",\"ready\":\"complete\",\"length\":2}"
+10-15 15:54:13.682  3582  3582 I System.out: N17 history state: failed=false web=android.webkit.WebView{9592153 VFEDHVC.. ........ 0,0-320,616} overlay=null
+10-15 15:54:14.180  3582  3603 E TestRunner: failed: gameHistoryReturnsBeforeLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:54:14.189  3582  3603 E TestRunner: ----- begin exception -----
+10-15 15:54:14.189  3582  3603 E TestRunner: java.lang.AssertionError: Timed out: actual campaign navigation committed
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.Assert.fail(Assert.java:89)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.Assert.assertTrue(Assert.java:42)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.await(BackNavigationDeviceTest.kt:63)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.access$await(BackNavigationDeviceTest.kt:20)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$gameHistoryReturnsBeforeLobby$1.invoke(BackNavigationDeviceTest.kt:258)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$gameHistoryReturnsBeforeLobby$1.invoke(BackNavigationDeviceTest.kt:253)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi(BackNavigationDeviceTest.kt:183)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi$default(BackNavigationDeviceTest.kt:161)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.gameHistoryReturnsBeforeLobby(BackNavigationDeviceTest.kt:253)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at java.lang.reflect.Method.invoke(Native Method)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.Suite.runChild(Suite.java:128)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.Suite.runChild(Suite.java:27)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:68)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:463)
+10-15 15:54:14.189  3582  3603 E TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2402)
+10-15 15:54:14.189  3582  3603 E TestRunner: ----- end exception -----
+10-15 15:54:14.192  3582  3603 I TestRunner: finished: gameHistoryReturnsBeforeLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:54:14.197  3582  3603 I TestRunner: started: firstActivatedBuiltinUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:54:14.865  3582  3603 I System.out: N17 builtin before first open: ResourceSelection(active=builtin, previous=builtin, ready=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 15:54:16.952  3582  3603 I System.out: N17 after first open: id=light ResourceSelection(active=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, previous=builtin, ready=null, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 15:54:17.019  3582  3603 I System.out: N17 after updated game BACK: id=light activityState=RESUMED
+10-15 15:54:18.748  3582  3603 I TestRunner: finished: firstActivatedBuiltinUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 15:54:18.751  3582  3603 I TestRunner: run finished: 7 tests, 1 failed, 0 ignored
+10-15 16:00:00.933  4695  4716 I TestRunner: run started: 28 tests
+10-15 16:00:00.935  4695  4716 I TestRunner: started: lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:01.552  4695  4716 I System.out: N17 builtin before first open: ResourceSelection(active=builtin, previous=builtin, ready=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:00:03.414  4695  4695 I System.out: N17 before lobby back: activity=103273231 task=31 pid=4695 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:00:03.931  4695  4716 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:00:05.306  4695  4695 I System.out: N17 resumed same activity=103273231 task=31 pid=4695
+10-15 16:00:06.380  4695  4716 I System.out: N17 after first open: id=light ResourceSelection(active=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, previous=builtin, ready=null, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:00:07.993  4695  4716 I System.out: N17 after updated game BACK: id=light activityState=RESUMED
+10-15 16:00:09.025  4695  4716 I TestRunner: finished: lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:09.028  4695  4716 I TestRunner: started: lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:09.555  4695  4716 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:00:10.302  4695  4695 I System.out: N17 before lobby back: activity=2226506 task=32 pid=4695 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:00:10.834  4695  4716 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:00:12.195  4695  4695 I System.out: N17 resumed same activity=2226506 task=32 pid=4695
+10-15 16:00:12.845  4695  4716 I System.out: N17 after first open: id=memory-demo ResourceSelection(active=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, previous=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, ready=null, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:00:12.933  4695  4716 I System.out: N17 after updated game BACK: id=memory-demo activityState=RESUMED
+10-15 16:00:13.930  4695  4716 I TestRunner: finished: lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:13.932  4695  4716 I TestRunner: started: firstActivatedDynamicUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:14.511  4695  4716 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:00:15.977  4695  4716 I System.out: N17 after first open: id=memory-demo ResourceSelection(active=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, previous=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, ready=null, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:00:16.043  4695  4716 I System.out: N17 after updated game BACK: id=memory-demo activityState=RESUMED
+10-15 16:00:16.973  4695  4716 I TestRunner: finished: firstActivatedDynamicUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:16.975  4695  4716 I TestRunner: started: repeatedBackgroundResumeAndRecreateKeepGameBackWorking(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:18.695  4695  4695 I System.out: N17 before lobby back: activity=126640648 task=34 pid=4695 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:00:19.226  4695  4716 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:00:21.146  4695  4695 I System.out: N17 resumed same activity=126640648 task=34 pid=4695
+10-15 16:00:22.412  4695  4695 I System.out: N17 before lobby back: activity=114160866 task=34 pid=4695 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:00:22.920  4695  4716 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:00:24.538  4695  4695 I System.out: N17 resumed same activity=114160866 task=34 pid=4695
+10-15 16:00:25.938  4695  4716 I TestRunner: finished: repeatedBackgroundResumeAndRecreateKeepGameBackWorking(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:25.940  4695  4716 I TestRunner: started: loadingBackCancelsLateOpenAndNextOpenReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:29.599  4695  4716 I TestRunner: finished: loadingBackCancelsLateOpenAndNextOpenReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:29.602  4695  4716 I TestRunner: started: gameHistoryReturnsBeforeLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:31.743  4695  4716 I System.out: N17 history before navigation: "{\"url\":\"https://appassets.androidplatform.net/assets/games/turing/index.html\",\"ready\":\"complete\",\"length\":1}"
+10-15 16:00:31.747  4695  4716 I System.out: N17 actual campaign link system tap: 61,99
+10-15 16:00:32.750  4695  4716 I System.out: N17 history after navigation: "{\"url\":\"https://appassets.androidplatform.net/assets/games/turing/campaign.html\",\"ready\":\"complete\",\"length\":2}"
+10-15 16:00:32.757  4695  4695 I System.out: N17 history state: failed=false canGoBack=true count=2 index=1 url=https://appassets.androidplatform.net/assets/games/turing/campaign.html overlay=null
+10-15 16:00:33.285  4695  4716 I TestRunner: finished: gameHistoryReturnsBeforeLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:33.287  4695  4716 I TestRunner: started: firstActivatedBuiltinUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:33.736  4695  4716 I System.out: N17 builtin before first open: ResourceSelection(active=builtin, previous=builtin, ready=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:00:35.110  4695  4716 I System.out: N17 after first open: id=light ResourceSelection(active=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, previous=builtin, ready=null, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:00:35.163  4695  4716 I System.out: N17 after updated game BACK: id=light activityState=RESUMED
+10-15 16:00:36.191  4695  4716 I TestRunner: finished: firstActivatedBuiltinUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:00:36.194  4695  4716 I TestRunner: started: loadingErrorDestroysActualViewRejectsOldBridgeAndKeepsActualLightSave(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:00:38.212  4695  4716 I TestRunner: finished: loadingErrorDestroysActualViewRejectsOldBridgeAndKeepsActualLightSave(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:00:38.215  4695  4716 I TestRunner: started: cardsDisplayActualCandidateAndActiveVersionsWithoutPromotingRemoteVersion(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:00:39.569  4695  4716 I TestRunner: finished: cardsDisplayActualCandidateAndActiveVersionsWithoutPromotingRemoteVersion(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:00:39.574  4695  4716 I TestRunner: started: lobbyIsImmediatelyUsableAndRotationKeepsOneCoordinator(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:00:40.422  4695  4716 I TestRunner: finished: lobbyIsImmediatelyUsableAndRotationKeepsOneCoordinator(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:00:40.425  4695  4716 I TestRunner: started: stoppedActivitySaveBridgeRejectsBeforeOpeningExternalFlow(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:26.488  4695  4716 I TestRunner: finished: stoppedActivitySaveBridgeRejectsBeforeOpeningExternalFlow(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:26.489  4695  4716 I TestRunner: started: oneOfFourRenewalFailuresDoesNotPreventOthersAndClearsAfterItsSuccess(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:28.629  4695  4716 I TestRunner: finished: oneOfFourRenewalFailuresDoesNotPreventOthersAndClearsAfterItsSuccess(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:28.631  4695  4716 I TestRunner: started: startupChecksDoNotBlockOpeningActualOfflineGame(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:29.724  4695  4716 I TestRunner: finished: startupChecksDoNotBlockOpeningActualOfflineGame(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:29.726  4695  4716 I TestRunner: started: settingsPersistWithoutUiThreadDiskWrites(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:30.501  4695  4716 I TestRunner: finished: settingsPersistWithoutUiThreadDiskWrites(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:30.503  4695  4716 I TestRunner: started: unknownAndFailedLocalScanNeverClaimBuiltinOrRemoteUpdates(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:31.434  4695  4716 I TestRunner: finished: unknownAndFailedLocalScanNeverClaimBuiltinOrRemoteUpdates(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:31.436  4695  4716 I TestRunner: started: localRecoveryCommitsOffUiAndPersistsAcrossStoreRecreation(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:32.136  4695  4716 I TestRunner: finished: localRecoveryCommitsOffUiAndPersistsAcrossStoreRecreation(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:32.137  4695  4716 I TestRunner: started: blockedCrossGameNavigationKeepsVerifiedDownloadedSessionAndDoesNotQuarantineIt(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:33.977  4695  4716 I TestRunner: finished: blockedCrossGameNavigationKeepsVerifiedDownloadedSessionAndDoesNotQuarantineIt(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:33.979  4695  4716 I TestRunner: started: trackedConfirmationIsDismissedOnStopAndDoesNotReopenOnRotation(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:34.817  4695  4716 I TestRunner: finished: trackedConfirmationIsDismissedOnStopAndDoesNotReopenOnRotation(com.xiaoxuhui.gamehub.UpdateLifecycleTest)
+10-15 16:01:34.820  4695  4716 I TestRunner: started: downloadedTuringWorkerUsesSessionResourcesAndCompletesActualProtocol(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:35.650  4695  4716 I TestRunner: finished: downloadedTuringWorkerUsesSessionResourcesAndCompletesActualProtocol(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:35.655  4695  4716 I TestRunner: started: emlRealSelectionStateSurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:36.649  4695  4716 I TestRunner: finished: emlRealSelectionStateSurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:36.651  4695  4716 I TestRunner: started: turingActualProjectEditorSurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:37.702  4695  4716 I TestRunner: finished: turingActualProjectEditorSurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:37.705  4695  4716 I TestRunner: started: lightActualStarsSurviveResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:38.756  4695  4716 I TestRunner: finished: lightActualStarsSurviveResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:38.758  4695  4716 I TestRunner: started: conwayPatternLibrarySurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:39.989  4695  4716 I TestRunner: finished: conwayPatternLibrarySurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:39.991  4695  4716 I TestRunner: started: turingCampaignDraftSurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:41.122  4695  4716 I TestRunner: finished: turingCampaignDraftSurvivesResourceUpgradeAndBuiltinRestore(com.xiaoxuhui.gamehub.ResourceStorageCompatibilityTest)
+10-15 16:01:41.123  4695  4716 I TestRunner: started: controllingWorkerCacheCannotSurviveFreshResolverSession(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:41.629  4695  4716 I TestRunner: finished: controllingWorkerCacheCannotSurviveFreshResolverSession(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:41.631  4695  4716 I TestRunner: started: registeredCacheIsRemovedAndActualLightSaveIsPreservedButUnknownCacheBlocks(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:42.035  4695  4716 I TestRunner: finished: registeredCacheIsRemovedAndActualLightSaveIsPreservedButUnknownCacheBlocks(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:42.036  4695  4716 I TestRunner: started: builtinResolverLoadsRealGameAtStableOriginAndRejectsOtherGameResources(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:42.195  4695  4716 I TestRunner: finished: builtinResolverLoadsRealGameAtStableOriginAndRejectsOtherGameResources(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:42.198  4695  4716 I TestRunner: started: forgedGuardPageFromRootWorkerCannotAuthorizeBuiltinOrActivation(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:42.450  4695  4716 I TestRunner: finished: forgedGuardPageFromRootWorkerCannotAuthorizeBuiltinOrActivation(com.xiaoxuhui.gamehub.ResourceWebViewTest)
+10-15 16:01:42.453  4695  4716 I TestRunner: run finished: 28 tests, 0 failed, 0 ignored
+10-15 16:15:53.489  6776  6796 I TestRunner: run started: 1 tests
+10-15 16:15:53.489  6776  6796 I TestRunner: started: actualSignedApkUpgradePreservesGameplayAndBack(com.xiaoxuhui.gamehub.BackNavigationUpgradeDeviceTest)
+10-15 16:15:53.866  6776  6796 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:15:56.429  6776  6796 I System.out: N17 production-signed 0.4.1 gameplay save seeded: sha256=be0f3074e9baddba1b6adfb2c6948ea627c5aafd9e3e26efca7f9284415b3427
+10-15 16:15:56.975  6776  6796 I System.out: N17 upgrade mode=seed actual first activation/physical back/reentry passed
+10-15 16:15:57.366  6776  6796 I TestRunner: finished: actualSignedApkUpgradePreservesGameplayAndBack(com.xiaoxuhui.gamehub.BackNavigationUpgradeDeviceTest)
+10-15 16:15:57.367  6776  6796 I TestRunner: run finished: 1 tests, 0 failed, 0 ignored
+10-15 16:15:58.297  7007  7027 I TestRunner: run started: 1 tests
+10-15 16:15:58.297  7007  7027 I TestRunner: started: actualSignedApkUpgradePreservesGameplayAndBack(com.xiaoxuhui.gamehub.BackNavigationUpgradeDeviceTest)
+10-15 16:15:58.528  7007  7027 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:16:00.300  7007  7007 I System.out: N17 before lobby back: activity=192209609 task=59 pid=7007 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:16:00.815  7007  7027 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:16:02.176  7007  7007 I System.out: N17 resumed same activity=192209609 task=59 pid=7007
+10-15 16:16:02.777  7007  7027 I System.out: N17 production-signed 0.4.1->0.4.2 complete gameplay save preserved: sha256=be0f3074e9baddba1b6adfb2c6948ea627c5aafd9e3e26efca7f9284415b3427
+10-15 16:16:03.409  7007  7027 I System.out: N17 upgrade mode=verify actual first activation/physical back/reentry passed
+10-15 16:16:03.782  7007  7027 I TestRunner: finished: actualSignedApkUpgradePreservesGameplayAndBack(com.xiaoxuhui.gamehub.BackNavigationUpgradeDeviceTest)
+10-15 16:16:03.784  7007  7027 I TestRunner: run finished: 1 tests, 0 failed, 0 ignored
+10-15 16:16:25.349  7228  7248 I TestRunner: run started: 26 tests
+10-15 16:16:25.349  7228  7248 I TestRunner: started: lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:25.579  7228  7248 I System.out: N17 builtin before first open: ResourceSelection(active=builtin, previous=builtin, ready=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:16:27.328  7228  7228 I System.out: N17 before lobby back: activity=2046953 task=60 pid=7228 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:16:27.859  7228  7248 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:16:29.227  7228  7228 I System.out: N17 resumed same activity=2046953 task=60 pid=7228
+10-15 16:16:29.894  7228  7248 I System.out: N17 after first open: id=light ResourceSelection(active=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, previous=builtin, ready=null, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:16:29.940  7228  7248 I System.out: N17 after updated game BACK: id=light activityState=RESUMED
+10-15 16:16:31.747  7228  7248 I TestRunner: finished: lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:31.748  7228  7248 I TestRunner: started: lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:32.274  7228  7248 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:16:32.965  7228  7228 I System.out: N17 before lobby back: activity=110483928 task=61 pid=7228 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:16:33.501  7228  7248 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:16:34.862  7228  7228 I System.out: N17 resumed same activity=110483928 task=61 pid=7228
+10-15 16:16:35.333  7228  7248 I System.out: N17 after first open: id=memory-demo ResourceSelection(active=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, previous=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, ready=null, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:16:35.459  7228  7248 I System.out: N17 after updated game BACK: id=memory-demo activityState=RESUMED
+10-15 16:16:36.327  7228  7248 I TestRunner: finished: lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:36.329  7228  7248 I TestRunner: started: firstActivatedDynamicUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:36.714  7228  7248 I System.out: N17 dynamic before first open: ResourceSelection(active=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, previous=builtin, ready=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:16:38.009  7228  7248 I System.out: N17 after first open: id=memory-demo ResourceSelection(active=2-fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, previous=1-27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b, ready=null, pinned=false, highestCode=2, highestHash=fc0aabbd7c6546dc9c652d7eb6d9e1842856c1a4f0827c888c125b11565e9622, quarantine=[], available=true)
+10-15 16:16:38.079  7228  7248 I System.out: N17 after updated game BACK: id=memory-demo activityState=RESUMED
+10-15 16:16:38.959  7228  7248 I TestRunner: finished: firstActivatedDynamicUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:38.962  7228  7248 I TestRunner: started: repeatedBackgroundResumeAndRecreateKeepGameBackWorking(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:40.053  7228  7228 I System.out: N17 before lobby back: activity=221570288 task=63 pid=7228 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:16:40.563  7228  7248 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:16:41.927  7228  7228 I System.out: N17 resumed same activity=221570288 task=63 pid=7228
+10-15 16:16:42.942  7228  7228 I System.out: N17 before lobby back: activity=233840266 task=63 pid=7228 root=true intent=#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;launchFlags=0x10200000;component=com.xiaoxuhui.gamehub/.MainActivity;sourceBounds=236%20327%20312%20447;end
+10-15 16:16:43.447  7228  7248 I System.out: N17 after lobby system BACK: state=CREATED
+10-15 16:16:44.804  7228  7228 I System.out: N17 resumed same activity=233840266 task=63 pid=7228
+10-15 16:16:46.277  7228  7248 I TestRunner: finished: repeatedBackgroundResumeAndRecreateKeepGameBackWorking(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:46.279  7228  7248 I TestRunner: started: loadingBackCancelsLateOpenAndNextOpenReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:50.083  7228  7248 I TestRunner: finished: loadingBackCancelsLateOpenAndNextOpenReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:50.086  7228  7248 I TestRunner: started: gameHistoryReturnsBeforeLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:52.201  7228  7248 I System.out: N17 history before navigation: "{\"url\":\"https://appassets.androidplatform.net/assets/games/turing/index.html\",\"ready\":\"complete\",\"length\":1}"
+10-15 16:16:52.203  7228  7248 I System.out: N17 actual campaign link system tap: 61,99
+10-15 16:16:53.177  7228  7248 I System.out: N17 history after navigation: "{\"url\":\"https://appassets.androidplatform.net/assets/games/turing/campaign.html\",\"ready\":\"complete\",\"length\":2}"
+10-15 16:16:53.177  7228  7228 I System.out: N17 history state: failed=false canGoBack=true count=2 index=1 url=https://appassets.androidplatform.net/assets/games/turing/campaign.html overlay=null
+10-15 16:16:53.675  7228  7248 I TestRunner: finished: gameHistoryReturnsBeforeLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:53.677  7228  7248 I TestRunner: started: firstActivatedBuiltinUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:53.940  7228  7248 I System.out: N17 builtin before first open: ResourceSelection(active=builtin, previous=builtin, ready=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:16:55.862  7228  7248 I System.out: N17 after first open: id=light ResourceSelection(active=2-339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, previous=builtin, ready=null, pinned=false, highestCode=2, highestHash=339fbdcde1ac68e53f4241d282a872c04c5d4dd15a03be08bd8a5cdf1dadea01, quarantine=[], available=true)
+10-15 16:16:55.907  7228  7248 I System.out: N17 after updated game BACK: id=light activityState=RESUMED
+10-15 16:16:56.857  7228  7248 I TestRunner: finished: firstActivatedBuiltinUpdateReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+10-15 16:16:56.859  7228  7248 I TestRunner: started: badArchivePreservesBuiltinAndCleansPartBeforeExplicitRetry(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:57.386  7228  7248 I TestRunner: finished: badArchivePreservesBuiltinAndCleansPartBeforeExplicitRetry(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:57.387  7228  7248 I TestRunner: started: sourceRateLimitIsDurableAndDoesNotBlockOtherUpdateChannels(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:57.791  7228  7248 I TestRunner: finished: sourceRateLimitIsDurableAndDoesNotBlockOtherUpdateChannels(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:57.793  7228  7248 I TestRunner: started: goingOfflineMarksSuccessfulResultsAsHistorical(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:58.048  7228  7248 I TestRunner: finished: goingOfflineMarksSuccessfulResultsAsHistorical(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:58.049  7228  7248 I TestRunner: started: meteredNeedsManualConfirmationAndSavedAutomaticOptOutPersists(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:58.557  7228  7248 I TestRunner: finished: meteredNeedsManualConfirmationAndSavedAutomaticOptOutPersists(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:58.559  7228  7248 I TestRunner: started: resourceRateLimitPersistsIndependentlyWhileApkReminderRemainsAvailable(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:58.799  7228  7248 I TestRunner: finished: resourceRateLimitPersistsIndependentlyWhileApkReminderRemainsAvailable(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:58.801  7228  7248 I TestRunner: started: source404AndTimeoutDoNotHideOtherVersionsOrSignedResources(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:59.079  7228  7248 I TestRunner: finished: source404AndTimeoutDoNotHideOtherVersionsOrSignedResources(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:59.080  7228  7248 I TestRunner: started: wifiAutomaticallyDownloadsOnlyChangedGameAndNeverTheApk(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:59.286  7228  7248 I TestRunner: finished: wifiAutomaticallyDownloadsOnlyChangedGameAndNeverTheApk(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:16:59.287  7228  7248 I TestRunner: started: apkRateLimitsAndMissingReleaseDoNotBlockResourceChannel(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:17:00.885  7228  7248 I TestRunner: finished: apkRateLimitsAndMissingReleaseDoNotBlockResourceChannel(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:17:00.887  7228  7248 I TestRunner: started: gameBackgroundAndMeteredTransitionsCancelHoldBusyUntilCleanupThenAllowManualRetry(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:17:01.627  7228  7248 I TestRunner: finished: gameBackgroundAndMeteredTransitionsCancelHoldBusyUntilCleanupThenAllowManualRetry(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:17:01.629  7228  7248 I TestRunner: started: manualAndStartupQueriesIncludeAllRegisteredGameRepositories(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:17:01.852  7228  7248 I TestRunner: finished: manualAndStartupQueriesIncludeAllRegisteredGameRepositories(com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest)
+10-15 16:17:01.854  7228  7248 I TestRunner: started: apk403CannotBlockDynamicAutoUpdateAndMissingV2DoesNotBlockOldChannels(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:02.569  7228  7248 I TestRunner: finished: apk403CannotBlockDynamicAutoUpdateAndMissingV2DoesNotBlockOldChannels(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:02.570  7228  7248 I TestRunner: started: installedCompatibleGameUpdatesAutomaticallyAndRetirementClearsOnlyReady(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:03.180  7228  7248 I TestRunner: finished: installedCompatibleGameUpdatesAutomaticallyAndRetirementClearsOnlyReady(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:03.181  7228  7248 I TestRunner: started: installedDynamicFailurePersistsInDynamicStoreAndExplicitCodeOneRetryWorks(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:03.917  7228  7248 I TestRunner: finished: installedDynamicFailurePersistsInDynamicStoreAndExplicitCodeOneRetryWorks(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:03.917  7228  7248 I TestRunner: started: dynamic429BackoffPersistsWhileV1AndApkRemainAvailable(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:04.246  7228  7248 I TestRunner: finished: dynamic429BackoffPersistsWhileV1AndApkRemainAvailable(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:04.246  7228  7248 I TestRunner: started: blockedDynamicReadRetainsGlobalBusyUntilCancelledBytesAreCleaned(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:04.967  7228  7248 I TestRunner: finished: blockedDynamicReadRetainsGlobalBusyUntilCancelledBytesAreCleaned(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:04.967  7228  7248 I TestRunner: started: wifiFirstInstallIsManualAndRemovedGameNeverAutomaticallyReinstalls(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:05.465  7228  7248 I TestRunner: finished: wifiFirstInstallIsManualAndRemovedGameNeverAutomaticallyReinstalls(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:05.466  7228  7248 I TestRunner: started: sharedActualStoreBytesRejectDynamicInstallAndKeepBothOldSelections(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:05.926  7228  7248 I TestRunner: finished: sharedActualStoreBytesRejectDynamicInstallAndKeepBothOldSelections(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:05.927  7228  7248 I TestRunner: started: incompatibleNewGameIsVisibleButCannotDownloadAndCorruptInstalledUpdateKeepsOld(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:06.783  7228  7248 I TestRunner: finished: incompatibleNewGameIsVisibleButCannotDownloadAndCorruptInstalledUpdateKeepsOld(com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest)
+10-15 16:17:06.784  7228  7248 I TestRunner: started: futureHostGameExplainsCompatibilityAndOffersNoInstall(com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest)
+10-15 16:17:08.413  7228  7248 I System.out: Native UI screenshot: /storage/emulated/0/Android/data/com.xiaoxuhui.gamehub/cache/n4-ui-incompatible-directory.png
+10-15 16:17:08.745  7228  7248 I TestRunner: finished: futureHostGameExplainsCompatibilityAndOffersNoInstall(com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest)
+10-15 16:17:08.747  7228  7248 I TestRunner: run finished: 26 tests, 0 failed, 0 ignored

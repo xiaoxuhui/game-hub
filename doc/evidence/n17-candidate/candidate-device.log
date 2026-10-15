@@ -1,0 +1,12 @@
+
+com.xiaoxuhui.gamehub.BackNavigationDeviceTest:.......
+com.xiaoxuhui.gamehub.UpdateCoordinatorDeviceTest:..........
+com.xiaoxuhui.gamehub.DynamicCoordinatorDeviceTest:........
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name color
+s_glBindAttribLocation: bind attrib 2 name localCoord
+com.xiaoxuhui.gamehub.DynamicLobbyDeviceTest:.
+
+Time: 43.398
+
+OK (26 tests)

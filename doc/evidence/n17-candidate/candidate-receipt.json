@@ -1,0 +1,17 @@
+{
+  "candidateSourceSha": "0f8c66088809267626d4ce6fb9eee2cc216dc20c",
+  "versionName": "0.4.2",
+  "versionCode": 6,
+  "formalReleaseCreated": false,
+  "apkBytes": 2654159,
+  "apkSha256": "74dd285154ad01725edd543d057f9e16a0226b6297ab87e20234c8791356ffb0",
+  "certificateDerBytes": 1031,
+  "certificateSha256": "44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2",
+  "baselineApkSha256": "9f57c90af42efea54e4e079d637d964346a78e7e880493eac7887f9aaac323da",
+  "upgradeSeedTests": 1,
+  "upgradeVerifyTests": 1,
+  "upgradeSaveProofSha256": "be0f3074e9baddba1b6adfb2c6948ea627c5aafd9e3e26efca7f9284415b3427",
+  "nodeTests": 85,
+  "jvmTests": 95,
+  "recordedAt": "2026-10-15T16:17:06.6341682+00:00"
+}
