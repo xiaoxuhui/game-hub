@@ -12,14 +12,20 @@ const getter = (options = {}) => async path => {
   return {default_branch: 'main'};
 };
 
-test('six actual upstreams include separate red-green and turing baselines', () => {
+test('seven actual upstreams include direct dynamic source and separate red-green baseline', () => {
   const sources = loadSources();
-  assert.equal(sources.length, 6);
+  assert.equal(sources.length, 7);
   const turing = sources.find(s => s.id === 'turing');
   assert.deepEqual(turing.consumers.map(c => c.id), ['turing', 'red-green-puzzle']);
   assert.notEqual(turing.consumers[0].revision, turing.consumers[1].revision);
   assert.ok(turing.consumers[1].inputs.includes('doc/red-green-puzzle.html'));
   assert.equal(sources.find(s => s.id === 'lambda-diagram-game').repository, 'https://github.com/xiaoxuhui/lambda-diagram-game.git');
+  const scratch=sources.find(s=>s.id==='mini-scratch');
+  assert.equal(scratch.repository,'https://github.com/xiaoxuhui/mini-scratch.git');
+  assert.equal(scratch.consumers.length,1);
+  assert.ok(scratch.consumers[0].inputs.includes('dist/src/core.js'));
+  assert.equal(classifyChanges([{filename:'dist/src/core.js'}],scratch.consumers[0].inputs).status,'resource-change-pending-review');
+  assert.equal(classifyChanges([{filename:'README.md'}],scratch.consumers[0].inputs).status,'metadata-only');
 });
 test('release versions distinguish newer, equal and older without numeric rounding', () => {
   assert.equal(versionOrder('v1.2.4', '1.2.3'), 'new-release');

@@ -91,6 +91,28 @@
         "upstream-source.json"
       ],
       "releaseNotes": "红绿变换首次接入：数量限1到10、最多683行，恢复本机数量参数；复制不可用时可选全文手动复制。固定图灵上游592027，适配源码与完整MIT许可随包。"
+    },
+    {
+      "id": "mini-scratch",
+      "displayName": "灵感积木",
+      "iconKind": "logic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
+      "revision": "8c3bad2a0a9f71053bc2dfb132f7ca4417a182a4",
+      "directory": "dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "mini-scratch-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "index.html",
+        "play.html",
+        "src/app.js",
+        "src/core.js",
+        "src/style.css"
+      ],
+      "releaseNotes": "灵感积木首次接入：中文积木拖拽、嵌套循环、角色运动、画笔与三个示例；本机自动保存，JSON 导入导出沿用大厅系统文件桥接。来源固定 8c3bad2a，原创角色与完整 MIT 随包。"
     }
   ]
 }

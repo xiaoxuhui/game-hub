@@ -1,6 +1,7 @@
 import {readFileSync, writeFileSync, mkdirSync, appendFileSync} from 'node:fs';
 import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {dynamicSources} from './dynamic-resources.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const SHA = /^[a-f0-9]{40}$/;
@@ -31,6 +32,15 @@ export function loadSources(root = ROOT) {
     source.consumers.push({id, revision: proof.revision, inputs: proof.inputs.map(i => i.path)});
   }
   requireValue(sources.length === 6, 'Expected six upstream repositories');
+  // Direct dynamic sources need their own upstream check; integrated examples above
+  // retain their original upstream proof rather than watching the hall repository.
+  const dynamic=dynamicSources(readFileSync(join(root,'dynamic-sources.lock.json')));
+  for(const item of dynamic.sources) {
+    if(item.repository === 'https://github.com/xiaoxuhui/game-hub.git') continue;
+    let source=sources.find(s=>s.repository===item.repository);
+    if(!source){source={id:item.id,repository:item.repository,version:item.version,consumers:[]};sources.push(source);}
+    source.consumers.push({id:item.id,revision:item.revision,inputs:item.files.map(path=>`${item.directory}/${path}`)});
+  }
   for (const source of sources) {
     requireValue(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\.git$/.test(source.repository), 'Invalid upstream repository');
     versionOrder(source.version, source.version);
