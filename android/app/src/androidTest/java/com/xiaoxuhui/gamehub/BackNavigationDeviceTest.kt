@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
+import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
@@ -253,7 +254,15 @@ class BackNavigationDeviceTest {
     @Test fun gameHistoryReturnsBeforeLobby() = withUi { _, scenario ->
         open(scenario, "turing")
         println("N17 history before navigation: ${js(scenario, "JSON.stringify({url:location.href,ready:document.readyState,length:history.length})")}")
-        js(scenario, "location.href='campaign.html'")
+        // Native WebView back history must be tested with an actual user navigation,
+        // not a script-only assignment that the browser can omit from Back UI history.
+        val link = JSONObject(js(scenario, "(()=>{const a=document.querySelector('a.campaign-link');if(!a)throw new Error('Missing actual campaign link');a.scrollIntoView({block:'center'});const r=a.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,scale:devicePixelRatio}})()"))
+        val screen = IntArray(2)
+        scenario.onActivity { (field(it, "webView") as WebView).getLocationOnScreen(screen) }
+        val x = screen[0] + (link.getDouble("x") * link.getDouble("scale")).toInt()
+        val y = screen[1] + (link.getDouble("y") * link.getDouble("scale")).toInt()
+        println("N17 actual campaign link system tap: $x,$y")
+        shell("input tap $x $y")
         try {
             await("actual campaign navigation committed") {
                 var canGoBack = false
@@ -262,7 +271,11 @@ class BackNavigationDeviceTest {
             }
         } finally {
             println("N17 history after navigation: ${js(scenario, "JSON.stringify({url:location.href,ready:document.readyState,length:history.length})")}")
-            scenario.onActivity { println("N17 history state: failed=${field(it,"loadFailed")} web=${field(it,"webView")} overlay=${field(it,"overlay")}") }
+            scenario.onActivity {
+                val web = field(it, "webView") as? WebView
+                val history = web?.copyBackForwardList()
+                println("N17 history state: failed=${field(it,"loadFailed")} canGoBack=${web?.canGoBack()} count=${history?.size} index=${history?.currentIndex} url=${history?.currentItem?.url} overlay=${field(it,"overlay")}")
+            }
         }
         back()
         await("actual web history before lobby") { js(scenario, "location.pathname.endsWith('/index.html')") == "true" }
