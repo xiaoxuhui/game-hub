@@ -1,0 +1,26 @@
+{
+  "game-abelian-sandpile-2-47a35517606c.zip": {
+    "bytes": 83688,
+    "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3"
+  },
+  "game-lambda-diagram-game-3-fcef92bb937e.zip": {
+    "bytes": 117813,
+    "sha256": "fcef92bb937ec4df8fe57a853a1c28fa930ad35c74acf6540880c8c0789908b5"
+  },
+  "game-memory-demo-2-178d01e9ee05.zip": {
+    "bytes": 9510,
+    "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+  },
+  "game-mini-scratch-2-12d3953b9369.zip": {
+    "bytes": 188863,
+    "sha256": "12d3953b9369755e246e1a3859a506f86cf9db2f120a29efbae13e125a5aadec"
+  },
+  "game-red-green-puzzle-1-81edc7c967f7.zip": {
+    "bytes": 14620,
+    "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+  },
+  "games.unsigned.json": {
+    "bytes": 12595,
+    "sha256": "3d4eea2316839c2f89d237d33b2c368938670f69ac6b214915056f5d34c27665"
+  }
+}
