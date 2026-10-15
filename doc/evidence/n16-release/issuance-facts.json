@@ -1,0 +1,114 @@
+{
+  "catalogSequence": "10",
+  "catalogAssetId": 644253150,
+  "catalogSha256": "16d563d8ebbf8035e160034dcc19d8286f42173dde7bcd0e057b2d807af58c2e",
+  "previousCatalogAssetId": 644172022,
+  "previousCatalogName": "catalog-seq9-d4970f1be88b.signed.json",
+  "oldGameDescriptorsUnchanged": true,
+  "miniScratch": {
+    "id": "mini-scratch",
+    "displayName": "灵感积木",
+    "iconKind": "generic",
+    "available": true,
+    "version": "0.2.0",
+    "contentCode": 3,
+    "sourceRepository": "https://github.com/xiaoxuhui/mini-scratch.git",
+    "sourceRevision": "10d7d0566693764d2de2d83c828f0fabd2fd7102",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "mini-scratch-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 188863,
+    "archiveSha256": "12d3953b9369755e246e1a3859a506f86cf9db2f120a29efbae13e125a5aadec",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 11414,
+        "sha256": "badaa41ca415367b1db28a9ce43deeab9be742a16e6a0182e60ee612380f8cc5",
+        "mime": "text/html"
+      },
+      {
+        "path": "play.html",
+        "bytes": 93764,
+        "sha256": "7e18ead753279bdadd60999e346ac757b8d2a283e57bf196bd2fee17a8625285",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 10943,
+        "sha256": "3cf6714ae495b685eca59ffe2b23a81ac067fbea540f3e39b47ce58c5f79958a",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/audio.js",
+        "bytes": 1550,
+        "sha256": "dde4606eaa39e6c64ed3700bd297dffad930c742f4f56200ccdf505b263aff39",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/blocks.js",
+        "bytes": 6039,
+        "sha256": "9485b096c7034bdc56cf1dbac2b4f6a2d0aa990c0929f7d9fb85a08a0851a210",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 320,
+        "sha256": "73755eeb3c77a111c95fabdaa714fa0e64162fefba3fb6995d5420b12b81a3cb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/editor.js",
+        "bytes": 16974,
+        "sha256": "89bcaeb1a9d460b609c884c926ec876e4c07224433c945ea1aa8caceb0e1f15e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/expressions.js",
+        "bytes": 3065,
+        "sha256": "99a920aa81b2d339227588cfaf596ede72ec0587fd3c0234daf5ffa4fb3c9464",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/persistence.js",
+        "bytes": 836,
+        "sha256": "694536f5ce7f91fd881198dc739aac989b5fe9f5e1720dd32561075ab15c0a53",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/project.js",
+        "bytes": 6538,
+        "sha256": "d8c589ef24c14e168e7d1b7ef5bbd1b8a5d7949a30e92716ea968ba0635a3ea7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/runtime.js",
+        "bytes": 8545,
+        "sha256": "06a30bb32fa47a08ad43549d00983d7c382dc3eba5f640323da26fc858880a6b",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/sprites.js",
+        "bytes": 1850,
+        "sha256": "f534d58c66ce786a1bf2ba5283c8d8e9f284a454e6fb9858c6f25a67f19159a7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/style.css",
+        "bytes": 24521,
+        "sha256": "26018cc6a0af7fe855a6c45260daae18ff4c1b550cc153630eab18d206ec5511",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "图标修正：灵感积木改用暖黄色手柄图标，与Lambda线路实验室区分。程序仍为0.2.0，九类积木与画笔共69种，运行文件及存档保持原样。",
+    "assetId": 644248725
+  }
+}
