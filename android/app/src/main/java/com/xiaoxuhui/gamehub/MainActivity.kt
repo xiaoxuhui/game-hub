@@ -148,7 +148,13 @@ class MainActivity : ComponentActivity() {
                     if (view.canGoBack()) view.goBack() else showLobby()
                 } else {
                     isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
+                    try {
+                        onBackPressedDispatcher.onBackPressed()
+                    } finally {
+                        // Root back can keep this Activity alive in the background.
+                        // Future game navigation must still pass through this callback.
+                        isEnabled = true
+                    }
                 }
             }
         })
