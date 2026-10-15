@@ -1,0 +1,107 @@
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.BackNavigationDeviceTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stream=
+com.xiaoxuhui.gamehub.BackNavigationDeviceTest:
+INSTRUMENTATION_STATUS: test=lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.BackNavigationDeviceTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: Timed out: system back must return to lobby; actual state=STARTED
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.await(BackNavigationDeviceTest.kt:62)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.awaitLobby(BackNavigationDeviceTest.kt:106)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.verifyUpdatedReturn(BackNavigationDeviceTest.kt:222)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.access$verifyUpdatedReturn(BackNavigationDeviceTest.kt:19)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby$2.invoke(BackNavigationDeviceTest.kt:241)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby$2.invoke(BackNavigationDeviceTest.kt:239)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi(BackNavigationDeviceTest.kt:179)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(BackNavigationDeviceTest.kt:239)
+
+INSTRUMENTATION_STATUS: stream=
+Error in lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest):
+java.lang.AssertionError: Timed out: system back must return to lobby; actual state=STARTED
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.await(BackNavigationDeviceTest.kt:62)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.awaitLobby(BackNavigationDeviceTest.kt:106)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.verifyUpdatedReturn(BackNavigationDeviceTest.kt:222)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.access$verifyUpdatedReturn(BackNavigationDeviceTest.kt:19)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby$2.invoke(BackNavigationDeviceTest.kt:241)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby$2.invoke(BackNavigationDeviceTest.kt:239)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi(BackNavigationDeviceTest.kt:179)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(BackNavigationDeviceTest.kt:239)
+
+INSTRUMENTATION_STATUS: test=lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.BackNavigationDeviceTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.BackNavigationDeviceTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: Timed out: actual launcher icon 游戏大厅
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.await(BackNavigationDeviceTest.kt:62)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.launchFromHomeIcon(BackNavigationDeviceTest.kt:85)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.access$launchFromHomeIcon(BackNavigationDeviceTest.kt:19)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$ActivityHandle.launch(BackNavigationDeviceTest.kt:41)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi(BackNavigationDeviceTest.kt:177)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(BackNavigationDeviceTest.kt:244)
+
+INSTRUMENTATION_STATUS: stream=
+Error in lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest):
+java.lang.AssertionError: Timed out: actual launcher icon 游戏大厅
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.await(BackNavigationDeviceTest.kt:62)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.launchFromHomeIcon(BackNavigationDeviceTest.kt:85)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.access$launchFromHomeIcon(BackNavigationDeviceTest.kt:19)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$ActivityHandle.launch(BackNavigationDeviceTest.kt:41)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi(BackNavigationDeviceTest.kt:177)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(BackNavigationDeviceTest.kt:244)
+
+INSTRUMENTATION_STATUS: test=lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 44.512
+There were 2 failures:
+1) lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+java.lang.AssertionError: Timed out: system back must return to lobby; actual state=STARTED
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.await(BackNavigationDeviceTest.kt:62)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.awaitLobby(BackNavigationDeviceTest.kt:106)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.verifyUpdatedReturn(BackNavigationDeviceTest.kt:222)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.access$verifyUpdatedReturn(BackNavigationDeviceTest.kt:19)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby$2.invoke(BackNavigationDeviceTest.kt:241)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby$2.invoke(BackNavigationDeviceTest.kt:239)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi(BackNavigationDeviceTest.kt:179)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.lobbyBackResumeThenFirstUpdatedBuiltinBackReturnsToLobby(BackNavigationDeviceTest.kt:239)
+2) lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(com.xiaoxuhui.gamehub.BackNavigationDeviceTest)
+java.lang.AssertionError: Timed out: actual launcher icon 游戏大厅
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.await(BackNavigationDeviceTest.kt:62)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.launchFromHomeIcon(BackNavigationDeviceTest.kt:85)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.access$launchFromHomeIcon(BackNavigationDeviceTest.kt:19)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest$ActivityHandle.launch(BackNavigationDeviceTest.kt:41)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.withUi(BackNavigationDeviceTest.kt:177)
+	at com.xiaoxuhui.gamehub.BackNavigationDeviceTest.lobbyBackResumeThenFirstUpdatedDynamicBackReturnsToLobby(BackNavigationDeviceTest.kt:244)
+
+FAILURES!!!
+Tests run: 2,  Failures: 2
+
+
+INSTRUMENTATION_CODE: -1
