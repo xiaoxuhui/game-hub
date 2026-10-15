@@ -98,10 +98,10 @@
       "iconKind": "generic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
-      "revision": "10d7d0566693764d2de2d83c828f0fabd2fd7102",
+      "revision": "3b073c131fba1861be9214b8eefefffa4560ab96",
       "directory": "dist",
-      "version": "0.2.0",
-      "contentCode": 3,
+      "version": "0.2.1",
+      "contentCode": 4,
       "entryPage": "index.html",
       "storageContract": "mini-scratch-dynamic-v1",
       "files": [
@@ -120,7 +120,7 @@
         "src/sprites.js",
         "src/style.css"
       ],
-      "releaseNotes": "图标修正：灵感积木改用暖黄色手柄图标，与Lambda线路实验室区分。程序仍为0.2.0，九类积木与画笔共69种，运行文件及存档保持原样。"
+      "releaseNotes": "0.2.1：控制积木改为向右开口的横向U形，积木盒预览同步；如果/否则保留两个独立开口。嵌套、参数、分支添加与执行保持，保留手柄图标和原作品存档。"
     }
   ]
 }
