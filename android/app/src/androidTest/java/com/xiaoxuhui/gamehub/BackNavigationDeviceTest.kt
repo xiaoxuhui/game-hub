@@ -1,10 +1,10 @@
 package com.xiaoxuhui.gamehub
 
 import android.content.Context
-import android.content.Intent
 import android.os.ParcelFileDescriptor
 import android.view.KeyEvent
 import android.view.View
+import android.view.accessibility.AccessibilityNodeInfo
 import android.webkit.WebView
 import androidx.lifecycle.Lifecycle
 import androidx.test.platform.app.InstrumentationRegistry
@@ -38,9 +38,7 @@ class BackNavigationDeviceTest {
             next != null
         }
         fun launch() {
-            val launch = instrumentation.targetContext.packageManager.getLaunchIntentForPackage(instrumentation.targetContext.packageName)!!
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-            instrumentation.runOnMainSync { instrumentation.targetContext.startActivity(launch) }
+            launchFromHomeIcon()
             attachResumed()
             onActivity { assertTrue("Real launcher root required", it.isTaskRoot) }
         }
@@ -69,6 +67,25 @@ class BackNavigationDeviceTest {
     private fun shell(command: String): String =
         ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(command))
             .bufferedReader().use { it.readText().trim() }
+
+    private fun launchFromHomeIcon() {
+        // A MAIN intent from instrumentation/shell is not a launch originating from the home app.
+        // Android's root-back policy distinguishes that source even when isTaskRoot is true.
+        shell("input keyevent KEYCODE_HOME")
+        val metrics = instrumentation.targetContext.resources.displayMetrics
+        shell("input swipe ${metrics.widthPixels / 2} ${metrics.heightPixels * 86 / 100} ${metrics.widthPixels / 2} ${metrics.heightPixels / 5} 350")
+        val label = instrumentation.targetContext.applicationInfo.loadLabel(instrumentation.targetContext.packageManager).toString()
+        fun find(node: AccessibilityNodeInfo?): AccessibilityNodeInfo? {
+            if (node == null) return null
+            if (node.packageName?.toString() == "com.android.launcher3" && node.isClickable &&
+                (node.text?.toString() == label || node.contentDescription?.toString() == label)) return node
+            for (index in 0 until node.childCount) find(node.getChild(index))?.let { return it }
+            return null
+        }
+        await("actual launcher icon $label") {
+            find(instrumentation.uiAutomation.rootInActiveWindow)?.performAction(AccessibilityNodeInfo.ACTION_CLICK) == true
+        }
+    }
 
     private fun js(scenario: ActivityHandle, script: String): String {
         val latch = CountDownLatch(1)
@@ -128,8 +145,7 @@ class BackNavigationDeviceTest {
         println("N17 after lobby system BACK: state=$afterBack")
         assertTrue("Root must remain reusable; observed $afterBack", afterBack == Lifecycle.State.CREATED || afterBack == Lifecycle.State.RESUMED)
         if (afterBack == Lifecycle.State.CREATED) {
-            val component = "${instrumentation.targetContext.packageName}/.MainActivity"
-            println(shell("am start -W -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n $component --activity-new-task --activity-reset-task-if-needed"))
+            launchFromHomeIcon()
             await("same task resumed") { scenario.state == Lifecycle.State.RESUMED }
         }
         scenario.onActivity { activity ->
