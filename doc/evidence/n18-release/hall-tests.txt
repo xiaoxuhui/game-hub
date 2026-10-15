@@ -1,0 +1,110 @@
+✔ Android application identity and minimum API stay independent of source APKs (1.8518ms)
+✔ Manifest has one launcher and only the planned update permission (2.4076ms)
+✔ compact lobby uses four fixed source icons and clickable cards (1.9104ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.373ms)
+✔ four original export bridge names and a file chooser are wired (0.7041ms)
+Bundled 1 sources, 5 files, commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Manifest SHA-256: ce53794479015b4f53fd19cb4cec2fa3cf5114d20da68d67c645586b5d0a0f52
+Verified 1 sources and 5 resources
+fatal: unable to read tree (ffffffffffffffffffffffffffffffffffffffff)
+✔ lock contains four immutable source revisions and unique IDs (1.6548ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (1.9222ms)
+✔ HTML references exclude external and fragment links while preserving local assets (1.2647ms)
+✔ missing local HTML reference stops bundling (17.7091ms)
+✔ manifest hashes are stable and change when a resource changes (10.7416ms)
+✔ failed checkout or missing locked resource preserves the last complete bundle (3896.7201ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (7.0321ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (12.2851ms)
+✔ higher content accepts new bytes only with new exact public asset identity (0.5291ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (873.3065ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (146.4409ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (3.2041ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (486.254ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (16.8535ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (7.1126ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (2.7684ms)
+✔ detached programmatic Blob click saves content before immediate revoke (7.5816ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (4.4734ms)
+✔ hall migration copies validated current state and checkpoint without changing any old bytes (2.2601ms)
+✔ new state including empty state prevents migration and cleared checkpoint resurrection (1.5792ms)
+✔ invalid old current or checkpoint prevents all migration writes (0.6796ms)
+✔ migration rolls back partial new-key writes after a storage failure and preserves legacy (0.6546ms)
+✔ legacy v1 and checkpoint-only migrations work, existing new checkpoint is never overwritten (0.3256ms)
+✔ HTML adapter requires exact markers and records both source and integrated bytes (1.7585ms)
+✔ new full v3 persists while fixed old reader reads latest v2 base without losing extensions (14.477ms)
+✔ old normal steps append to complete mixed history and preserve source and strategy extensions (4.4313ms)
+✔ old expression replacement archives every prior full session and accepts the new base (5.0824ms)
+✔ failed base write rolls back full storage and next startup recovers an interrupted journal (4.979ms)
+✔ concurrent old writes cannot be overwritten by a stale new capture (3.2527ms)
+✔ demo preserves progress, counts wins once and validates imported state (3.2643ms)
+✔ actual import handler never claims durable success after storage write failure (4.9829ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.4387ms)
+(node:29396) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/soft/game-hub/examples/red-green-puzzle/core.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\soft\game-hub\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ adaptation retains exact frozen HTML fixture, full MIT and reviewed output hashes (10.4666ms)
+✔ every supported size preserves frozen algorithm, legal edges and independent BFS distance (4.9825ms)
+✔ invalid sizes are rejected before building and bounded text remains complete (1.3427ms)
+✔ only valid versioned parameters restore, invalid storage defaults safely (0.3393ms)
+✔ scope is exactly eight repositories and rejects other accounts/repos before API use (1.9808ms)
+✔ actual master branch and lightweight release tag commit distinguish source changes (6.3545ms)
+✔ annotated tag resolves commit rather than using mutable target_commitish (0.3898ms)
+✔ nested tag cycles, missing objects, wrong SHA/type and depth fail closed (0.732ms)
+✔ no release is explicit initial release pending; private source stays private (0.3415ms)
+✔ malformed release/version, repository identity and network fail without credential leakage (0.7491ms)
+✔ diverged histories, invalid baseline and 300-file truncation cannot pass (0.5277ms)
+✔ docs-only remains an unpublished change; HTML/dependencies/CI/renames need contract (1.4234ms)
+✔ summary escapes API fields and makes publication distinction visible (0.7437ms)
+✔ reusable workflow restricts token, checkout credentials and report retention (1.1533ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (3.202ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (1.2476ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (2.1096ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.9006ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (5.9168ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (255.9468ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.4747ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.796ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (151.9935ms)
+✔ successor retains identities omitted from candidate and binds new resources to public assets (34.9734ms)
+✔ successor refuses skipped sequences, same-code metadata changes and incomplete historical snapshot (5.9383ms)
+✔ successor rejects forged asset bytes and duplicate candidate identities before signing (4.0573ms)
+✔ complete signed history audit detects earliest missing ZIP, sequence gaps and historical identity mutation (6.4945ms)
+✔ public download binds same-name CDN cache key to immutable asset ID and rejects foreign URLs (0.7465ms)
+✔ uploaded resume binds original current ID and digest plus complete actual upload records (3.2097ms)
+✔ v1 successor binds two actual code increases while preserving other full identities (31.2932ms)
+✔ v1 successor refuses sequence skips, same-code source/notes/archive changes and rollback (2.7009ms)
+✔ v1 refuses wrong contract, repository, duplicate identities, asset IDs and pagination (2.1835ms)
+✔ v1 full signed history requires initial one, every sequence, and unchanged same-code metadata (2.1406ms)
+✔ v1 anonymous download only accepts fixed release URL and binds immutable asset ID cache key (0.5511ms)
+✔ post-upload resume requires unchanged current identity and four exact existing upload bindings (1.872ms)
+✔ abelian-sandpile committed integration bytes bind to exact upstream identity and reject forged proof (12.3813ms)
+✔ lambda-diagram-game committed integration bytes bind to exact upstream identity and reject forged proof (3.8302ms)
+✔ seven actual upstreams include direct dynamic source and separate red-green baseline (6.5291ms)
+✔ release versions distinguish newer, equal and older without numeric rounding (0.3708ms)
+✔ resource HTML in doc wins over metadata exclusion; rename and dist are detected (0.1762ms)
+✔ unknown new dependencies need review; only known metadata can be ignored (0.3923ms)
+✔ same revision and version do not fetch feature/dependabot branches (0.5623ms)
+✔ unreleased main changes are pending review, not automatically published (0.199ms)
+✔ reviewed baseline ahead of main is not a new update or a failure (0.2519ms)
+✔ no formal release stays distinct from failures (0.7375ms)
+✔ HTTP, network and malformed response failures never become latest (0.6369ms)
+✔ divergence and truncated diff fail; other sources still checked (3.3025ms)
+✔ Markdown summary escapes remote branch strings (0.558ms)
+ℹ tests 85
+ℹ suites 0
+ℹ pass 85
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4321.1368
