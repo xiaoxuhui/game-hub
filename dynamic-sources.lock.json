@@ -98,10 +98,10 @@
       "iconKind": "generic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
-      "revision": "e98545924338d66d716b44f3c1f75bf3f32f5556",
+      "revision": "edd314948977fcc38009787ff00a5e73f1758c4f",
       "directory": "dist",
-      "version": "0.3.0",
-      "contentCode": 5,
+      "version": "0.4.0",
+      "contentCode": 6,
       "entryPage": "index.html",
       "storageContract": "mini-scratch-dynamic-v1",
       "files": [
@@ -115,6 +115,7 @@
         "src/blocks.js",
         "src/core.js",
         "src/editor.js",
+        "src/events.js",
         "src/expressions.js",
         "src/persistence.js",
         "src/procedures.js",
@@ -124,7 +125,7 @@
         "src/sprites.js",
         "src/style.css"
       ],
-      "releaseNotes": "0.3.0：自定义角色/背景可导入、绘画和保存；声音可录入、导入、试听与播放（旧大厅麦克风未开放时请导入系统录音）。自制积木支持多个具名数字、文字、布尔参数；真假积木六边形，当前坐标、方向、大小、音量等可直接运算。独立v3存档保留旧槽与备份，手柄图标保持。"
+      "releaseNotes": "0.4.0：移除固定主程序，绿旗/按键/点击/广播脚本独立分组，可排序删除和撤销。添加事件后动作自动进入该事件；按键和角色点击可直接启动，不要求先点绿旗，也不会顺带触发绿旗。游离积木不自动运行。旧顶层动作迁移为可删绿旗组，独立v4存档保留v3/v2/v1旧槽与备份。"
     }
   ]
 }
