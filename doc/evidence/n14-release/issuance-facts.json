@@ -1,0 +1,66 @@
+{
+  "catalogSequence": "8",
+  "catalogAssetId": 644025209,
+  "catalogSha256": "0158a1e8f61302f9928722c84716bbcfb3c4eeb5731436806397527c526d088b",
+  "previousCatalogAssetId": 637160386,
+  "previousCatalogName": "catalog-seq7-64024dd43bcf.signed.json",
+  "oldGameDescriptorsUnchanged": true,
+  "miniScratch": {
+    "id": "mini-scratch",
+    "displayName": "灵感积木",
+    "iconKind": "logic",
+    "available": true,
+    "version": "0.1.0",
+    "contentCode": 1,
+    "sourceRepository": "https://github.com/xiaoxuhui/mini-scratch.git",
+    "sourceRevision": "8c3bad2a0a9f71053bc2dfb132f7ca4417a182a4",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "mini-scratch-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 102015,
+    "archiveSha256": "1323c534ffba8405448c52cf73c4b048f1596dd88f4c6b231258239d354e0d13",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 9497,
+        "sha256": "dfef9f8eb7905dc7e036049f573cad233888bd1f35b1b3dfcc0e1e485bff402b",
+        "mime": "text/html"
+      },
+      {
+        "path": "play.html",
+        "bytes": 50089,
+        "sha256": "86504ebc29e62da2a8a6546dba4fc51eb31da9feaf5afa41f0299499d02e0185",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 16523,
+        "sha256": "c090acb94428e6911fd1ba92edfcdccb203dd99a7f236bfab89419bb0258a1b0",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 6542,
+        "sha256": "f4ee8c30e90391a16baf7498ec7a249ba9d4ecaa5952eed0bfb0cffe5cf688a2",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/style.css",
+        "bytes": 17700,
+        "sha256": "a64591de3b1de78bd64585e53a2260cd34a3c26b212cd4ffd4fd35058805a121",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "灵感积木首次接入：中文积木拖拽、嵌套循环、角色运动、画笔与三个示例；本机自动保存，JSON 导入导出沿用大厅系统文件桥接。来源固定 8c3bad2a，原创角色与完整 MIT 随包。",
+    "assetId": 644018323
+  }
+}
