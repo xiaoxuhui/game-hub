@@ -85,6 +85,7 @@ $stopped=Get-Content -LiteralPath (Join-Path $archive 'evidence\emulator-stopped
 if($owner.serial -cne 'emulator-5580' -or $owner.avdRoot -cne (Join-Path $taskRoot 'avd') -or $stopped.ownerPid -ne $owner.pid -or $stopped.serial -cne $owner.serial -or $stopped.avdName -cne 'game-hub-n17' -or -not $stopped.confirmedAbsent -or @($stopped.processes).Count -lt 1){throw 'Trusted owned-emulator stop identity required'}
 if(@($stopped.processes | Where-Object pid -eq $owner.pid).Count -ne 1){throw 'Owner process proof absent'}
 $live=@(Get-CimInstance Win32_Process)
+if(@($live | Where-Object {$_.Name -match 'emulator|qemu' -and -not $_.CommandLine}).Count){throw 'Emulator process identity unavailable; refuse cleanup'}
 foreach($process in $stopped.processes){
     if($process.pid -lt 1 -or $process.creationTimeUtc -notmatch '^2026-' -or $process.commandLineSha256 -notmatch '^[0-9a-f]{64}$' -or -not $process.executable.StartsWith('D:\soft\game-hub-toolchain\android-sdk\emulator\',[StringComparison]::OrdinalIgnoreCase)){throw 'Invalid owned process proof'}
     if(@($live | Where-Object ProcessId -eq $process.pid).Count){throw 'Recorded emulator PID still exists; also refuse PID reuse'}
