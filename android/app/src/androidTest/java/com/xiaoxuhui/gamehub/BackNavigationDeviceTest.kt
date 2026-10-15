@@ -21,6 +21,44 @@ import java.util.concurrent.TimeUnit
 class BackNavigationDeviceTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
 
+    /** Explicit external two-install controller; intentionally not a normal regression @Test. */
+    internal fun upgradeStorageStep(mode: String, expectedApkSha: String) {
+        require(mode == "seed" || mode == "verify")
+        require(Regex("[0-9a-f]{64}").matches(expectedApkSha))
+        val context = instrumentation.targetContext
+        val info = context.packageManager.getPackageInfo(context.packageName, android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES)
+        assertEquals(if (mode == "seed") "0.4.1" else "0.4.2", info.versionName)
+        assertEquals(if (mode == "seed") 5L else 6L, info.longVersionCode)
+        assertEquals(expectedApkSha, ResourcePolicy.sha256(java.io.File(context.applicationInfo.sourceDir).readBytes()))
+        assertEquals("44e92c1ad3d1a0462b33d844c32238bdeb4739fd5e5a6ef7639fdf4007125ae2",
+            ResourcePolicy.sha256(info.signingInfo!!.apkContentsSigners.single().toByteArray()))
+        val proof = java.io.File(context.filesDir, "n17-upgrade-save-proof.json")
+        withUi(::stageDynamic) { h, scenario ->
+            if (mode == "verify") backgroundAndResumeSameActivity(scenario)
+            open(scenario, "memory-demo")
+            assertTrue(h.dynamic.selection("memory-demo").active.startsWith("2-"))
+            assertNull(h.dynamic.selection("memory-demo").ready)
+            if (mode == "seed") {
+                assertEquals("true", js(scenario, "(()=>{document.querySelector('#restart').click();document.querySelector('#cards button').click();return JSON.parse(localStorage.getItem('memory-demo-state-v1')).open[0]===0})()"))
+                val save = js(scenario, "localStorage.getItem('memory-demo-state-v1')")
+                assertNotEquals("null", save)
+                proof.writeText(save)
+                println("N17 production-signed 0.4.1 gameplay save seeded: sha256=${ResourcePolicy.sha256(save.toByteArray())}")
+            } else {
+                assertTrue("Existing proof must survive actual install -r", proof.isFile)
+                assertEquals("Complete actual gameplay save preserved by APK upgrade", proof.readText(), js(scenario, "localStorage.getItem('memory-demo-state-v1')"))
+                println("N17 production-signed 0.4.1->0.4.2 complete gameplay save preserved: sha256=${ResourcePolicy.sha256(proof.readBytes())}")
+            }
+            back()
+            awaitLobby(scenario)
+            open(scenario, "memory-demo")
+            assertEquals(proof.readText(), js(scenario, "localStorage.getItem('memory-demo-state-v1')"))
+            back()
+            awaitLobby(scenario)
+            println("N17 upgrade mode=$mode actual first activation/physical back/reentry passed")
+        }
+    }
+
     /** Launch normally, without ActivityScenario's result/bootstrap task semantics. */
     private inner class ActivityHandle : AutoCloseable {
         private var activity: MainActivity? = null
