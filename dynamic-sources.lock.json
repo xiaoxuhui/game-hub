@@ -95,13 +95,13 @@
     {
       "id": "mini-scratch",
       "displayName": "灵感积木",
-      "iconKind": "logic",
+      "iconKind": "generic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
       "revision": "10d7d0566693764d2de2d83c828f0fabd2fd7102",
       "directory": "dist",
       "version": "0.2.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "mini-scratch-dynamic-v1",
       "files": [
@@ -120,7 +120,7 @@
         "src/sprites.js",
         "src/style.css"
       ],
-      "releaseNotes": "0.2.0：九类积木与画笔共69种，加入音符、按键/点击/广播事件、条件、检测、嵌套运算、变量和单参数自制积木。新版独立保存v2作品，原v1槽与首次升级备份保留；回退读旧作品，旧版后续编辑不合并进新版。固定来源10d7d056，完整MIT随包。"
+      "releaseNotes": "图标修正：灵感积木改用暖黄色手柄图标，与Lambda线路实验室区分。程序仍为0.2.0，九类积木与画笔共69种，运行文件及存档保持原样。"
     }
   ]
 }
