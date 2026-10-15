@@ -1,0 +1,121 @@
+{
+  "catalogSequence": "13",
+  "catalogAssetId": 644739909,
+  "catalogSha256": "ae09f97361e368482f13111f9dbf47ccc36d62c3e31b3fed2ea61daaa8e1535f",
+  "historyAssetId": 644646912,
+  "verifiedHistorySequences": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13"
+  ],
+  "resources": [
+    {
+      "id": "memory-demo",
+      "contentCode": 1,
+      "assetId": 623482293,
+      "bytes": 8490,
+      "sha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b"
+    },
+    {
+      "id": "memory-demo",
+      "contentCode": 2,
+      "assetId": 625120403,
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "id": "abelian-sandpile",
+      "contentCode": 1,
+      "assetId": 625246315,
+      "bytes": 83690,
+      "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "contentCode": 1,
+      "assetId": 625246403,
+      "bytes": 89571,
+      "sha256": "5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8"
+    },
+    {
+      "id": "red-green-puzzle",
+      "contentCode": 1,
+      "assetId": 625642734,
+      "bytes": 14620,
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "contentCode": 2,
+      "assetId": 628444055,
+      "bytes": 102362,
+      "sha256": "0ee2f0ef41545e2364172a3ec2c74481c9cb16ae3c6361a66786f24d0594cdb9"
+    },
+    {
+      "id": "abelian-sandpile",
+      "contentCode": 2,
+      "assetId": 631376685,
+      "bytes": 83688,
+      "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "contentCode": 3,
+      "assetId": 637155800,
+      "bytes": 117813,
+      "sha256": "fcef92bb937ec4df8fe57a853a1c28fa930ad35c74acf6540880c8c0789908b5"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 1,
+      "assetId": 644018323,
+      "bytes": 102015,
+      "sha256": "1323c534ffba8405448c52cf73c4b048f1596dd88f4c6b231258239d354e0d13"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 2,
+      "assetId": 644169215,
+      "bytes": 188863,
+      "sha256": "12d3953b9369755e246e1a3859a506f86cf9db2f120a29efbae13e125a5aadec"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 3,
+      "assetId": 644248725,
+      "bytes": 188863,
+      "sha256": "12d3953b9369755e246e1a3859a506f86cf9db2f120a29efbae13e125a5aadec"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 4,
+      "assetId": 644536836,
+      "bytes": 194491,
+      "sha256": "c9f604bc2d8b1ca6fd84a425fd351b77db898f5f8ad555acfa5952790a5c4b62"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 5,
+      "assetId": 644643800,
+      "bytes": 274032,
+      "sha256": "ebb50a24d9f573256d31fd810617951b7e13944ca7b52f863d3ab21e2f74b1c1"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 6,
+      "assetId": 644737060,
+      "bytes": 282205,
+      "sha256": "18bacdca60bbf0620778172d20f9ccd2204e8e64d3f0f7d73e78f634e61a4426"
+    }
+  ]
+}

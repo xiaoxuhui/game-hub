@@ -1,0 +1,144 @@
+{
+  "catalogSequence": "13",
+  "catalogAssetId": 644739909,
+  "catalogSha256": "ae09f97361e368482f13111f9dbf47ccc36d62c3e31b3fed2ea61daaa8e1535f",
+  "previousCatalogAssetId": 644646912,
+  "previousCatalogName": "catalog-seq12-6aede403cda7.signed.json",
+  "oldGameDescriptorsUnchanged": true,
+  "miniScratch": {
+    "id": "mini-scratch",
+    "displayName": "灵感积木",
+    "iconKind": "generic",
+    "available": true,
+    "version": "0.4.0",
+    "contentCode": 6,
+    "sourceRepository": "https://github.com/xiaoxuhui/mini-scratch.git",
+    "sourceRevision": "3e3e2567289db8a6b740f5e01605b7a72bf3b778",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "mini-scratch-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 282205,
+    "archiveSha256": "18bacdca60bbf0620778172d20f9ccd2204e8e64d3f0f7d73e78f634e61a4426",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 12096,
+        "sha256": "aa584ccdbb7164812e809f52c2fd2a0b2c1a1283d174778633810f281c70c3f3",
+        "mime": "text/html"
+      },
+      {
+        "path": "play.html",
+        "bytes": 140396,
+        "sha256": "052a4c23c423e21d3216ad7ef0e183e02843dd56a31dfb91c0560d74665c3010",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 13530,
+        "sha256": "d8926ea1e4d22563ffd05a6f8ee0caeca5cb05319f8be4bd44f7542f81063bbb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/asset-editor.js",
+        "bytes": 11206,
+        "sha256": "cfd6c31393e273fe0f91ae80975560d6a10c41d38bb5d94f0bf26f644e243ce3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/assets.js",
+        "bytes": 2858,
+        "sha256": "2cebcbff461b4d598818ec45914841fa745589814ebd043fe24a02098b465e79",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/audio.js",
+        "bytes": 2698,
+        "sha256": "d047a1d1a3e4bc59790a2cbf987bb6227fcb9f24a25faf9ac751a6f228f13232",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/blocks.js",
+        "bytes": 7058,
+        "sha256": "ac9a667f36233c12e13c91e91d21eea594ab2fc4c550b0ce332b3f04cca2033d",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 320,
+        "sha256": "73755eeb3c77a111c95fabdaa714fa0e64162fefba3fb6995d5420b12b81a3cb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/editor.js",
+        "bytes": 24811,
+        "sha256": "70eb7596f12e185aeda3f86fdc7537b47f67b88472e0ac8a0be5886a46edcf11",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/events.js",
+        "bytes": 721,
+        "sha256": "653291794469c74e2ad506b64288c326f3c24d93a4439f2bceb4b07af6a1d7cc",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/expressions.js",
+        "bytes": 3559,
+        "sha256": "2f41342bbe141d8fcc48ab823a29086629dd50635003d150f59cebce12dbdac3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/persistence.js",
+        "bytes": 1309,
+        "sha256": "866ec1ea2e4163f04c619a75dc9b1d772fe9cd2d07b045a4e227eb7a2603b973",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/procedures.js",
+        "bytes": 3905,
+        "sha256": "81d26a61944c8f8237c1227c1c688687a67bc8559600052b16c28f9c968cacd7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/project.js",
+        "bytes": 8717,
+        "sha256": "176accbf30a3932ed76358e1e996167c8aa5416d1273e7b972993549c960df82",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/recorder.js",
+        "bytes": 2337,
+        "sha256": "d0ac5a42daf67229b6271da8a2949ed7aa10277482a993fcb6023e769b433154",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/runtime.js",
+        "bytes": 9513,
+        "sha256": "612238e467fc3e1c75c2b27552e4cf825e5a94d36b9d2aa447e9056cf67c4530",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/sprites.js",
+        "bytes": 1850,
+        "sha256": "f534d58c66ce786a1bf2ba5283c8d8e9f284a454e6fb9858c6f25a67f19159a7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/style.css",
+        "bytes": 32283,
+        "sha256": "3aec13fa4b606fd8be711d8140e2031f9465d66ce04945641292393149e064d5",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "0.4.0：移除固定主程序，绿旗/按键/点击/广播脚本独立分组，可排序删除和撤销。添加事件后动作自动进入该事件；按键和角色点击可直接启动，不要求先点绿旗，也不会顺带触发绿旗。游离积木不自动运行。旧顶层动作迁移为可删绿旗组，独立v4存档保留v3/v2/v1旧槽与备份。",
+    "assetId": 644737060
+  }
+}

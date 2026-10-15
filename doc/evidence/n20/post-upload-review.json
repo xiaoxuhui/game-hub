@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "previousSequence": "12",
+  "nextSequence": "13",
+  "existingCatalogUnchanged": true,
+  "resources": [
+    {
+      "id": 625120403,
+      "name": "game-memory-demo-2-178d01e9ee05.zip",
+      "bytes": 9510,
+      "digest": "sha256:178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "id": 631376685,
+      "name": "game-abelian-sandpile-2-47a35517606c.zip",
+      "bytes": 83688,
+      "digest": "sha256:47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3"
+    },
+    {
+      "id": 637155800,
+      "name": "game-lambda-diagram-game-3-fcef92bb937e.zip",
+      "bytes": 117813,
+      "digest": "sha256:fcef92bb937ec4df8fe57a853a1c28fa930ad35c74acf6540880c8c0789908b5"
+    },
+    {
+      "id": 625642734,
+      "name": "game-red-green-puzzle-1-81edc7c967f7.zip",
+      "bytes": 14620,
+      "digest": "sha256:81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+    },
+    {
+      "id": 644737060,
+      "name": "game-mini-scratch-6-18bacdca60bb.zip",
+      "bytes": 282205,
+      "digest": "sha256:18bacdca60bbf0620778172d20f9ccd2204e8e64d3f0f7d73e78f634e61a4426"
+    }
+  ]
+}
