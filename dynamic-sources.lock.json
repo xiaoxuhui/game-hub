@@ -98,10 +98,10 @@
       "iconKind": "generic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
-      "revision": "3e3e2567289db8a6b740f5e01605b7a72bf3b778",
+      "revision": "f5d9d5b613515c2f8500e76466151127b7500baf",
       "directory": "dist",
-      "version": "0.4.0",
-      "contentCode": 6,
+      "version": "0.5.0",
+      "contentCode": 7,
       "entryPage": "index.html",
       "storageContract": "mini-scratch-dynamic-v1",
       "files": [
@@ -117,6 +117,8 @@
         "src/editor.js",
         "src/events.js",
         "src/expressions.js",
+        "src/list-ui.js",
+        "src/lists.js",
         "src/persistence.js",
         "src/procedures.js",
         "src/project.js",
@@ -125,7 +127,7 @@
         "src/sprites.js",
         "src/style.css"
       ],
-      "releaseNotes": "0.4.0：移除固定主程序，绿旗/按键/点击/广播脚本独立分组，可排序删除和撤销。添加事件后动作自动进入该事件；按键和角色点击可直接启动，不要求先点绿旗，也不会顺带触发绿旗。游离积木不自动运行。旧顶层动作迁移为可删绿旗组，独立v4存档保留v3/v2/v1旧槽与备份。"
+      "releaseNotes": "0.5.0：变量分类加入列表，可编辑数字、文字、布尔初始项；支持末尾添加、替换、插入、删除、清空，列表项与长度可作为返回值。舞台实时分页监视；序号从1开始，插入长度+1为末尾，错误序号明确提示。独立v5存档保留v4及旧槽与备份。"
     }
   ]
 }
