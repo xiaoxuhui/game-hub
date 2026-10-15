@@ -87,7 +87,9 @@ if(@($stopped.processes | Where-Object pid -eq $owner.pid).Count -ne 1){throw 'O
 $live=@(Get-CimInstance Win32_Process)
 if(@($live | Where-Object {$_.Name -match 'emulator|qemu' -and -not $_.CommandLine}).Count){throw 'Emulator process identity unavailable; refuse cleanup'}
 foreach($process in $stopped.processes){
-    if($process.pid -lt 1 -or $process.creationTimeUtc -notmatch '^2026-' -or $process.commandLineSha256 -notmatch '^[0-9a-f]{64}$' -or -not $process.executable.StartsWith('D:\soft\game-hub-toolchain\android-sdk\emulator\',[StringComparison]::OrdinalIgnoreCase)){throw 'Invalid owned process proof'}
+    $created=[DateTimeOffset]$process.creationTimeUtc
+    $started=[DateTimeOffset]$owner.startedAt
+    if($process.pid -lt 1 -or [Math]::Abs(($created.UtcDateTime-$started.UtcDateTime).TotalSeconds) -gt 5 -or $process.commandLineSha256 -notmatch '^[0-9a-f]{64}$' -or -not $process.executable.StartsWith('D:\soft\game-hub-toolchain\android-sdk\emulator\',[StringComparison]::OrdinalIgnoreCase)){throw 'Invalid owned process proof'}
     if(@($live | Where-Object ProcessId -eq $process.pid).Count){throw 'Recorded emulator PID still exists; also refuse PID reuse'}
 }
 if(@($live | Where-Object {$_.Name -match 'emulator|qemu' -and $_.CommandLine -and ($_.CommandLine -match 'game-hub-n17|(?:-port\s+5580\b)' -or $_.CommandLine.IndexOf($owner.avdRoot,[StringComparison]::OrdinalIgnoreCase) -ge 0)}).Count){throw 'Owned AVD process still exists independently of adb'}

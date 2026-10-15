@@ -28,3 +28,4 @@
 - bd87fd4提交后review_p0独立结果复审CLOSED：候选/正式旧包全摘要、DER、版本、85/95/26+1+1计数、真实存档摘要和16份公开副本逐项一致；隔离store边界准确。
 - e975521清理脚本首次审核OPEN：ADB设备查询未检查退出码；仅按命令行路径和设备列表可能漏活AVD。执行前补ADB失败拒删、归档owner PID/创建时刻/路径/命令行摘要及子进程停止证明、独立扫描PID和AVD/端口，找不到可信身份拒删；当前未执行删除，待提交后复审。
 - e3eda04复审仍OPEN：任意emulator/qemu进程的CommandLine不可读也要拒删，不能跳过身份未知的进程。再次补充全量空命令行拒绝检查，保留两轮意见与修订提交，不删除历史记录。
+- 4351c96脚本预审CLOSED。实际停机首次时间检查保守拒绝：PowerShell自动将JSON日期解析为DateTime，再DateTime.Parse会丢UTC标记，错误差8小时；原诊断留emulator-owner-check.json。改用DateTimeOffset直接保留类型/偏移，PID30324及qemu28676创建时间与owner记录差小于0.1秒，按真实serial/name核验后仅停止自有AVD，双PID与设备消失均确认。清理脚本时间门禁同样改为类型安全解析，并绑定原owner时点±5秒，不放宽未知身份拒绝。
