@@ -163,7 +163,7 @@ class BackNavigationDeviceTest {
         configure: (DynamicCoordinatorDeviceTest.Harness) -> Unit = {},
         action: (DynamicCoordinatorDeviceTest.Harness, ActivityHandle) -> Unit
     ) {
-        DynamicCoordinatorDeviceTest.Harness().use { harness ->
+        DynamicCoordinatorDeviceTest.Harness("back-navigation-fixture").use { harness ->
             harness.network = UpdateNetwork(false, false)
             configure(harness)
             val owner = harness.owner()

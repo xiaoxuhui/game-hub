@@ -1,0 +1,54 @@
+[
+  {
+    "id": "memory-demo",
+    "displayName": "配对练习 · 示范",
+    "iconKind": "puzzle",
+    "available": true,
+    "version": "1.0.0",
+    "contentCode": 1,
+    "sourceRepository": "https://github.com/xiaoxuhui/game-hub.git",
+    "sourceRevision": "81bdef33331fefedbb858b1ce109ebc437759bb6",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "memory-demo-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 8490,
+    "archiveSha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "app.js",
+        "bytes": 2788,
+        "sha256": "7ea93d8899e90d48ee7e461b80741ebfd82f14d2beff06d0de6cd0fa57f07080",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "core.js",
+        "bytes": 2550,
+        "sha256": "cb22b3116f8735b4813ca89eadc2553e00203cb4aa53381fd5c44a19223946eb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "index.html",
+        "bytes": 792,
+        "sha256": "107df220ef87ad4b10c8bfce8f7c4b8a621679561da4de7b5022a0751ae291ab",
+        "mime": "text/html"
+      },
+      {
+        "path": "style.css",
+        "bytes": 814,
+        "sha256": "dae57971b2860008725be78e54a655c7a19f6fe52620ea9977bf385ebb80cfa4",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "自有最小配对示范：可选下载，支持自动保存与JSON导入导出。",
+    "assetId": 623482293
+  }
+]

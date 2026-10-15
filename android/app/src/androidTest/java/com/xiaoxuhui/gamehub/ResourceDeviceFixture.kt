@@ -16,7 +16,7 @@ import java.util.zip.CRC32
 import java.util.zip.ZipInputStream
 
 /** Ephemeral test key; exercises production AtomicFile and full actual bundled games. Never a release key. */
-internal class ResourceDeviceFixture(val context: Context) : AutoCloseable {
+internal class ResourceDeviceFixture(val context: Context, private val dynamicAssetDirectory: String = "dynamic-demo-fixture") : AutoCloseable {
     val root = File(context.cacheDir, "resource-device-test-${UUID.randomUUID()}").apply { mkdirs() }
     private val pair = KeyPairGenerator.getInstance("RSA").apply { initialize(3072) }.generateKeyPair()
     val store = GameResourceStore(File(root, "store"), 3, pair.public.encoded)
@@ -72,9 +72,9 @@ internal class ResourceDeviceFixture(val context: Context) : AutoCloseable {
     /** Test-only v2 using the same ephemeral trust root as this fixture's actual v1 archives. */
     fun dynamicRelease(sequence: Int = 1, code: Int = 1, available: Boolean = true, minHost: Int = 4): Triple<ResourceCatalog,ByteArray,ByteArray> {
         val assets=androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().context.assets
-        val original=assets.open("dynamic-demo-fixture/game.zip").use {it.readBytes()}
+        val original=assets.open("$dynamicAssetDirectory/game.zip").use {it.readBytes()}
         require(ResourcePolicy.sha256(original)=="27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b")
-        val game=JSONArray(assets.open("dynamic-demo-fixture/games.json").bufferedReader().use {it.readText()}).getJSONObject(0)
+        val game=JSONArray(assets.open("$dynamicAssetDirectory/games.json").bufferedReader().use {it.readText()}).getJSONObject(0)
         val resources=linkedMapOf<String,ByteArray>()
         ZipInputStream(original.inputStream()).use {zip->
             while(true) {val entry=zip.nextEntry ?: break;val path=ResourcePolicy.safePath(entry.name);require(!entry.isDirectory);resources[path]=zip.readBytes()}
