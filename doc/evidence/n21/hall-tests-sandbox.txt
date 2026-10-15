@@ -1,0 +1,144 @@
+✔ Android application identity and minimum API stay independent of source APKs (1.6032ms)
+✔ Manifest has one launcher and only the planned update permission (1.5913ms)
+✔ compact lobby uses four fixed source icons and clickable cards (1.5579ms)
+✔ CI builds pinned sources and checks APK without a publish step (0.44ms)
+✔ four original export bridge names and a file chooser are wired (0.7772ms)
+✔ lock contains four immutable source revisions and unique IDs (1.1501ms)
+✔ floating revision, duplicate IDs, and unsafe paths are rejected (1.6712ms)
+✔ HTML references exclude external and fragment links while preserving local assets (1.1568ms)
+✔ missing local HTML reference stops bundling (17.5067ms)
+✔ manifest hashes are stable and change when a resource changes (9.4564ms)
+✖ failed checkout or missing locked resource preserves the last complete bundle (303.0823ms)
+✔ v2 issuance binds fixed prerelease, complete membership and exact asset bytes (8.5266ms)
+✔ higher v2 sequences require history and preserve all identities and immutable same-code metadata (11.1093ms)
+✔ higher content accepts new bytes only with new exact public asset identity (0.6074ms)
+✔ actual CLI signs via stdin, verifies public DER, rejects overwrite and requires authenticated history (936.0321ms)
+✔ v2 signed bytes, empty directory and retired full descriptor remain strict (246.903ms)
+✔ v2 rejects bad identities, capabilities, dangerous files, expiry and duplicate assets (2.9469ms)
+✔ raw signed integer decimals and exponents cannot fold into accepted JS integers (64.0866ms)
+✔ dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable (10.8535ms)
+✔ synchronously forged ZIP and candidate metadata cannot claim locked source bytes (4.1358ms)
+✔ v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse (0.9439ms)
+✔ detached programmatic Blob click saves content before immediate revoke (5.1591ms)
+✔ bubble listener sees EML-style Blob URL assigned by the target click handler (2.0451ms)
+✔ hall migration copies validated current state and checkpoint without changing any old bytes (2.0455ms)
+✔ new state including empty state prevents migration and cleared checkpoint resurrection (1.4432ms)
+✔ invalid old current or checkpoint prevents all migration writes (0.5533ms)
+✔ migration rolls back partial new-key writes after a storage failure and preserves legacy (0.5951ms)
+✔ legacy v1 and checkpoint-only migrations work, existing new checkpoint is never overwritten (0.2861ms)
+✔ HTML adapter requires exact markers and records both source and integrated bytes (1.9268ms)
+✔ new full v3 persists while fixed old reader reads latest v2 base without losing extensions (11.844ms)
+✔ old normal steps append to complete mixed history and preserve source and strategy extensions (2.4362ms)
+✔ old expression replacement archives every prior full session and accepts the new base (3.1961ms)
+✔ failed base write rolls back full storage and next startup recovers an interrupted journal (3.7684ms)
+✔ concurrent old writes cannot be overwritten by a stale new capture (1.9399ms)
+✔ demo preserves progress, counts wins once and validates imported state (2.4352ms)
+✔ actual import handler never claims durable success after storage write failure (6.1845ms)
+✔ nonmatching pair stays visible until next flip; duplicate flip does not count (0.4699ms)
+(node:31708) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/soft/game-hub/examples/red-green-puzzle/core.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\soft\game-hub\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ adaptation retains exact frozen HTML fixture, full MIT and reviewed output hashes (11.3771ms)
+✔ every supported size preserves frozen algorithm, legal edges and independent BFS distance (2.8637ms)
+✔ invalid sizes are rejected before building and bounded text remains complete (0.9478ms)
+✔ only valid versioned parameters restore, invalid storage defaults safely (0.2623ms)
+✔ scope is exactly eight repositories and rejects other accounts/repos before API use (2.3378ms)
+✔ actual master branch and lightweight release tag commit distinguish source changes (9.1774ms)
+✔ annotated tag resolves commit rather than using mutable target_commitish (0.5505ms)
+✔ nested tag cycles, missing objects, wrong SHA/type and depth fail closed (1.0206ms)
+✔ no release is explicit initial release pending; private source stays private (0.4336ms)
+✔ malformed release/version, repository identity and network fail without credential leakage (1.1503ms)
+✔ diverged histories, invalid baseline and 300-file truncation cannot pass (0.614ms)
+✔ docs-only remains an unpublished change; HTML/dependencies/CI/renames need contract (1.7262ms)
+✔ summary escapes API fields and makes publication distinction visible (0.6515ms)
+✔ reusable workflow restricts token, checkout credentials and report retention (0.7003ms)
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (3.4901ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (2.1925ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (3.7148ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.6956ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (4.6767ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (299.6366ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.3854ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.7024ms)
+✖ resource generation failure preserves previous complete candidate and rejects stale commit (74.8154ms)
+✔ successor retains identities omitted from candidate and binds new resources to public assets (25.7273ms)
+✔ successor refuses skipped sequences, same-code metadata changes and incomplete historical snapshot (4.4447ms)
+✔ successor rejects forged asset bytes and duplicate candidate identities before signing (3.2825ms)
+✔ complete signed history audit detects earliest missing ZIP, sequence gaps and historical identity mutation (4.3816ms)
+✔ public download binds same-name CDN cache key to immutable asset ID and rejects foreign URLs (0.4907ms)
+✔ uploaded resume binds original current ID and digest plus complete actual upload records (2.274ms)
+✔ v1 successor binds two actual code increases while preserving other full identities (20.1377ms)
+✔ v1 successor refuses sequence skips, same-code source/notes/archive changes and rollback (2.7565ms)
+✔ v1 refuses wrong contract, repository, duplicate identities, asset IDs and pagination (2.0687ms)
+✔ v1 full signed history requires initial one, every sequence, and unchanged same-code metadata (3.234ms)
+✔ v1 anonymous download only accepts fixed release URL and binds immutable asset ID cache key (0.8949ms)
+✔ post-upload resume requires unchanged current identity and four exact existing upload bindings (3.0439ms)
+✔ abelian-sandpile committed integration bytes bind to exact upstream identity and reject forged proof (5.2361ms)
+✔ lambda-diagram-game committed integration bytes bind to exact upstream identity and reject forged proof (4.567ms)
+✔ seven actual upstreams include direct dynamic source and separate red-green baseline (5.4157ms)
+✔ release versions distinguish newer, equal and older without numeric rounding (0.322ms)
+✔ resource HTML in doc wins over metadata exclusion; rename and dist are detected (0.1399ms)
+✔ unknown new dependencies need review; only known metadata can be ignored (0.3492ms)
+✔ same revision and version do not fetch feature/dependabot branches (0.4613ms)
+✔ unreleased main changes are pending review, not automatically published (0.167ms)
+✔ reviewed baseline ahead of main is not a new update or a failure (0.2434ms)
+✔ no formal release stays distinct from failures (0.6238ms)
+✔ HTTP, network and malformed response failures never become latest (0.5377ms)
+✔ divergence and truncated diff fail; other sources still checked (3.3119ms)
+✔ Markdown summary escapes remote branch strings (0.5432ms)
+ℹ tests 85
+ℹ suites 0
+ℹ pass 83
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1280.4655
+
+✖ failing tests:
+
+test at tests\bundle.test.mjs:59:1
+✖ failed checkout or missing locked resource preserves the last complete bundle (303.0823ms)
+  AssertionError [ERR_ASSERTION]: error: could not write config file C:/Users/25133/AppData/Local/Packages/sandbox.{eac549d7-8138-440b-8378-d6ee6e897a1f}/AC/Temp/game-hub-integration-DzNwKc/original/.git/config: Permission denied
+  fatal: could not set 'core.repositoryformatversion' to '0'
+  
+  
+  128 !== 0
+  
+      at git (file:///D:/soft/game-hub/tests/bundle.test.mjs:68:12)
+      at TestContext.<anonymous> (file:///D:/soft/game-hub/tests/bundle.test.mjs:74:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 128,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\resource-bundle.test.mjs:79:1
+✖ resource generation failure preserves previous complete candidate and rejects stale commit (74.8154ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\25133\AppData\Local\Packages\sandbox.{eac549d7-8138-440b-8378-d6ee6e897a1f}\AC\Temp\game-hub-resource-test-vFAqFb\.build\resource-staging-8LnNnz' -> 'C:\Users\25133\AppData\Local\Packages\sandbox.{eac549d7-8138-440b-8378-d6ee6e897a1f}\AC\Temp\game-hub-resource-test-vFAqFb\.build\resource-candidate'
+      at renameSync (node:fs:1074:11)
+      at buildResources (file:///D:/soft/game-hub/scripts/resource-bundle.mjs:93:9)
+      at TestContext.<anonymous> (file:///D:/soft/game-hub/tests/resource-bundle.test.mjs:96:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\25133\\AppData\\Local\\Packages\\sandbox.{eac549d7-8138-440b-8378-d6ee6e897a1f}\\AC\\Temp\\game-hub-resource-test-vFAqFb\\.build\\resource-staging-8LnNnz',
+    dest: 'C:\\Users\\25133\\AppData\\Local\\Packages\\sandbox.{eac549d7-8138-440b-8378-d6ee6e897a1f}\\AC\\Temp\\game-hub-resource-test-vFAqFb\\.build\\resource-candidate'
+  }

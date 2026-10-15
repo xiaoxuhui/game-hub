@@ -1,0 +1,156 @@
+{
+  "catalogSequence": "14",
+  "catalogAssetId": 644809132,
+  "catalogSha256": "bdb9889af98e9fed50067c96102f677b31cd5bb187ff47af23be727603d61b2c",
+  "previousCatalogAssetId": 644739909,
+  "previousCatalogName": "catalog-seq13-ae09f97361e3.signed.json",
+  "oldGameDescriptorsUnchanged": true,
+  "miniScratch": {
+    "id": "mini-scratch",
+    "displayName": "灵感积木",
+    "iconKind": "generic",
+    "available": true,
+    "version": "0.5.0",
+    "contentCode": 7,
+    "sourceRepository": "https://github.com/xiaoxuhui/mini-scratch.git",
+    "sourceRevision": "f5d9d5b613515c2f8500e76466151127b7500baf",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "mini-scratch-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 312805,
+    "archiveSha256": "29548a43c01500b539c009a15b47b869358a60d1fe638999ee3fff7601534593",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 12285,
+        "sha256": "84bc2b4577ee1cb6cb1db50f3cdd13bcf1e4e2767c00c89f8f484ac39ebbb99b",
+        "mime": "text/html"
+      },
+      {
+        "path": "play.html",
+        "bytes": 155671,
+        "sha256": "b2e9f00b653ba13464c1bed90707ec0b570c51a352ca0706dddfee4ee6849d30",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 13872,
+        "sha256": "a33b98ba79d0d5a88fbfc5ea31305bd0cd7eea1197d90ad5e4266777473b3dec",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/asset-editor.js",
+        "bytes": 11206,
+        "sha256": "cfd6c31393e273fe0f91ae80975560d6a10c41d38bb5d94f0bf26f644e243ce3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/assets.js",
+        "bytes": 2858,
+        "sha256": "2cebcbff461b4d598818ec45914841fa745589814ebd043fe24a02098b465e79",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/audio.js",
+        "bytes": 2698,
+        "sha256": "d047a1d1a3e4bc59790a2cbf987bb6227fcb9f24a25faf9ac751a6f228f13232",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/blocks.js",
+        "bytes": 7920,
+        "sha256": "bcb8bba0c7755f7accd342fa14f736b867f964c046096cce521353f3ec6e22f3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 320,
+        "sha256": "73755eeb3c77a111c95fabdaa714fa0e64162fefba3fb6995d5420b12b81a3cb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/editor.js",
+        "bytes": 25040,
+        "sha256": "fc7cbf34ec21bad971117f15c63212fa0c39beff84f06350c4198a6f6d863a1b",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/events.js",
+        "bytes": 721,
+        "sha256": "653291794469c74e2ad506b64288c326f3c24d93a4439f2bceb4b07af6a1d7cc",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/expressions.js",
+        "bytes": 3782,
+        "sha256": "e75d4411c2c0cebe86a5bf4c1abc192867128cf1f508cf20a5d46eae3a73baba",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/list-ui.js",
+        "bytes": 7756,
+        "sha256": "c800aebc22747ee67cc781d1765728ee2535a259515480b0d6d122604a48ee44",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/lists.js",
+        "bytes": 2309,
+        "sha256": "e58af6d42516aabd76396c806bbb075dfdd34fe30adc2336190065f209dcf3c2",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/persistence.js",
+        "bytes": 1549,
+        "sha256": "98191c1b2b764dbd1b51321bad1c322978f2d080a061361e7469b83656409d47",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/procedures.js",
+        "bytes": 3905,
+        "sha256": "81d26a61944c8f8237c1227c1c688687a67bc8559600052b16c28f9c968cacd7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/project.js",
+        "bytes": 8849,
+        "sha256": "1d5739e136ec8f4e1f2c790c052391b4a8c379889114079809786c03c9947691",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/recorder.js",
+        "bytes": 2337,
+        "sha256": "d0ac5a42daf67229b6271da8a2949ed7aa10277482a993fcb6023e769b433154",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/runtime.js",
+        "bytes": 9781,
+        "sha256": "8ed3b53d0fad5440fce102e1ef03a98b4686008c1c276eb990c1d29361c5c7de",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/sprites.js",
+        "bytes": 1850,
+        "sha256": "f534d58c66ce786a1bf2ba5283c8d8e9f284a454e6fb9858c6f25a67f19159a7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/style.css",
+        "bytes": 34854,
+        "sha256": "1590820cb76d0b0dde53d09c65c1aa231b4e9b9f4fd7882734224d1ad8e15013",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "0.5.0：变量分类加入列表，可编辑数字、文字、布尔初始项；支持末尾添加、替换、插入、删除、清空，列表项与长度可作为返回值。舞台实时分页监视；序号从1开始，插入长度+1为末尾，错误序号明确提示。独立v5存档保留v4及旧槽与备份。",
+    "assetId": 644807162
+  }
+}
