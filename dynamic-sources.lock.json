@@ -98,10 +98,10 @@
       "iconKind": "generic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
-      "revision": "3b073c131fba1861be9214b8eefefffa4560ab96",
+      "revision": "e98545924338d66d716b44f3c1f75bf3f32f5556",
       "directory": "dist",
-      "version": "0.2.1",
-      "contentCode": 4,
+      "version": "0.3.0",
+      "contentCode": 5,
       "entryPage": "index.html",
       "storageContract": "mini-scratch-dynamic-v1",
       "files": [
@@ -109,18 +109,22 @@
         "index.html",
         "play.html",
         "src/app.js",
+        "src/asset-editor.js",
+        "src/assets.js",
         "src/audio.js",
         "src/blocks.js",
         "src/core.js",
         "src/editor.js",
         "src/expressions.js",
         "src/persistence.js",
+        "src/procedures.js",
         "src/project.js",
+        "src/recorder.js",
         "src/runtime.js",
         "src/sprites.js",
         "src/style.css"
       ],
-      "releaseNotes": "0.2.1：控制积木改为向右开口的横向U形，积木盒预览同步；如果/否则保留两个独立开口。嵌套、参数、分支添加与执行保持，保留手柄图标和原作品存档。"
+      "releaseNotes": "0.3.0：自定义角色/背景可导入、绘画和保存；声音可录入、导入、试听与播放（旧大厅麦克风未开放时请导入系统录音）。自制积木支持多个具名数字、文字、布尔参数；真假积木六边形，当前坐标、方向、大小、音量等可直接运算。独立v3存档保留旧槽与备份，手柄图标保持。"
     }
   ]
 }
