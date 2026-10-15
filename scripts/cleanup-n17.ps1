@@ -80,7 +80,18 @@ $baselineApk='D:\soft\game-hub-archives\n10-20261010\evidence\d7fb241b5ecfac6062
 if((Get-FileHash -LiteralPath $baselineApk -Algorithm SHA256).Hash.ToLowerInvariant() -cne '9f57c90af42efea54e4e079d637d964346a78e7e880493eac7887f9aaac323da'){throw 'Formal baseline APK differs'}
 $busy=@(Get-CimInstance Win32_Process | Where-Object {$_.ProcessId -ne $PID -and $_.CommandLine -and $_.CommandLine.IndexOf($taskRoot,[StringComparison]::OrdinalIgnoreCase) -ge 0})
 if($busy.Count){throw 'Task process still active'}
+$owner=Get-Content -LiteralPath (Join-Path $archive 'evidence\emulator-owner.json') -Raw | ConvertFrom-Json
+$stopped=Get-Content -LiteralPath (Join-Path $archive 'evidence\emulator-stopped.json') -Raw | ConvertFrom-Json
+if($owner.serial -cne 'emulator-5580' -or $owner.avdRoot -cne (Join-Path $taskRoot 'avd') -or $stopped.ownerPid -ne $owner.pid -or $stopped.serial -cne $owner.serial -or $stopped.avdName -cne 'game-hub-n17' -or -not $stopped.confirmedAbsent -or @($stopped.processes).Count -lt 1){throw 'Trusted owned-emulator stop identity required'}
+if(@($stopped.processes | Where-Object pid -eq $owner.pid).Count -ne 1){throw 'Owner process proof absent'}
+$live=@(Get-CimInstance Win32_Process)
+foreach($process in $stopped.processes){
+    if($process.pid -lt 1 -or $process.creationTimeUtc -notmatch '^2026-' -or $process.commandLineSha256 -notmatch '^[0-9a-f]{64}$' -or -not $process.executable.StartsWith('D:\soft\game-hub-toolchain\android-sdk\emulator\',[StringComparison]::OrdinalIgnoreCase)){throw 'Invalid owned process proof'}
+    if(@($live | Where-Object ProcessId -eq $process.pid).Count){throw 'Recorded emulator PID still exists; also refuse PID reuse'}
+}
+if(@($live | Where-Object {$_.Name -match 'emulator|qemu' -and $_.CommandLine -and ($_.CommandLine -match 'game-hub-n17|(?:-port\s+5580\b)' -or $_.CommandLine.IndexOf($owner.avdRoot,[StringComparison]::OrdinalIgnoreCase) -ge 0)}).Count){throw 'Owned AVD process still exists independently of adb'}
 $devices=& 'D:\soft\game-hub-toolchain\android-sdk\platform-tools\adb.exe' devices
+if($LASTEXITCODE -ne 0){throw 'adb device-state query failed'}
 if($devices -match '^emulator-5580\s'){throw 'Owned emulator still active'}
 if(Test-Path -LiteralPath (Join-Path $archive 'cleanup-result.json')){throw 'Cleanup result already exists'}
 $result=[ordered]@{checkedAt=[DateTimeOffset]::UtcNow.ToString('o');commit=$ExpectedCommit;indexSha256=$ExpectedIndexSha256;target=$taskRoot;files=$files;logicalBytes=$bytes;execute=[bool]$Execute;removed=$false}
