@@ -1,6 +1,7 @@
 package com.xiaoxuhui.gamehub
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.ParcelFileDescriptor
 import android.view.KeyEvent
 import android.view.View
@@ -72,8 +73,11 @@ class BackNavigationDeviceTest {
         // A MAIN intent from instrumentation/shell is not a launch originating from the home app.
         // Android's root-back policy distinguishes that source even when isTaskRoot is true.
         shell("input keyevent KEYCODE_HOME")
-        val metrics = instrumentation.targetContext.resources.displayMetrics
-        shell("input swipe ${metrics.widthPixels / 2} ${metrics.heightPixels * 86 / 100} ${metrics.widthPixels / 2} ${metrics.heightPixels / 5} 350")
+        instrumentation.uiAutomation.waitForIdle(200, 5000)
+        val bounds = Rect()
+        checkNotNull(instrumentation.uiAutomation.rootInActiveWindow).getBoundsInScreen(bounds)
+        shell("input swipe ${bounds.centerX()} ${bounds.bottom * 86 / 100} ${bounds.centerX()} ${bounds.bottom / 5} 350")
+        instrumentation.uiAutomation.waitForIdle(200, 5000)
         val label = instrumentation.targetContext.applicationInfo.loadLabel(instrumentation.targetContext.packageManager).toString()
         fun find(node: AccessibilityNodeInfo?): AccessibilityNodeInfo? {
             if (node == null) return null
@@ -248,11 +252,17 @@ class BackNavigationDeviceTest {
 
     @Test fun gameHistoryReturnsBeforeLobby() = withUi { _, scenario ->
         open(scenario, "turing")
+        println("N17 history before navigation: ${js(scenario, "JSON.stringify({url:location.href,ready:document.readyState,length:history.length})")}")
         js(scenario, "location.href='campaign.html'")
-        await("actual campaign navigation committed") {
-            var canGoBack = false
-            scenario.onActivity { canGoBack = (field(it, "webView") as? WebView)?.canGoBack() == true }
-            canGoBack && js(scenario, "document.readyState==='complete' && location.pathname.endsWith('/campaign.html')") == "true"
+        try {
+            await("actual campaign navigation committed") {
+                var canGoBack = false
+                scenario.onActivity { canGoBack = (field(it, "webView") as? WebView)?.canGoBack() == true }
+                canGoBack && js(scenario, "document.readyState==='complete' && location.pathname.endsWith('/campaign.html')") == "true"
+            }
+        } finally {
+            println("N17 history after navigation: ${js(scenario, "JSON.stringify({url:location.href,ready:document.readyState,length:history.length})")}")
+            scenario.onActivity { println("N17 history state: failed=${field(it,"loadFailed")} web=${field(it,"webView")} overlay=${field(it,"overlay")}") }
         }
         back()
         await("actual web history before lobby") { js(scenario, "location.pathname.endsWith('/index.html')") == "true" }
