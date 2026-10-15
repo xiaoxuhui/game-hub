@@ -29,3 +29,6 @@
 - e975521清理脚本首次审核OPEN：ADB设备查询未检查退出码；仅按命令行路径和设备列表可能漏活AVD。执行前补ADB失败拒删、归档owner PID/创建时刻/路径/命令行摘要及子进程停止证明、独立扫描PID和AVD/端口，找不到可信身份拒删；当前未执行删除，待提交后复审。
 - e3eda04复审仍OPEN：任意emulator/qemu进程的CommandLine不可读也要拒删，不能跳过身份未知的进程。再次补充全量空命令行拒绝检查，保留两轮意见与修订提交，不删除历史记录。
 - 4351c96脚本预审CLOSED。实际停机首次时间检查保守拒绝：PowerShell自动将JSON日期解析为DateTime，再DateTime.Parse会丢UTC标记，错误差8小时；原诊断留emulator-owner-check.json。改用DateTimeOffset直接保留类型/偏移，PID30324及qemu28676创建时间与owner记录差小于0.1秒，按真实serial/name核验后仅停止自有AVD，双PID与设备消失均确认。清理脚本时间门禁同样改为类型安全解析，并绑定原owner时点±5秒，不放宽未知身份拒绝。
+- 35e06a7复审CLOSED：实际UTC差0.0247s/0.0720s，双PID停止证明与类型安全时间检查吻合，脚本解析/差异门禁通过。
+- 实际永久归档与dry-run独立复核CLOSED：72/72大小/完整SHA、68/68现场证据绑定、source.bundle完整历史/35e06a7、实际恢复探针、8只读原仓、干净主/工作检出和远端main、双PID/AVD消失均吻合，CI35e06a7 success。仅允许已审脚本用固定索引及commit重执行所有门禁，删除唯一任务根。
+- 实际Execute已完成，removed=true、Test-Path=False，7165文件/3596438793逻辑字节；结果副本n17-cleanup。最后文档提交与执行后独立复核待归档。
