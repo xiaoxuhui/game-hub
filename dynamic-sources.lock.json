@@ -98,10 +98,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
-      "revision": "8c3bad2a0a9f71053bc2dfb132f7ca4417a182a4",
+      "revision": "10d7d0566693764d2de2d83c828f0fabd2fd7102",
       "directory": "dist",
-      "version": "0.1.0",
-      "contentCode": 1,
+      "version": "0.2.0",
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "mini-scratch-dynamic-v1",
       "files": [
@@ -109,10 +109,18 @@
         "index.html",
         "play.html",
         "src/app.js",
+        "src/audio.js",
+        "src/blocks.js",
         "src/core.js",
+        "src/editor.js",
+        "src/expressions.js",
+        "src/persistence.js",
+        "src/project.js",
+        "src/runtime.js",
+        "src/sprites.js",
         "src/style.css"
       ],
-      "releaseNotes": "灵感积木首次接入：中文积木拖拽、嵌套循环、角色运动、画笔与三个示例；本机自动保存，JSON 导入导出沿用大厅系统文件桥接。来源固定 8c3bad2a，原创角色与完整 MIT 随包。"
+      "releaseNotes": "0.2.0：九类积木与画笔共69种，加入音符、按键/点击/广播事件、条件、检测、嵌套运算、变量和单参数自制积木。新版独立保存v2作品，原v1槽与首次升级备份保留；回退读旧作品，旧版后续编辑不合并进新版。固定来源10d7d056，完整MIT随包。"
     }
   ]
 }
