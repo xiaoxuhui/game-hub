@@ -7,8 +7,9 @@ import android.view.KeyEvent
 import android.view.View
 import android.webkit.WebView
 import androidx.lifecycle.Lifecycle
-import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
@@ -17,6 +18,42 @@ import java.util.concurrent.TimeUnit
 /** Real system back/launcher lifecycle, actual signed ready->active installs and production WebViews. */
 class BackNavigationDeviceTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
+
+    /** Launch normally, without ActivityScenario's result/bootstrap task semantics. */
+    private inner class ActivityHandle : AutoCloseable {
+        private var activity: MainActivity? = null
+        val state: Lifecycle.State get() {
+            var value = Lifecycle.State.DESTROYED
+            instrumentation.runOnMainSync { value = activity?.lifecycle?.currentState ?: value }
+            return value
+        }
+        fun onActivity(action: (MainActivity) -> Unit) = instrumentation.runOnMainSync { action(checkNotNull(activity)) }
+        private fun attachResumed(previous: MainActivity? = null) = await("normal launcher activity resumed") {
+            var next: MainActivity? = null
+            instrumentation.runOnMainSync {
+                next = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+                    .filterIsInstance<MainActivity>().singleOrNull { it !== previous }
+                if (next != null) activity = next
+            }
+            next != null
+        }
+        fun launch() {
+            val launch = instrumentation.targetContext.packageManager.getLaunchIntentForPackage(instrumentation.targetContext.packageName)!!
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+            instrumentation.runOnMainSync { instrumentation.targetContext.startActivity(launch) }
+            attachResumed()
+            onActivity { assertTrue("Real launcher root required", it.isTaskRoot) }
+        }
+        fun recreate() {
+            var previous: MainActivity? = null
+            onActivity { previous = it; it.recreate() }
+            attachResumed(previous)
+        }
+        override fun close() {
+            instrumentation.runOnMainSync { activity?.let { if (!it.isDestroyed) it.finish() } }
+            await("test-owned activity destroyed") { state == Lifecycle.State.DESTROYED }
+        }
+    }
 
     private fun field(activity: MainActivity, name: String): Any? =
         MainActivity::class.java.getDeclaredField(name).apply { isAccessible = true }.get(activity)
@@ -33,7 +70,7 @@ class BackNavigationDeviceTest {
         ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(command))
             .bufferedReader().use { it.readText().trim() }
 
-    private fun js(scenario: ActivityScenario<MainActivity>, script: String): String {
+    private fun js(scenario: ActivityHandle, script: String): String {
         val latch = CountDownLatch(1)
         var result = "null"
         scenario.onActivity { activity ->
@@ -45,11 +82,11 @@ class BackNavigationDeviceTest {
         return result
     }
 
-    private fun awaitGame(scenario: ActivityScenario<MainActivity>) = await("loaded game") {
+    private fun awaitGame(scenario: ActivityHandle) = await("loaded game") {
         scenario.state == Lifecycle.State.RESUMED && js(scenario, "document.readyState==='complete' && location.pathname.includes('/assets/games/')") == "true"
     }
 
-    private fun awaitLobby(scenario: ActivityScenario<MainActivity>) = await("system back must return to lobby; actual state=${scenario.state}") {
+    private fun awaitLobby(scenario: ActivityHandle) = await("system back must return to lobby; actual state=${scenario.state}") {
         if (scenario.state != Lifecycle.State.RESUMED) false else {
             var visible = false
             scenario.onActivity { activity ->
@@ -60,7 +97,7 @@ class BackNavigationDeviceTest {
         }
     }
 
-    private fun open(scenario: ActivityScenario<MainActivity>, id: String) {
+    private fun open(scenario: ActivityHandle, id: String) {
         await("actual game card: $id") {
             var clicked = false
             scenario.onActivity { activity ->
@@ -78,14 +115,15 @@ class BackNavigationDeviceTest {
         instrumentation.waitForIdleSync()
     }
 
-    private fun backgroundAndResumeSameActivity(scenario: ActivityScenario<MainActivity>) {
+    private fun backgroundAndResumeSameActivity(scenario: ActivityHandle) {
         var identity = 0
         scenario.onActivity { activity ->
             identity = System.identityHashCode(activity)
-            println("N17 before lobby back: activity=$identity task=${activity.taskId} pid=${android.os.Process.myPid()}")
+            assertTrue("Real launcher root required", activity.isTaskRoot)
+            println("N17 before lobby back: activity=$identity task=${activity.taskId} pid=${android.os.Process.myPid()} root=${activity.isTaskRoot} intent=${activity.intent.toUri(0)}")
         }
         back()
-        await("launcher root task must move to background") { scenario.state == Lifecycle.State.CREATED }
+        await("launcher root task must move to background, current=${scenario.state}") { scenario.state == Lifecycle.State.CREATED }
         val component = "${instrumentation.targetContext.packageName}/.MainActivity"
         println(shell("am start -W -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n $component --activity-new-task --activity-reset-task-if-needed"))
         await("same task resumed") { scenario.state == Lifecycle.State.RESUMED }
@@ -97,7 +135,7 @@ class BackNavigationDeviceTest {
 
     private fun withUi(
         configure: (DynamicCoordinatorDeviceTest.Harness) -> Unit = {},
-        action: (DynamicCoordinatorDeviceTest.Harness, ActivityScenario<MainActivity>) -> Unit
+        action: (DynamicCoordinatorDeviceTest.Harness, ActivityHandle) -> Unit
     ) {
         DynamicCoordinatorDeviceTest.Harness().use { harness ->
             harness.network = UpdateNetwork(false, false)
@@ -114,9 +152,8 @@ class BackNavigationDeviceTest {
             coordinatorField.set(null, owner)
             runtimeField.set(null, runtime)
             try {
-                val launch = instrumentation.targetContext.packageManager.getLaunchIntentForPackage(instrumentation.targetContext.packageName)!!
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-                ActivityScenario.launch<MainActivity>(launch).use { scenario ->
+                ActivityHandle().use { scenario ->
+                    scenario.launch()
                     awaitLobby(scenario)
                     action(harness, scenario)
                 }
@@ -149,7 +186,7 @@ class BackNavigationDeviceTest {
         println("N17 dynamic before first open: ${h.dynamic.selection("memory-demo")}")
     }
 
-    private fun verifyUpdatedReturn(h: DynamicCoordinatorDeviceTest.Harness, scenario: ActivityScenario<MainActivity>, id: String) {
+    private fun verifyUpdatedReturn(h: DynamicCoordinatorDeviceTest.Harness, scenario: ActivityHandle, id: String) {
         val store = if (id == "light") h.builtin else h.dynamic
         open(scenario, id)
         assertTrue("Actual ready->active promotion", store.selection(id).active.startsWith("2-"))
@@ -191,7 +228,11 @@ class BackNavigationDeviceTest {
     @Test fun gameHistoryReturnsBeforeLobby() = withUi { _, scenario ->
         open(scenario, "turing")
         js(scenario, "location.href='campaign.html'")
-        await("actual campaign navigation") { js(scenario, "location.pathname.endsWith('/campaign.html')") == "true" }
+        await("actual campaign navigation committed") {
+            var canGoBack = false
+            scenario.onActivity { canGoBack = (field(it, "webView") as? WebView)?.canGoBack() == true }
+            canGoBack && js(scenario, "document.readyState==='complete' && location.pathname.endsWith('/campaign.html')") == "true"
+        }
         back()
         await("actual web history before lobby") { js(scenario, "location.pathname.endsWith('/index.html')") == "true" }
         back()
