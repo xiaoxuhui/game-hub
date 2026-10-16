@@ -27,6 +27,7 @@
     "verify:dynamic": "node scripts/dynamic-resources.mjs --verify",
     "check:web": "node scripts/web/check.mjs",
     "test:web": "node --test tests/web/*.test.mjs",
+    "test:web:build": "node tests/web/build.integration.mjs",
     "prepare:web": "node scripts/web/inputs.mjs",
     "build:web": "node scripts/web/build.mjs",
     "verify:web": "node scripts/web/build.mjs --verify",

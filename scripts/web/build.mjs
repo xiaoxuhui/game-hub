@@ -1,10 +1,11 @@
-import {readFileSync,writeFileSync,mkdirSync,existsSync,renameSync,mkdtempSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,existsSync,mkdtempSync} from 'node:fs';
 import {join,dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {strictJson} from '../resource-protocol.mjs';
 import {normalizeBase,resourcePath} from '../../web/src/core/contracts.mjs';
 import {files,metadata,treeHash,sha256,inside,removeOwned} from './files.mjs';
 import {projectRoot,sourceLock,readSource,prepareInputs,assertClean,git} from './inputs.mjs';
+import {replaceLocalOutput} from './local-output.mjs';
 
 export function adapterFiles(root){return [...files(join(root,'web/src')).map(f=>({...f,path:'web/src/'+f.path})),...files(join(root,'scripts/web')).map(f=>({...f,path:'scripts/web/'+f.path})),{path:'web/package.json',data:readFileSync(join(root,'web/package.json'))}].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);}
 function put(root,path,data){inside(root,join(root,path));mkdirSync(dirname(join(root,path)),{recursive:true});writeFileSync(join(root,path),data);}
@@ -43,9 +44,7 @@ export async function buildWeb({root=projectRoot,base='/',output=join(root,'.bui
     for(const entry of entries)put(staging,entry.path,entry.data);
     put(staging,'build-manifest.json',JSON.stringify(manifest,null,2)+'\n');
     verifyWeb(root,staging);
-    if(existsSync(output))renameSync(output,backup);
-    try{renameSync(staging,output);}catch(e){if(existsSync(backup))renameSync(backup,output);throw e;}
-    const verified=verifyWeb(root,output);if(existsSync(backup))removeOwned(buildRoot,backup);return verified;
+    return replaceLocalOutput({buildRoot,staging,output,backup,validate:path=>verifyWeb(root,path)});
   }finally{if(existsSync(staging))removeOwned(buildRoot,staging);}
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

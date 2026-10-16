@@ -28,6 +28,7 @@ jobs:
       - run: pnpm run test:web
       - run: pnpm run build:web -- --base /hub/
       - run: pnpm run verify:web
+      - run: pnpm run test:web:build
       - uses: actions/upload-artifact@v5
         with:
           name: game-hub-web-preview
