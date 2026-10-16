@@ -11,8 +11,15 @@
   },
   "homepage": "https://github.com/xiaoxuhui/game-hub#readme",
   "bugs": "https://github.com/xiaoxuhui/game-hub/issues",
-  "keywords": ["android", "offline", "game-hub", "webview"],
-  "engines": { "node": ">=20.19.0" },
+  "keywords": [
+    "android",
+    "offline",
+    "game-hub",
+    "webview"
+  ],
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "packageManager": "pnpm@11.19.0",
   "scripts": {
     "test": "node --test",
@@ -26,11 +33,16 @@
     "prepare:dynamic": "node scripts/dynamic-resources.mjs",
     "verify:dynamic": "node scripts/dynamic-resources.mjs --verify",
     "check:web": "node scripts/web/check.mjs",
+    "audit:web": "node scripts/web/audit.mjs",
+    "test:web:browser": "playwright test --config e2e/web/playwright.config.mjs",
     "test:web": "node --test tests/web/*.test.mjs",
     "test:web:build": "node tests/web/build.integration.mjs",
     "prepare:web": "node scripts/web/inputs.mjs",
     "build:web": "node scripts/web/build.mjs",
     "verify:web": "node scripts/web/build.mjs --verify",
     "serve:web": "node scripts/web/serve.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
   }
 }

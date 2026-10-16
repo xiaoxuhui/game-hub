@@ -2,9 +2,9 @@ name: Check web game hub
 on:
   push:
     branches: [main, feat-web-v1]
-    paths: ['web/**', 'scripts/web/**', 'tests/web/**', 'package.json', '.github/workflows/web-check.yml']
+    paths: ['web/**', 'scripts/web/**', 'scripts/bundle.mjs', 'scripts/resource-protocol.mjs', 'tests/web/**', 'e2e/web/**', 'package.json', 'pnpm-lock.yaml', '.github/workflows/web-check.yml']
   pull_request:
-    paths: ['web/**', 'scripts/web/**', 'tests/web/**', 'package.json', '.github/workflows/web-check.yml']
+    paths: ['web/**', 'scripts/web/**', 'scripts/bundle.mjs', 'scripts/resource-protocol.mjs', 'tests/web/**', 'e2e/web/**', 'package.json', 'pnpm-lock.yaml', '.github/workflows/web-check.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,6 +12,8 @@ jobs:
   web:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/game-hub-browsers
     steps:
       - uses: actions/checkout@v6
         with:
@@ -24,11 +26,14 @@ jobs:
         with:
           version: 11.19.0
           run_install: false
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run check:web
       - run: pnpm run test:web
       - run: pnpm run build:web -- --base /hub/
       - run: pnpm run verify:web
       - run: pnpm run test:web:build
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm run test:web:browser
       - uses: actions/upload-artifact@v5
         with:
           name: game-hub-web-preview
