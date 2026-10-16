@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/game-hub-browsers
+      # Job env cannot use runner context; keep browser cache in the checkout.
+      PLAYWRIGHT_BROWSERS_PATH: .build/playwright-browsers
     steps:
       - uses: actions/checkout@v6
         with:
