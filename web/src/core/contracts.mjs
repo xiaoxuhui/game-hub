@@ -4,7 +4,7 @@ const SHA=/^[0-9a-f]{64}$/;
 const MIME=new Set(['text/html','text/css','application/javascript','application/json','text/plain','image/png','image/jpeg','image/webp','image/gif','image/svg+xml','image/x-icon','font/woff2']);
 function insist(value,message){if(!value)throw new Error(message);}
 export function mimeForPath(path){
-  if(path==='LICENSE')return 'text/plain';
+  if(path.split('/').at(-1)==='LICENSE')return 'text/plain';
   const type=({html:'text/html',js:'application/javascript',mjs:'application/javascript',css:'text/css',json:'application/json',md:'text/plain',txt:'text/plain',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',gif:'image/gif',svg:'image/svg+xml',ico:'image/x-icon',woff2:'font/woff2'})[path.split('.').at(-1).toLowerCase()];
   insist(type,'Unsupported resource extension');return type;
 }

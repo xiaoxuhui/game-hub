@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { safePath, normalizeBase, resourcePath, validateSourceLock, ownsKey } from '../../web/src/core/contracts.mjs';
+import { safePath, normalizeBase, resourcePath, validateSourceLock, ownsKey, mimeForPath } from '../../web/src/core/contracts.mjs';
 
 const source = () => ({ id:'sample-game', displayName:'示范', version:'1.0.0', webContentCode:1, buildKind:'static',
   repository:'https://github.com/xiaoxuhui/sample.git', revision:'a'.repeat(40), entryPage:'index.html',
@@ -46,4 +46,9 @@ test('MIME must match the declared filename, not merely be a known MIME string',
     const item=lock();item.sources[0].files.push({path:'app.js',bytes:40,sha256:'d'.repeat(64),mime:'application/javascript'});
     item.sources[0].files.find(f=>f.path===name).mime=type;assert.throws(()=>validateSourceLock(item));
   }
+});
+test('licenses keep text MIME at immutable nested resource paths',()=>{
+  assert.equal(mimeForPath('games/sample-game/1/abcdef/LICENSE'),'text/plain');
+  assert.equal(mimeForPath('licenses/Apache-2.0.txt'),'text/plain');
+  assert.throws(()=>mimeForPath('assets/unknown.bin'));
 });
