@@ -1,0 +1,8 @@
+{
+  "name": "game-hub-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "跨平台网页游戏大厅"
+}
