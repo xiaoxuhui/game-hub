@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { safePath, normalizeBase, resourcePath, validateSourceLock, ownsKey } from '../../web/src/core/contracts.mjs';
 
-const source = () => ({ id:'sample-game', displayName:'示范', version:'1.0.0', webContentCode:1,
+const source = () => ({ id:'sample-game', displayName:'示范', version:'1.0.0', webContentCode:1, buildKind:'static',
   repository:'https://github.com/xiaoxuhui/sample.git', revision:'a'.repeat(40), entryPage:'index.html',
   storage:{keys:['sample.save'],prefixes:['sample.backup.']},
   files:[{path:'index.html',bytes:100,sha256:'b'.repeat(64),mime:'text/html'},{path:'LICENSE',bytes:20,sha256:'c'.repeat(64),mime:'text/plain'}] });
@@ -34,4 +34,16 @@ test('storage ownership uses declared exact keys or prefixes, never a substring 
   assert.ok(ownsKey(storage,'sample.save'));assert.ok(ownsKey(storage,'sample.backup.123'));
   for(const key of ['other.sample.save','sample.save2','sample.backup','__hub.settings',''])assert.equal(ownsKey(storage,key),false);
   const collision=lock();collision.sources.push({...source(),id:'second-game'});assert.throws(()=>validateSourceLock(collision));
+});
+test('build kinds and source directories are an explicit executable contract',()=>{
+  for(const mutate of [g=>delete g.buildKind,g=>g.buildKind='execute',g=>g.buildKind='dynamic',g=>g.sourceDirectory='dist']){
+    const item=lock();mutate(item.sources[0]);assert.throws(()=>validateSourceLock(item));
+  }
+  const dynamic=lock();Object.assign(dynamic.sources[0],{buildKind:'dynamic',sourceDirectory:'dist'});assert.equal(validateSourceLock(dynamic).sources.length,1);
+});
+test('MIME must match the declared filename, not merely be a known MIME string',()=>{
+  for(const [name,type] of [['index.html','application/javascript'],['app.js','text/html'],['LICENSE','application/json']]){
+    const item=lock();item.sources[0].files.push({path:'app.js',bytes:40,sha256:'d'.repeat(64),mime:'application/javascript'});
+    item.sources[0].files.find(f=>f.path===name).mime=type;assert.throws(()=>validateSourceLock(item));
+  }
 });
