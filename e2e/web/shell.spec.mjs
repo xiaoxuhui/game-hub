@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-test('fixed catalog opens eight version-addressed links without script errors',async({page})=>{
+test('fixed catalog lists eight version-addressed links without script errors',async({page})=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto('./');await expect(page.getByRole('heading',{name:'游戏大厅',exact:true})).toBeVisible();
   await expect(page.locator('#games a')).toHaveCount(8);
