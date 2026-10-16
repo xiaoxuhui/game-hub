@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdirSync,mkdtempSync,writeFileSync,readFileSync,existsSync} from 'node:fs';
+import {mkdirSync,mkdtempSync,writeFileSync,readFileSync,existsSync,unlinkSync} from 'node:fs';
 import {join} from 'node:path';
 import {projectRoot} from '../../scripts/web/inputs.mjs';
 import {removeOwned} from '../../scripts/web/files.mjs';
@@ -27,5 +27,15 @@ test('initial failed handoff exposes no invalid output; successful handoff remov
     mkdirSync(f.staging);writeFileSync(join(f.staging,'index.html'),'valid');
     assert.equal(replaceLocalOutput({...f,validate:()=>42}),42);
     assert.equal(readFileSync(join(f.output,'index.html'),'utf8'),'valid');assert.equal(existsSync(f.backup),false);
+  }finally{f.cleanup();}
+});
+test('partial old-backup cleanup failure retains verified new output',()=>{
+  const f=fixture();try{
+    mkdirSync(f.output);writeFileSync(join(f.output,'index.html'),'old');writeFileSync(join(f.output,'other.txt'),'old-other');
+    const cleanup=(_root,path)=>{unlinkSync(join(path,'index.html'));throw Error('injected cleanup failure');};
+    assert.throws(()=>replaceLocalOutput({...f,validate:()=>true,cleanup}),/Verified output retained/);
+    assert.equal(readFileSync(join(f.output,'index.html'),'utf8'),'new');
+    assert.equal(existsSync(join(f.backup,'index.html')),false);
+    assert.equal(readFileSync(join(f.backup,'other.txt'),'utf8'),'old-other');
   }finally{f.cleanup();}
 });
