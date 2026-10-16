@@ -24,6 +24,12 @@
     "prepare:resources": "node scripts/resource-sources.mjs",
     "verify:resources": "node scripts/resource-bundle.mjs --verify",
     "prepare:dynamic": "node scripts/dynamic-resources.mjs",
-    "verify:dynamic": "node scripts/dynamic-resources.mjs --verify"
+    "verify:dynamic": "node scripts/dynamic-resources.mjs --verify",
+    "check:web": "node scripts/web/check.mjs",
+    "test:web": "node --test tests/web/*.test.mjs",
+    "prepare:web": "node scripts/web/inputs.mjs",
+    "build:web": "node scripts/web/build.mjs",
+    "verify:web": "node scripts/web/build.mjs --verify",
+    "serve:web": "node scripts/web/serve.mjs"
   }
 }
