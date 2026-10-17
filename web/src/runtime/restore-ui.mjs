@@ -11,7 +11,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
   const provenance=element('p','历史快照未记录原游戏版本；预览使用当前游戏校验。文件中的游戏版本表示导出时的读取器版本。'),message=element('p'),preview=element('pre');message.id='hub-restore-message';message.setAttribute('role','status');preview.id='hub-restore-preview';
   const actions=element('div'),confirm=button('hub-restore-confirm','确认完整替换'),close=button('hub-restore-close','取消'),reload=button('hub-restore-reload','重新打开游戏');confirm.disabled=true;reload.hidden=true;
   actions.append(confirm,reload,close);dialog.append(heading,explain,fileLabel,historyLabel,provenance,message,preview,actions);document.body.append(dialog);bar.append(open);
-  let generation=0,queue=Promise.resolve(),selected=null,rows=[],restoring=false;
+  let generation=0,queue=Promise.resolve(),selected=null,rows=[],restoring=false,requiresReload=false;
   function invalidate(){generation++;selected=null;confirm.disabled=true;preview.textContent='';saves.cancelRestore();}
   function schedule(load){
     invalidate();const revision=generation;message.textContent='正在校验备份…';
@@ -38,6 +38,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
     schedule(async()=>{const bytes=new TextEncoder().encode(JSON.stringify(row.record)),record=decodeHistoryRecord(bytes,context);return {bytes,entries:record.entries,description:`本机历史快照 · revision ${record.revision} · 原版本未记录`};});
   });
   open.addEventListener('click',()=>{
+    if(requiresReload){location.reload();return;}
     invalidate();input.value='';history.value='';message.textContent='请选择备份文件或本机历史快照';dialog.showModal();input.focus();const revision=generation;
     void saves.backups().then(backups=>{if(revision!==generation)return;rows=backups;history.replaceChildren(new Option('请选择历史快照',''));rows.forEach((row,index)=>history.append(new Option(`自动备份 ${index+1} · revision ${row.record.revision}`,String(index))));}).catch(error=>{if(revision===generation)message.textContent='历史快照无法读取：'+error.message;});
   });
@@ -45,7 +46,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
   close.addEventListener('click',dismiss);dialog.addEventListener('cancel',event=>{event.preventDefault();dismiss();});
   confirm.addEventListener('click',()=>{
     if(!selected||restoring)return;const candidate=selected;selected=null;restoring=true;confirm.disabled=true;input.disabled=true;history.disabled=true;close.disabled=true;message.textContent='正在恢复，请稍候…';
-    void saves.restore(candidate.token).then(()=>{message.textContent='恢复完成。当前游戏页面保持只读，请重新打开游戏。';reload.hidden=false;}).catch(error=>{message.textContent='恢复未完成：'+error.message+'。请重新打开游戏并检查存档。';reload.hidden=false;}).finally(()=>{restoring=false;close.disabled=false;close.textContent='关闭';});
+    void saves.restore(candidate.token).then(()=>{message.textContent='恢复完成。当前游戏页面保持只读，请重新打开游戏。';reload.hidden=false;}).catch(error=>{message.textContent='恢复未完成：'+error.message+'。请重新打开游戏并检查存档。';reload.hidden=false;}).finally(()=>{restoring=false;requiresReload=true;open.textContent='重新打开';open.title='重新打开游戏后读取当前正式存档';close.disabled=false;close.textContent='关闭';});
   });
   reload.addEventListener('click',()=>location.reload());
 }
