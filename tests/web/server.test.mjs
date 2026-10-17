@@ -11,7 +11,7 @@ async function fixture(action){
   const root=mkdtempSync(join(build,'web-server-test-'));
   try{
     mkdirSync(join(root,'games/demo/1/hash'),{recursive:true});
-    const entries=[['index.html','<h1>大厅</h1>'],['app.mjs','export const version=1;'],['sw.js','self.addEventListener("fetch",()=>{});'],['games/demo/1/hash/app.js','console.log("game")'],['private.txt','must not be served']];
+    const entries=[['index.html','<h1>大厅</h1>'],['app.mjs','export const version=1;'],['sw.js','self.addEventListener("fetch",()=>{});'],['games/demo/1/hash/index.html','<h1>游戏</h1>'],['games/demo/1/hash/app.js','console.log("game")'],['private.txt','must not be served']];
     for(const [path,data] of entries)writeFileSync(join(root,path),data);
     writeFileSync(join(root,'build-manifest.json'),JSON.stringify({basePath:'/hub/',files:entries.filter(([p])=>p!=='private.txt').map(([path])=>({path})),games:[]}));
     const server=createWebServer({root,base:'/hub/'});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -23,6 +23,8 @@ test('real server serves canonical subdirectory modules with MIME and scope head
   assert.equal(response.headers.get('x-content-type-options'),'nosniff');assert.match(response.headers.get('content-security-policy'),/object-src 'none'/);
   const head=await fetch(origin+'/hub/app.mjs',{method:'HEAD'});assert.equal(head.status,200);assert.equal(await head.text(),'');
   assert.equal((await fetch(origin+'/')).status,404);
+  assert.equal((await fetch(origin+'/hub/games/demo/1/hash/')).status,200);
+  assert.equal((await fetch(origin+'/hub/games/missing/')).status,404);
 }));
 test('only the hall SW can register while normal game Worker script requests remain usable',()=>fixture(async origin=>{
   assert.equal((await fetch(origin+'/hub/sw.js',{headers:{'Service-Worker':'script'}})).status,200);

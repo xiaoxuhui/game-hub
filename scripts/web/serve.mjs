@@ -22,7 +22,7 @@ export function createWebServer({root,base='/'}){
       const raw=(request.url||'').split('?')[0];
       if(!raw.startsWith('/')||/[\\%\x00-\x20]/.test(raw)||raw.includes('//'))return error(400,'无效路径');
       if(!raw.startsWith(base))return error(404,'没有此页面');
-      let path=raw.slice(base.length)||'index.html';safePath(path);
+      let path=raw.slice(base.length)||'index.html';if(path.endsWith('/'))path+='index.html';safePath(path);
       if(request.headers['service-worker']&&path!=='sw.js')return error(403,'游戏不能注册 Service Worker');
       if(!allowed.has(path))return error(404,'没有此文件');
       const target=inside(root,join(root,path));

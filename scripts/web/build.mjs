@@ -6,6 +6,7 @@ import {normalizeBase,resourcePath} from '../../web/src/core/contracts.mjs';
 import {files,metadata,treeHash,sha256,inside,removeOwned} from './files.mjs';
 import {projectRoot,sourceLock,readSource,prepareInputs,assertClean,git} from './inputs.mjs';
 import {replaceLocalOutput} from './local-output.mjs';
+import {adaptGame,gameCsp} from './adapt.mjs';
 
 export function adapterFiles(root){return [...files(join(root,'web/src')).map(f=>({...f,path:'web/src/'+f.path})),...files(join(root,'scripts/web')).map(f=>({...f,path:'scripts/web/'+f.path})),{path:'web/package.json',data:readFileSync(join(root,'web/package.json'))}].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);}
 function put(root,path,data){inside(root,join(root,path));mkdirSync(dirname(join(root,path)),{recursive:true});writeFileSync(join(root,path),data);}
@@ -14,11 +15,11 @@ export function expectedPayload(root,base){
   if(!/^\d+\.\d+\.\d+$/.test(version))throw Error('Web shell version');
   const entries=[],games=[];
   for(const source of lock.sources){
-    const raw=readSource(root,source),digest=treeHash(raw),entryUrl=resourcePath(base,source.id,source.webContentCode,digest,source.entryPage),prefix=`games/${source.id}/${source.webContentCode}/${digest}/`;
-    for(const item of raw)entries.push({...item,path:prefix+item.path});
-    games.push({id:source.id,displayName:source.displayName,version:source.version,contentCode:source.webContentCode,digest,entryUrl,entryPage:source.entryPage,category:source.category,iconKind:source.iconKind,sourceRepository:source.repository,sourceRevision:source.revision,storage:source.storage,files:source.files,mode:'online'});
+    const raw=readSource(root,source),adapted=adaptGame(root,source,raw,base),digest=adapted.digest,entryUrl=resourcePath(base,source.id,source.webContentCode,digest,source.entryPage),prefix=`games/${source.id}/${source.webContentCode}/${digest}/`;
+    for(const item of adapted.entries)entries.push({...item,path:prefix+item.path});
+    games.push({id:source.id,displayName:source.displayName,version:source.version,contentCode:source.webContentCode,digest,entryUrl,entryPage:source.entryPage,category:source.category,iconKind:source.iconKind,sourceRepository:source.repository,sourceRevision:source.revision,storage:source.storage,sourceFiles:source.files,files:adapted.files,csp:gameCsp,mode:'online'});
   }
-  entries.push(...files(join(root,'web/src')));
+  entries.push(...files(join(root,'web/src')).filter(f=>!f.path.startsWith('runtime/')));
   entries.push({path:'assets/hub.svg',data:readFileSync(join(root,'android/icon-source/game-hub-icon.svg'))});
   for(const id of ['conway','eml','light','turing'])entries.push({path:`assets/${id}.png`,data:readFileSync(join(root,`android/app/src/main/res/drawable-nodpi/game_${id}.png`))});
   for(const path of ['LICENSE','THIRD_PARTY_NOTICES.md','licenses/Apache-2.0.txt'])entries.push({path,data:readFileSync(join(root,path))});
