@@ -1,11 +1,13 @@
 import {LIMITS} from './contracts.mjs';
 const integer=n=>Number.isSafeInteger(n)&&n>=0;
 export function controlledEligibility({baseURL,controllerURL,scopeURL,handshake,crypto,idb,cache,registrations=[]}){
-  const base=new URL(baseURL);
-  if(!base.pathname.endsWith('/')||base.search||base.hash)return false;
+  let base;try{base=new URL(baseURL);}catch{return false;}
+  const secure=base.protocol==='https:'||(base.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(base.hostname));
+  if(!secure||base.username||base.password||!base.pathname.endsWith('/')||base.search||base.hash||!Array.isArray(registrations))return false;
   const script=new URL('sw.js',base).href;
   return Boolean(controllerURL===script&&scopeURL===base.href&&handshake===1&&crypto&&idb&&cache&&
-    registrations.filter(r=>r.scope.startsWith(base.href)||base.href.startsWith(r.scope)).every(r=>r.scope===base.href&&r.scriptURL===script));
+    registrations.every(r=>r&&typeof r.scope==='string'&&typeof r.scriptURL==='string'&&
+      (!(r.scope.startsWith(base.href)||base.href.startsWith(r.scope))||(r.scope===base.href&&r.scriptURL===script))));
 }
 export function reserveBytes({committed,reserved,requested,budget=LIMITS.cache,margin=LIMITS.reserve}){
   if(![committed,reserved,requested,budget,margin].every(integer)||requested===0)throw Error('Invalid byte reservation');

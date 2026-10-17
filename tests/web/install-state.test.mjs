@@ -13,6 +13,15 @@ test('byte reservations account for current generations, concurrent staging and 
   for(const patch of [{requested:11},{reserved:30},{committed:101},{requested:0},{requested:NaN},{budget:Number.MAX_SAFE_INTEGER+1}])assert.throws(()=>reserveBytes({committed:60,reserved:10,requested:10,budget:100,margin:20,...patch}));
 });
 const stage={phase:'staging',fence:7,manifestDigest:'a'.repeat(64)};
+test('controlled install only permits HTTPS or explicit loopback HTTP development',()=>{
+  for(const origin of ['http://example.com','file://','ftp://example.com','https://user:pass@example.com']){
+    const baseURL=origin+'/hub/';assert.equal(controlledEligibility({...control,baseURL,controllerURL:baseURL+'sw.js',scopeURL:baseURL,registrations:[]}),false);
+  }
+  const baseURL='http://127.0.0.1:18427/hub/';
+  assert.equal(controlledEligibility({...control,baseURL,controllerURL:baseURL+'sw.js',scopeURL:baseURL,registrations:[]}),true);
+  assert.equal(controlledEligibility({...control,baseURL:'not a URL'}),false);
+  assert.equal(controlledEligibility({...control,registrations:[null]}),false);
+});
 test('only complete exact-manifest current-fence work can become ready and a new session active',()=>{
   const verified={type:'verified',fence:7,complete:true,manifestDigest:stage.manifestDigest};
   const ready=transitionInstallation(stage,verified);assert.equal(ready.phase,'ready');assert.equal(stage.phase,'staging');
