@@ -9,7 +9,8 @@ const cases={
   late:['a cancellation during real signature await invalidates the complete CAS',{rejected:true,phase:'failed'}],
   'proof-late':['proof deletion during signature await cannot commit ready against an unchanged ledger',{rejected:true,phase:'staging',proofPreserved:true}],
   'authority-rollback':['a signed authority older than an installed proof cannot authorize another check',{rejected:true,unchanged:true,authoritySequence:'1',proofSequence:'2'}],
-  'commit-expiry':['authorization expiring at the final IDB write aborts the entire transaction',{rejected:true,empty:true}]
+  'commit-expiry':['authorization expiring at the final IDB write aborts the entire transaction',{rejected:true,empty:true}],
+  'input-copy':['repository captures signature input before awaiting the IDB snapshot',{check:true,begin:true}]
 };
 for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page,request})=>{
   const catalog=await (await request.get('catalog.json')).json(),payload=signedPayload({catalog,origin:'http://127.0.0.1:18427'});
@@ -26,6 +27,14 @@ for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page
     const rawOpen=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('game-hub-web.resources./hub/',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
     const putRaw=async(raw,key,value)=>new Promise((resolve,reject)=>{const tx=raw.transaction('state','readwrite');tx.objectStore('state').put(value,key);tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);});
     const readRaw=async(raw,key)=>new Promise((resolve,reject)=>{const tx=raw.transaction('state'),s=tx.objectStore('state'),v=s.get(key),k=s.getKey(key);tx.oncomplete=()=>resolve({present:k.result!==undefined,value:v.result});tx.onabort=()=>reject(tx.error);});
+    if(which==='input-copy'){
+      const attempt=async method=>{
+        let signal,release;const reached=new Promise(resolve=>signal=resolve),gate=new Promise(resolve=>release=resolve);
+        const delayed=createResourceRepository({database:{...db,async snapshot(){const s=await db.snapshot();signal();await gate;return s;}},authority,now:()=>now}),input=new Uint8Array(envelope),pending=delayed[method](input,'conway');
+        await reached;input.fill(0);release();try{await pending;return true;}catch{return false;}
+      };
+      const check=await attempt('check'),begin=await attempt('begin');repo.close();return {check,begin};
+    }
     if(which==='complete'){
       await repo.check(envelope);const {record}=await repo.begin(envelope,'conway');await repo.complete(record.fence,{manifestDigest:record.digest,complete:true});repo.close();
       const again=createResourceRepository({database:await openResourceDatabase(options),authority:createCatalogAuthority(trust),now:()=>now}),saved=await again.inspect(),proof=await again.proof(record.fence);again.close();return {phase:saved.state.installations[0].phase,games:saved.catalog.games.length,proof:proof.receipt.history.payloadSha256===record.proofHash,revision:saved.state.revision};
