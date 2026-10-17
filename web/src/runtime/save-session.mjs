@@ -1,11 +1,11 @@
 import {checkEntries,createFacade,legacyEntries,openSaveStore,SAVE_LIMITS} from './save-store.mjs';
 
 export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},environment=globalThis}){
-  let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly',preview=null,importPreview=null,importGeneration=0;
+  let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly',readonlyReason=null,preview=null,importPreview=null,importGeneration=0;
   const writerId=environment.crypto?.randomUUID?.();
   const prefix='game-hub-web.journal.'+encodeURIComponent(basePath)+'.'+gameId+'.',journalKey=prefix+writerId;
-  const notify=(state,message)=>{
-    mode=state;
+  const notify=(state,message,reason=null)=>{
+    mode=state;readonlyReason=reason;
     // A view callback must never change transaction or writer semantics.
     try{onStatus({mode:state,message});}catch(error){console.error('存档状态界面更新失败',error);}
   };
@@ -63,25 +63,30 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     notify('writable','正在保存…');queueMicrotask(()=>{void flush();});
   });
   async function checkWriter(){
-    if(mode!=='writable'||!db)return;
+    if((mode!=='writable'&&readonlyReason!=='native-preflight')||!db)return;
     try{const current=await db.current(gameId);if(current?.writerId!==writerId||current.fence!==record.fence)notify('readonly','另一标签已接管存档，本页只读，可导出备份');}
     catch{notify('readonly','存档连接已失效，本页只读，请导出备份');}
   }
   const identity=()=>Object.fromEntries(['writerId','fence','revision','sequence'].map(key=>[key,record?.[key]]));
-  const canRestore=()=>{
-    if(mode!=='writable'||!db||!record||draft!==null||sequence!==record.sequence)throw Error('当前存档未保存或只读，不能恢复；请先导出并重新打开');
+  const canRestore=(allowProtected=false)=>{
+    const protectedOriginal=allowProtected&&mode==='readonly'&&readonlyReason==='native-preflight';
+    if((mode!=='writable'&&!protectedOriginal)||!db||!record||(!protectedOriginal&&draft!==null)||sequence!==record.sequence)throw Error('当前存档未保存或只读，不能恢复；请先导出并重新打开');
+    return protectedOriginal;
   };
   // Caller must first validate the complete file and the fixed native writer.
   // Keep candidate/expected private: mutating the UI preview cannot replace them.
   async function prepareRestore(candidate){
-    preview=null;const replacement=checkEntries(candidate,scope);await flush();canRestore();
-    const token=environment.crypto.randomUUID(),expected=identity();preview={token,expected,entries:replacement};
-    return {token,expected:{...expected},keys:replacement.length,replacedKeys:entries.length};
+    preview=null;const replacement=checkEntries(candidate,scope);await flush();canRestore(true);
+    const expected=identity(),current=await db.current(gameId);const protectedOriginal=canRestore(true);
+    if(Object.keys(expected).some(key=>expected[key]!==current?.[key])){notify('readonly','存档已变化，本页只读，请重新打开');throw Error('Save conflict: restore owner changed');}
+    const token=environment.crypto.randomUUID();preview={token,expected,entries:replacement,draft:JSON.stringify(draft),protectedOriginal};
+    return {token,expected:{...expected},keys:replacement.length,replacedKeys:entries.length,protectedOriginal,hasDraft:draft!==null};
   }
   async function restore(token){
     const selected=preview;preview=null;
     if(!selected||selected.token!==token)throw Error('恢复确认已失效，请重新选择备份');
-    await flush();canRestore();
+    await flush();const protectedOriginal=canRestore(true);
+    if(protectedOriginal!==selected.protectedOriginal||JSON.stringify(draft)!==selected.draft)throw Error('本页草稿或保护状态已变化，请重新预览恢复');
     if(Object.keys(selected.expected).some(key=>selected.expected[key]!==record[key]))throw Error('存档已变化，请重新预览恢复');
     const restoreWriter=environment.crypto.randomUUID();
     notify('readonly','正在恢复，当前页面已停止写入…');
@@ -120,7 +125,7 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
   }
   return {
     storage,flush,checkWriter,prepareRestore,restore,cancelRestore(){preview=null;},
-    protectWrites(message){preview=null;notify('readonly',message);},
+    protectWrites(message){preview=null;const eligible=(mode==='writable'||readonlyReason==='native-preflight')&&db&&record&&sequence===record.sequence;notify('readonly',message,eligible?'native-preflight':null);},
     prepareImport,commitImport,cancelImport(){importGeneration++;importPreview=null;},
     committedSnapshot(){if(!record)throw Error('尚未读取完整存档');return {entries:checkEntries(record.entries,scope),mode:'readonly',pending:false,canonicalRead:true,source:'canonical-session'};},
     snapshot(){return {entries:checkEntries(draft??entries,scope),mode,pending:sequence>(record?.sequence??0)||draft!==null,canonicalRead:!!record,source:draft?'session-draft':record?'canonical-session':'legacy-only'};},

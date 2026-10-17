@@ -13,6 +13,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
   const actions=element('div'),confirm=button('hub-restore-confirm','确认完整替换'),close=button('hub-restore-close','取消'),reload=button('hub-restore-reload','重新打开游戏');confirm.disabled=true;reload.hidden=true;
   actions.append(confirm,reload,close);dialog.append(heading,explain,fileLabel,historyLabel,provenance,message,preview,actions);document.body.append(dialog);bar.append(open);
   const original=button('hub-restore-export-original','导出本页原档');original.disabled=!saves.snapshot().canonicalRead;original.title='本页最后确认的完整存档，可能不是另一标签的最新数据；与未保存草稿分别导出';dialog.insertBefore(original,fileLabel);original.addEventListener('click',()=>downloadSnapshot(context,saves.committedSnapshot(),'original'));
+  const draft=button('hub-restore-export-draft','导出本页草稿');draft.title='未保存草稿单独导出，不能直接当完整正式备份恢复';dialog.insertBefore(draft,fileLabel);draft.addEventListener('click',()=>downloadSnapshot(context,saves.snapshot(),'draft'));
   let generation=0,queue=Promise.resolve(),selected=null,rows=[],restoring=false,requiresReload=false;
   function invalidate(){generation++;selected=null;confirm.disabled=true;preview.textContent='';saves.cancelRestore();}
   function schedule(load){
@@ -26,7 +27,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
         const digest=await sha256(candidate.bytes),entries=await validateNativeSave(context,candidate.entries,gameRoot);if(revision!==generation)return;
         const confirmation=await saves.prepareRestore(entries);if(revision!==generation){saves.cancelRestore();return;}
         selected={token:confirmation.token,digest};
-        preview.textContent=`${context.name}\n${candidate.description}\nSHA-256: ${digest}\n将导入 ${confirmation.keys} 项，完整替换当前 ${confirmation.replacedKeys} 项\n当前存档 revision: ${confirmation.expected.revision}\n${entries.map(([key,value])=>`${key.slice(0,120)} · ${value.length} 字符`).join('\n')}`;
+        preview.textContent=`${context.name}\n${candidate.description}\nSHA-256: ${digest}\n将导入 ${confirmation.keys} 项，完整替换当前 ${confirmation.replacedKeys} 项\n${confirmation.protectedOriginal?'受保护原档将被替换，原始字节自动备份；可先导出或取消。\n':''}${confirmation.hasDraft?'本页未保存草稿不会写入恢复结果；请先导出草稿，重新打开后本页草稿将丢失。\n':''}当前存档 revision: ${confirmation.expected.revision}\n${entries.map(([key,value])=>`${key.slice(0,120)} · ${value.length} 字符`).join('\n')}`;
         message.textContent='校验通过。请核对后确认，或取消保留当前存档。';confirm.disabled=false;
       }catch(error){if(revision===generation){message.textContent='无法恢复：'+error.message;confirm.disabled=true;}}
     });
@@ -41,7 +42,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
   });
   open.addEventListener('click',()=>{
     if(requiresReload){location.reload();return;}
-    invalidate();input.value='';history.value='';message.textContent='请选择备份文件或本机历史快照';dialog.showModal();input.focus();const revision=generation;
+    invalidate();input.value='';history.value='';draft.disabled=!saves.snapshot().pending;message.textContent='请选择备份文件或本机历史快照';dialog.showModal();input.focus();const revision=generation;
     void saves.backups().then(backups=>{if(revision!==generation)return;rows=backups;history.replaceChildren(new Option('请选择历史快照',''));rows.forEach((row,index)=>history.append(new Option(`自动备份 ${index+1} · revision ${row.record.revision}`,String(index))));}).catch(error=>{if(revision===generation)message.textContent='历史快照无法读取：'+error.message;});
   });
   function dismiss(){if(restoring)return;invalidate();dialog.close();open.focus();}
