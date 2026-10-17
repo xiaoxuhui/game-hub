@@ -1,4 +1,5 @@
 function insist(value,message){if(!value)throw Error(message);}
+function capture(bytes){insist(bytes instanceof Uint8Array&&bytes.length>0&&bytes.length<=8*1024*1024,'Invalid signature envelope');return new Uint8Array(bytes);}
 export function reservationBytes(game,receipt){
   return game.files.reduce((n,f)=>n+f.bytes,0)+receipt.envelope.length+new TextEncoder().encode(JSON.stringify({...receipt,envelope:undefined})).length+1024;
 }
@@ -26,11 +27,11 @@ export function createResourceRepository({database,authority,now=Date.now}){
   return Object.freeze({
     async inspect(){const s=await snapshot();return {state:s.state,catalog:s.current?.catalog??null};},
     async check(envelope){
-      const s=await snapshot(),receipt=await fresh(envelope,s.current),serialized=authority.serialize(receipt);authority.requireFresh(receipt,{now:now()});
+      const bytes=capture(envelope),s=await snapshot(),receipt=await fresh(bytes,s.current),serialized=authority.serialize(receipt);authority.requireFresh(receipt,{now:now()});
       await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,receipt:serialized,authorization:windowFor(receipt)});return receipt.catalog;
     },
     async begin(envelope,id){
-      const s=await snapshot(),receipt=await fresh(envelope,s.current),game=receipt.catalog.games.find(g=>g.id===id);insist(game?.available===true,'Game is not available for installation');
+      const bytes=capture(envelope),s=await snapshot(),receipt=await fresh(bytes,s.current),game=receipt.catalog.games.find(g=>g.id===id);insist(game?.available===true,'Game is not available for installation');
       const serialized=authority.serialize(receipt),retained=s.proofs[receipt.payloadSha256]?.record??serialized;
       const event={type:'begin',id:game.id,contentCode:game.contentCode,digest:game.digest,proofHash:receipt.payloadSha256,bytes:reservationBytes(game,retained)};
       authority.requireFresh(receipt,{now:now()});const outcome=await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,event,receipt:serialized,authorization:windowFor(receipt),proof:serialized,expectedProofToken:s.proofTokens[receipt.payloadSha256]??'absent'});return {record:outcome.result,game};
