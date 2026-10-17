@@ -81,13 +81,15 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     if(Object.keys(selected.expected).some(key=>selected.expected[key]!==record[key]))throw Error('存档已变化，请重新预览恢复');
     const restoreWriter=environment.crypto.randomUUID();
     notify('readonly','正在恢复，当前页面已停止写入…');
-    try{
-      const restored=await db.restore({gameId,expected:selected.expected,writerId:restoreWriter,entries:selected.entries},scope);
-      // Never replace this old native UI's in-memory state or let its callbacks
-      // resume writing. A new page must acquire the new complete snapshot.
-      channel?.postMessage({fence:restored.fence});notify('readonly','恢复完成，重新打开游戏后生效');
-      return {fence:restored.fence,revision:restored.revision};
-    }catch(error){notify('readonly','恢复未提交，原存档保持；请重新打开后再试');throw error;}
+    let restored;
+    try{restored=await db.restore({gameId,expected:selected.expected,writerId:restoreWriter,entries:selected.entries},scope);}
+    catch(error){notify('readonly','恢复未提交，原存档保持；请重新打开后再试');throw error;}
+    // Notification is not the commit authority. A closed channel cannot turn a
+    // successful IDB transaction into a false "original unchanged" report.
+    try{channel?.postMessage({fence:restored.fence});}catch{/* IDB fences stale writers even without a broadcast. */}
+    // Never replace this old native UI's in-memory state or resume its callbacks.
+    notify('readonly','恢复完成，重新打开游戏后生效');
+    return {fence:restored.fence,revision:restored.revision};
   }
   return {
     storage,flush,checkWriter,prepareRestore,restore,cancelRestore(){preview=null;},
