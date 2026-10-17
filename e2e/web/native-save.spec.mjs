@@ -26,3 +26,13 @@ test('EML clone-based native UI writer retains future state, value and expressio
   await expect.poll(()=>page.evaluate(()=>Object.keys(JSON.parse(localStorage.getItem('eml_workbench_v2')).derivations).length)).toBeGreaterThan(0);
   expect(await page.evaluate(()=>{const state=JSON.parse(localStorage.getItem('eml_workbench_v2')),value=state.values[state.valueOrder[0]];return [state.future.opaque,value.future.opaque,value.canonicalExpression.future.opaque];})).toEqual(['root','value','expression']);
 });
+test('sandpile authoritative save cannot hide conflicting or future mirror fields',async({page,request})=>{
+  const game=(await (await request.get('catalog.json')).json()).games.find(g=>g.id==='abelian-sandpile');await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
+  const result=await page.evaluate(async game=>{
+    const root=new URL('.',location.href),api=await import(new URL('hub-runtime/native-save.mjs',root)),raw=SandpileStorage.encode(SandpileApp.snapshot(),SandpileLevels),data=JSON.parse(raw),before=Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]);
+    const entries=[['abelian-sandpile.experiment.v1',raw],['abelian-sandpile.progress.v1',JSON.stringify(data.progress)],['abelian-sandpile.settings.v1',JSON.stringify(data.settings)]];
+    const accepted=await api.validateNativeSave({id:game.id,storage:game.storage},entries,root),rejected=[];
+    for(const [key,value] of [['abelian-sandpile.progress.v1',{...data.progress,future:{opaque:true}}],['abelian-sandpile.settings.v1',{...data.settings,speed:data.settings.speed===60?59:60}],['abelian-sandpile.settings.v1',{...data.settings,future:true}]]){try{await api.validateNativeSave({id:game.id,storage:game.storage},entries.map(pair=>pair[0]===key?[key,JSON.stringify(value)]:pair),root);rejected.push(false);}catch{rejected.push(true);}}
+    return {exact:JSON.stringify(accepted)===JSON.stringify(entries),rejected,unchanged:JSON.stringify(before)===JSON.stringify(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]))};
+  },game);expect(result).toEqual({exact:true,rejected:[true,true,true],unchanged:true});
+});
