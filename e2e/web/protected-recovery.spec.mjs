@@ -40,6 +40,14 @@ for(const stage of ['preview','committed'])test(`late readonly draft remains sep
   if(stage==='committed')expect((await readCanonical(page,game.id)).entries).toEqual(JSON.parse(backup).entries);
 });
 async function api(page,request){const game=await setup(page,request),root=new URL('.',new URL(game.entryUrl,page.url())).href;await page.goto('./');await page.evaluate(async root=>{const {startSaveSession}=await import(new URL('hub-runtime/save-session.mjs',root));window.opts={gameId:'protected-demo',scope:{keys:['demo.save'],prefixes:[]},basePath:'/protected-test/'};window.start=startSaveSession;window.a=await start(opts);a.storage.setItem('demo.save','raw future');await a.flush();a.protectWrites('原生写保护');},root);}
+test('committed canonical save stops being offered as an unsaved draft',async({page,request})=>{
+  const game=await setup(page,request),root=new URL('.',new URL(game.entryUrl,page.url())).href;await page.goto('./');
+  const result=await page.evaluate(async root=>{
+    const {startSaveSession}=await import(new URL('hub-runtime/save-session.mjs',root)),{mountRestore}=await import(new URL('hub-runtime/restore-ui.mjs',root)),context=await(await fetch(new URL('hub-runtime/context.json',root))).json(),saves=await startSaveSession({gameId:context.id,scope:context.storage,basePath:context.basePath});
+    const bar=document.createElement('aside');document.body.append(bar);mountRestore({bar,saves,context,gameRoot:new URL(root)});document.querySelector('#game-hub-restore').click();
+    saves.storage.setItem('red-green-puzzle.parameters.v1','{"schemaVersion":1,"size":6}');const pendingEnabled=!document.querySelector('#hub-restore-export-draft').disabled;await saves.flush();const committedDisabled=document.querySelector('#hub-restore-export-draft').disabled,pending=saves.snapshot().pending;saves.close();return {pendingEnabled,committedDisabled,pending};
+  },root);expect(result).toEqual({pendingEnabled:true,committedDisabled:true,pending:false});
+});
 test('protected recovery explicitly binds unsaved draft and keeps native import disabled',async({page,request})=>{
   await api(page,request);const result=await page.evaluate(async()=>{try{a.storage.setItem('demo.save','draft one');}catch{}const first=await a.prepareRestore([['demo.save','candidate']]);const info={protected:first.protectedOriginal,draft:first.hasDraft};const nativeBlocked=await a.prepareImport().then(()=>false,()=>true);try{a.storage.setItem('demo.save','draft two');}catch{}const changed=await a.restore(first.token).then(()=>false,()=>true);const second=await a.prepareRestore([['demo.save','candidate']]);await a.restore(second.token);const b=await start(opts),value=b.storage.getItem('demo.save'),draft=a.snapshot().entries;a.close();b.close();return {info,nativeBlocked,changed,value,draft};});expect(result).toEqual({info:{protected:true,draft:true},nativeBlocked:true,changed:true,value:'candidate',draft:[['demo.save','draft two']]});
 });
