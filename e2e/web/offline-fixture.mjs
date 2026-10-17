@@ -5,6 +5,7 @@ import {join,resolve} from 'node:path';
 import {build} from 'esbuild';
 import {execFileSync} from 'node:child_process';
 import {files,metadata,removeOwned} from '../../scripts/web/files.mjs';
+import {verifyWeb} from '../../scripts/web/build.mjs';
 import {signedPayload,signPayload,testSpki,TEST_KEY_ID} from '../../tests/fixtures/web-signed.mjs';
 export async function prepareOfflineFixture(projectRoot,production){
   const root=join(projectRoot,'.build/web-offline-fixture'),basePath=production.basePath,origin='http://127.0.0.1:18428';
@@ -21,7 +22,7 @@ export async function prepareOfflineFixture(projectRoot,production){
   if(process.env.WEB_RPC_REVIEW_RED==='1')builder.onLoad({filter:/[\\/]sw[\\/]resources\.mjs$/},()=>({contents:execFileSync('git',['show','3e1da25:web/sw/resources.mjs'],{cwd:projectRoot,encoding:'utf8'}),loader:'js',resolveDir:join(projectRoot,'web/sw')}));
   }}]});
   if(replacements!==1||compiled.outputFiles.length!==1||Object.values(compiled.metafile.outputs).some(o=>o.imports.length))throw Error('Invalid test SW closure');
-  const timingProbe=`\n// Test timing only: keep real WebCrypto verification, then pause its result.\nconst originalVerify=crypto.subtle.verify.bind(crypto.subtle);crypto.subtle.verify=async(...args)=>{const valid=await originalVerify(...args);if(valid)await fetch(${JSON.stringify(origin+basePath+'__fixture/verified.json')},{cache:'no-store'});return valid;};\n`;
+  const timingProbe=`\n// Test timing only: keep real WebCrypto verification, then pause its result.\nconst originalVerify=crypto.subtle.verify.bind(crypto.subtle);crypto.subtle.verify=async(...args)=>{const valid=await originalVerify(...args);if(valid)try{await fetch(${JSON.stringify(origin+basePath+'__fixture/verified.json')},{cache:'no-store'});}catch{}return valid;};\n`;
   writeFileSync(join(root,'sw.js'),Buffer.concat([Buffer.from(compiled.outputFiles[0].contents),Buffer.from(timingProbe)]));
   const catalog=JSON.parse(readFileSync(join(root,'catalog.json'),'utf8')),payload=signedPayload({catalog,origin,basePath});
   payload.issuedAt=new Date(Date.now()-1000).toISOString();payload.expiresAt=new Date(Date.now()+3600000).toISOString();
@@ -30,6 +31,7 @@ export async function prepareOfflineFixture(projectRoot,production){
   const tampered=Buffer.from(JSON.stringify(changed));mkdirSync(join(root,'__hub'),{recursive:true});writeFileSync(join(root,'__hub/current.json'),normal);
   const manifest={...production,testOnly:'ephemeral-public-key-no-production-verification',files:metadata(files(root).filter(f=>f.path!=='build-manifest.json'))};
   writeFileSync(join(root,'build-manifest.json'),JSON.stringify(manifest));
+  let rejected=false;try{verifyWeb(projectRoot,root);}catch(error){if(!error.message.includes('manifest differs'))throw error;rejected=true;}if(!rejected)throw Error('Production verifier accepted a test identity');
   writeFileSync(join(projectRoot,'.build/web-offline-info.json'),JSON.stringify({origin,basePath,build:production.sourceCommit,games:catalog.games.map(g=>({id:g.id,files:g.files.length,entryUrl:g.entryUrl}))}));
   return {root,variants:{normal,expired,tampered}};
 }
