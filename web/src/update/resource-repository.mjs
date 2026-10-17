@@ -30,7 +30,8 @@ export function createResourceRepository({database,authority,now=Date.now}){
     },
     async begin(envelope,id){
       const s=await snapshot(),receipt=await fresh(envelope,s.current),game=receipt.catalog.games.find(g=>g.id===id);insist(game?.available===true,'Game is not available for installation');
-      const serialized=authority.serialize(receipt),event={type:'begin',id:game.id,contentCode:game.contentCode,digest:game.digest,proofHash:receipt.payloadSha256,bytes:reservationBytes(game,serialized)};
+      const serialized=authority.serialize(receipt),retained=s.proofs[receipt.payloadSha256]?.record??serialized;
+      const event={type:'begin',id:game.id,contentCode:game.contentCode,digest:game.digest,proofHash:receipt.payloadSha256,bytes:reservationBytes(game,retained)};
       authority.requireFresh(receipt,{now:now()});const outcome=await database.commit({expected:s.token,event,receipt:serialized,proof:serialized,expectedProofToken:s.proofTokens[receipt.payloadSha256]??'absent'});return {record:outcome.result,game};
     },
     async complete(fence,confirmation){
