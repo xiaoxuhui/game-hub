@@ -1,5 +1,7 @@
+import {enableShell} from './shell.mjs';
 const build=__HUB_BUILD__,basePath=__HUB_BASE__,protocol=1,scope=self.location.origin+basePath,scriptURL=scope+'sw.js';
-// Deliberately no claim/skipWaiting/fetch routing in this control-only slice.
+enableShell();
+// Never claim existing online games or skip an old active SW automatically.
 self.addEventListener('message',event=>{
   const data=event.data,port=event.ports?.[0];if(!port||data?.type!=='hub-control')return;
   event.waitUntil((async()=>{

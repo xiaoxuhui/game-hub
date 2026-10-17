@@ -16,7 +16,7 @@ export function assertClean(root){
   // Git's clean filters can hide CRLF working bytes that differ from HEAD.
   // Prove the actual bytes of every tracked build input, not only porcelain.
   const algorithm=git(root,['rev-parse','--show-object-format']);if(!['sha1','sha256'].includes(algorithm))throw Error('Unknown Git object format');
-  const paths=['web','scripts/web','scripts/bundle.mjs','scripts/resource-protocol.mjs','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','LICENSE','THIRD_PARTY_NOTICES.md','licenses','android/icon-source/game-hub-icon.svg','android/app/src/main/res/drawable-nodpi','android/app/src/main/res/drawable'];
+  const paths=['web','scripts/web','scripts/bundle.mjs','scripts/resource-protocol.mjs','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','LICENSE','THIRD_PARTY_NOTICES.md','licenses','android/icon-source/game-hub-icon.svg','android/icon-source/store-icon-512.png','android/app/src/main/res/drawable-nodpi','android/app/src/main/res/drawable'];
   const tracked=new Set();
   for(const entry of git(root,['ls-tree','-r','-z','HEAD','--',...paths]).split('\0').filter(Boolean)){
     const tab=entry.indexOf('\t'),[mode,type,objectId]=entry.slice(0,tab).split(' '),path=entry.slice(tab+1),full=join(root,path);
