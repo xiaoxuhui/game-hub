@@ -8,6 +8,7 @@ import {projectRoot,sourceLock,readSource,prepareInputs,assertClean,git,recursiv
 import {replaceLocalOutput} from './local-output.mjs';
 import {adaptGame,gameCsp} from './adapt.mjs';
 import {vectorIcon} from './icons.mjs';
+import {bundleServiceWorker} from './sw-bundle.mjs';
 
 export function adapterFiles(root){return [...recursiveBuildInputs.flatMap(directory=>files(join(root,directory)).map(f=>({...f,path:directory+'/'+f.path}))),{path:'web/package.json',data:readFileSync(join(root,'web/package.json'))}].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);}
 function put(root,path,data){inside(root,join(root,path));mkdirSync(dirname(join(root,path)),{recursive:true});writeFileSync(join(root,path),data);}
@@ -20,12 +21,14 @@ export function expectedPayload(root,base){
     for(const item of adapted.entries)entries.push({...item,path:prefix+item.path});
     games.push({id:source.id,displayName:source.displayName,version:source.version,contentCode:source.webContentCode,digest,entryUrl,entryPage:source.entryPage,category:source.category,iconKind:source.iconKind,sourceRepository:source.repository,sourceRevision:source.revision,storage:source.storage,sourceFiles:source.files,files:adapted.files,csp:gameCsp,mode:'online'});
   }
-  entries.push(...files(join(root,'web/src')).filter(f=>!f.path.startsWith('runtime/')));
+  const sourceCommit=git(root,['rev-parse','HEAD']);
+  entries.push(...files(join(root,'web/src')).filter(f=>!f.path.startsWith('runtime/')&&f.path!=='build-context.mjs'));
+  entries.push({path:'build-context.mjs',data:Buffer.from('export const BUILD=Object.freeze('+JSON.stringify({basePath:base,build:sourceCommit,protocol:1})+');\n')});
+  entries.push({path:'sw.js',data:bundleServiceWorker(root,{basePath:base,build:sourceCommit})});
   entries.push({path:'assets/hub.svg',data:readFileSync(join(root,'android/icon-source/game-hub-icon.svg'))});
   for(const id of ['conway','eml','light','turing'])entries.push({path:`assets/${id}.png`,data:readFileSync(join(root,`android/app/src/main/res/drawable-nodpi/game_${id}.png`))});
   for(const kind of ['simulation','logic','puzzle','generic'])entries.push({path:`assets/${kind}.svg`,data:vectorIcon(root,kind)});
   for(const path of ['LICENSE','THIRD_PARTY_NOTICES.md','licenses/Apache-2.0.txt'])entries.push({path,data:readFileSync(join(root,path))});
-  const sourceCommit=git(root,['rev-parse','HEAD']);
   entries.push({path:'catalog.json',data:Buffer.from(JSON.stringify({schemaVersion:1,platform:'web',trust:'https-online',shellVersion:version,basePath:base,sourceCommit,games},null,2)+'\n')});
   entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   if(new Set(entries.map(f=>f.path.toLowerCase())).size!==entries.length)throw Error('Output path collision');
