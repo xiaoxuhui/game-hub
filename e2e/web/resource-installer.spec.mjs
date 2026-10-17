@@ -15,7 +15,8 @@ for(const which of cases)test(`cache component ${which} uses actual fetch CacheS
     const {createResourceRepository}=await import(new URL('update/resource-repository.mjs',location.href));
     const {createResourceInstaller}=await import(new URL('cache/installer.mjs',location.href));
     const {completionMarker,resourceURL}=await import(new URL('cache/resource-files.mjs',location.href));
-    const {openSaveStore}=await import(new URL('core/../runtime/save-store.mjs',location.href));
+    const saveGame=catalog.games.find(g=>g.id==='eml');
+    const {openSaveStore}=await import(new URL(saveGame.entryUrl.slice(0,-saveGame.entryPage.length)+'hub-runtime/save-store.mjs',location.origin));
     // The built hall excludes raw runtime/. Use a reviewed game's identical
     // self-contained runtime helper to create an opaque other-game save record.
     let now=start,control=which==='uncontrolled'?null:'test-component-controlled';const basePath='/hub/',origin=location.origin;

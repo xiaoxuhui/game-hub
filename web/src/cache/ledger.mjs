@@ -10,7 +10,8 @@ function exact(value,fields){insist(value&&typeof value==='object'&&!Array.isArr
 const integer=(v,min=0)=>Number.isSafeInteger(v)&&!Object.is(v,-0)&&v>=min;
 const identifier=v=>typeof v==='string'&&v.length>0&&v.length<=180&&!/[\x00-\x20\x7f]/.test(v);
 const next=v=>{insist(integer(v)&&v<Number.MAX_SAFE_INTEGER,'Ledger counter exhausted');return v+1;};
-const cacheName=(base,fence)=>`game-hub-web.resources.${sha256Hex(base).slice(0,24)}.${fence}`;
+export const resourceCachePrefix=base=>{normalizeBase(base);return `game-hub-web.resources.${sha256Hex(base).slice(0,24)}.`;};
+const cacheName=(base,fence)=>resourceCachePrefix(base)+fence;
 const identity=r=>JSON.stringify([r.id,r.contentCode,r.digest]);
 export const emptyLedger=()=>({schemaVersion:1,revision:0,nextFence:0,installations:[],sessions:[]});
 

@@ -43,6 +43,9 @@ export function createResourceRepository({database,authority,now=Date.now}){
       authority.requireFresh(receipt,{now:now()});const result=await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,receipt:authority.serialize(receipt),authorization:windowFor(receipt),event:{type:'complete',fence,proofHash:record.proofHash,manifestDigest:input.manifestDigest,complete:input.complete}});return result.result;
     },
     async cancel(fence){const s=await snapshot();return (await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,event:{type:'cancel',fence}})).result;},
+    // A cheap status query is not signature/cache authorization.
+    async task(fence){const state=await database.read(),record=state.installations.find(r=>r.fence===fence);insist(record,'Unknown installation');return record;},
+    async missing(fence){const s=await snapshot();return (await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,event:{type:'missing',fence}})).result;},
     async proof(fence){
       const s=await snapshot(),record=s.state.installations.find(r=>r.fence===fence);insist(record,'Unknown installation');const proof=s.verifiedProofs.get(record.proofHash);
       return {record,game:proof.catalog.games.find(g=>g.id===record.id),receipt:authority.serialize(proof)};
