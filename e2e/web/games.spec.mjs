@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 const games=[['conway','#stepButton'],['eml','#addButton'],['light','#btn-levels'],['turing','#generateRoute'],['abelian-sandpile','#drop-selected'],['lambda-diagram-game','#convert'],['red-green-puzzle','#generateBtn'],['mini-scratch','#runButton']];
-for(const [id,control] of games)test(`${id} loads fixed resources, survives refresh and returns to hall`,async({page,request})=>{
+for(const [id,control] of games)test(`${id} loads fixed resources, survives refresh and returns to hall`,async({page,request},testInfo)=>{
   const response=await request.get('catalog.json');const catalog=await response.json(),game=catalog.games.find(g=>g.id===id);
   const errors=[],violations=[],requests=[],failures=[];
   page.on('pageerror',error=>errors.push(error.message));
@@ -14,7 +14,13 @@ for(const [id,control] of games)test(`${id} loads fixed resources, survives refr
   else if(id==='lambda-diagram-game')await page.locator(control).click();
   else if(id==='mini-scratch'){await page.locator(control).click();await page.locator('#stopButton').click();}
   else if(id==='light'){await page.locator(control).click();await page.keyboard.press('Escape');}
+  else if(id==='turing'){
+    await page.locator('#routeSteps').fill('10');
+    const workerReady=page.waitForEvent('worker');await page.locator(control).click();const worker=await workerReady;
+    expect(worker.url()).toContain('/assets/route-worker-');await expect(page.locator('#routeStatus')).toContainText('已显示');
+  }
   await page.reload();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
+  await page.screenshot({path:testInfo.outputPath('game.png')});
   const prefix=new URL('.',new URL(game.entryUrl,'http://127.0.0.1:18427')).href;
   for(const url of requests.filter(url=>/^http/.test(url)))expect(url.startsWith(prefix),url).toBe(true);
   expect(errors).toEqual([]);expect(violations).toEqual([]);expect(failures).toEqual([]);
