@@ -10,8 +10,13 @@ permissions:
   contents: read
 jobs:
   web:
+    name: web-${{ matrix.browser }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     env:
       # Job env cannot use runner context; keep browser cache in the checkout.
       PLAYWRIGHT_BROWSERS_PATH: .build/playwright-browsers
@@ -39,9 +44,10 @@ jobs:
       - run: pnpm run verify:web
       - run: pnpm run test:web:build
       - run: pnpm run test:web:catalog
-      - run: pnpm exec playwright install --with-deps chromium firefox webkit
-      - run: pnpm run test:web:browser
+      - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+      - run: pnpm run test:web:browser -- --project '${{ matrix.browser }}-*'
       - uses: actions/upload-artifact@v5
+        if: matrix.browser == 'chromium'
         with:
           name: game-hub-web-preview
           path: .build/web-dist/
@@ -49,7 +55,7 @@ jobs:
       - uses: actions/upload-artifact@v5
         if: always()
         with:
-          name: game-hub-web-test-evidence
+          name: game-hub-web-test-evidence-${{ matrix.browser }}
           path: |
             .build/web-browser/
             .build/web-browser-result.json
