@@ -14,7 +14,9 @@ export function createControllerGate(){
       const registration=assertRegistrations(await container.getRegistrations(),{origin,...BUILD});insist(registration.active===controller,'Controller is not the active expected registration');
       const nonce=crypto.randomUUID(),channel=new MessageChannel();
       const value=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>{channel.port1.close();reject(Error('Controller handshake timeout'));},2000);channel.port1.onmessage=event=>{clearTimeout(timer);channel.port1.close();resolve(event.data);};try{controller.postMessage({type:'hub-control',protocol:1,build:BUILD.build,basePath:BUILD.basePath,nonce},[channel.port2]);}catch(error){clearTimeout(timer);channel.port1.close();reject(error);}});
-      validateControlReply(value,{context:BUILD,origin,nonce});insist(!closed&&ticket===generation&&container.controller===controller&&controller.state==='activated','Controller changed during handshake');
+      validateControlReply(value,{context:BUILD,origin,nonce});
+      const confirmed=assertRegistrations(await container.getRegistrations(),{origin,...BUILD});
+      insist(confirmed.active===controller&&!closed&&ticket===generation&&container.controller===controller&&controller.state==='activated','Controller changed during handshake');
       authorized??=BUILD.build+':'+crypto.randomUUID();return {controlled:true,token:authorized};
     }catch(error){if(ticket===generation)authorized=null;return {controlled:false,reason:error.message};}
   }
@@ -24,7 +26,8 @@ export function createControllerGate(){
     async register(){
       capability();const registrations=await container.getRegistrations();
       if(registrations.some(r=>{const path=new URL(r.scope).pathname;return path.startsWith(BUILD.basePath)||BUILD.basePath.startsWith(path);}))assertRegistrations(registrations,{origin,...BUILD});
-      return await container.register(origin+BUILD.basePath+'sw.js',{scope:BUILD.basePath,updateViaCache:'none'});
+      const registration=await container.register(origin+BUILD.basePath+'sw.js',{scope:BUILD.basePath,updateViaCache:'none'});
+      assertRegistrations(await container.getRegistrations(),{origin,...BUILD});return registration;
     },
     invalidate,
     close(){closed=true;invalidate();container?.removeEventListener('controllerchange',invalidate);globalThis.removeEventListener('pageshow',invalidate);}
