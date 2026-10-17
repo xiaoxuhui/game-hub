@@ -97,6 +97,8 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
   }
   return {
     storage,flush,checkWriter,prepareRestore,restore,cancelRestore(){preview=null;},
+    protectWrites(message){preview=null;notify('readonly',message);},
+    committedSnapshot(){if(!record)throw Error('尚未读取完整存档');return {entries:checkEntries(record.entries,scope),mode:'readonly',pending:false,canonicalRead:true,source:'canonical-session'};},
     snapshot(){return {entries:checkEntries(draft??entries,scope),mode,pending:sequence>(record?.sequence??0)||draft!==null,canonicalRead:!!record,source:draft?'session-draft':record?'canonical-session':'legacy-only'};},
     async backups(){return db?db.backups(gameId):[];},
     close(){channel?.close();db?.close();}

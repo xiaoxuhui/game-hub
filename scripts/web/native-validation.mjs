@@ -6,6 +6,11 @@ import {strictJson} from '../resource-protocol.mjs';
 
 const cache=new Map(),clones=entries=>entries.map(file=>({...file,data:Buffer.from(file.data)}));
 const options={target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022,moduleResolution:ts.ModuleResolutionKind.Bundler,strict:true,noEmit:true,types:[],lib:['lib.es2022.d.ts','lib.dom.d.ts']};
+export function splitEmlBeforeUI(text){
+  const ast=ts.createSourceFile('eml-workbench.js',text,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS),names=['EMLExpression','EMLExpressionProperties','EMLTranscendentalRules','EMLAlgebraRules','EMLFormulaRules','EMLEvaluator','EMLValueStore','EMLPersistence','EMLTreeViewport','EMLTreeController','EMLDerivationTrace','EMLApp'];
+  if(ast.parseDiagnostics.length||ast.statements.length!==names.length||ast.statements.some((statement,index)=>!ts.isExpressionStatement(statement)||!statement.getText(ast).includes(`root.${names[index]} =`)))throw Error('Unreviewed EML library/UI boundary');
+  const boundary=ast.statements[8].getFullStart();return [text.slice(0,boundary),text.slice(boundary)];
+}
 export function nativeTuring(root,source){
   const directory=join(root,'web/native-validation/turing'),manifest=strictJson(readFileSync(join(directory,'provenance.json'))),raw=files(directory);
   if(manifest.schemaVersion!==1||manifest.gameId!==source.id||source.id!=='turing'||manifest.repository!==source.repository||manifest.revision!==source.revision||manifest.compiler?.name!=='typescript'||manifest.compiler.version!=='5.9.3'||ts.version!==manifest.compiler.version)throw Error('Native Turing provenance/compiler mismatch');

@@ -1,5 +1,6 @@
 import {decodeBackup,decodeHistoryRecord,MAX_BACKUP_BYTES} from './save-backup.mjs';
 import {validateNativeSave} from './native-save.mjs';
+import {downloadSnapshot} from './backup-download.mjs';
 const element=(tag,text)=>{const node=document.createElement(tag);if(text)node.textContent=text;return node;};
 const button=(id,text)=>{const node=element('button',text);node.id=id;node.type='button';return node;};
 const sha256=async bytes=>{if(!globalThis.crypto?.subtle)throw Error('浏览器缺少安全文件摘要能力，请通过HTTPS打开');return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),byte=>byte.toString(16).padStart(2,'0')).join('');};
@@ -11,6 +12,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
   const provenance=element('p','历史快照未记录原游戏版本；预览使用当前游戏校验。文件中的游戏版本表示导出时的读取器版本。'),message=element('p'),preview=element('pre');message.id='hub-restore-message';message.setAttribute('role','status');preview.id='hub-restore-preview';
   const actions=element('div'),confirm=button('hub-restore-confirm','确认完整替换'),close=button('hub-restore-close','取消'),reload=button('hub-restore-reload','重新打开游戏');confirm.disabled=true;reload.hidden=true;
   actions.append(confirm,reload,close);dialog.append(heading,explain,fileLabel,historyLabel,provenance,message,preview,actions);document.body.append(dialog);bar.append(open);
+  const original=button('hub-restore-export-original','导出本页原档');original.disabled=!saves.snapshot().canonicalRead;original.title='本页最后确认的完整存档，可能不是另一标签的最新数据；与未保存草稿分别导出';dialog.insertBefore(original,fileLabel);original.addEventListener('click',()=>downloadSnapshot(context,saves.committedSnapshot(),'original'));
   let generation=0,queue=Promise.resolve(),selected=null,rows=[],restoring=false,requiresReload=false;
   function invalidate(){generation++;selected=null;confirm.disabled=true;preview.textContent='';saves.cancelRestore();}
   function schedule(load){

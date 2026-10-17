@@ -15,9 +15,12 @@ for(const id of ['conway','eml','light','turing','abelian-sandpile','lambda-diag
     const before=Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]),accepted=await api.validateNativeSave({id:game.id,storage:game.storage},entries,root);
     const bad=entries.map((pair,index)=>index===0?[pair[0],'{"unsupported":true}']:pair);let rejected=false;try{await api.validateNativeSave({id:game.id,storage:game.storage},bad,root);}catch{rejected=true;}
     const future=entries.map((pair,index)=>index===0?[pair[0],JSON.stringify({...JSON.parse(pair[1]),future:{opaque:'must remain'}})]:pair);let futureRejected=false;try{await api.validateNativeSave({id:game.id,storage:game.storage},future,root);}catch{futureRejected=true;}
+    window.futureNativeEntries=future;
     return {exact:JSON.stringify(accepted)===JSON.stringify(entries),rejected,futureRejected,unchanged:JSON.stringify(before)===JSON.stringify(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]))};
   },game);
   expect(result).toEqual({exact:true,rejected:true,futureRejected:id!=='eml',unchanged:true});
+  await page.evaluate(()=>{for(const [key,value] of futureNativeEntries)localStorage.setItem(key,value);});await expect(page.locator('#game-hub-status')).toHaveText('已保存');
+  const errors=[];page.on('pageerror',error=>errors.push(error.message));await page.reload();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode',id==='eml'?'writable':'readonly');expect(errors).toEqual([]);
 });
 test('EML clone-based native UI writer retains future state, value and expression fields during a real save',async({page,request})=>{
   const game=(await (await request.get('catalog.json')).json()).games.find(g=>g.id==='eml');await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');

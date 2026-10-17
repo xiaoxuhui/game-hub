@@ -3,10 +3,15 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {nativeTuring,nativeLambda} from '../../scripts/web/native-validation.mjs';
+import {nativeTuring,nativeLambda,splitEmlBeforeUI} from '../../scripts/web/native-validation.mjs';
 import {sourceLock,projectRoot,readSource} from '../../scripts/web/inputs.mjs';
 import {removeOwned} from '../../scripts/web/files.mjs';
 import {auditNativeSource} from '../../scripts/web/audit-native.mjs';
+test('EML native libraries are split before UI without changing or reordering any source byte',()=>{
+  const source=sourceLock().sources.find(s=>s.id==='eml'),html=readSource(projectRoot,source).find(f=>f.path.endsWith('.html')).data.toString('utf8'),scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi)];assert.equal(scripts.length,1);
+  const original=scripts[0][1],[libraries,ui]=splitEmlBeforeUI(original);assert.equal(libraries+ui,original);assert.match(libraries,/root\.EMLPersistence =/);assert.doesNotMatch(libraries,/root\.EMLApp =/);assert.match(ui,/root\.EMLApp =/);
+  assert.throws(()=>splitEmlBeforeUI(original+'\ndocument.body.remove();'),/boundary/);assert.throws(()=>splitEmlBeforeUI(original.replace('root.EMLPersistence =','root.UnknownPersistence =')),/boundary/);
+});
 test('frozen native Turing validators compile without UI and retain the old project format',async()=>{
   const source=sourceLock().sources.find(s=>s.id==='turing'),output=nativeTuring(projectRoot,source),parent=join(projectRoot,'.build');mkdirSync(parent,{recursive:true});const root=mkdtempSync(join(parent,'web-native-validator-'));
   try{

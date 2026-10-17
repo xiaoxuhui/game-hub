@@ -3,14 +3,14 @@ const KEY='red-green-puzzle.parameters.v1';
 async function entry(request){return (await (await request.get('catalog.json')).json()).games.find(g=>g.id==='red-green-puzzle').entryUrl;}
 async function ready(page){await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');}
 test('game save persists through reload while raw legacy and foreign keys remain untouched',async({page,request})=>{
-  await page.addInitScript(()=>{if(!localStorage.getItem('seeded')){localStorage.setItem('red-green-puzzle.parameters.v1','{"schemaVersion":1,"size":3,"future":"keep raw"}');localStorage.setItem('light-game/save','foreign opaque');localStorage.setItem('seeded','1');}});
+  await page.addInitScript(()=>{if(!localStorage.getItem('seeded')){localStorage.setItem('red-green-puzzle.parameters.v1','{"schemaVersion":1,"size":3}');localStorage.setItem('light-game/save','foreign opaque');localStorage.setItem('seeded','1');}});
   await page.goto(await entry(request));await ready(page);await expect(page.locator('#sizeInput')).toHaveValue('3');
   await page.locator('#sizeInput').fill('4');await page.locator('#generateBtn').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');
   await page.reload();await ready(page);await expect(page.locator('#sizeInput')).toHaveValue('4');
   expect(await page.evaluate(()=>localStorage.getItem('light-game/save'))).toBe(null);
   const hall=await page.context().newPage();await hall.goto('/hub/');
   expect(await hall.evaluate(()=>localStorage.getItem('light-game/save'))).toBe('foreign opaque');
-  expect(await hall.evaluate(()=>JSON.parse(localStorage.getItem('red-green-puzzle.parameters.v1')).future)).toBe('keep raw');
+  expect(await hall.evaluate(()=>localStorage.getItem('red-green-puzzle.parameters.v1'))).toBe('{"schemaVersion":1,"size":3}');
 });
 test('unknown authoritative save format only permits explicitly incomplete emergency export',async({page,request},testInfo)=>{
   await page.goto('/hub/');

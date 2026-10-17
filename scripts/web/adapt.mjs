@@ -3,7 +3,7 @@ import {join,posix} from 'node:path';
 import {safePath,normalizeBase} from '../../web/src/core/contracts.mjs';
 import {files,metadata,treeHash} from './files.mjs';
 import {sourceProofBytes} from '../../web/src/core/digests.mjs';
-import {nativeTuring,nativeLambda} from './native-validation.mjs';
+import {nativeTuring,nativeLambda,splitEmlBeforeUI} from './native-validation.mjs';
 
 export const gameCsp="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const attr=(text,name)=>new RegExp(`(?:^|\\s)${name}\\s*=\\s*["']([^"']*)["']`,'i').exec(text)?.[1];
@@ -36,7 +36,7 @@ export function adaptPage({path,text,paths}){
 }
 export function adaptGame(root,source,raw,base){
   normalizeBase(base);if(raw.some(f=>f.path.startsWith('hub-runtime/')||f.path.startsWith('hub-inline-')))throw Error('Reserved adapter path');
-  const paths=new Set(raw.map(f=>f.path)),pages={},entries=[];
+  const paths=new Set(raw.map(f=>f.path)),pages={},entries=[],preflightAfter={};
   for(const item of raw){
     if(!item.path.endsWith('.html')){
       if(source.id==='light'&&item.path==='scripts/storage.js'){
@@ -49,6 +49,16 @@ export function adaptGame(root,source,raw,base){
       continue;
     }
     const adapted=adaptPage({path:item.path,text:item.data.toString('utf8'),paths});
+    if(source.id==='eml'){
+      if(adapted.scripts.length!==1||adapted.generated.length!==1)throw Error('Unreviewed EML script layout');
+      const file=adapted.generated[0],[libraries,ui]=splitEmlBeforeUI(file.data.toString('utf8')),uiPath=file.path.replace(/\.js$/,'-ui.js');
+      file.data=Buffer.from(libraries);adapted.generated.push({path:uiPath,data:Buffer.from(ui)});adapted.scripts.push({path:uiPath,type:'classic'});
+    }
+    const anchors={conway:'scripts/logic-function-library.js',light:'scripts/storage.js','abelian-sandpile':'src/storage/persistence.js','lambda-diagram-game':'hub-inline-lambda-lab-html-5.js',eml:adapted.scripts[0]?.path};
+    if(Object.hasOwn(anchors,source.id)){
+      const anchor=anchors[source.id];if(adapted.scripts.filter(script=>script.path===anchor&&script.type==='classic').length!==1)throw Error('Missing reviewed native preflight boundary');preflightAfter[item.path]=anchor;
+    }else if(['turing','red-green-puzzle','mini-scratch'].includes(source.id))preflightAfter[item.path]=null;
+    else throw Error('Missing reviewed native preflight adapter');
     entries.push({path:item.path,data:adapted.html},...adapted.generated);pages[item.path]=adapted.scripts;
   }
   for(const item of files(join(root,'web/src/runtime')))entries.push({path:'hub-runtime/'+item.path,data:item.data});
@@ -56,7 +66,7 @@ export function adaptGame(root,source,raw,base){
   if(source.id==='lambda-diagram-game')for(const item of nativeLambda(source,raw))entries.push({...item,path:'hub-runtime/native/'+item.path});
   entries.push({path:'hub-runtime/favicon.svg',data:readFileSync(join(root,'android/icon-source/game-hub-icon.svg'))});
   entries.push({path:'hub-runtime/source-proof.json',data:Buffer.from(sourceProofBytes({id:source.id,sourceRepository:source.repository,sourceRevision:source.revision,sourceFiles:metadata(raw)}))});
-  entries.push({path:'hub-runtime/context.json',data:Buffer.from(JSON.stringify({schemaVersion:1,id:source.id,name:source.displayName,version:source.version,sourceRevision:source.revision,storage:source.storage,basePath:base,pages})+'\n')});
+  entries.push({path:'hub-runtime/context.json',data:Buffer.from(JSON.stringify({schemaVersion:1,id:source.id,name:source.displayName,version:source.version,sourceRevision:source.revision,storage:source.storage,basePath:base,pages,preflightAfter})+'\n')});
   entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   if(new Set(entries.map(f=>f.path.toLowerCase())).size!==entries.length)throw Error('Adapted output collision');
   return {entries,digest:treeHash(entries),files:metadata(entries)};
