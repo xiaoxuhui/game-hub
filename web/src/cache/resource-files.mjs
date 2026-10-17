@@ -1,4 +1,4 @@
-import {GAME_CSP,LIMITS,mimeForPath,normalizeBase,resourcePath} from '../core/contracts.mjs';
+import {GAME_CSP,SHELL_CSP,LIMITS,mimeForPath,normalizeBase,resourcePath} from '../core/contracts.mjs';
 import {sha256Hex,fileTreeDigest} from '../core/digests.mjs';
 import {strictJson} from '../core/strict-json.mjs';
 function insist(value,message){if(!value)throw Error(message);}
@@ -10,10 +10,10 @@ export function resourceURL(origin,basePath,game,path){
   const parsed=new URL(origin);insist(parsed.origin===origin&&(parsed.protocol==='https:'||(parsed.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(parsed.hostname))),'Unsafe resource origin');
   return origin+resourcePath(basePath,game.id,game.contentCode,game.digest,path);
 }
-function headers(mime){return {'Content-Type':mime+(/^(?:text\/|application\/(?:javascript|json))/.test(mime)?'; charset=utf-8':''),'Content-Security-Policy':GAME_CSP,'X-Content-Type-Options':'nosniff','Cross-Origin-Resource-Policy':'same-origin','Referrer-Policy':'no-referrer','Cache-Control':'public, max-age=31536000, immutable'};}
+function headers(mime,csp=GAME_CSP){return {'Content-Type':mime+(/^(?:text\/|application\/(?:javascript|json))/.test(mime)?'; charset=utf-8':''),'Content-Security-Policy':csp,'X-Content-Type-Options':'nosniff','Cross-Origin-Resource-Policy':'same-origin','Referrer-Policy':'no-referrer','Cache-Control':'public, max-age=31536000, immutable'};}
 export function canonicalResponse(bytes,file,csp){
-  fileIdentity(file);insist(csp===GAME_CSP&&bytes instanceof Uint8Array&&bytes.length===file.bytes&&sha256Hex(bytes)===file.sha256,'Unverified canonical resource');
-  return new Response(bytes,{status:200,headers:{...headers(file.mime),'Content-Length':String(bytes.length)}});
+  fileIdentity(file);insist([GAME_CSP,SHELL_CSP].includes(csp)&&bytes instanceof Uint8Array&&bytes.length===file.bytes&&sha256Hex(bytes)===file.sha256,'Unverified canonical resource');
+  return new Response(bytes,{status:200,headers:{...headers(file.mime,csp),'Content-Length':String(bytes.length)}});
 }
 async function readBody(response,max,signal){
   abort(signal);insist(response.body,'Resource response has no body');const reader=response.body.getReader(),chunks=[];let length=0;
@@ -21,14 +21,15 @@ async function readBody(response,max,signal){
   catch(error){await reader.cancel().catch(()=>{});throw error;}finally{reader.releaseLock();}
   const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}return bytes;
 }
-export async function verifyResponse(response,file,{url,network=false,signal}={}){
+export async function verifyResponse(response,file,{url,network=false,signal,csp=GAME_CSP}={}){
   fileIdentity(file);abort(signal);
+  insist([GAME_CSP,SHELL_CSP].includes(csp),'Unknown response policy');
   insist(response&&response.status===200&&response.redirected===false&&(network?response.type==='basic':['basic','default'].includes(response.type)),'Resource response type or status');
   if(network)insist(typeof url==='string'&&response.url===url,'Resource response URL changed');
   insist(response.headers.get('content-type')?.split(';')[0].trim()===file.mime,'Resource MIME mismatch');
   const declared=response.headers.get('content-length'),encoding=response.headers.get('content-encoding');
   if(declared!==null){insist(/^(?:0|[1-9][0-9]*)$/.test(declared)&&Number.isSafeInteger(Number(declared))&&Number(declared)<=LIMITS.file*2,'Invalid resource Content-Length');if(!encoding||encoding==='identity')insist(Number(declared)===file.bytes,'Resource declared length mismatch');}
-  if(!network)for(const name of ['content-security-policy','x-content-type-options','cross-origin-resource-policy','referrer-policy'])insist(response.headers.get(name)===new Headers(headers(file.mime)).get(name),'Cached security headers differ');
+  if(!network)for(const name of ['content-security-policy','x-content-type-options','cross-origin-resource-policy','referrer-policy'])insist(response.headers.get(name)===new Headers(headers(file.mime,csp)).get(name),'Cached security headers differ');
   const bytes=await readBody(response,file.bytes,signal);insist(bytes.length===file.bytes&&sha256Hex(bytes)===file.sha256,'Resource bytes or digest mismatch');return bytes;
 }
 export function completionMarker(record,origin,basePath){

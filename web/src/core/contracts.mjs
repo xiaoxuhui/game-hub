@@ -1,12 +1,13 @@
 export const LIMITS = Object.freeze({ file:20*1024*1024, game:100*1024*1024, files:2000, games:32, cache:150*1024*1024, reserve:20*1024*1024 });
 export const GAME_CSP="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+export const SHELL_CSP="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const ID=/^[a-z][a-z0-9-]{0,63}$/;
 const SHA=/^[0-9a-f]{64}$/;
 const MIME=new Set(['text/html','text/css','application/javascript','application/json','text/plain','image/png','image/jpeg','image/webp','image/gif','image/svg+xml','image/x-icon','font/woff2']);
 function insist(value,message){if(!value)throw new Error(message);}
 export function mimeForPath(path){
   if(path.split('/').at(-1)==='LICENSE')return 'text/plain';
-  const type=({html:'text/html',js:'application/javascript',mjs:'application/javascript',css:'text/css',json:'application/json',md:'text/plain',txt:'text/plain',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',gif:'image/gif',svg:'image/svg+xml',ico:'image/x-icon',woff2:'font/woff2'})[path.split('.').at(-1).toLowerCase()];
+  const type=({html:'text/html',js:'application/javascript',mjs:'application/javascript',css:'text/css',json:'application/json',webmanifest:'application/manifest+json',md:'text/plain',txt:'text/plain',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',gif:'image/gif',svg:'image/svg+xml',ico:'image/x-icon',woff2:'font/woff2'})[path.split('.').at(-1).toLowerCase()];
   insist(type,'Unsupported resource extension');return type;
 }
 export function safePath(value){

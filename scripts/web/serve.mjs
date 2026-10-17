@@ -2,12 +2,12 @@ import {createServer} from 'node:http';
 import {readFileSync,lstatSync,realpathSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {normalizeBase,safePath,mimeForPath} from '../../web/src/core/contracts.mjs';
+import {normalizeBase,safePath,mimeForPath,SHELL_CSP} from '../../web/src/core/contracts.mjs';
 import {inside} from './files.mjs';
 import {projectRoot} from './inputs.mjs';
 import {verifyWeb} from './build.mjs';
 
-const shellCsp="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+const shellCsp=SHELL_CSP;
 export function createWebServer({root,base='/'}){
   root=resolve(root);normalizeBase(base);
   const manifest=JSON.parse(readFileSync(join(root,'build-manifest.json'),'utf8'));
