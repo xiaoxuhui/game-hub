@@ -7,7 +7,7 @@ export function validateShellManifest(manifest){
   insist(manifest&&Object.keys(manifest).length===4&&['schemaVersion','build','basePath','files'].every(k=>Object.hasOwn(manifest,k))&&manifest.schemaVersion===1&&/^[a-f0-9]{40}$/.test(manifest.build),'Unknown shell manifest');normalizeBase(manifest.basePath);
   insist(Array.isArray(manifest.files)&&manifest.files.length>0&&manifest.files.length<=512,'Invalid shell file count');let bytes=1024;const paths=new Set();
   for(const file of manifest.files){
-    safePath(file.path);insist(!['sw.js','build-manifest.json'].includes(file.path)&&!file.path.startsWith('games/')&&Object.keys(file).length===4&&['path','bytes','sha256','mime'].every(k=>Object.hasOwn(file,k))&&Number.isSafeInteger(file.bytes)&&file.bytes>=0&&!Object.is(file.bytes,-0)&&/^[a-f0-9]{64}$/.test(file.sha256)&&file.mime===mimeForPath(file.path)&&!paths.has(file.path.toLowerCase()),'Invalid shell file');paths.add(file.path.toLowerCase());bytes+=file.bytes;insist(bytes<=SHELL_GENERATION,'Shell generation budget exceeded');
+    safePath(file.path);insist(!['sw.js','build-manifest.json','catalog.json'].includes(file.path)&&!file.path.startsWith('__hub/current')&&!file.path.startsWith('games/')&&Object.keys(file).length===4&&['path','bytes','sha256','mime'].every(k=>Object.hasOwn(file,k))&&Number.isSafeInteger(file.bytes)&&file.bytes>=0&&!Object.is(file.bytes,-0)&&/^[a-f0-9]{64}$/.test(file.sha256)&&file.mime===mimeForPath(file.path)&&!paths.has(file.path.toLowerCase()),'Invalid shell file');paths.add(file.path.toLowerCase());bytes+=file.bytes;insist(bytes<=SHELL_GENERATION,'Shell generation budget exceeded');
   }
   return {hash:sha256Hex(JSON.stringify(manifest)),bytes};
 }

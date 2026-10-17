@@ -31,7 +31,7 @@ export function expectedPayload(root,base){
   for(const kind of ['simulation','logic','puzzle','generic'])entries.push({path:`assets/${kind}.svg`,data:vectorIcon(root,kind)});
   for(const path of ['LICENSE','THIRD_PARTY_NOTICES.md','licenses/Apache-2.0.txt'])entries.push({path,data:readFileSync(join(root,path))});
   entries.push({path:'catalog.json',data:Buffer.from(JSON.stringify({schemaVersion:1,platform:'web',trust:'https-online',shellVersion:version,basePath:base,sourceCommit,games},null,2)+'\n')});
-  const shell={schemaVersion:1,build:sourceCommit,basePath:base,files:metadata(entries.filter(f=>!f.path.startsWith('games/')))};
+  const shell={schemaVersion:1,build:sourceCommit,basePath:base,files:metadata(entries.filter(f=>!f.path.startsWith('games/')&&f.path!=='catalog.json'&&!f.path.startsWith('__hub/current')))};
   entries.push({path:'sw.js',data:bundleServiceWorker(root,{basePath:base,build:sourceCommit,shell})});
   entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   if(new Set(entries.map(f=>f.path.toLowerCase())).size!==entries.length)throw Error('Output path collision');
