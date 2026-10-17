@@ -8,7 +8,7 @@ const file={path:'index.html',bytes:data.length,sha256:sha256Hex(data),mime:'tex
 const game={id:'sample',contentCode:1,digest:fileTreeDigest([file]),entryPage:'index.html',files:[file],csp:GAME_CSP};
 const record={id:game.id,contentCode:1,digest:game.digest,fence:1,proofHash:'a'.repeat(64)};
 const url=resourceURL(origin,basePath,game,file.path);
-function network(bytes=data,headers={}){const response=new Response(bytes,{headers:{'content-type':'text/html','content-length':String(bytes.length),...headers}});Object.defineProperties(response,{type:{value:'basic'},url:{value:url}});return response;}
+function network(bytes=data,headers={}){const response=new Response(bytes,{headers:{'content-type':'text/html','content-length':String(bytes.length),...headers}});Object.defineProperties(response,{type:{value:'basic',configurable:true},url:{value:url,configurable:true}});return response;}
 
 test('download verification binds exact decoded bytes while allowing encoded transport lengths',async()=>{
   assert.deepEqual(await verifyResponse(network(),file,{url,network:true}),data);
@@ -16,7 +16,7 @@ test('download verification binds exact decoded bytes while allowing encoded tra
   const empty={path:'empty.txt',mime:'text/plain',bytes:0,sha256:sha256Hex(new Uint8Array())};const response=network(new Uint8Array(),{'content-type':'text/plain'});await verifyResponse(response,empty,{url,network:true});
 });
 test('wrong status, URL, response type, MIME, size, digest and noncanonical declarations fail',async()=>{
-  const cases=[()=>new Response(data),()=>{const r=network();Object.defineProperty(r,'url',{value:origin+'/other'});return r;},()=>network(data,{'content-type':'application/javascript'}),()=>network(data,{'content-length':'1.0'}),()=>network(data,{'content-length':'1'}),()=>network(new Uint8Array([1])),()=>network(new Uint8Array(data.length+1)),()=>network(new Uint8Array(data.length).fill(1)),()=>new Response(null,{status:204})];
+  const cases=[()=>new Response(data),()=>{const r=network();Object.defineProperty(r,'url',{value:origin+'/other'});return r;},()=>network(data,{'content-type':'application/javascript'}),()=>network(data,{'content-length':'1.0'}),()=>network(data,{'content-length':'1'}),()=>network(new Uint8Array([1])),()=>network(new Uint8Array(data.length+1)),()=>network(new Uint8Array(data.length+1),{'content-length':String(file.bytes)}),()=>network(new Uint8Array(1),{'content-length':String(file.bytes)}),()=>network(new Uint8Array(data.length).fill(1)),()=>new Response(null,{status:204})];
   for(const make of cases)await assert.rejects(()=>verifyResponse(make(),file,{url,network:true}));
   const aborted=new AbortController();aborted.abort();await assert.rejects(()=>verifyResponse(network(),file,{url,network:true,signal:aborted.signal}));
 });
