@@ -86,4 +86,6 @@ Lambda 的存档迁移与镜像验证辅助函数从已冻结资源原样提取�
 
 ## 仅测试使用的历史存档 reader
 
+网页构建另使用MIT许可的[esbuild 0.28.2](https://github.com/evanw/esbuild/tree/v0.28.2)，仅将已审ES模块编译为classic Service Worker；精确版本/完整性锁定于pnpm-lock.yaml，pnpm仅批准esbuild的安装构建脚本，不复制编译器进网页或APK。
+
 tests/fixtures/mini-history/ 保留 mini-scratch 0.1.0–0.4.0 四个固定公开提交的最小纯 helper 原字节及 MIT LICENSE；来源路径、完整 SHA、逐文件摘要和样本生成方式见各版本 provenance.json。这些副本只验证有限历史存档向量，不复制进 APK 或网页产物，不构成全历史兼容保证。
