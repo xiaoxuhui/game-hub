@@ -7,6 +7,7 @@ bar.append(back,status);document.body.append(bar);
 try{
   const response=await fetch(contextURL);if(!response.ok)throw Error('游戏配置无法读取');const context=await response.json();
   back.href=context.basePath;
+  document.documentElement.dataset.hubGameId=context.id;
   status.textContent=`${context.name} · 在线`;
   let page=location.pathname.slice(gameRoot.pathname.length);if(!page||page.endsWith('/'))page+='index.html';const scripts=context.pages[page];
   if(!scripts)throw Error('页面不在固定清单');
