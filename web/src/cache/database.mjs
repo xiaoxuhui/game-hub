@@ -16,10 +16,12 @@ export function openResourceDatabase({indexedDB,basePath,timeout=4000}){
         let tx,result,cause;
         try{tx=db.transaction('state',event?'readwrite':'readonly');}catch(error){fail(error);return;}
         tx.oncomplete=()=>done(result);tx.onabort=()=>fail(cause??tx.error??Error('Resource transaction aborted'));
-        const store=tx.objectStore('state'),read=store.get('current');
-        read.onsuccess=()=>{try{
+        const store=tx.objectStore('state'),read=store.get('current'),key=store.getKey('current');
+        // Requests run in issue order in this same transaction. Presence must
+        // use getKey: an existing undefined value is corrupt, not first visit.
+        key.onsuccess=()=>{try{
           // Only a genuinely absent key is a first visit. Null/future data fails.
-          const current=read.result===undefined?emptyLedger():read.result;validateLedger(current,basePath);
+          const current=key.result===undefined?emptyLedger():read.result;validateLedger(current,basePath);
           if(event){const outcome=applyLedger(current,event,{basePath});store.put(outcome.state,'current');result=outcome;}
           else result=current;
         }catch(error){cause=error;tx.abort();}};
