@@ -34,3 +34,16 @@ test('cache completeness requires exact URLs, strict marker identity and all ori
   entries.set(url,canonicalResponse(new Uint8Array(data.length).fill(1),{...file,sha256:sha256Hex(new Uint8Array(data.length).fill(1))},GAME_CSP));await assert.rejects(()=>verifyCache(cache,{record,game,origin,basePath}));entries.set(url,canonicalResponse(data,file,GAME_CSP));
   const wrong=completionMarker({...record,fence:2},origin,basePath);entries.set(marker.url,canonicalResponse(wrong.bytes,{...markerFile,bytes:wrong.bytes.length,sha256:sha256Hex(wrong.bytes)},GAME_CSP));await assert.rejects(()=>verifyCache(cache,{record,game,origin,basePath}));
 });
+
+test('completion marker requires canonical raw bytes and fixed security headers',async()=>{
+  const marker=completionMarker(record,origin,basePath);
+  for(const kind of ['whitespace','weak-header']){
+    let response;
+    if(kind==='whitespace'){
+      const bytes=new TextEncoder().encode(JSON.stringify(JSON.parse(new TextDecoder().decode(marker.bytes)),null,2)+'\n');
+      response=canonicalResponse(bytes,{path:'marker.json',bytes:bytes.length,sha256:sha256Hex(bytes),mime:'application/json'},GAME_CSP);
+    }else{response=new Response(marker.bytes,{headers:{'content-type':'application/json','content-security-policy':'default-src *'}});}
+    const entries=new Map([[url,canonicalResponse(data,file,GAME_CSP)],[marker.url,response]]),cache={keys:async()=>[...entries.keys()].map(u=>new Request(u)),match:async key=>entries.get(key)?.clone()};
+    await assert.rejects(()=>verifyCache(cache,{record,game,origin,basePath}),kind);
+  }
+});

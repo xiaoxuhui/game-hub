@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {TEST_KEY_ID,TEST_TIME,testSpki,signPayload,signedPayload} from '../../tests/fixtures/web-signed.mjs';
-const cases=['success','hash','mime','quota','cancel','late-put','control','uncontrolled','orphan','extra','missing','expiry'];
+const cases=['success','hash','mime','quota','cancel','late-put','control','uncontrolled','orphan','extra','missing','expiry','marker-byte','marker-header'];
 for(const which of cases)test(`cache component ${which} uses actual fetch CacheStorage and IDB without claiming SW control`,async({page,request})=>{
   const catalog=await (await request.get('catalog.json')).json(),bytes=signPayload(signedPayload({catalog,origin:'http://127.0.0.1:18427'}));
   if(['hash','mime'].includes(which))await page.route('**/games/conway/**/index.html',async route=>{
@@ -31,6 +31,10 @@ for(const which of cases)test(`cache component ${which} uses actual fetch CacheS
       calls++;const url=typeof request==='string'?request:request.url;
       if(which==='quota'&&calls===1)throw new DOMException('injected Cache quota','QuotaExceededError');
       if(which==='late-put'&&calls===1){signal();await gate;}
+      if(url.includes('/__hub/resources/')&&which==='marker-byte'){
+        const text=await response.text(),headers=new Headers(response.headers),bytes=new TextEncoder().encode(JSON.stringify(JSON.parse(text),null,2)+'\n');headers.set('content-length',String(bytes.length));response=new Response(bytes,{headers});
+      }
+      if(url.includes('/__hub/resources/')&&which==='marker-header'){response.headers.set('content-security-policy','default-src *');}
       const result=await put.call(this,request,response);
       if(which==='cancel'&&calls===1)aborter.abort();if(which==='control'&&calls===1)control='different-controller';
       if(url.includes('/__hub/resources/')){if(which==='expiry')now=start+86400000;if(which==='extra')await put.call(this,origin+basePath+'unlisted.txt',new Response('unlisted'));}
@@ -57,5 +61,5 @@ for(const which of cases)test(`cache component ${which} uses actual fetch CacheS
   else if(which==='orphan')expect(result).toEqual({rejected:true,count:0,orphanPreserved:true,unchanged:true});
   else if(which==='uncontrolled')expect(result).toEqual({rejected:true,count:0,unchanged:true});
   else if(which==='missing')expect(result).toEqual({repaired:true,phase:'repair',retained:true,unchanged:true});
-  else expect(result).toEqual({rejected:true,phase:'failed',retained:true,marker:['extra','expiry'].includes(which),unchanged:true,reason:true,stopped:true});
+  else expect(result).toEqual({rejected:true,phase:'failed',retained:true,marker:['extra','expiry','marker-byte','marker-header'].includes(which),unchanged:true,reason:true,stopped:true});
 });
