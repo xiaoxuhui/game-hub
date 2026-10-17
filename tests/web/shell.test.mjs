@@ -30,5 +30,5 @@ test('shell closure requires complete root files canonical marker headers and by
   entries.set(origin+basePath+'extra.txt',new Response('extra'));await assert.rejects(()=>verifyShellCache(cache,{record,manifest,origin}));entries.delete(origin+basePath+'extra.txt');
   const clean=entries.get(marker.url);const weak=clean.clone();weak.headers.delete('x-content-type-options');entries.set(marker.url,weak);await assert.rejects(()=>verifyShellCache(cache,{record,manifest,origin}));entries.set(marker.url,clean);
   entries.set(origin+basePath+file.path,new Response('evil',{headers:entries.get(origin+basePath+file.path).headers}));await assert.rejects(()=>verifyShellCache(cache,{record,manifest,origin}));
-  for(const path of ['sw.js','build-manifest.json','catalog.json','__hub/current.json','games/example/index.html','../escape.html'])assert.throws(()=>validateShellManifest({...manifest,files:[{...file,path}]}),path);
+  for(const path of ['sw.js','build-manifest.json','catalog.json','__hub/current.json','games/example/index.html','../escape.html'])assert.throws(()=>validateShellManifest({...manifest,files:[{...file,path,mime:path.endsWith('.json')?'application/json':path.endsWith('.js')?'application/javascript':file.mime}]}),path);
 });
