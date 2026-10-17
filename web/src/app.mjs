@@ -1,12 +1,13 @@
 import {validateOnlineCatalog,validateHistory,snapshot,changes,SHELL_VERSION} from './core/online-catalog.mjs';
 import {boundedText} from './core/http.mjs';
 const $=id=>document.getElementById(id),base=new URL('./',import.meta.url).pathname,key='game-hub-web.check.'+base;
-let catalog=null,category='全部',previous=null,unread=new Set(),lastSuccess=null,busy=false,lastAttempt=0;
+let catalog=null,category='全部',previous=null,unread=new Set(),lastSuccess=null,busy=false,lastAttempt=0,detailTrigger=null;
 try{const stored=JSON.parse(localStorage.getItem(key)||'null');if(stored){previous=validateHistory(stored.snapshot);lastSuccess=Number.isSafeInteger(stored.lastSuccess)?stored.lastSuccess:null;unread=new Set(Array.isArray(stored.unread)?stored.unread:[]);}}catch{previous=null;/* Bad check history never blocks online checking or touches game saves. */}
 function persist(){try{localStorage.setItem(key,JSON.stringify({snapshot:previous,lastSuccess,unread:[...unread]}));}catch{$('status').textContent+=' · 检查记录未能保存';}}
 function icon(game){return `./assets/${['conway','eml','light','turing'].includes(game.iconKind)?game.iconKind+'.png':['simulation','logic','puzzle','generic'].includes(game.iconKind)?game.iconKind+'.svg':'generic.svg'}`;}
 function markRead(id){unread.delete(id);persist();}
-function detail(game){
+function detail(game,trigger){
+  detailTrigger=trigger;
   $('detail-title').textContent=game.displayName;$('detail-icon').src=icon(game);$('detail-meta').textContent=`${game.category} · v${game.version} · 网页资源 #${game.contentCode}`;
   $('detail-source').textContent=game.sourceRevision;$('detail-size').textContent=(game.files.reduce((n,f)=>n+f.bytes,0)/1024).toFixed(0)+' KiB';
   $('detail-play').href=game.entryUrl;$('detail-play').onclick=()=>markRead(game.id);$('details').showModal();
@@ -22,7 +23,7 @@ function render(){
     card.className='game-card';image.src=icon(game);image.alt='';image.width=52;image.height=52;name.textContent=game.displayName;
     link.href=game.entryUrl;link.className='game-link';link.append(image,name);link.onclick=()=>markRead(game.id);
     if(unread.has(game.id)){const badge=document.createElement('span');badge.className='update-dot';badge.textContent='有更新';link.append(badge);}
-    info.className='info';info.textContent='· · ·';info.setAttribute('aria-label',game.displayName+'详情');info.onclick=()=>detail(game);card.append(link,info);$('games').append(card);
+    info.className='info';info.textContent='· · ·';info.setAttribute('aria-label',game.displayName+'详情');info.onclick=()=>detail(game,info);card.append(link,info);$('games').append(card);
   }
 }
 async function check(){
@@ -41,5 +42,6 @@ async function check(){
   finally{clearTimeout(timer);busy=false;$('check-update').disabled=false;$('last-check').textContent=lastSuccess?'最近成功：'+new Date(lastSuccess).toLocaleString('zh-CN'):'尚未成功检查';}
 }
 $('check-update').onclick=check;$('reload-shell').onclick=()=>location.reload();
+$('details').addEventListener('close',()=>{(detailTrigger?.isConnected?detailTrigger:$('check-update')).focus();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastAttempt>=15*60*1000)check();});
 document.documentElement.dataset.shellVersion=SHELL_VERSION;await check();
