@@ -3,6 +3,11 @@ import {checkEntries} from './save-store.mjs';
 // Separate from resource budgets. Covers worst-case JSON escaping of the
 // 32Mi-character whole-save contract; native game validators impose tighter limits.
 export const MAX_BACKUP_BYTES=256*1024*1024;
+export function decodeHistoryRecord(bytes,context){
+  const record=strictJson(bytes,MAX_BACKUP_BYTES),fields=['schema','gameId','writerId','fence','revision','sequence','entries'];
+  if(!record||Array.isArray(record)||Object.keys(record).sort().join()!==fields.sort().join()||record.schema!==1||record.gameId!==context.id||typeof record.writerId!=='string'||!record.writerId||['fence','revision','sequence'].some(key=>!Number.isSafeInteger(record[key])||record[key]<0))throw Error('未知或无效历史快照，原数据保持');
+  return {...record,entries:checkEntries(record.entries,context.storage)};
+}
 export function decodeBackup(bytes,context){
   if(!(bytes instanceof Uint8Array))throw Error('Backup bytes required');
   const backup=strictJson(bytes,MAX_BACKUP_BYTES);
