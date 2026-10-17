@@ -1,0 +1,38 @@
+{
+  "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
+  "revision": "0a7b8ef2c972112fee92078a3bdf8d878c018e70",
+  "version": "0.2.0",
+  "slot": 2,
+  "files": [
+    {
+      "path": "LICENSE",
+      "sourcePath": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "blocks.js",
+      "sourcePath": "dist/src/blocks.js",
+      "bytes": 6039,
+      "sha256": "9485b096c7034bdc56cf1dbac2b4f6a2d0aa990c0929f7d9fb85a08a0851a210"
+    },
+    {
+      "path": "persistence.js",
+      "sourcePath": "dist/src/persistence.js",
+      "bytes": 836,
+      "sha256": "694536f5ce7f91fd881198dc739aac989b5fe9f5e1720dd32561075ab15c0a53"
+    },
+    {
+      "path": "project.js",
+      "sourcePath": "dist/src/project.js",
+      "bytes": 6538,
+      "sha256": "d8c589ef24c14e168e7d1b7ef5bbd1b8a5d7949a30e92716ea968ba0635a3ea7"
+    }
+  ],
+  "sample": {
+    "path": "sample.json",
+    "bytes": 2137,
+    "sha256": "676c988da45122c68b9f871b46c5eafdd05c5201dd871b4c1548e7645d326de3",
+    "generation": "Native example(dance), native startup migrations for this version, validateProject and JSON.stringify; Date.now fixed to 0 for stable IDs"
+  }
+}

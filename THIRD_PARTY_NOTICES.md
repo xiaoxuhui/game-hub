@@ -83,3 +83,7 @@ campaign.ts 与仅供类型检查的 examples.ts，保留 MIT LICENSE。
 
 Lambda 的存档迁移与镜像验证辅助函数从已冻结资源原样提取，保留 MIT 许可和
 来源摘要；函数提取不执行游戏界面。所有原游戏资源和现有版权说明继续适用。
+
+## 仅测试使用的历史存档 reader
+
+tests/fixtures/mini-history/ 保留 mini-scratch 0.1.0–0.4.0 四个固定公开提交的最小纯 helper 原字节及 MIT LICENSE；来源路径、完整 SHA、逐文件摘要和样本生成方式见各版本 provenance.json。这些副本只验证有限历史存档向量，不复制进 APK 或网页产物，不构成全历史兼容保证。

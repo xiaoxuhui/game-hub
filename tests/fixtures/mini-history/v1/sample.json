@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "name": "小狐狸画方形",
+  "sprite": "fox",
+  "backdrop": "meadow",
+  "blocks": [
+    {
+      "id": "bmv9jhiwh-1",
+      "type": "say",
+      "value": "一起画一个正方形吧！"
+    },
+    {
+      "id": "bmv9jhiwh-2",
+      "type": "penDown"
+    },
+    {
+      "id": "bmv9jhiwh-5",
+      "type": "repeat",
+      "value": 4,
+      "children": [
+        {
+          "id": "bmv9jhiwh-3",
+          "type": "move",
+          "value": 100
+        },
+        {
+          "id": "bmv9jhiwh-4",
+          "type": "turn",
+          "value": 90
+        }
+      ]
+    },
+    {
+      "id": "bmv9jhiwh-6",
+      "type": "penUp"
+    },
+    {
+      "id": "bmv9jhiwh-7",
+      "type": "say",
+      "value": "完成啦！你也来试试 ✨"
+    }
+  ]
+}

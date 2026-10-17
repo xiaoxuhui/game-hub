@@ -1,0 +1,56 @@
+{
+  "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
+  "revision": "edd314948977fcc38009787ff00a5e73f1758c4f",
+  "version": "0.4.0",
+  "slot": 4,
+  "files": [
+    {
+      "path": "LICENSE",
+      "sourcePath": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "assets.js",
+      "sourcePath": "dist/src/assets.js",
+      "bytes": 2858,
+      "sha256": "2cebcbff461b4d598818ec45914841fa745589814ebd043fe24a02098b465e79"
+    },
+    {
+      "path": "blocks.js",
+      "sourcePath": "dist/src/blocks.js",
+      "bytes": 7058,
+      "sha256": "ac9a667f36233c12e13c91e91d21eea594ab2fc4c550b0ce332b3f04cca2033d"
+    },
+    {
+      "path": "events.js",
+      "sourcePath": "dist/src/events.js",
+      "bytes": 704,
+      "sha256": "441de52ab18c24da7bd2b88fff0c77d9b12b9e3ad3accd4a5982439cda5c012a"
+    },
+    {
+      "path": "persistence.js",
+      "sourcePath": "dist/src/persistence.js",
+      "bytes": 1309,
+      "sha256": "866ec1ea2e4163f04c619a75dc9b1d772fe9cd2d07b045a4e227eb7a2603b973"
+    },
+    {
+      "path": "procedures.js",
+      "sourcePath": "dist/src/procedures.js",
+      "bytes": 3905,
+      "sha256": "81d26a61944c8f8237c1227c1c688687a67bc8559600052b16c28f9c968cacd7"
+    },
+    {
+      "path": "project.js",
+      "sourcePath": "dist/src/project.js",
+      "bytes": 8717,
+      "sha256": "176accbf30a3932ed76358e1e996167c8aa5416d1273e7b972993549c960df82"
+    }
+  ],
+  "sample": {
+    "path": "sample.json",
+    "bytes": 2605,
+    "sha256": "3837979d13b57efdb17161dbcbdf9f4b76eb7689a02a12b608070cc92cdac9ca",
+    "generation": "Native example(dance), native startup migrations for this version, validateProject and JSON.stringify; Date.now fixed to 0 for stable IDs"
+  }
+}

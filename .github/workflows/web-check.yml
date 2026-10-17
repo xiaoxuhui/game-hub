@@ -2,9 +2,9 @@ name: Check web game hub
 on:
   push:
     branches: [main, feat-web-v1]
-    paths: ['web/**', 'scripts/web/**', 'scripts/test-core.mjs', 'scripts/bundle.mjs', 'scripts/resource-protocol.mjs', 'tests/web/**', 'e2e/web/**', 'package.json', 'pnpm-lock.yaml', '.github/workflows/web-check.yml']
+    paths: ['web/**', 'scripts/web/**', 'scripts/test-core.mjs', 'scripts/bundle.mjs', 'scripts/resource-protocol.mjs', 'tests/web/**', 'tests/fixtures/mini-history/**', 'e2e/web/**', 'THIRD_PARTY_NOTICES.md', 'package.json', 'pnpm-lock.yaml', '.github/workflows/web-check.yml']
   pull_request:
-    paths: ['web/**', 'scripts/web/**', 'scripts/test-core.mjs', 'scripts/bundle.mjs', 'scripts/resource-protocol.mjs', 'tests/web/**', 'e2e/web/**', 'package.json', 'pnpm-lock.yaml', '.github/workflows/web-check.yml']
+    paths: ['web/**', 'scripts/web/**', 'scripts/test-core.mjs', 'scripts/bundle.mjs', 'scripts/resource-protocol.mjs', 'tests/web/**', 'tests/fixtures/mini-history/**', 'e2e/web/**', 'THIRD_PARTY_NOTICES.md', 'package.json', 'pnpm-lock.yaml', '.github/workflows/web-check.yml']
   workflow_dispatch:
 permissions:
   contents: read

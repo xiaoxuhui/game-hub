@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "name": "积木音乐派对",
+  "sprite": "fox",
+  "backdrop": "meadow",
+  "blocks": [
+    {
+      "id": "b0-26",
+      "type": "define",
+      "name": "小舞步",
+      "parameters": [
+        {
+          "id": "b0-41",
+          "name": "步数",
+          "type": "number",
+          "legacy": true
+        }
+      ],
+      "children": [
+        {
+          "id": "b0-23",
+          "type": "move",
+          "value": {
+            "type": "parameter",
+            "definitionId": "b0-26",
+            "parameterId": "b0-41"
+          }
+        },
+        {
+          "id": "b0-24",
+          "type": "turn",
+          "value": 45
+        },
+        {
+          "id": "b0-25",
+          "type": "note",
+          "value": 60,
+          "seconds": 0.15
+        }
+      ]
+    },
+    {
+      "id": "b0-34",
+      "type": "whenKey",
+      "key": "space",
+      "children": [
+        {
+          "id": "b0-27",
+          "type": "changeVar",
+          "name": "分数",
+          "value": 1
+        },
+        {
+          "id": "b0-30",
+          "type": "call",
+          "name": "小舞步",
+          "arguments": [
+            {
+              "parameterId": "b0-41",
+              "value": {
+                "type": "add",
+                "a": 20,
+                "b": {
+                  "type": "variable",
+                  "name": "分数"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "b0-33",
+          "type": "say",
+          "value": {
+            "type": "join",
+            "a": "按空格跳舞，分数：",
+            "b": {
+              "type": "variable",
+              "name": "分数"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0-36",
+      "type": "whenClick",
+      "children": [
+        {
+          "id": "b0-35",
+          "type": "broadcast",
+          "name": "欢呼"
+        }
+      ]
+    },
+    {
+      "id": "b0-39",
+      "type": "whenMessage",
+      "name": "欢呼",
+      "children": [
+        {
+          "id": "b0-37",
+          "type": "say",
+          "value": "点击和广播都成功啦！"
+        },
+        {
+          "id": "b0-38",
+          "type": "note",
+          "value": 72,
+          "seconds": 0.2
+        }
+      ]
+    },
+    {
+      "id": "b0-42",
+      "type": "whenFlag",
+      "children": [
+        {
+          "id": "b0-40",
+          "type": "say",
+          "value": "按空格键跳舞，或点击我试试！"
+        }
+      ]
+    }
+  ],
+  "eventScripts": true,
+  "variables": [
+    {
+      "name": "分数",
+      "value": 0
+    }
+  ]
+}

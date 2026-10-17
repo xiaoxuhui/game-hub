@@ -1,0 +1,26 @@
+{
+  "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
+  "revision": "8c3bad2a0a9f71053bc2dfb132f7ca4417a182a4",
+  "version": "0.1.0",
+  "slot": 1,
+  "files": [
+    {
+      "path": "LICENSE",
+      "sourcePath": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "core.js",
+      "sourcePath": "dist/src/core.js",
+      "bytes": 6542,
+      "sha256": "f4ee8c30e90391a16baf7498ec7a249ba9d4ecaa5952eed0bfb0cffe5cf688a2"
+    }
+  ],
+  "sample": {
+    "path": "sample.json",
+    "bytes": 766,
+    "sha256": "3efa94c5df9966cbcfde13ce9e318bcf19d1425793c0d79a3457d955f6572a9e",
+    "generation": "Verbatim tests/fixtures/square.json"
+  }
+}
