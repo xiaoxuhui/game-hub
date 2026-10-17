@@ -1,0 +1,34 @@
+import {test,expect} from '@playwright/test';
+const KEY='red-green-puzzle.parameters.v1';
+async function entry(request){return (await (await request.get('catalog.json')).json()).games.find(g=>g.id==='red-green-puzzle').entryUrl;}
+async function ready(page){await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');}
+test('game save persists through reload while raw legacy and foreign keys remain untouched',async({page,request})=>{
+  await page.addInitScript(()=>{if(!localStorage.getItem('seeded')){localStorage.setItem('red-green-puzzle.parameters.v1','{"schemaVersion":1,"size":3,"future":"keep raw"}');localStorage.setItem('light-game/save','foreign opaque');localStorage.setItem('seeded','1');}});
+  await page.goto(await entry(request));await ready(page);await expect(page.locator('#sizeInput')).toHaveValue('3');
+  await page.locator('#sizeInput').fill('4');await page.locator('#generateBtn').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');
+  await page.reload();await ready(page);await expect(page.locator('#sizeInput')).toHaveValue('4');
+  expect(await page.evaluate(()=>{const getter=Object.getOwnPropertyDescriptor(Window.prototype,'localStorage')?.get;return getter?getter.call(window).getItem('light-game/save'):'not on prototype';})).not.toBe('changed');
+  expect(await page.evaluate(()=>localStorage.getItem('light-game/save'))).toBe(null);
+  const hall=await page.context().newPage();await hall.goto('/hub/');
+  expect(await hall.evaluate(()=>localStorage.getItem('light-game/save'))).toBe('foreign opaque');
+  expect(await hall.evaluate(()=>JSON.parse(localStorage.getItem('red-green-puzzle.parameters.v1')).future)).toBe('keep raw');
+});
+test('new game tab takes ownership; older tab cannot overwrite and can download its draft',async({page,context,request},testInfo)=>{
+  const url=await entry(request);await page.goto(url);await ready(page);
+  const newer=await context.newPage();await newer.goto(url);await ready(newer);
+  await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','readonly');
+  await newer.locator('#sizeInput').fill('5');await newer.locator('#generateBtn').click();await expect(newer.locator('#game-hub-status')).toHaveText('已保存');
+  const blocked=await page.evaluate(key=>{try{localStorage.setItem(key,'{"schemaVersion":1,"size":8}');return false;}catch{return true;}},KEY);expect(blocked).toBe(true);
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]);
+  const path=testInfo.outputPath('conflict-backup.json');await download.saveAs(path);
+  const {readFile}=await import('node:fs/promises'),backup=JSON.parse(await readFile(path,'utf8'));
+  expect(backup.gameId).toBe('red-green-puzzle');expect(backup.mode).toBe('readonly');expect(JSON.parse(backup.entries.find(([k])=>k===KEY)[1]).size).toBe(8);
+  await newer.reload();await ready(newer);await expect(newer.locator('#sizeInput')).toHaveValue('5');
+});
+test('journal quota failure is visible and preserves an exportable attempted save',async({page,request},testInfo)=>{
+  await page.addInitScript(()=>{const original=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key.startsWith('game-hub-web.journal.'))throw new DOMException('test quota','QuotaExceededError');return original.call(this,key,value);};});
+  await page.goto(await entry(request));await ready(page);
+  await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','readonly');await expect(page.locator('#game-hub-status')).toContainText('空间不足');
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]);const path=testInfo.outputPath('quota-backup.json');await download.saveAs(path);
+  const {readFile}=await import('node:fs/promises'),backup=JSON.parse(await readFile(path,'utf8'));expect(backup.pending).toBe(true);expect(backup.entries.some(([key])=>key===KEY)).toBe(true);
+});

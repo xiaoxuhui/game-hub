@@ -84,6 +84,7 @@ export function openSaveStore({indexedDB,basePath,timeout=4000}){
         }catch(error){cause=error;tx.abort();}};
       });
       resolve({
+        current(gameId){return new Promise((done,fail)=>{const tx=db.transaction('saves'),request=tx.objectStore('saves').get(gameId);let record;request.onsuccess=()=>{record=request.result;};tx.oncomplete=()=>done(record);tx.onabort=()=>fail(tx.error);});},
         acquire(options){return transact(options.gameId,options.scope,previous=>acquireRecord(previous,options));},
         commit(proposed,scope,{backup=false}={}){return transact(proposed.gameId,scope,current=>({record:commitRecord(current,proposed,scope),backups:backup?[current]:[]}));},
         backups(gameId){return new Promise((done,fail)=>{const tx=db.transaction('backups'),request=tx.objectStore('backups').index('gameId').getAll(gameId);let rows;request.onsuccess=()=>{rows=request.result;};tx.oncomplete=()=>done(rows);tx.onabort=()=>fail(tx.error);});},

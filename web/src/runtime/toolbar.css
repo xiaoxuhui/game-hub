@@ -2,3 +2,4 @@
 html[data-hub-game-id="turing"] .level-sidebar{top:calc(72px + env(safe-area-inset-top))!important}
 html[data-hub-game-id="turing"] .route-actions label{min-width:0;flex:0 0 112px}
 html[data-hub-game-id="turing"] .route-actions input{min-width:0;width:100%;max-width:100%}
+#game-hub-status{flex:1;min-width:0}#game-hub-backup{flex:none;border:1px solid #b7d4ff70;border-radius:8px;background:#283e59;color:#f2f7ff;font:600 12px/1.5 system-ui;padding:5px 10px;cursor:pointer}#game-hub-backup:focus-visible{outline:2px solid #bfddff;outline-offset:2px}

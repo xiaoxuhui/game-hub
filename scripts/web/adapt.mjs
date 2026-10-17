@@ -44,7 +44,7 @@ export function adaptGame(root,source,raw,base){
   for(const item of files(join(root,'web/src/runtime')))entries.push({path:'hub-runtime/'+item.path,data:item.data});
   entries.push({path:'hub-runtime/favicon.svg',data:readFileSync(join(root,'android/icon-source/game-hub-icon.svg'))});
   entries.push({path:'hub-runtime/source-proof.json',data:Buffer.from(sourceProofBytes({id:source.id,sourceRepository:source.repository,sourceRevision:source.revision,sourceFiles:metadata(raw)}))});
-  entries.push({path:'hub-runtime/context.json',data:Buffer.from(JSON.stringify({schemaVersion:1,id:source.id,name:source.displayName,version:source.version,storage:source.storage,basePath:base,pages})+'\n')});
+  entries.push({path:'hub-runtime/context.json',data:Buffer.from(JSON.stringify({schemaVersion:1,id:source.id,name:source.displayName,version:source.version,sourceRevision:source.revision,storage:source.storage,basePath:base,pages})+'\n')});
   entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   if(new Set(entries.map(f=>f.path.toLowerCase())).size!==entries.length)throw Error('Adapted output collision');
   return {entries,digest:treeHash(entries),files:metadata(entries)};
