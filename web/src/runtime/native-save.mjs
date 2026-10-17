@@ -5,7 +5,7 @@ function knownEqual(raw,normalized){
   if(Array.isArray(raw))return Array.isArray(normalized)&&raw.length===normalized.length&&raw.every((item,index)=>knownEqual(item,normalized[index]));
   return normalized!==null&&typeof normalized==='object'&&!Array.isArray(normalized)&&Object.keys(raw).every(key=>Object.hasOwn(normalized,key)&&knownEqual(raw[key],normalized[key]));
 }
-function lossless(raw,written){if(!knownEqual(raw,written))throw Error('当前游戏保存器无法保留此存档的全部字段，请保留原文件并使用兼容的新版本');}
+export function lossless(raw,written){if(!knownEqual(raw,written))throw Error('当前游戏保存器无法保留此存档的全部字段，请保留原文件并使用兼容的新版本');}
 function parse(text,limit){if(new TextEncoder().encode(text).length>limit)throw Error('原生存档超过本游戏导入上限');return JSON.parse(text);}
 function light(text){
   const raw=parse(text,8*1024*1024),api=globalThis.LightStorage;

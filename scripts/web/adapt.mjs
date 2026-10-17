@@ -4,6 +4,7 @@ import {safePath,normalizeBase} from '../../web/src/core/contracts.mjs';
 import {files,metadata,treeHash} from './files.mjs';
 import {sourceProofBytes} from '../../web/src/core/digests.mjs';
 import {nativeTuring,nativeLambda,splitEmlBeforeUI} from './native-validation.mjs';
+import {guardNativeFileReads} from './native-file-adapter.mjs';
 
 export const gameCsp="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const attr=(text,name)=>new RegExp(`(?:^|\\s)${name}\\s*=\\s*["']([^"']*)["']`,'i').exec(text)?.[1];
@@ -61,6 +62,7 @@ export function adaptGame(root,source,raw,base){
     else throw Error('Missing reviewed native preflight adapter');
     entries.push({path:item.path,data:adapted.html},...adapted.generated);pages[item.path]=adapted.scripts;
   }
+  const guarded=guardNativeFileReads(source.id,entries);entries.splice(0,entries.length,...guarded);
   for(const item of files(join(root,'web/src/runtime')))entries.push({path:'hub-runtime/'+item.path,data:item.data});
   if(source.id==='turing')for(const item of nativeTuring(root,source))entries.push({...item,path:'hub-runtime/native/turing/'+item.path});
   if(source.id==='lambda-diagram-game')for(const item of nativeLambda(source,raw))entries.push({...item,path:'hub-runtime/native/'+item.path});

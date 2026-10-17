@@ -2,6 +2,7 @@ import {startSaveSession} from './save-session.mjs';
 import {mountRestore} from './restore-ui.mjs';
 import {validateNativeSave} from './native-save.mjs';
 import {downloadSnapshot} from './backup-download.mjs';
+import {nativeFileReader} from './native-file.mjs';
 const contextURL=new URL('./context.json',import.meta.url),gameRoot=new URL('../',import.meta.url);
 const bar=document.createElement('aside');bar.id='game-hub-toolbar';bar.setAttribute('aria-label','游戏大厅工具栏');
 const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('./toolbar.css',import.meta.url);document.head.append(style);
@@ -15,6 +16,7 @@ try{
   status.textContent=`${context.name} · 在线`;
   const saves=await startSaveSession({gameId:context.id,scope:context.storage,basePath:context.basePath,onStatus:state=>{status.textContent=state.message;status.title=state.message;status.dataset.saveMode=state.mode;}});
   Object.defineProperty(window,'localStorage',{configurable:false,get:()=>saves.storage});
+  Object.defineProperty(window,'GameHubReadNativeFile',{configurable:false,writable:false,value:nativeFileReader({context,gameRoot,saves,onError:error=>{status.textContent='导入已拒绝：'+error.message;}})});
   const exportButton=document.createElement('button');exportButton.id='game-hub-backup';exportButton.type='button';exportButton.textContent=saves.snapshot().canonicalRead?'备份':'应急导出';exportButton.title=saves.snapshot().canonicalRead?'导出本页当前游戏全部存档键值':'未能读取正式存档，仅导出旧档或本页草稿';bar.append(exportButton);
   exportButton.addEventListener('click',()=>{
     downloadSnapshot(context,saves.snapshot());
