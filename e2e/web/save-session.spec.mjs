@@ -7,11 +7,32 @@ test('game save persists through reload while raw legacy and foreign keys remain
   await page.goto(await entry(request));await ready(page);await expect(page.locator('#sizeInput')).toHaveValue('3');
   await page.locator('#sizeInput').fill('4');await page.locator('#generateBtn').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');
   await page.reload();await ready(page);await expect(page.locator('#sizeInput')).toHaveValue('4');
-  expect(await page.evaluate(()=>{const getter=Object.getOwnPropertyDescriptor(Window.prototype,'localStorage')?.get;return getter?getter.call(window).getItem('light-game/save'):'not on prototype';})).not.toBe('changed');
   expect(await page.evaluate(()=>localStorage.getItem('light-game/save'))).toBe(null);
   const hall=await page.context().newPage();await hall.goto('/hub/');
   expect(await hall.evaluate(()=>localStorage.getItem('light-game/save'))).toBe('foreign opaque');
   expect(await hall.evaluate(()=>JSON.parse(localStorage.getItem('red-green-puzzle.parameters.v1')).future)).toBe('keep raw');
+});
+test('unknown authoritative save format only permits explicitly incomplete emergency export',async({page,request},testInfo)=>{
+  await page.goto('/hub/');
+  await page.evaluate(()=>new Promise((resolve,reject)=>{
+    const request=indexedDB.open('game-hub-web.saves./hub/',1);
+    request.onupgradeneeded=()=>{request.result.createObjectStore('saves',{keyPath:'gameId'});request.result.createObjectStore('backups',{keyPath:'id'}).createIndex('gameId','gameId');};
+    request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result,tx=db.transaction('saves','readwrite');tx.objectStore('saves').put({schema:2,gameId:'red-green-puzzle',opaque:'future canonical bytes'});tx.oncomplete=()=>{db.close();resolve();};};
+  }));
+  await page.goto(await entry(request));await ready(page);
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]);
+  const path=testInfo.outputPath('future-emergency.json');await download.saveAs(path);
+  const {readFile}=await import('node:fs/promises'),backup=JSON.parse(await readFile(path,'utf8'));
+  expect(download.suggestedFilename()).toContain('emergency');expect(backup.canonicalRead).toBe(false);expect(backup.warning).toContain('未能读取正式存档');
+  await expect(page.locator('#game-hub-backup')).toHaveText('应急导出');
+});
+test('denied IDB access never labels legacy or default session data as a complete backup',async({page,request},testInfo)=>{
+  await page.addInitScript(()=>{Object.defineProperty(window,'indexedDB',{value:{open(){throw new DOMException('test denied','SecurityError');}}});});
+  await page.goto(await entry(request));await ready(page);
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]);
+  const path=testInfo.outputPath('denied-emergency.json');await download.saveAs(path);
+  const {readFile}=await import('node:fs/promises'),backup=JSON.parse(await readFile(path,'utf8'));
+  expect(download.suggestedFilename()).toContain('emergency');expect(backup.canonicalRead).toBe(false);expect(backup.warning).toContain('未能读取正式存档');
 });
 test('new game tab takes ownership; older tab cannot overwrite and can download its draft',async({page,context,request},testInfo)=>{
   const url=await entry(request);await page.goto(url);await ready(page);
