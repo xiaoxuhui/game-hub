@@ -34,6 +34,7 @@
     "verify:dynamic": "node scripts/dynamic-resources.mjs --verify",
     "check:web": "node scripts/web/check.mjs",
     "audit:web": "node scripts/web/audit.mjs",
+    "audit:web:native": "node scripts/web/audit-native.mjs",
     "test:web:browser": "playwright test --config e2e/web/playwright.config.mjs",
     "test:web": "node --test tests/web/*.test.mjs",
     "test:web:build": "node tests/web/build.integration.mjs",
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@noble/hashes": "1.8.0",
-    "@playwright/test": "1.62.1"
+    "@playwright/test": "1.62.1",
+    "typescript": "5.9.3"
   }
 }

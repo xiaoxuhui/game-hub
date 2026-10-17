@@ -30,6 +30,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check:web
       - run: pnpm run test:web
+      - run: pnpm run audit:web:native
       - run: pnpm run build:web -- --base /hub/
       - run: pnpm run verify:web
       - run: pnpm run test:web:build

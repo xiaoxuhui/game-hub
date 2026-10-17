@@ -8,7 +8,7 @@ import {validateSourceLock} from '../../web/src/core/contracts.mjs';
 import {files,metadata,inside} from './files.mjs';
 
 export const projectRoot=fileURLToPath(new URL('../../',import.meta.url));
-export const recursiveBuildInputs=Object.freeze(['web/src','scripts/web']);
+export const recursiveBuildInputs=Object.freeze(['web/src','scripts/web','web/native-validation']);
 export function git(root,args){return execFileSync('git',args,{cwd:root,encoding:'utf8',env:{...process.env,GIT_TERMINAL_PROMPT:'0',GIT_OPTIONAL_LOCKS:'0',GIT_HTTP_LOW_SPEED_LIMIT:'1024',GIT_HTTP_LOW_SPEED_TIME:'60'}}).trim();}
 export function assertClean(root){
   if(git(root,['status','--porcelain=v1','--untracked-files=all']))throw Error('Web build requires clean independent checkout');

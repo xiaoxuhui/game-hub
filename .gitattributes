@@ -2,3 +2,5 @@
 *.bat text eol=crlf
 *.jar binary
 android/gradlew text eol=lf
+# Keep this frozen upstream source byte-for-byte, including its final blank line.
+web/native-validation/turing/core.ts whitespace=-blank-at-eof

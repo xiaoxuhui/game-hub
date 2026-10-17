@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "gameId": "turing",
+  "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+  "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+  "compiler": {
+    "name": "typescript",
+    "version": "5.9.3"
+  },
+  "files": [
+    {
+      "path": "core.ts",
+      "sourcePath": "src/core.ts",
+      "bytes": 8123,
+      "sha256": "54e6e45544790c87301e19dcb69bffb3390467b4a1473bb9116dfc932b9430b0"
+    },
+    {
+      "path": "project-codec.ts",
+      "sourcePath": "src/project-codec.ts",
+      "bytes": 3012,
+      "sha256": "2f6a5c0ccb5afba3bc3eda042af3a70e9f9b550e0bffd79002104a34fcfe473a"
+    },
+    {
+      "path": "campaign.ts",
+      "sourcePath": "src/campaign.ts",
+      "bytes": 22086,
+      "sha256": "24d36f62d6448906637b325972277ba41f4a6081af806abe0e68817726cfd4ec"
+    },
+    {
+      "path": "LICENSE",
+      "sourcePath": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "examples.ts",
+      "sourcePath": "src/examples.ts",
+      "bytes": 2288,
+      "sha256": "4aebbd2ab72e457a114db0a6e6849435332060fab0571595d2adfc88a30de47b"
+    }
+  ]
+}

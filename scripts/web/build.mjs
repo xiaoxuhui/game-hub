@@ -3,7 +3,7 @@ import {join,dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {strictJson} from '../resource-protocol.mjs';
 import {normalizeBase,resourcePath} from '../../web/src/core/contracts.mjs';
-import {files,metadata,treeHash,sha256,inside,removeOwned} from './files.mjs';
+import {files,metadata,sha256,inside,removeOwned} from './files.mjs';
 import {projectRoot,sourceLock,readSource,prepareInputs,assertClean,git,recursiveBuildInputs} from './inputs.mjs';
 import {replaceLocalOutput} from './local-output.mjs';
 import {adaptGame,gameCsp} from './adapt.mjs';
@@ -29,7 +29,10 @@ export function expectedPayload(root,base){
   entries.push({path:'catalog.json',data:Buffer.from(JSON.stringify({schemaVersion:1,platform:'web',trust:'https-online',shellVersion:version,basePath:base,sourceCommit,games},null,2)+'\n')});
   entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   if(new Set(entries.map(f=>f.path.toLowerCase())).size!==entries.length)throw Error('Output path collision');
-  return {entries,manifest:{schemaVersion:1,platform:'web',sourceCommit,inputLockSha256:sha256(readFileSync(join(root,'web/sources.lock.json'))),adapterSha256:treeHash(adapterFiles(root)),shellVersion:version,basePath:base,games,files:metadata(entries)}};
+  // Adapter inputs include TypeScript source that is never served as a game
+  // resource, so their identity uses path/length/hash independently of MIME.
+  const adapterSha256=sha256(JSON.stringify(adapterFiles(root).map(f=>({path:f.path,bytes:f.data.length,sha256:sha256(f.data)}))));
+  return {entries,manifest:{schemaVersion:1,platform:'web',sourceCommit,inputLockSha256:sha256(readFileSync(join(root,'web/sources.lock.json'))),adapterSha256,shellVersion:version,basePath:base,games,files:metadata(entries)}};
 }
 export function verifyWeb(root=projectRoot,output=join(root,'.build/web-dist')){
   assertClean(root);inside(join(root,'.build'),output);const manifest=strictJson(readFileSync(join(output,'build-manifest.json')),4*1024*1024);
