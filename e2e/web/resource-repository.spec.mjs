@@ -7,19 +7,21 @@ const cases={
   undefined:['existing undefined authority and proof keys are preserved on refusal',{authorityRejected:true,authorityPreserved:true,proofRejected:true,proofPreserved:true}],
   expiry:['expiry and cancellation block ready while retaining the reservation',{expired:true,staging:true,failed:true,late:true}],
   late:['a cancellation during real signature await invalidates the complete CAS',{rejected:true,phase:'failed'}],
-  'proof-late':['proof deletion during signature await cannot commit ready against an unchanged ledger',{rejected:true,phase:'staging',proofPreserved:true}]
+  'proof-late':['proof deletion during signature await cannot commit ready against an unchanged ledger',{rejected:true,phase:'staging',proofPreserved:true}],
+  'authority-rollback':['a signed authority older than an installed proof cannot authorize another check',{rejected:true,unchanged:true,authoritySequence:'1',proofSequence:'2'}],
+  'commit-expiry':['authorization expiring at the final IDB write aborts the entire transaction',{rejected:true,empty:true}]
 };
 for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page,request})=>{
   const catalog=await (await request.get('catalog.json')).json(),payload=signedPayload({catalog,origin:'http://127.0.0.1:18427'});
   // Cross a timestamp digit boundary so retaining an older shared proof cannot
   // accidentally reserve the byte length of the newly serialized receipt.
   if(which==='concurrent'){payload.issuedAt=new Date(0).toISOString();payload.expiresAt=new Date(3600000).toISOString();}
-  const bytes=signPayload(payload);await page.goto('./');
-  const result=await page.evaluate(async({which,bytes,spki,keyId,start})=>{
+  const bytes=signPayload(payload),nextBytes=which==='authority-rollback'?signPayload({...payload,catalogSequence:'2'}):[];await page.goto('./');
+  const result=await page.evaluate(async({which,bytes,nextBytes,spki,keyId,start})=>{
     const {openResourceDatabase}=await import(new URL('cache/database.mjs',location.href));
     const {createCatalogAuthority}=await import(new URL('update/catalog-authority.mjs',location.href));
     const {createResourceRepository}=await import(new URL('update/resource-repository.mjs',location.href));
-    const options={indexedDB,basePath:'/hub/'},trust={spki:new Uint8Array(spki),keyId,origin:location.origin,basePath:'/hub/'};let now=start;
+    const options={indexedDB,basePath:'/hub/',now:()=>now},trust={spki:new Uint8Array(spki),keyId,origin:location.origin,basePath:'/hub/'};let now=start;
     const db=await openResourceDatabase(options),authority=createCatalogAuthority(trust),repo=createResourceRepository({database:db,authority,now:()=>now}),envelope=new Uint8Array(bytes);
     const rawOpen=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('game-hub-web.resources./hub/',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
     const putRaw=async(raw,key,value)=>new Promise((resolve,reject)=>{const tx=raw.transaction('state','readwrite');tx.objectStore('state').put(value,key);tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);});
@@ -27,6 +29,16 @@ for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page
     if(which==='complete'){
       await repo.check(envelope);const {record}=await repo.begin(envelope,'conway');await repo.complete(record.fence,{manifestDigest:record.digest,complete:true});repo.close();
       const again=createResourceRepository({database:await openResourceDatabase(options),authority:createCatalogAuthority(trust),now:()=>now}),saved=await again.inspect(),proof=await again.proof(record.fence);again.close();return {phase:saved.state.installations[0].phase,games:saved.catalog.games.length,proof:proof.receipt.history.payloadSha256===record.proofHash,revision:saved.state.revision};
+    }
+    if(which==='authority-rollback'){
+      await repo.check(envelope);const raw=await rawOpen(),old=await readRaw(raw,'authority');const {record}=await repo.begin(new Uint8Array(nextBytes),'conway'),before=await readRaw(raw,'current');await putRaw(raw,'authority',old.value);let rejected=false;
+      try{await repo.check(envelope);}catch{rejected=true;}const after=await readRaw(raw,'current'),auth=await readRaw(raw,'authority'),proof=await readRaw(raw,'proof:'+record.proofHash);raw.close();repo.close();return {rejected,unchanged:JSON.stringify(before)===JSON.stringify(after),authoritySequence:auth.value.history.catalogSequence,proofSequence:proof.value.history.catalogSequence};
+    }
+    if(which==='commit-expiry'){
+      const original=IDBObjectStore.prototype.put;let rejected=false;
+      IDBObjectStore.prototype.put=function(value,key){const r=original.call(this,value,key);if(this.name==='state'&&key==='authority')now=start+86400000;return r;};
+      try{await repo.begin(envelope,'conway');}catch{rejected=true;}finally{IDBObjectStore.prototype.put=original;}
+      const saved=await repo.inspect();repo.close();return {rejected,empty:saved.state.revision===0&&saved.state.installations.length===0&&saved.catalog===null};
     }
     if(which==='concurrent'){
       let calls=0,release;const gate=new Promise(resolve=>release=resolve);const wrap=a=>({...a,async fresh(...args){const result=await a.fresh(...args);if(++calls===2)release();await gate;return result;}});
@@ -59,6 +71,6 @@ for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page
       const state=await readRaw(raw,'current'),proof=await readRaw(raw,'proof:'+record.proofHash);raw.close();repo.close();return {rejected,phase:state.value.installations[0].phase,proofPreserved:proof.present&&proof.value===undefined};
     }
     await repo.cancel(record.fence);release();let rejected=false;try{await pending;}catch{rejected=true;}const phase=(await repo.inspect()).state.installations[0].phase;repo.close();return {rejected,phase};
-  },{which,bytes:[...bytes],spki:[...testSpki],keyId:TEST_KEY_ID,start:which==='concurrent'?999:TEST_TIME});
+  },{which,bytes:[...bytes],nextBytes:[...nextBytes],spki:[...testSpki],keyId:TEST_KEY_ID,start:which==='concurrent'?999:TEST_TIME});
   expect(result).toEqual(expected);
 });
