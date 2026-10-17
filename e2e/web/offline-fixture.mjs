@@ -19,7 +19,7 @@ export async function prepareOfflineFixture(projectRoot,production){
   });
   // Explicit local red reproduction only; the production builder has no alias.
   if(process.env.WEB_RPC_REVIEW_RED==='1')builder.onLoad({filter:/[\\/]sw[\\/]resources\.mjs$/},()=>({contents:execFileSync('git',['show','3e1da25:web/sw/resources.mjs'],{cwd:projectRoot,encoding:'utf8'}),loader:'js',resolveDir:join(projectRoot,'web/sw')}));
-  }}}]});
+  }}]});
   if(replacements!==1||compiled.outputFiles.length!==1||Object.values(compiled.metafile.outputs).some(o=>o.imports.length))throw Error('Invalid test SW closure');
   const timingProbe=`\n// Test timing only: keep real WebCrypto verification, then pause its result.\nconst originalVerify=crypto.subtle.verify.bind(crypto.subtle);crypto.subtle.verify=async(...args)=>{const valid=await originalVerify(...args);if(valid)await fetch(${JSON.stringify(origin+basePath+'__fixture/verified.json')},{cache:'no-store'});return valid;};\n`;
   writeFileSync(join(root,'sw.js'),Buffer.concat([Buffer.from(compiled.outputFiles[0].contents),Buffer.from(timingProbe)]));
