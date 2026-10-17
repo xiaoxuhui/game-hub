@@ -45,7 +45,7 @@ jobs:
       - run: pnpm run test:web:build
       - run: pnpm run test:web:catalog
       - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
-      - run: pnpm run test:web:browser -- --project '${{ matrix.browser }}-*'
+      - run: pnpm exec playwright test --config e2e/web/playwright.config.mjs --project '${{ matrix.browser }}-*'
       - uses: actions/upload-artifact@v5
         if: matrix.browser == 'chromium'
         with:
