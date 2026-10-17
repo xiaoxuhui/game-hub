@@ -24,6 +24,7 @@ export async function validateNativeFile(context,text,gameRoot){
 }
 export function nativeFileReader({context,gameRoot,saves,confirm,onError,onValidated=()=>{}}){
   let generation=0;
+  globalThis.addEventListener('pagehide',()=>{generation++;saves.cancelImport();confirm.cancel();});
   return async file=>{
     const selected=++generation;saves.cancelImport();confirm.cancel();
     const check=()=>{if(selected!==generation)throw Error('文件选择已变化，请重新确认');};
@@ -36,6 +37,6 @@ export function nativeFileReader({context,gameRoot,saves,confirm,onError,onValid
       const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),byte=>byte.toString(16).padStart(2,'0')).join('');check();
       const accepted=await confirm({gameName:context.name,filename:file.name,bytes:bytes.length,digest,expected:authorization.expected});check();if(!accepted)throw Error('已取消导入');
       await saves.commitImport(authorization.token);check();onValidated(text);return text;
-    }catch(error){if(selected===generation){saves.cancelImport();onError(error);}throw error;}
+    }catch(error){if(selected!==generation)throw Error('文件选择已变化，请重新确认');saves.cancelImport();onError(error);throw error;}
   };
 }
