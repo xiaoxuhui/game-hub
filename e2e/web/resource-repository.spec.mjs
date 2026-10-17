@@ -9,7 +9,11 @@ const cases={
   late:['a cancellation during real signature await invalidates the complete CAS',{rejected:true,phase:'failed'}]
 };
 for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page,request})=>{
-  const catalog=await (await request.get('catalog.json')).json(),bytes=signPayload(signedPayload({catalog,origin:'http://127.0.0.1:18427'}));await page.goto('./');
+  const catalog=await (await request.get('catalog.json')).json(),payload=signedPayload({catalog,origin:'http://127.0.0.1:18427'});
+  // Cross a timestamp digit boundary so retaining an older shared proof cannot
+  // accidentally reserve the byte length of the newly serialized receipt.
+  if(which==='concurrent'){payload.issuedAt=new Date(0).toISOString();payload.expiresAt=new Date(3600000).toISOString();}
+  const bytes=signPayload(payload);await page.goto('./');
   const result=await page.evaluate(async({which,bytes,spki,keyId,start})=>{
     const {openResourceDatabase}=await import(new URL('cache/database.mjs',location.href));
     const {createCatalogAuthority}=await import(new URL('update/catalog-authority.mjs',location.href));
@@ -49,6 +53,6 @@ for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page
     const {record}=await repo.begin(envelope,'conway');let signal,release;const reached=new Promise(resolve=>signal=resolve),gate=new Promise(resolve=>release=resolve);
     const slow=createResourceRepository({database:db,authority:{...authority,async fresh(...args){const receipt=await authority.fresh(...args);signal();await gate;return receipt;}},now:()=>now});
     const pending=slow.complete(record.fence,{manifestDigest:record.digest,complete:true});await reached;await repo.cancel(record.fence);release();let rejected=false;try{await pending;}catch{rejected=true;}const phase=(await repo.inspect()).state.installations[0].phase;repo.close();return {rejected,phase};
-  },{which,bytes:[...bytes],spki:[...testSpki],keyId:TEST_KEY_ID,start:TEST_TIME});
+  },{which,bytes:[...bytes],spki:[...testSpki],keyId:TEST_KEY_ID,start:which==='concurrent'?999:TEST_TIME});
   expect(result).toEqual(expected);
 });
