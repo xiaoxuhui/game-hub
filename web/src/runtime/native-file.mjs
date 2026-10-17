@@ -22,12 +22,12 @@ export async function validateNativeFile(context,text,gameRoot){
   }
   await validateNativeSave(context,entries,gameRoot);
 }
-export function nativeFileReader({context,gameRoot,saves,onError}){
+export function nativeFileReader({context,gameRoot,saves,onError,onValidated=()=>{}}){
   return async file=>{
     try{
       if(saves.snapshot().mode!=='writable')throw Error('当前页面只读，请先重新打开兼容版本');
       const limit=limits[context.id];if(!limit||!file||file.size===0||file.size>limit)throw Error('原生文件为空或超过当前游戏导入上限');
-      const text=new TextDecoder('utf-8',{fatal:true}).decode(await file.arrayBuffer());await validateNativeFile(context,text,gameRoot);return text;
+      const text=new TextDecoder('utf-8',{fatal:true}).decode(await file.arrayBuffer());await validateNativeFile(context,text,gameRoot);onValidated();return text;
     }catch(error){onError(error);throw error;}
   };
 }

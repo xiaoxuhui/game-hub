@@ -16,7 +16,7 @@ try{
   status.textContent=`${context.name} · 在线`;
   const saves=await startSaveSession({gameId:context.id,scope:context.storage,basePath:context.basePath,onStatus:state=>{status.textContent=state.message;status.title=state.message;status.dataset.saveMode=state.mode;}});
   Object.defineProperty(window,'localStorage',{configurable:false,get:()=>saves.storage});
-  Object.defineProperty(window,'GameHubReadNativeFile',{configurable:false,writable:false,value:nativeFileReader({context,gameRoot,saves,onError:error=>{status.textContent='导入已拒绝：'+error.message;}})});
+  Object.defineProperty(window,'GameHubReadNativeFile',{configurable:false,writable:false,value:nativeFileReader({context,gameRoot,saves,onError:error=>{status.textContent='导入已拒绝：'+error.message;},onValidated:()=>{status.textContent='文件已校验，等待游戏导入';}})});
   const exportButton=document.createElement('button');exportButton.id='game-hub-backup';exportButton.type='button';exportButton.textContent=saves.snapshot().canonicalRead?'备份':'应急导出';exportButton.title=saves.snapshot().canonicalRead?'导出本页当前游戏全部存档键值':'未能读取正式存档，仅导出旧档或本页草稿';bar.append(exportButton);
   exportButton.addEventListener('click',()=>{
     downloadSnapshot(context,saves.snapshot());
