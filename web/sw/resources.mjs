@@ -21,19 +21,19 @@ export function enableResources(control){
         data=validateResourceRequest(raw,{build,basePath});await control.hall(event.source);
         if(data.action==='cancel'){
           const active=busy;if(!active||active.taskId!==data.args.taskId||active.sourceId!==event.source.id)throw Error('No matching current download');
-          active.abort.abort();await active.finished;await control.hall(event.source);send({ok:true,result:{cancelled:true}});return;
+          active.abort.abort();await active.finished;await control.hall(event.source);send({ok:true,result:{cancelled:active.outcome==='cancelled',phase:active.outcome}});return;
         }
         if(data.action==='status'){const status=await(await repo()).inspect();await control.hall(event.source);send({ok:true,result:{...status,task:busy?{taskId:busy.taskId,action:busy.action}:null}});return;}
         if(busy)throw Error('Resource operation busy');
-        let finish;task={taskId:data.nonce,sourceId:event.source.id,action:data.action,abort:new AbortController(),finished:new Promise(resolve=>finish=resolve),finish:()=>finish()};busy=task;
+        let finish;task={taskId:data.nonce,sourceId:event.source.id,action:data.action,outcome:'pending',abort:new AbortController(),finished:new Promise(resolve=>finish=resolve),finish:()=>finish()};busy=task;
         const repository=await repo(),bytes=await current(task.abort.signal);await control.hall(event.source);
         if(data.action==='check'){
-          if(task.abort.signal.aborted)throw Error('Resource request cancelled');const catalog=await repository.check(bytes);await control.hall(event.source);send({ok:true,result:{catalog}});
+          if(task.abort.signal.aborted)throw new DOMException('Resource request cancelled','AbortError');const catalog=await repository.check(bytes);task.outcome='checked';await control.hall(event.source);send({ok:true,result:{catalog}});
         }else{
           const installer=createResourceInstaller({repository,caches:self.caches,fetch:self.fetch.bind(self),origin,basePath,control:()=>control.hall(event.source)});
-          const result=await installer.install(bytes,data.args.id,{signal:task.abort.signal,onProgress:progress=>send({progress:{...progress,taskId:task.taskId}})});await control.hall(event.source);send({ok:true,result});
+          const result=await installer.install(bytes,data.args.id,{signal:task.abort.signal,onProgress:progress=>send({progress:{...progress,taskId:task.taskId}})});task.outcome='ready';await control.hall(event.source);send({ok:true,result});
         }
-      }catch(error){send({ok:false,error:String(error?.message??'Resource operation failed').slice(0,240)});}
+      }catch(error){if(task?.outcome==='pending')task.outcome=task.abort.signal.aborted&&error?.name==='AbortError'?'cancelled':'failed';send({ok:false,error:String(error?.message??'Resource operation failed').slice(0,240)});}
       finally{if(task){if(busy===task)busy=null;task.finish();}port.close();}
     })());
   });
