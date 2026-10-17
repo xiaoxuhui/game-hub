@@ -4,5 +4,10 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "跨平台网页游戏大厅"
+  "description": "跨平台网页游戏大厅",
+  "author": "xiaoxuhui",
+  "repository": {"type":"git","url":"git+https://github.com/xiaoxuhui/game-hub.git","directory":"web"},
+  "homepage": "https://github.com/xiaoxuhui/game-hub#readme",
+  "bugs": "https://github.com/xiaoxuhui/game-hub/issues",
+  "engines": {"node":">=24.0.0"}
 }
