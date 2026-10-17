@@ -44,3 +44,16 @@ test('scoped clear preserves another game and an empty save never resurrects raw
   });
   expect(result.empty).toEqual([]);expect(result.kept).toEqual([['other.save','keep']]);expect(result.backups).toContainEqual([['test.save','old']]);
 });
+test('newer future-format crash journal blocks takeover without changing the IDB writer',async({page,request})=>{
+  await setup(page,request);
+  const result=await page.evaluate(async()=>{
+    const scope={keys:['test.save'],prefixes:[]},db=await saveModule.openSaveStore({indexedDB,basePath:'/future/'});
+    const current=await db.acquire({gameId:'demo',writerId:'a',scope,legacy:[['test.save','old']],journals:[]});
+    const journal={...current,sequence:2,future:{opaque:true}};
+    const blocked=await db.acquire({gameId:'demo',writerId:'b',scope,legacy:[],journals:[journal]}).then(()=>false,()=>true);
+    // If takeover was aborted atomically, the previous writer still owns fence1.
+    const retained=await db.commit({...current,sequence:1,entries:[['test.save','writer retained']]},scope).then(()=>true,()=>false);
+    db.close();return {blocked,retained,journal};
+  });
+  expect(result.blocked).toBe(true);expect(result.retained).toBe(true);expect(result.journal.future).toEqual({opaque:true});
+});

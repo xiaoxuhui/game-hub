@@ -22,6 +22,14 @@ test('transaction mutation rejects stale fences and revisions, never merges snap
   const committed=commitRecord(old,write,scope);assert.equal(committed.revision,1);assert.deepEqual(committed.entries,write.entries);
   assert.throws(()=>commitRecord(committed,write,scope),/conflict/);
 });
+test('a newer current-writer journal with unknown schema or extensions blocks takeover',()=>{
+  const previous=acquireRecord(null,{...identity,legacy:[['one','old']],journals:[]}).record;
+  for(const extra of [{schema:2},{future:'opaque'}, {entries:[['foreign','bad']]}]){
+    const journal={...previous,sequence:2,...extra};
+    assert.throws(()=>acquireRecord(previous,{...identity,writerId:'b',legacy:[],journals:[journal]}),/preserved|scope/);
+    assert.equal(previous.fence,1);assert.equal(previous.entries[0][1],'old');
+  }
+});
 test('scoped facade clear and property access cannot touch another game; failed journaling is not success',()=>{
   let snapshot=[['one','original']],fail=false;const storage=createFacade(scope,snapshot,entries=>{if(fail)throw Error('quota');snapshot=entries;});
   storage['game.future']='unknown';assert.equal(storage.getItem('game.future'),'unknown');assert.equal(storage.length,2);

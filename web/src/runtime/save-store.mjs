@@ -22,6 +22,9 @@ export function acquireRecord(previous,{gameId,writerId,scope,legacy,journals}){
   if(previous)checkRecord(previous,gameId,scope);
   let entries=previous?previous.entries:checkEntries(legacy,scope),recovered=null;
   for(const journal of journals){
+    // A later journal from this exact owner is potentially the newest save.
+    // An older reader must not advance the fence past bytes it cannot decode.
+    if(previous&&journal?.gameId===gameId&&journal.writerId===previous.writerId&&journal.fence===previous.fence&&(!integer(journal.sequence)||journal.sequence>previous.sequence))checkRecord(journal,gameId,scope);
     try{checkRecord(journal,gameId,scope);}catch{continue;}
     // The first IDB commit may finish before its JS callback can rewrite a newer
     // synchronous journal. Within one writer fence, sequence orders whole saves.
