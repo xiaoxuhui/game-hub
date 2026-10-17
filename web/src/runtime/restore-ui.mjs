@@ -15,6 +15,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
   const original=button('hub-restore-export-original','导出本页原档');original.disabled=!saves.snapshot().canonicalRead;original.title='本页最后确认的完整存档，可能不是另一标签的最新数据；与未保存草稿分别导出';dialog.insertBefore(original,fileLabel);original.addEventListener('click',()=>downloadSnapshot(context,saves.committedSnapshot(),'original'));
   const draft=button('hub-restore-export-draft','导出本页草稿');draft.title='未保存草稿单独导出，不能直接当完整正式备份恢复';dialog.insertBefore(draft,fileLabel);draft.addEventListener('click',()=>downloadSnapshot(context,saves.snapshot(),'draft'));
   let generation=0,queue=Promise.resolve(),selected=null,rows=[],restoring=false,requiresReload=false;
+  saves.watchDraft(()=>{draft.disabled=!saves.snapshot().pending;if(requiresReload&&!draft.disabled)message.textContent='恢复已结束，本页仍有未保存草稿；可先导出草稿，再重新打开游戏。';});
   function invalidate(){generation++;selected=null;confirm.disabled=true;preview.textContent='';saves.cancelRestore();}
   function schedule(load){
     invalidate();const revision=generation;message.textContent='正在校验备份…';
@@ -49,7 +50,7 @@ export function mountRestore({bar,saves,context,gameRoot}){
   close.addEventListener('click',dismiss);dialog.addEventListener('cancel',event=>{event.preventDefault();dismiss();});
   confirm.addEventListener('click',()=>{
     if(!selected||restoring)return;const candidate=selected;selected=null;restoring=true;confirm.disabled=true;input.disabled=true;history.disabled=true;close.disabled=true;message.textContent='正在恢复，请稍候…';
-    void saves.restore(candidate.token).then(()=>{message.textContent='恢复完成。当前游戏页面保持只读，请重新打开游戏。';reload.hidden=false;}).catch(error=>{message.textContent='恢复未完成：'+error.message+'。请重新打开游戏并检查存档。';reload.hidden=false;}).finally(()=>{restoring=false;requiresReload=true;open.textContent='重新打开';open.title='重新打开游戏后读取当前正式存档';close.disabled=false;close.textContent='关闭';});
+    void saves.restore(candidate.token).then(()=>{message.textContent='恢复完成。当前游戏页面保持只读，请重新打开游戏。'+(saves.snapshot().pending?'本页有未保存草稿，可先单独导出。':'');reload.hidden=false;}).catch(error=>{message.textContent='恢复未完成：'+error.message+'。请重新打开游戏并检查存档。';reload.hidden=false;}).finally(()=>{restoring=false;requiresReload=true;draft.disabled=!saves.snapshot().pending;open.textContent='重新打开';open.title='重新打开游戏后读取当前正式存档';close.disabled=false;close.textContent='关闭';});
   });
   reload.addEventListener('click',()=>location.reload());
 }

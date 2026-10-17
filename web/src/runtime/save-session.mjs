@@ -3,6 +3,8 @@ import {checkEntries,createFacade,legacyEntries,openSaveStore,SAVE_LIMITS} from 
 export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},environment=globalThis}){
   let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly',readonlyReason=null,preview=null,importPreview=null,importGeneration=0;
   const writerId=environment.crypto?.randomUUID?.();
+  const draftObservers=new Set();
+  function publishDraft(){for(const observer of draftObservers){try{observer();}catch(error){console.error('草稿状态界面更新失败',error);}}}
   const prefix='game-hub-web.journal.'+encodeURIComponent(basePath)+'.'+gameId+'.',journalKey=prefix+writerId;
   const notify=(state,message,reason=null)=>{
     mode=state;readonlyReason=reason;
@@ -53,13 +55,14 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     const attempted=new Map(draft??entries);
     if(operation.type==='clear')attempted.clear();else if(operation.type==='remove')attempted.delete(operation.key);else attempted.set(operation.key,operation.value);
     draft=checkEntries([...attempted],scope);
+    publishDraft();
     if(mode!=='writable')throw Error('存档只读，请导出备份');
     if(sequence===Number.MAX_SAFE_INTEGER){notify('readonly','存档序号已满，请导出备份');throw Error('Save counter exhausted');}
     const proposed={...record,sequence:sequence+1,entries:nextEntries};
     try{nativeStorage.setItem(journalKey,JSON.stringify(proposed));}
     catch(error){notify('readonly','存档空间不足或不可用，请导出备份');throw error;}
     backupNeeded||=entries.some(([key])=>!nextEntries.some(([nextKey])=>key===nextKey));
-    entries=nextEntries;sequence=proposed.sequence;draft=null;
+    entries=nextEntries;sequence=proposed.sequence;draft=null;publishDraft();
     notify('writable','正在保存…');queueMicrotask(()=>{void flush();});
   });
   async function checkWriter(){
@@ -125,11 +128,12 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
   }
   return {
     storage,flush,checkWriter,prepareRestore,restore,cancelRestore(){preview=null;},
+    watchDraft(observer){draftObservers.add(observer);try{observer();}catch{draftObservers.delete(observer);}return ()=>draftObservers.delete(observer);},
     protectWrites(message){preview=null;const eligible=(mode==='writable'||readonlyReason==='native-preflight')&&db&&record&&sequence===record.sequence;notify('readonly',message,eligible?'native-preflight':null);},
     prepareImport,commitImport,cancelImport(){importGeneration++;importPreview=null;},
     committedSnapshot(){if(!record)throw Error('尚未读取完整存档');return {entries:checkEntries(record.entries,scope),mode:'readonly',pending:false,canonicalRead:true,source:'canonical-session'};},
     snapshot(){return {entries:checkEntries(draft??entries,scope),mode,pending:sequence>(record?.sequence??0)||draft!==null,canonicalRead:!!record,source:draft?'session-draft':record?'canonical-session':'legacy-only'};},
     async backups(){return db?db.backups(gameId):[];},
-    close(){importGeneration++;importPreview=null;channel?.close();db?.close();}
+    close(){importGeneration++;importPreview=null;draftObservers.clear();channel?.close();db?.close();}
   };
 }
