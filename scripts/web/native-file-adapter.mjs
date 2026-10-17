@@ -32,7 +32,8 @@ function preserveTuringMetadata(text){
     if(ts.isObjectLiteralExpression(node)){
       const fields=new Map(node.properties.filter(ts.isPropertyAssignment).map(property=>[property.name.getText(ast),property]));
       if(fields.get('format')?.initializer.getText(ast)==='"turing-machine-simulator"'&&fields.has('name')&&fields.has('description')){
-        if(node.properties.length!==14||!['name','description'].every(key=>ts.isStringLiteral(fields.get(key).initializer)))throw Error('Unreviewed Turing metadata builder');builders++;
+        const expected=['format','version','name','description','input','blankSymbol','initialState','acceptStates','rejectStates','haltStates','rules','maxSteps','speed'];
+        if(node.properties.length!==expected.length||expected.some(key=>!fields.has(key))||!['name','description'].every(key=>ts.isStringLiteral(fields.get(key).initializer)))throw Error('Unreviewed Turing metadata builder');builders++;
         for(const key of ['name','description']){const value=fields.get(key).initializer;changes.push({start:value.getStart(ast),end:value.end,text:`globalThis.GameHubTuringProjectField("${key}",${value.getText(ast)})`});}
       }
     }
