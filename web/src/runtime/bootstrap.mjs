@@ -12,10 +12,10 @@ try{
   status.textContent=`${context.name} · 在线`;
   const saves=await startSaveSession({gameId:context.id,scope:context.storage,basePath:context.basePath,onStatus:state=>{status.textContent=state.message;status.title=state.message;status.dataset.saveMode=state.mode;}});
   Object.defineProperty(window,'localStorage',{configurable:false,get:()=>saves.storage});
-  const exportButton=document.createElement('button');exportButton.id='game-hub-backup';exportButton.type='button';exportButton.textContent='备份';exportButton.title='导出当前游戏完整备份';bar.append(exportButton);
+  const exportButton=document.createElement('button');exportButton.id='game-hub-backup';exportButton.type='button';exportButton.textContent=saves.snapshot().canonicalRead?'备份':'应急导出';exportButton.title=saves.snapshot().canonicalRead?'导出本页当前游戏全部存档键值':'未能读取正式存档，仅导出旧档或本页草稿';bar.append(exportButton);
   exportButton.addEventListener('click',()=>{
-    const snapshot=saves.snapshot(),backup={format:'game-hub-save',schemaVersion:1,gameId:context.id,gameVersion:context.version,sourceRevision:context.sourceRevision,createdAt:new Date().toISOString(),...snapshot};
-    const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`${context.id}-full-backup.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const snapshot=saves.snapshot(),backup={format:'game-hub-save',schemaVersion:1,gameId:context.id,gameVersion:context.version,sourceRevision:context.sourceRevision,createdAt:new Date().toISOString(),...snapshot,...(!snapshot.canonicalRead?{warning:'未能读取正式存档，此文件仅包含原始旧档或本页草稿，并非正式存档的完整备份'}:{})};
+    const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`${context.id}-${snapshot.canonicalRead?'session':'emergency'}-backup.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   });
   window.addEventListener('pageshow',()=>{void saves.checkWriter();});document.addEventListener('visibilitychange',()=>{if(!document.hidden)void saves.checkWriter();});
   back.addEventListener('click',event=>{if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();void saves.flush().finally(()=>location.assign(back.href));});

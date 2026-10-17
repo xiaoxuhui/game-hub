@@ -63,7 +63,7 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
   }
   return {
     storage,flush,checkWriter,
-    snapshot(){return {entries:checkEntries(draft??entries,scope),mode,pending:sequence>(record?.sequence??0)||draft!==null};},
+    snapshot(){return {entries:checkEntries(draft??entries,scope),mode,pending:sequence>(record?.sequence??0)||draft!==null,canonicalRead:!!record,source:draft?'session-draft':record?'canonical-session':'legacy-only'};},
     async backups(){return db?db.backups(gameId):[];},
     close(){channel?.close();db?.close();}
   };
