@@ -7,7 +7,8 @@ test.afterEach(()=>rmSync(faultPath,{force:true}));
 async function open(page,{controlled=true}={}){
   const context=info();await page.goto(context.origin+context.basePath);
   await page.evaluate(async()=>{const {createControllerGate}=await import('./control/gate.mjs');window.gate=createControllerGate();await gate.register();await navigator.serviceWorker.ready;});
-  if(controlled)await page.reload();
+  await page.waitForFunction(async()=>(await navigator.serviceWorker.ready).active?.state==='activated');
+  if(controlled){await page.reload();expect(await page.evaluate(()=>navigator.serviceWorker.controller?.state)).toBe('activated');}
   await page.evaluate(()=>{
     window.rpc=async(action,args={},change={},active=false)=>{
       const nonce=crypto.randomUUID();window.lastTaskId=nonce;const {BUILD}=await import('./build-context.mjs'),channel=new MessageChannel();
@@ -26,7 +27,8 @@ test('actual activation persists epoch and rejects uncontrolled protocol build f
   const first=await page.evaluate(async()=>{const {openResourceDatabase}=await import('./cache/database.mjs'),db=await openResourceDatabase({indexedDB,basePath:'/hub/'});try{return(await db.snapshot()).controller.record;}finally{db.close();}});
   expect(first).toMatchObject({schemaVersion:1,protocol:1,build:context.build,generation:1});expect(first.epoch).toMatch(/^[a-f0-9-]{36}$/);
   const game=context.games.find(g=>g.id==='light');await page.goto(context.origin+game.entryUrl);
-  expect(await page.evaluate(async build=>{const channel=new MessageChannel();return await new Promise(resolve=>{channel.port1.onmessage=e=>{channel.port1.close();resolve(e.data.ok);};navigator.serviceWorker.controller.postMessage({type:'hub-resources',protocol:1,build,basePath:'/hub/',nonce:crypto.randomUUID(),action:'status',args:{}},[channel.port2]);});},context.build)).toBe(false);
+  const gameSource=await page.evaluate(async build=>{const channel=new MessageChannel(),registration=await navigator.serviceWorker.ready,controllerPresent=Boolean(navigator.serviceWorker.controller);return await new Promise(resolve=>{channel.port1.onmessage=e=>{channel.port1.close();resolve({controllerPresent,ok:e.data.ok});};registration.active.postMessage({type:'hub-resources',protocol:1,build,basePath:'/hub/',nonce:crypto.randomUUID(),action:'status',args:{}},[channel.port2]);});},context.build);
+  expect(gameSource.ok).toBe(false);await test.info().attach('game-source-control-observation',{body:JSON.stringify(gameSource),contentType:'application/json'});
 });
 test('actual fixed-key SW checks signed catalog installs complete bytes but does not grant game session',async({page})=>{
   const context=await open(page),check=await page.evaluate(()=>rpc('check'));expect(check.ok).toBe(true);expect(check.result.catalog.games).toHaveLength(8);

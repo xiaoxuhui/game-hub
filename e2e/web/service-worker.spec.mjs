@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 const audit=()=>readFileSync(new URL('../../.build/web-sw-requests.jsonl',import.meta.url),'utf8').split('\n').filter(Boolean).map(line=>JSON.parse(line));
 async function setup(page){await page.goto('./');await page.evaluate(async()=>{const {createControllerGate}=await import('./control/gate.mjs');window.gate=createControllerGate();});}
-async function register(page){await page.evaluate(async()=>{await gate.register();await navigator.serviceWorker.ready;});}
+async function register(page){await page.evaluate(async()=>{await gate.register();await navigator.serviceWorker.ready;});await page.waitForFunction(async()=>(await navigator.serviceWorker.ready).active?.state==='activated');}
 async function reopen(page){await page.reload();await page.evaluate(async()=>{const {createControllerGate}=await import('./control/gate.mjs');window.gate=createControllerGate();});}
 test('real SW ready is not controller and controlled reopen uses stable invalidated handshake token',async({page})=>{
   await setup(page);await register(page);
@@ -25,7 +25,9 @@ test('real SW rejects wrong protocol build and invalid nonce from controlled cal
 test('additional narrow registration prevents gate without unregistering it',async({page})=>{
   await setup(page);await register(page);await reopen(page);
   expect(await page.evaluate(async()=>(await gate.inspect()).controlled)).toBe(true);
-  const result=await page.evaluate(async()=>{await navigator.serviceWorker.register('/hub/sw.js',{scope:'/hub/games/'});const state=await gate.inspect();return {blocked:!state.controlled,count:(await navigator.serviceWorker.getRegistrations()).length};});expect(result).toEqual({blocked:true,count:2});
+  await page.evaluate(async()=>{await navigator.serviceWorker.register('/hub/sw.js',{scope:'/hub/games/'});});
+  await page.waitForFunction(async()=>(await navigator.serviceWorker.getRegistrations()).find(r=>r.scope===location.origin+'/hub/games/')?.active?.state==='activated');
+  const result=await page.evaluate(async()=>{const state=await gate.inspect();return {blocked:!state.controlled,count:(await navigator.serviceWorker.getRegistrations()).length};});expect(result).toEqual({blocked:true,count:2});
 });
 test('server rejects actual game SW registration but ordinary game Worker executes',async({page,request})=>{
   await setup(page);const catalog=await(await request.get('catalog.json')).json(),game=catalog.games.find(g=>g.id==='turing'),file=game.files.find(f=>/worker.*\.js$/.test(f.path)),url=game.entryUrl.slice(0,-game.entryPage.length)+file.path;
@@ -40,7 +42,8 @@ test('narrow scope created during pending control verification cannot grant a to
   await setup(page);await register(page);await reopen(page);
   const result=await page.evaluate(async()=>{
     const container=navigator.serviceWorker,read=container.getRegistrations.bind(container);
-    container.getRegistrations=async()=>{const old=await read();container.getRegistrations=read;await container.register('/hub/sw.js',{scope:'/hub/games/'});return old;};
+    container.getRegistrations=async()=>{const old=await read();container.getRegistrations=read;const registration=await container.register('/hub/sw.js',{scope:'/hub/games/'}),worker=registration.installing??registration.waiting??registration.active;
+      if(worker.state!=='activated')await new Promise((resolve,reject)=>{const timer=setTimeout(()=>{worker.removeEventListener('statechange',changed);reject(Error('Narrow SW activation timeout'));},5000);const changed=()=>{if(worker.state==='activated'||worker.state==='redundant'){clearTimeout(timer);worker.removeEventListener('statechange',changed);worker.state==='activated'?resolve():reject(Error('Narrow SW redundant'));}};worker.addEventListener('statechange',changed);changed();});return old;};
     const state=await gate.inspect();return {blocked:!state.controlled,registrations:(await read()).length};
   });expect(result).toEqual({blocked:true,registrations:2});
 });
