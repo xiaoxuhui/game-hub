@@ -24,3 +24,9 @@ test('native import backup failure prevents native UI and canonical replacement'
 test('a replacement file invalidates the previous native preview',async({page,request})=>{
   const {raw}=await setup(page,request);await select(page,raw,'old.json');await expect(page.locator('#hub-native-import-preview')).toContainText('old.json');await select(page,{...raw,name:'Latest file'},'latest.json');await expect(page.locator('#hub-native-import-preview')).toContainText('latest.json');await page.locator('#hub-native-import-confirm').click();await expect(page.locator('#projectName')).toHaveValue('Latest file');
 });
+test('pagehide during a delayed committed checkpoint never returns the old file to the native importer',async({page,request})=>{
+  const {raw,before}=await setup(page,request);await select(page,raw);await expect(page.locator('#hub-native-import-dialog')).toBeVisible();
+  await page.evaluate(()=>{window.completionDescriptor=Object.getOwnPropertyDescriptor(IDBTransaction.prototype,'oncomplete');window.backupCommitted=new Promise(resolve=>{let intercepted=false;Object.defineProperty(IDBTransaction.prototype,'oncomplete',{...completionDescriptor,set(callback){const transaction=this;completionDescriptor.set.call(this,function(event){if(!intercepted&&transaction.mode==='readwrite'){intercepted=true;window.releaseBackup=()=>callback.call(transaction,event);resolve();}else callback.call(transaction,event);});}});});});
+  await page.locator('#hub-native-import-confirm').click();await page.evaluate(()=>backupCommitted);await page.evaluate(()=>{dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));releaseBackup();Object.defineProperty(IDBTransaction.prototype,'oncomplete',completionDescriptor);});
+  await expect(page.locator('#toast')).toContainText('文件选择已变化');expect((await readCanonical(page,'mini-scratch')).entries).toEqual(before.entries);await expect(page.locator('#projectName')).not.toHaveValue('Imported project');
+});
