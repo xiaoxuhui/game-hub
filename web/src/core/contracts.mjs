@@ -1,4 +1,5 @@
 export const LIMITS = Object.freeze({ file:20*1024*1024, game:100*1024*1024, files:2000, games:32, cache:150*1024*1024, reserve:20*1024*1024 });
+export const GAME_CSP="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const ID=/^[a-z][a-z0-9-]{0,63}$/;
 const SHA=/^[0-9a-f]{64}$/;
 const MIME=new Set(['text/html','text/css','application/javascript','application/json','text/plain','image/png','image/jpeg','image/webp','image/gif','image/svg+xml','image/x-icon','font/woff2']);

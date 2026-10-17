@@ -1,13 +1,13 @@
 import {readFileSync} from 'node:fs';
 import {join,posix} from 'node:path';
-import {safePath,normalizeBase} from '../../web/src/core/contracts.mjs';
+import {safePath,normalizeBase,GAME_CSP} from '../../web/src/core/contracts.mjs';
 import {files,metadata,treeHash} from './files.mjs';
 import {sourceProofBytes} from '../../web/src/core/digests.mjs';
 import {nativeTuring,nativeLambda,splitEmlBeforeUI} from './native-validation.mjs';
 import {guardNativeFileReads} from './native-file-adapter.mjs';
 import {guardAudioStart} from './audio-adapter.mjs';
 
-export const gameCsp="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+export const gameCsp=GAME_CSP;
 const attr=(text,name)=>new RegExp(`(?:^|\\s)${name}\\s*=\\s*["']([^"']*)["']`,'i').exec(text)?.[1];
 export function adaptPage({path,text,paths}){
   const scripts=[],generated=[],directory=posix.dirname(path),pageId=path.replace(/\W/g,'-');
