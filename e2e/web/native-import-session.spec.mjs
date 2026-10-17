@@ -10,16 +10,16 @@ test('failed pre-import backup leaves canonical untouched and never permits the 
 test('cancelling during the initial confirmation await never starts a backup transaction',async({page,request})=>{
   await setup(page,request);const result=await page.evaluate(async()=>{const a=nativeSession,preview=await a.prepareImport(),pending=a.commitImport(preview.token);a.cancelImport();const rejected=await pending.then(()=>false,()=>true),backups=await a.backups();a.close();return {rejected,count:backups.length};});expect(result).toEqual({rejected:true,count:0});
 });
-for(const action of ['cancel','replace','close'])test(`${action} after a real checkpoint commits cannot authorize returning an old native file`,async({page,request})=>{
+for(const action of ['cancel','replace','close','edit','protect'])test(`${action} after a real checkpoint commits cannot authorize returning an old native file`,async({page,request})=>{
   await setup(page,request);const result=await page.evaluate(async action=>{
     const a=nativeSession,preview=await a.prepareImport(),descriptor=Object.getOwnPropertyDescriptor(IDBTransaction.prototype,'oncomplete');let release,signal,intercepted=false,newPreview;
     const committed=new Promise(resolve=>{signal=resolve;});Object.defineProperty(IDBTransaction.prototype,'oncomplete',{...descriptor,set(callback){const transaction=this;descriptor.set.call(this,function(event){if(!intercepted&&transaction.mode==='readwrite'){intercepted=true;release=()=>callback.call(transaction,event);signal();}else callback.call(transaction,event);});}});
     let rejected,replacementAccepted=true;
     try{
       const pending=a.commitImport(preview.token);await committed;
-      if(action==='cancel')a.cancelImport();else if(action==='replace')newPreview=await a.prepareImport();else a.close();release();rejected=await pending.then(()=>false,()=>true);
+      if(action==='cancel')a.cancelImport();else if(action==='replace')newPreview=await a.prepareImport();else if(action==='edit'){a.storage.setItem('native.save','newer edit');await a.flush();}else if(action==='protect')a.protectWrites('injected read-only transition');else a.close();release();rejected=await pending.then(()=>false,()=>true);
       if(newPreview)replacementAccepted=await a.commitImport(newPreview.token).then(()=>true,()=>false);
     }finally{Object.defineProperty(IDBTransaction.prototype,'oncomplete',descriptor);}
     const entries=await new Promise((resolve,reject)=>{const request=indexedDB.open('game-hub-web.saves./native-import-session/',1);request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result,tx=db.transaction('saves'),read=tx.objectStore('saves').get('native-import');let record;read.onsuccess=()=>{record=read.result;};tx.oncomplete=()=>{db.close();resolve(record.entries);};};});if(action!=='close')a.close();return {rejected,replacementAccepted,entries};
-  },action);expect(result).toEqual({rejected:true,replacementAccepted:true,entries:[['native.save','original opaque bytes']]});
+  },action);expect(result).toEqual({rejected:true,replacementAccepted:true,entries:[['native.save',action==='edit'?'newer edit':'original opaque bytes']]});
 });
