@@ -30,3 +30,7 @@ test('pagehide during a delayed committed checkpoint never returns the old file 
   await page.locator('#hub-native-import-confirm').click();await page.evaluate(()=>backupCommitted);await page.evaluate(()=>{dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));releaseBackup();Object.defineProperty(IDBTransaction.prototype,'oncomplete',completionDescriptor);});
   await expect(page.locator('#toast')).toContainText('文件选择已变化');expect((await readCanonical(page,'mini-scratch')).entries).toEqual(before.entries);await expect(page.locator('#projectName')).not.toHaveValue('Imported project');
 });
+test('pagehide during a file read cannot open a late native preview',async({page,request})=>{
+  const {raw,before}=await setup(page,request);await page.evaluate(()=>{window.originalArrayBuffer=File.prototype.arrayBuffer;window.readStarted=new Promise(resolve=>{File.prototype.arrayBuffer=function(){const file=this;return new Promise(continueRead=>{window.releaseRead=()=>continueRead(originalArrayBuffer.call(file));resolve();});};});});
+  await select(page,raw);await page.evaluate(()=>readStarted);await page.evaluate(()=>{dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));releaseRead();File.prototype.arrayBuffer=originalArrayBuffer;});await expect(page.locator('#toast')).toContainText('文件选择已变化');await expect(page.locator('#hub-native-import-dialog')).not.toBeVisible();expect((await readCanonical(page,'mini-scratch')).entries).toEqual(before.entries);
+});
