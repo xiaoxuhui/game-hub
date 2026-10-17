@@ -7,5 +7,5 @@ export default defineConfig({
   outputDir:root+'/.build/web-browser',reporter:[['list'],['json',{outputFile:root+'/.build/web-browser-result.json'}]],
   use:{baseURL:'http://127.0.0.1:18427/hub/',trace:'retain-on-failure',screenshot:'only-on-failure'},
   projects:['chromium','firefox','webkit'].flatMap(browserName=>sizes.map(([size,viewport])=>({name:`${browserName}-${size}`,use:{browserName,viewport,...(browserName==='chromium'&&process.env.WEB_CHROMIUM_EXECUTABLE?{launchOptions:{executablePath:process.env.WEB_CHROMIUM_EXECUTABLE}}:{})}}))),
-  webServer:{command:'node scripts/web/serve.mjs',cwd:root,url:'http://127.0.0.1:18427/hub/',reuseExistingServer:false,timeout:30000}
+  webServer:{command:'node e2e/web/serve.mjs',cwd:root,url:'http://127.0.0.1:18427/hub/',reuseExistingServer:false,timeout:30000}
 });

@@ -1,4 +1,6 @@
 import {test,expect} from '@playwright/test';
+import {readFileSync} from 'node:fs';
+const audit=()=>readFileSync(new URL('../../.build/web-sw-requests.jsonl',import.meta.url),'utf8').split('\n').filter(Boolean).map(line=>JSON.parse(line));
 async function setup(page){await page.goto('./');await page.evaluate(async()=>{const {createControllerGate}=await import('./control/gate.mjs');window.gate=createControllerGate();});}
 async function register(page){await page.evaluate(async()=>{await gate.register();await navigator.serviceWorker.ready;});}
 async function reopen(page){await page.reload();await page.evaluate(async()=>{const {createControllerGate}=await import('./control/gate.mjs');window.gate=createControllerGate();});}
@@ -27,8 +29,18 @@ test('additional narrow registration prevents gate without unregistering it',asy
 });
 test('server rejects actual game SW registration but ordinary game Worker executes',async({page,request})=>{
   await setup(page);const catalog=await(await request.get('catalog.json')).json(),game=catalog.games.find(g=>g.id==='turing'),file=game.files.find(f=>/worker.*\.js$/.test(f.path)),url=game.entryUrl.slice(0,-game.entryPage.length)+file.path;
-  const denied=page.waitForResponse(r=>r.url().endsWith(file.path)&&r.status()===403);
-  expect(await page.evaluate(async url=>{try{await navigator.serviceWorker.register(url,{scope:url.slice(0,url.lastIndexOf('/')+1)});return false;}catch{return true;}},url)).toBe(true);await denied;
-  const ordinary=page.waitForResponse(r=>r.url().endsWith(file.path)&&r.status()===200);
-  const reply=await page.evaluate(async url=>await new Promise((resolve,reject)=>{const worker=new Worker(url),timer=setTimeout(()=>{worker.terminate();reject(Error('Worker timeout'));},5000);worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(Error('Worker error'));};worker.onmessage=e=>{if(e.data.type==='complete'){clearTimeout(timer);worker.terminate();resolve(e.data.reason);}};worker.postMessage({definition:{blankSymbol:'_',initialState:'q',haltStates:['q'],transitions:[]},initialTape:[],maxSteps:1});}),url);await ordinary;expect(reply).toBe('halt');
+  const probe=url+'?sw-probe='+crypto.randomUUID();
+  expect(await page.evaluate(async url=>{try{await navigator.serviceWorker.register(url,{scope:url.slice(0,url.lastIndexOf('/')+1)});return false;}catch{return true;}},probe)).toBe(true);
+  await expect.poll(()=>audit().some(row=>row.url===probe&&row.serviceWorker&&row.status===403)).toBe(true);
+  const reply=await page.evaluate(async url=>await new Promise((resolve,reject)=>{const worker=new Worker(url),timer=setTimeout(()=>{worker.terminate();reject(Error('Worker timeout'));},5000);worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(Error('Worker error'));};worker.onmessage=e=>{if(['complete','error'].includes(e.data.type)){clearTimeout(timer);worker.terminate();e.data.type==='error'?reject(Error(e.data.message)):resolve(e.data.reason);}};worker.postMessage({definition:{blankSymbol:'_',initialState:'q',acceptStates:[],rejectStates:[],haltStates:['q'],transitions:[]},initialTape:[],maxSteps:1});}),url);expect(reply).toBe('halt');
+  expect(audit().some(row=>row.url===url&&!row.serviceWorker&&row.status===200)).toBe(true);
+});
+
+test('narrow scope created during pending control verification cannot grant a token',async({page})=>{
+  await setup(page);await register(page);await reopen(page);
+  const result=await page.evaluate(async()=>{
+    const container=navigator.serviceWorker,read=container.getRegistrations.bind(container);
+    container.getRegistrations=async()=>{const old=await read();container.getRegistrations=read;await container.register('/hub/sw.js',{scope:'/hub/games/'});return old;};
+    const state=await gate.inspect();return {blocked:!state.controlled,registrations:(await read()).length};
+  });expect(result).toEqual({blocked:true,registrations:2});
 });
