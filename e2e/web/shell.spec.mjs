@@ -1,4 +1,7 @@
 import {test,expect} from '@playwright/test';
+import {writeFileSync,rmSync} from 'node:fs';
+const offline=new URL('../../.build/web-network-down',import.meta.url);
+test.afterEach(()=>rmSync(offline,{force:true}));
 test('fixed catalog lists eight version-addressed links without script errors',async({page})=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto('./');await expect(page.getByRole('heading',{name:'游戏大厅',exact:true})).toBeVisible();
@@ -14,10 +17,11 @@ test('catalog HTTP failure is visible and never presented as latest',async({page
   await page.goto('./');await expect(page.locator('#status')).toHaveText('检查失败：目录暂不可用');
   await expect(page.locator('#games a')).toHaveCount(0);
 });
-for(const fault of ['offline','missing','extra','bytes','marker'])test(`real shell cold navigation ${fault} keeps one complete generation`,async({page,context,request})=>{
+for(const fault of ['offline','missing','extra','bytes','marker'])test(`real shell cold navigation ${fault} with origin disconnected keeps one complete generation`,async({page,request})=>{
   await page.goto('./');const build=await(await request.get('build-manifest.json')).json();
   await page.evaluate(async()=>{const {createControllerGate}=await import('./control/gate.mjs');const gate=createControllerGate();await gate.register();await navigator.serviceWorker.ready;gate.close();});
   const before=await page.evaluate(async()=>{const {openShellDatabase}=await import('./cache/shell-database.mjs');const db=await openShellDatabase({indexedDB,basePath:'/hub/'}),state=await db.read();db.close();return state;});expect(before.records.at(-1).phase).toBe('ready');
+  expect(await page.evaluate(async record=>(await(await caches.open(record.cacheName)).keys()).some(r=>new URL(r.url).pathname==='/hub/catalog.json'||new URL(r.url).pathname.startsWith('/hub/__hub/current')),before.records.at(-1))).toBe(false);
   if(fault!=='offline')await page.evaluate(async({fault,build,record})=>{
     const cache=await caches.open(record.cacheName),url=location.origin+'/hub/index.html';
     if(fault==='missing')await cache.delete(url);
@@ -25,7 +29,8 @@ for(const fault of ['offline','missing','extra','bytes','marker'])test(`real she
     if(fault==='bytes'){const response=await cache.match(url);await cache.put(url,new Response('corrupt',{headers:response.headers}));}
     if(fault==='marker'){const keys=await cache.keys(),key=keys.find(r=>r.url.includes('/__hub/shell/')),response=await cache.match(key);response.headers.set('content-security-policy','default-src *');await cache.put(key,response);}
   },{fault,build,record:before.records.at(-1)});
-  await context.setOffline(true);const response=await page.reload({waitUntil:'domcontentloaded'});expect(response.fromServiceWorker()).toBe(true);
+  writeFileSync(offline,'disconnect this owned test server');await expect(request.get('./',{timeout:1500,maxRetries:0})).rejects.toThrow();
+  const response=await page.reload({waitUntil:'domcontentloaded'});expect(response.fromServiceWorker()).toBe(true);
   if(fault==='offline'){
     expect(response.status()).toBe(200);await expect(page.getByRole('heading',{name:'游戏大厅',exact:true})).toBeVisible();await expect(page.locator('#status')).toContainText('检查失败');await expect(page.locator('#status')).not.toContainText('检查成功');
     expect(await page.evaluate(async()=>(await import('./build-context.mjs')).BUILD.build)).toBe(build.sourceCommit);
@@ -38,7 +43,7 @@ test('PWA manifest stays within base and reuses actual 512 pixel icon',async({pa
   const icon=await(await request.get(new URL(manifest.icons[0].src,url).href)).body();expect(icon.readUInt32BE(16)).toBe(512);expect(icon.readUInt32BE(20)).toBe(512);
 });
 for(const fault of ['quota','orphan','undefined'])test(`shell component ${fault} preserves budget data and unrelated storage`,async({page,request})=>{
-  await page.goto('./');const build=await(await request.get('build-manifest.json')).json(),manifest={schemaVersion:1,build:build.sourceCommit,basePath:build.basePath,files:build.files.filter(f=>!f.path.startsWith('games/')&&f.path!=='sw.js')};
+  await page.goto('./');const build=await(await request.get('build-manifest.json')).json(),manifest={schemaVersion:1,build:build.sourceCommit,basePath:build.basePath,files:build.files.filter(f=>!f.path.startsWith('games/')&&!['sw.js','catalog.json'].includes(f.path)&&!f.path.startsWith('__hub/current'))};
   const result=await page.evaluate(async({fault,manifest})=>{
     const {openShellDatabase}=await import('./cache/shell-database.mjs'),{shellCachePrefix}=await import('./cache/shell-ledger.mjs'),{createShellCache}=await import('./cache/shell-cache.mjs');
     if(fault==='undefined')await new Promise((resolve,reject)=>{const open=indexedDB.open('game-hub-web.shell./hub/',1);open.onupgradeneeded=()=>open.result.createObjectStore('state');open.onsuccess=()=>{const db=open.result,tx=db.transaction('state','readwrite');tx.objectStore('state').put(undefined,'current');tx.oncomplete=()=>{db.close();resolve();};tx.onabort=()=>reject(tx.error);};});
@@ -51,4 +56,11 @@ for(const fault of ['quota','orphan','undefined'])test(`shell component ${fault}
     return {rejected,readRejected,count:state?.records.length??null,phase:state?.records[0]?.phase??null,charged:(state?.records[0]?.bytes??0)>0,foreign:localStorage.getItem('foreign-app-shell-sentinel')==='keep'&&(await(await foreign.match(location.origin+'/hub/foreign.txt')).text())==='keep'};
   },{fault,manifest});
   expect(result).toEqual({rejected:true,readRejected:fault==='undefined',count:fault==='undefined'?null:fault==='quota'?1:0,phase:fault==='quota'?'failed':null,charged:fault==='quota',foreign:true});
+});
+
+test('actual concurrent shell transactions charge two full generations and refuse a third',async({page})=>{
+  await page.goto('./');const result=await page.evaluate(async()=>{
+    const {openShellDatabase}=await import('./cache/shell-database.mjs'),{SHELL_GENERATION,SHELL_TOTAL}=await import('./cache/shell-ledger.mjs'),a=await openShellDatabase({indexedDB,basePath:'/hub/'}),b=await openShellDatabase({indexedDB,basePath:'/hub/'}),event={type:'begin',build:'a'.repeat(40),manifestHash:'b'.repeat(64),bytes:SHELL_GENERATION};
+    const records=await Promise.all([a.apply(event),b.apply(event)]);let rejected=false;try{await a.apply({...event,bytes:1024});}catch{rejected=true;}const state=await b.read();a.close();b.close();return {rejected,distinct:records[0].fence!==records[1].fence&&records[0].cacheName!==records[1].cacheName,count:state.records.length,full:state.records.reduce((n,r)=>n+r.bytes,0)===SHELL_TOTAL};
+  });expect(result).toEqual({rejected:true,distinct:true,count:2,full:true});
 });
