@@ -37,7 +37,7 @@ async function nativeWrite(page,id){
   const revision=(await readCanonical(page,id)).revision;
   if(id==='conway')await page.evaluate(()=>PatternLibrary.saveLibrary(localStorage,PatternLibrary.loadLibrary(localStorage)));
   if(id==='eml')await page.locator('#addButton').click();
-  if(id==='light'){if(await page.locator('#overlay').isVisible())await page.keyboard.press('Escape');await page.locator('#btn-snapshots').click();await page.getByRole('button',{name:'保存当前布局',exact:true}).click();await page.locator('#snapshot-name').fill('Roundtrip write');await page.getByRole('button',{name:'保存',exact:true}).click();}
+  if(id==='light'){if(await page.locator('#overlay').isVisible())await page.keyboard.press('Escape');await page.locator('#btn-levels').click();await page.getByRole('button',{name:/折一下/}).click();await page.keyboard.press('1');await page.keyboard.press('ArrowRight');await page.keyboard.press('Enter');await page.locator('#btn-snapshots').click();await page.getByRole('button',{name:'保存当前布局',exact:true}).click();await page.locator('#snapshot-name').fill('Roundtrip write');await page.getByRole('button',{name:'保存',exact:true}).click();}
   if(id==='turing'){await page.locator('#input').fill('111');await page.locator('#apply').click();}
   if(id==='abelian-sandpile')await page.locator('#drop-selected').click();
   if(id==='lambda-diagram-game')await page.locator('#save-state').click();
