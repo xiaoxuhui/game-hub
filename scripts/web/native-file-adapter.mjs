@@ -27,8 +27,14 @@ export function guardNativeFileReads(id,entries){
   return output;
 }
 function preserveTuringMetadata(text){
-  const ast=ts.createSourceFile('turing-ui.js',text,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS),changes=[];let builders=0;
+  const ast=ts.createSourceFile('turing-ui.js',text,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS),changes=[];let builders=0,accepts=0;
   function visit(node){
+    if(ts.isBlock(node))for(let index=0;index<node.statements.length;index++){
+      const statement=node.statements[index];if(!ts.isVariableStatement(statement)||!statement.getText(ast).includes('GameHubReadNativeFile'))continue;
+      const declarations=statement.declarationList.declarations,following=node.statements[index+1],expression=ts.isExpressionStatement(following)?following.expression:null;
+      if(declarations.length!==1||!ts.isIdentifier(declarations[0].name)||!expression||!ts.isBinaryExpression(expression)||expression.operatorToken.kind!==ts.SyntaxKind.CommaToken||!ts.isCallExpression(expression.left)||expression.left.arguments.length!==1||expression.left.arguments[0].getText(ast)!==declarations[0].name.text||!ts.isCallExpression(expression.right)||expression.right.arguments.length!==0)throw Error('Unreviewed Turing import apply boundary');
+      changes.push({start:following.getStart(ast),end:following.end,text:`${expression.left.getText(ast)},globalThis.GameHubAcceptTuringProject(${declarations[0].name.text}),${expression.right.getText(ast)};`});accepts++;
+    }
     if(ts.isObjectLiteralExpression(node)){
       const fields=new Map(node.properties.filter(ts.isPropertyAssignment).map(property=>[property.name.getText(ast),property]));
       if(fields.get('format')?.initializer.getText(ast)==='"turing-machine-simulator"'&&fields.has('name')&&fields.has('description')){
@@ -39,5 +45,5 @@ function preserveTuringMetadata(text){
     }
     ts.forEachChild(node,visit);
   }
-  visit(ast);if(builders!==1)throw Error('Unreviewed Turing project builder count');let output=text;for(const change of changes.sort((a,b)=>b.start-a.start))output=output.slice(0,change.start)+change.text+output.slice(change.end);return output;
+  visit(ast);if(builders!==1||accepts!==1)throw Error('Unreviewed Turing project builder/apply count');let output=text;for(const change of changes.sort((a,b)=>b.start-a.start))output=output.slice(0,change.start)+change.text+output.slice(change.end);return output;
 }
