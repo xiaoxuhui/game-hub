@@ -68,3 +68,7 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
 ```
 
 构建阶段使用 Node.js、pnpm、Vite、TypeScript、Android Gradle Plugin 与 Gradle；这些工具不作为运行依赖复制进 APK。每次正式候选变更依赖后需重新生成依赖图、核对许可并更新此文件。
+
+## 网页专用摘要模块
+
+网页目标携带MIT许可的[@noble/hashes 1.8.0](https://github.com/paulmillr/noble-hashes/tree/1.8.0) SHA-256及其五个ESM依赖闭包，用于核验目录文件树和来源证明摘要，在缺少WebCrypto时仍可进行在线目录检查；这不提供目录发行身份验签或离线授权。算法未改，仅将crypto模块导入改为相对路径并移除可选source-map注释。完整许可及原始/适配字节摘要见web/src/vendor/noble-hashes/。该依赖只进入网页，不进入APK。

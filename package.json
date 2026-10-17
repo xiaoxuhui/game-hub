@@ -37,12 +37,14 @@
     "test:web:browser": "playwright test --config e2e/web/playwright.config.mjs",
     "test:web": "node --test tests/web/*.test.mjs",
     "test:web:build": "node tests/web/build.integration.mjs",
+    "test:web:catalog": "node tests/web/catalog.integration.mjs",
     "prepare:web": "node scripts/web/inputs.mjs",
     "build:web": "node scripts/web/build.mjs",
     "verify:web": "node scripts/web/build.mjs --verify",
     "serve:web": "node scripts/web/serve.mjs"
   },
   "devDependencies": {
+    "@noble/hashes": "1.8.0",
     "@playwright/test": "1.62.1"
   }
 }

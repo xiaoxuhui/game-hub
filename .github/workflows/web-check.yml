@@ -33,6 +33,7 @@ jobs:
       - run: pnpm run build:web -- --base /hub/
       - run: pnpm run verify:web
       - run: pnpm run test:web:build
+      - run: pnpm run test:web:catalog
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm run test:web:browser
       - uses: actions/upload-artifact@v5

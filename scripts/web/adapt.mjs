@@ -2,6 +2,7 @@ import {readFileSync} from 'node:fs';
 import {join,posix} from 'node:path';
 import {safePath,normalizeBase} from '../../web/src/core/contracts.mjs';
 import {files,metadata,treeHash} from './files.mjs';
+import {sourceProofBytes} from '../../web/src/core/digests.mjs';
 
 export const gameCsp="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const attr=(text,name)=>new RegExp(`(?:^|\\s)${name}\\s*=\\s*["']([^"']*)["']`,'i').exec(text)?.[1];
@@ -42,6 +43,7 @@ export function adaptGame(root,source,raw,base){
   }
   for(const item of files(join(root,'web/src/runtime')))entries.push({path:'hub-runtime/'+item.path,data:item.data});
   entries.push({path:'hub-runtime/favicon.svg',data:readFileSync(join(root,'android/icon-source/game-hub-icon.svg'))});
+  entries.push({path:'hub-runtime/source-proof.json',data:Buffer.from(sourceProofBytes({id:source.id,sourceRepository:source.repository,sourceRevision:source.revision,sourceFiles:metadata(raw)}))});
   entries.push({path:'hub-runtime/context.json',data:Buffer.from(JSON.stringify({schemaVersion:1,id:source.id,name:source.displayName,version:source.version,storage:source.storage,basePath:base,pages})+'\n')});
   entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   if(new Set(entries.map(f=>f.path.toLowerCase())).size!==entries.length)throw Error('Adapted output collision');
