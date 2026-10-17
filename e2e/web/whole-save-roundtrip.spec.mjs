@@ -27,11 +27,29 @@ async function assertBase(page,id){
   if(id==='red-green-puzzle')await expect(page.locator('#sizeInput')).toHaveValue('4');
   if(id==='mini-scratch')await expect(page.locator('#projectName')).toHaveValue('Whole backup project');
 }
+async function assertRetained(page,id,backup){
+  const entries=new Map((await readCanonical(page,id)).entries);
+  for(const [key,value] of backup.entries)if(key.endsWith('whole-backup-proof')||key==='inspiration-blocks-v4-legacy-backup')expect(entries.get(key)).toBe(value);
+  if(id==='eml')expect(JSON.parse(entries.get('eml_workbench_v2')).future).toEqual({opaque:'retained EML extension'});
+  if(id==='turing'){const raw=JSON.parse(entries.get('turing-machine-simulator.project.v1'));expect(raw.name).toBe('Whole backup project');expect(raw.description).toBe('Preserve both strings');}
+}
+async function nativeWrite(page,id){
+  const revision=(await readCanonical(page,id)).revision;
+  if(id==='conway')await page.evaluate(()=>PatternLibrary.saveLibrary(localStorage,PatternLibrary.loadLibrary(localStorage)));
+  if(id==='eml')await page.locator('#addButton').click();
+  if(id==='light'){if(await page.locator('#overlay').isVisible())await page.keyboard.press('Escape');await page.locator('#btn-snapshots').click();await page.getByRole('button',{name:'保存当前布局',exact:true}).click();await page.locator('#snapshot-name').fill('Roundtrip write');await page.getByRole('button',{name:'保存',exact:true}).click();}
+  if(id==='turing'){await page.locator('#input').fill('111');await page.locator('#apply').click();}
+  if(id==='abelian-sandpile')await page.locator('#drop-selected').click();
+  if(id==='lambda-diagram-game')await page.locator('#save-state').click();
+  if(id==='red-green-puzzle'){await page.locator('#sizeInput').fill('5');await page.locator('#generateBtn').click();}
+  if(id==='mini-scratch'){await page.locator('#projectName').fill('Whole backup written');await page.locator('#projectName').blur();}
+  await expect.poll(async()=>(await readCanonical(page,id)).revision).toBeGreaterThan(revision);
+}
 for(const id of ids)test(`${id} native reader and complete backup restore retain exact entries before reload`,async({page,request},testInfo)=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));const game=(await(await request.get('catalog.json')).json()).games.find(game=>game.id===id);
   await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');const entries=await samples(page,game);await page.goto('/hub/');await replaceCanonical(page,id,entries);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await assertBase(page,id);
   if(id==='lambda-diagram-game'){await page.locator('#save-state').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
   if(id==='abelian-sandpile')await expect(page.locator('#save-status')).toContainText('已自动保存在本机');
   const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]),path=testInfo.outputPath('whole-backup.json');await download.saveAs(path);const bytes=await readFile(path),backup=JSON.parse(bytes);expect(backup.pending).toBe(false);expect(backup.entries).toEqual((await readCanonical(page,id)).entries);expect(backup.entries.length).toBeGreaterThan(0);
-  await page.goto('/hub/');await replaceCanonical(page,id,[]);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await page.locator('#game-hub-restore').click();await page.locator('#hub-restore-file').setInputFiles({name:'whole-backup.json',mimeType:'application/json',buffer:bytes});await expect(page.locator('#hub-restore-confirm')).toBeEnabled();await page.locator('#hub-restore-confirm').click();await expect(page.locator('#hub-restore-message')).toContainText('恢复完成');expect((await readCanonical(page,id)).entries).toEqual(backup.entries);await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','readonly');await page.locator('#hub-restore-reload').click();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await assertBase(page,id);await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','writable');expect(errors).toEqual([]);
+  await page.goto('/hub/');await replaceCanonical(page,id,[]);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await page.locator('#game-hub-restore').click();await page.locator('#hub-restore-file').setInputFiles({name:'whole-backup.json',mimeType:'application/json',buffer:bytes});await expect(page.locator('#hub-restore-confirm')).toBeEnabled();await page.locator('#hub-restore-confirm').click();await expect(page.locator('#hub-restore-message')).toContainText('恢复完成');expect((await readCanonical(page,id)).entries).toEqual(backup.entries);await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','readonly');await page.locator('#hub-restore-reload').click();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await assertBase(page,id);await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','writable');await assertRetained(page,id,backup);await nativeWrite(page,id);await assertRetained(page,id,backup);const stored=(await readCanonical(page,id)).entries;expect(await page.evaluate(async({game,stored})=>{const root=new URL('.',location.href),{validateNativeSave}=await import(new URL('hub-runtime/native-save.mjs',root));return await validateNativeSave({id:game.id,storage:game.storage},stored,root);},{game,stored})).toEqual(stored);expect(errors).toEqual([]);
 });
