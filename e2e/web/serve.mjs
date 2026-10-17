@@ -19,10 +19,12 @@ server.on('error',error=>{console.error(error.message);process.exitCode=1;});
 server.listen(18427,'127.0.0.1',()=>console.log('Local test: http://127.0.0.1:18427'+manifest.basePath));
 const fixture=await prepareOfflineFixture(projectRoot,manifest),resourceServer=createWebServer({root:fixture.root,base:manifest.basePath});
 const faults=join(projectRoot,'.build/web-offline-faults.json'),resourceServe=resourceServer.listeners('request')[0];rmSync(faults,{force:true});resourceServer.removeListener('request',resourceServe);
+const verifiedLog=join(projectRoot,'.build/web-offline-verified.jsonl');writeFileSync(verifiedLog,'');
 resourceServer.on('request',(request,response)=>{
   let fault={};if(existsSync(faults))try{fault=JSON.parse(readFileSync(faults,'utf8'));}catch{/* A partial private test-control write grants no fault. */}
   const path=(request.url??'').split('?')[0];
   if(fault.down){request.socket.destroy();return;}
+  if(path===manifest.basePath+'__fixture/verified.json'){appendFileSync(verifiedLog,JSON.stringify({time:Date.now(),delayed:Boolean(fault.verifyDelay)})+'\n');const finish=()=>{response.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});response.end('{}');};if(fault.verifyDelay)setTimeout(finish,Math.min(Number(fault.verifyDelay),5000));else finish();return;}
   if(path===manifest.basePath+'__hub/current.json'&&fault.catalog&&fixture.variants[fault.catalog]){const body=fixture.variants[fault.catalog];response.writeHead(200,{'Content-Type':'application/json','Content-Length':body.length});response.end(body);return;}
   if(path.startsWith(manifest.basePath+'games/')&&fault.resource==='corrupt'){response.writeHead(200,{'Content-Type':'text/html','Content-Length':1});response.end('x');return;}
   if(path.startsWith(manifest.basePath+'games/')&&fault.delay){setTimeout(()=>{if(!response.destroyed)resourceServe(request,response);},Math.min(Number(fault.delay),5000));return;}

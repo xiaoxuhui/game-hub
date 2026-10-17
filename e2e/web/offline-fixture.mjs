@@ -3,6 +3,7 @@
 import {cpSync,existsSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {build} from 'esbuild';
+import {execFileSync} from 'node:child_process';
 import {files,metadata,removeOwned} from '../../scripts/web/files.mjs';
 import {signedPayload,signPayload,testSpki,TEST_KEY_ID} from '../../tests/fixtures/web-signed.mjs';
 export async function prepareOfflineFixture(projectRoot,production){
@@ -15,9 +16,13 @@ export async function prepareOfflineFixture(projectRoot,production){
     for(const [name,value] of [['PINNED_KEY_ID',TEST_KEY_ID],['PINNED_SPKI_BASE64',Buffer.from(testSpki).toString('base64')]]){
       const pattern=new RegExp(`export const ${name}='[^']+';`,'g'),matches=contents.match(pattern);if(matches?.length!==1)throw Error('Test trust replacement ambiguous');contents=contents.replace(pattern,`export const ${name}=${JSON.stringify(value)};`);
     }replacements++;return {contents,loader:'js',resolveDir:join(projectRoot,'web/src/update')};
-  });}}]});
+  });
+  // Explicit local red reproduction only; the production builder has no alias.
+  if(process.env.WEB_RPC_REVIEW_RED==='1')builder.onLoad({filter:/[\\/]sw[\\/]resources\.mjs$/},()=>({contents:execFileSync('git',['show','3e1da25:web/sw/resources.mjs'],{cwd:projectRoot,encoding:'utf8'}),loader:'js',resolveDir:join(projectRoot,'web/sw')}));
+  }}}]});
   if(replacements!==1||compiled.outputFiles.length!==1||Object.values(compiled.metafile.outputs).some(o=>o.imports.length))throw Error('Invalid test SW closure');
-  writeFileSync(join(root,'sw.js'),compiled.outputFiles[0].contents);
+  const timingProbe=`\n// Test timing only: keep real WebCrypto verification, then pause its result.\nconst originalVerify=crypto.subtle.verify.bind(crypto.subtle);crypto.subtle.verify=async(...args)=>{const valid=await originalVerify(...args);if(valid)await fetch(${JSON.stringify(origin+basePath+'__fixture/verified.json')},{cache:'no-store'});return valid;};\n`;
+  writeFileSync(join(root,'sw.js'),Buffer.concat([Buffer.from(compiled.outputFiles[0].contents),Buffer.from(timingProbe)]));
   const catalog=JSON.parse(readFileSync(join(root,'catalog.json'),'utf8')),payload=signedPayload({catalog,origin,basePath});
   payload.issuedAt=new Date(Date.now()-1000).toISOString();payload.expiresAt=new Date(Date.now()+3600000).toISOString();
   const normal=signPayload(payload),expired=signPayload({...payload,issuedAt:new Date(Date.now()-7200000).toISOString(),expiresAt:new Date(Date.now()-3600000).toISOString()});

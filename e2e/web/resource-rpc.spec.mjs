@@ -10,7 +10,7 @@ async function open(page,{controlled=true}={}){
   if(controlled)await page.reload();
   await page.evaluate(()=>{
     window.rpc=async(action,args={},change={},active=false)=>{
-      const {BUILD}=await import('./build-context.mjs'),channel=new MessageChannel(),nonce=crypto.randomUUID();
+      const {BUILD}=await import('./build-context.mjs'),channel=new MessageChannel(),nonce=crypto.randomUUID();window.lastTaskId=nonce;
       return await new Promise(async(resolve,reject)=>{
         const timer=setTimeout(()=>{channel.port1.close();reject(Error('RPC timeout'));},20000);channel.port1.onmessage=event=>{const data=event.data;if(data.progress){window.progress=data.progress;return;}clearTimeout(timer);channel.port1.close();resolve(data);};
         const target=active?(await navigator.serviceWorker.ready).active:navigator.serviceWorker.controller;
@@ -48,4 +48,11 @@ test('actual SW rejects concurrent work and cancellation settles writes while re
   const busy=await page.evaluate(()=>rpc('check'));expect(busy.ok).toBe(false);expect(busy.error).toContain('busy');
   const cancelled=await page.evaluate(()=>rpc('cancel',{taskId:window.progress.taskId}));expect(cancelled.ok).toBe(true);expect(cancelled.result.cancelled).toBe(true);expect((await page.evaluate(()=>window.installing)).ok).toBe(false);
   const state=(await page.evaluate(()=>rpc('status'))).result.state;expect(state.installations[0].phase).toBe('failed');expect(state.installations[0].bytes).toBeGreaterThan(0);expect(state.sessions).toHaveLength(0);
+});
+test('cancellation during real verification reports committed check rather than false cancellation',async({page})=>{
+  await open(page);fault({verifyDelay:1500});const audit=new URL('../../.build/web-offline-verified.jsonl',import.meta.url),before=readFileSync(audit,'utf8').split('\n').filter(Boolean).length;
+  await page.evaluate(()=>{window.checking=rpc('check');window.checkTaskId=window.lastTaskId;});
+  await expect.poll(()=>readFileSync(audit,'utf8').split('\n').filter(Boolean).length).toBeGreaterThan(before);
+  const cancelled=await page.evaluate(()=>rpc('cancel',{taskId:window.checkTaskId}));expect(cancelled.ok).toBe(true);expect(cancelled.result).toEqual({cancelled:false,phase:'checked'});
+  expect((await page.evaluate(()=>window.checking)).ok).toBe(true);fault({});expect((await page.evaluate(()=>rpc('status'))).result.catalog.catalogSequence).toBe('1');
 });
