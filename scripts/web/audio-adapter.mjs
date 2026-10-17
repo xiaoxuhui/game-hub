@@ -14,7 +14,7 @@ function guardResume(file){
     }
     ts.forEachChild(node,visit);
   }
-  visit(ast);if(changes.length!==1)throw Error('Unreviewed Mini audio startup count');const change=changes[0];file.data=Buffer.from(text.slice(0,change.start)+'await globalThis.GameHubResumeAudio(context)'+text.slice(change.end));
+  visit(moduleScope(file,ast,'audio.js'));if(changes.length!==1)throw Error('Unreviewed Mini audio startup count');const change=changes[0];file.data=Buffer.from(text.slice(0,change.start)+'await globalThis.GameHubResumeAudio(context)'+text.slice(change.end));
 }
 function guardRecordFeedback(file){
   const text=file.data.toString('utf8'),ast=ts.createSourceFile(file.path,text,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS),changes=[];if(ast.parseDiagnostics.length)throw Error('Unreviewed Mini asset syntax');
@@ -28,5 +28,14 @@ function guardRecordFeedback(file){
     }
     ts.forEachChild(node,visit);
   }
-  visit(ast);if(changes.length!==1)throw Error('Unreviewed Mini record listener count');const change=changes[0];file.data=Buffer.from(text.slice(0,change.start)+'if(current===token)status.textContent=error.message;'+text.slice(change.end));
+  visit(moduleScope(file,ast,'asset-editor.js'));if(changes.length!==1)throw Error('Unreviewed Mini record listener count');const change=changes[0];file.data=Buffer.from(text.slice(0,change.start)+'if(current===token)status.textContent=error.message;'+text.slice(change.end));
+}
+function moduleScope(file,ast,name){
+  if(file.path!=='hub-inline-play-html-0.js')return ast;
+  const matches=ast.statements.filter(statement=>{
+    const node=ts.isExpressionStatement(statement)?statement.expression:null,left=node&&ts.isBinaryExpression(node)&&node.operatorToken.kind===ts.SyntaxKind.EqualsToken?node.left:null;
+    return left&&ts.isElementAccessExpression(left)&&left.expression.getText(ast)==='__modules'&&ts.isStringLiteral(left.argumentExpression)&&left.argumentExpression.text===name;
+  });
+  const call=matches[0]?.expression.right,arrow=call&&ts.isCallExpression(call)&&call.arguments.length===0&&ts.isParenthesizedExpression(call.expression)?call.expression.expression:null;
+  if(matches.length!==1||!arrow||!ts.isArrowFunction(arrow)||arrow.parameters.length||!ts.isBlock(arrow.body))throw Error('Unreviewed Mini bundled module scope');return arrow.body;
 }
