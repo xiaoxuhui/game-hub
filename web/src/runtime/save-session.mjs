@@ -49,7 +49,7 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
         }catch(error){backupNeeded||=backup;notify('readonly',/conflict/.test(error.message)?'另一标签已接管存档，本页只读，可导出备份':'保存未完成，恢复日志已保留，请导出备份');}
       }
     })();
-    try{await pending;}finally{pending=null;}
+    try{await pending;}finally{pending=null;publishDraft();}
   }
   const storage=createFacade(scope,entries,(nextEntries,operation)=>{
     const attempted=new Map(draft??entries);
