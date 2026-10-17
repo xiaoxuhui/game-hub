@@ -1,5 +1,21 @@
 import {test,expect} from '@playwright/test';
 
+test('an existing undefined IDB value is corruption, never an absent first-visit key',async({page})=>{
+  await page.goto('./');
+  const result=await page.evaluate(async()=>{
+    const {openResourceDatabase}=await import(new URL('cache/database.mjs',location.href));
+    const options={indexedDB,basePath:'/hub/'},db=await openResourceDatabase(options);db.close();
+    const raw=await new Promise((resolve,reject)=>{const r=indexedDB.open('game-hub-web.resources./hub/',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+    await new Promise((resolve,reject)=>{const tx=raw.transaction('state','readwrite');tx.objectStore('state').put(undefined,'current');tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);});
+    const guarded=await openResourceDatabase(options);let readRejected=false,writeRejected=false;
+    try{await guarded.read();}catch{readRejected=true;}
+    try{await guarded.apply({type:'begin',id:'one',contentCode:1,digest:'a'.repeat(64),proofHash:'b'.repeat(64),bytes:100});}catch{writeRejected=true;}
+    const stored=await new Promise((resolve,reject)=>{const tx=raw.transaction('state'),store=tx.objectStore('state'),value=store.get('current'),key=store.getKey('current');tx.oncomplete=()=>resolve({keyPresent:key.result==='current',valueIsUndefined:value.result===undefined});tx.onabort=()=>reject(tx.error);});
+    guarded.close();raw.close();return {readRejected,writeRejected,...stored};
+  });
+  expect(result).toEqual({readRejected:true,writeRejected:true,keyPresent:true,valueIsUndefined:true});
+});
+
 test('real IDB serializes global reservations and preserves cancelled fences across reopen',async({page})=>{
   await page.goto('./');
   const result=await page.evaluate(async()=>{
