@@ -3,7 +3,7 @@ const routes={
   conway:[['scripts/dialogs.js',2],['scripts/record-import.js',1],['scripts/app.js',1]],
   light:[['scripts/app.js',1]],turing:[[/^assets\/main-[A-Za-z0-9_-]+\.js$/,1]],
   'abelian-sandpile':[['src/app.js',1]],'lambda-diagram-game':[['hub-inline-lambda-lab-html-7.js',1]],
-  'mini-scratch':[['src/app.js',1]],eml:[['hub-inline-eml-workbench-html-0-ui.js',1]],'red-green-puzzle':[]
+  'mini-scratch':[['src/app.js',1],['hub-inline-play-html-0.js',1]],eml:[['hub-inline-eml-workbench-html-0-ui.js',1]],'red-green-puzzle':[]
 };
 export function guardNativeFileReads(id,entries){
   const planned=routes[id];if(!planned)throw Error('Missing native import route');const output=entries.map(file=>({...file}));

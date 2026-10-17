@@ -2,8 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {guardNativeFileReads} from '../../scripts/web/native-file-adapter.mjs';
 test('native file adapter rewrites only audited await reads and refuses layout or call-count drift',()=>{
-  const original=Buffer.from('async function importProject(file){const value=JSON.parse(await file.text());return value;}'),files=[{path:'src/app.js',data:original},{path:'src/assets.js',data:Buffer.from('await file.text()')}],result=guardNativeFileReads('mini-scratch',files);
+  const original=Buffer.from('async function importProject(file){const value=JSON.parse(await file.text());return value;}'),files=[{path:'src/app.js',data:original},{path:'src/assets.js',data:Buffer.from('await file.text()')},{path:'hub-inline-play-html-0.js',data:original}],result=guardNativeFileReads('mini-scratch',files);
   assert.match(result[0].data.toString(),/await globalThis.GameHubReadNativeFile\(file\)/);assert.equal(result[1].data.toString(),'await file.text()');assert.equal(files[0].data,original);
+  assert.match(result[2].data.toString(),/GameHubReadNativeFile/);assert.equal(files[2].data,original);
   assert.throws(()=>guardNativeFileReads('mini-scratch',[]),/layout/);assert.throws(()=>guardNativeFileReads('mini-scratch',[{path:'src/app.js',data:Buffer.from('async function f(){return 1}')}]),/count/);
   assert.throws(()=>guardNativeFileReads('mini-scratch',[{path:'src/app.js',data:Buffer.from('async function f(){return await object.file.text()}')}]),/expression/);
 });
