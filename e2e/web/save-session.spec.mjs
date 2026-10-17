@@ -53,3 +53,13 @@ test('journal quota failure is visible and preserves an exportable attempted sav
   const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]);const path=testInfo.outputPath('quota-backup.json');await download.saveAs(path);
   const {readFile}=await import('node:fs/promises'),backup=JSON.parse(await readFile(path,'utf8'));expect(backup.pending).toBe(true);expect(backup.entries.some(([key])=>key===KEY)).toBe(true);
 });
+test('readonly draft retains multiple failed key writes without changing the newer tab',async({page,context,request},testInfo)=>{
+  const game=(await (await request.get('catalog.json')).json()).games.find(g=>g.id==='conway');
+  await page.goto(game.entryUrl);await ready(page);const newer=await context.newPage();await newer.goto(game.entryUrl);await ready(newer);
+  await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','readonly');
+  await page.evaluate(()=>{for(const [key,value] of [['conway-life-game.draft-a','first failed write'],['conway-life-game.draft-b','second failed write']]){try{localStorage.setItem(key,value);}catch{ /* expected readonly */ }}});
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]);const path=testInfo.outputPath('multi-key-draft.json');await download.saveAs(path);
+  const {readFile}=await import('node:fs/promises'),backup=JSON.parse(await readFile(path,'utf8'));
+  expect(backup.entries).toContainEqual(['conway-life-game.draft-a','first failed write']);expect(backup.entries).toContainEqual(['conway-life-game.draft-b','second failed write']);
+  expect(await newer.evaluate(()=>[localStorage.getItem('conway-life-game.draft-a'),localStorage.getItem('conway-life-game.draft-b')])).toEqual([null,null]);
+});
