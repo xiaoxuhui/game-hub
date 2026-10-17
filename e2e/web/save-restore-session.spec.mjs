@@ -21,3 +21,12 @@ test('changed save or another writer expires restore preview without replacing c
     const c=await startSaveSession(options),value=c.storage.getItem('restore.save');a.close();b.close();c.close();return {changed,fenced,value};
   },root);expect(result).toEqual({changed:true,fenced:true,value:'other writer'});
 });
+test('restore abort keeps old data and page readonly; a failed broadcast cannot undo a committed restore',async({page,request})=>{
+  const root=await session(page,request);
+  const result=await page.evaluate(async root=>{
+    let preview=await a.prepareRestore([['restore.save','aborted']]);const put=IDBObjectStore.prototype.put;let failed;
+    try{IDBObjectStore.prototype.put=function(value,...args){if(this.name==='saves'&&value.gameId==='restore-demo')throw Error('injected restore failure');return put.call(this,value,...args);};failed=await a.restore(preview.token).then(()=>false,()=>true);}finally{IDBObjectStore.prototype.put=put;}
+    const readonly=a.snapshot().mode==='readonly';a.close();const {startSaveSession}=await import(new URL('hub-runtime/save-session.mjs',root));let messages=0;
+    const b=await startSaveSession({...options,environment:{localStorage,indexedDB,crypto,BroadcastChannel:class{postMessage(){if(++messages>1)throw Error('notification unavailable');}close(){}}}}),old=b.storage.getItem('restore.save');preview=await b.prepareRestore([['restore.save','committed']]);const committed=await b.restore(preview.token).then(()=>true,()=>false);b.close();const c=await startSaveSession(options),value=c.storage.getItem('restore.save');c.close();return {failed,readonly,old,committed,value};
+  },root);expect(result).toEqual({failed:true,readonly:true,old:'original',committed:true,value:'committed'});
+});
