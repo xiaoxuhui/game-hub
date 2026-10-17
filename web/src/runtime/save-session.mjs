@@ -111,7 +111,9 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     catch(error){notify('readonly','导入前备份未完成，已停止导入，请重新打开');throw error;}
     // Cancellation may race a successful backup. Keep that harmless backup,
     // but never authorize the old file or invalidate a newer preview.
-    checkGeneration();
+    const checkLocal=()=>{checkGeneration();canRestore();if(Object.keys(selected.expected).some(key=>selected.expected[key]!==record[key]))throw Error('存档已变化，请重新预览导入');};
+    checkLocal();const current=await db.current(gameId);checkLocal();
+    if(Object.keys(selected.expected).some(key=>selected.expected[key]!==current?.[key])){notify('readonly','存档已变化，本页只读，请重新打开');throw Error('Save conflict: native import owner changed');}
     // No candidate bytes are applied here. Only after this checkpoint commits
     // may the caller return the validated file to the original native importer.
     return {...selected.expected};
