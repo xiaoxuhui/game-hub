@@ -44,12 +44,14 @@ export function openResourceDatabase({indexedDB,basePath,timeout=4000}){
           const state=stateKey.result===undefined?emptyLedger():stateRead.result;validateLedger(state,basePath);
           const present=authKey.result!==undefined,authority=authRead.result;
           const token={ledger:sha256Hex(JSON.stringify({present:stateKey.result!==undefined,state})),authority:receiptToken(authority,present)};
-          const hashes=command?(command.proof?[command.proof.history.payloadSha256]:[]):[...new Set(state.installations.map(r=>r.proofHash))];
+          const referenced=[...new Set(state.installations.map(r=>r.proofHash))];
+          const hashes=[...new Set([...referenced,...(command?.proof?[command.proof.history.payloadSha256]:[])])];
           if(hashes.some(h=>typeof h!=='string'||!/^[a-f0-9]{64}$/.test(h)))throw Error('Invalid proof key');
           const proofs=Object.create(null),proofTokens=Object.create(null);let remaining=hashes.length,total=0;
           const finish=()=>{try{
             if(!command){result={state,authority:{present,record:authority},proofs,proofTokens,token};return;}
             if(command.expected?.ledger!==token.ledger||command.expected?.authority!==token.authority)throw Error('Resource snapshot changed; retry');
+            if(referenced.some(hash=>command.expectedProofTokens?.[hash]!==proofTokens[hash]))throw Error('Referenced proof changed; retry');
             let next,outcome;
             if(command.event){outcome=applyLedger(state,command.event,{basePath});next=outcome.state;}
             else{if(state.revision===Number.MAX_SAFE_INTEGER)throw Error('Ledger counter exhausted');next={...state,revision:state.revision+1};validateLedger(next,basePath);}

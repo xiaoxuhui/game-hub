@@ -26,21 +26,21 @@ export function createResourceRepository({database,authority,now=Date.now}){
     async inspect(){const s=await snapshot();return {state:s.state,catalog:s.current?.catalog??null};},
     async check(envelope){
       const s=await snapshot(),receipt=await fresh(envelope,s.current),serialized=authority.serialize(receipt);authority.requireFresh(receipt,{now:now()});
-      await database.commit({expected:s.token,receipt:serialized});return receipt.catalog;
+      await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,receipt:serialized});return receipt.catalog;
     },
     async begin(envelope,id){
       const s=await snapshot(),receipt=await fresh(envelope,s.current),game=receipt.catalog.games.find(g=>g.id===id);insist(game?.available===true,'Game is not available for installation');
       const serialized=authority.serialize(receipt),retained=s.proofs[receipt.payloadSha256]?.record??serialized;
       const event={type:'begin',id:game.id,contentCode:game.contentCode,digest:game.digest,proofHash:receipt.payloadSha256,bytes:reservationBytes(game,retained)};
-      authority.requireFresh(receipt,{now:now()});const outcome=await database.commit({expected:s.token,event,receipt:serialized,proof:serialized,expectedProofToken:s.proofTokens[receipt.payloadSha256]??'absent'});return {record:outcome.result,game};
+      authority.requireFresh(receipt,{now:now()});const outcome=await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,event,receipt:serialized,proof:serialized,expectedProofToken:s.proofTokens[receipt.payloadSha256]??'absent'});return {record:outcome.result,game};
     },
     async complete(fence,confirmation){
       insist(confirmation&&Object.keys(confirmation).length===2&&Object.hasOwn(confirmation,'manifestDigest')&&Object.hasOwn(confirmation,'complete'),'Complete confirmation required');
       const input=structuredClone(confirmation),s=await snapshot(),record=s.state.installations.find(r=>r.fence===fence);insist(record?.phase==='staging','Stale or cancelled installation');
       const receipt=await fresh(s.authority.record.envelope,s.current);insist(receipt.payloadSha256===record.proofHash,'Catalog changed during download; retry');
-      authority.requireFresh(receipt,{now:now()});const result=await database.commit({expected:s.token,receipt:authority.serialize(receipt),event:{type:'complete',fence,proofHash:record.proofHash,manifestDigest:input.manifestDigest,complete:input.complete}});return result.result;
+      authority.requireFresh(receipt,{now:now()});const result=await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,receipt:authority.serialize(receipt),event:{type:'complete',fence,proofHash:record.proofHash,manifestDigest:input.manifestDigest,complete:input.complete}});return result.result;
     },
-    async cancel(fence){const s=await snapshot();return (await database.commit({expected:s.token,event:{type:'cancel',fence}})).result;},
+    async cancel(fence){const s=await snapshot();return (await database.commit({expected:s.token,expectedProofTokens:s.proofTokens,event:{type:'cancel',fence}})).result;},
     async proof(fence){
       const s=await snapshot(),record=s.state.installations.find(r=>r.fence===fence);insist(record,'Unknown installation');const proof=s.verifiedProofs.get(record.proofHash);
       return {record,game:proof.catalog.games.find(g=>g.id===record.id),receipt:authority.serialize(proof)};
