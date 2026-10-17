@@ -1,7 +1,7 @@
 import {checkEntries,createFacade,legacyEntries,openSaveStore,SAVE_LIMITS} from './save-store.mjs';
 
 export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},environment=globalThis}){
-  let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly';
+  let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly',preview=null;
   const writerId=environment.crypto?.randomUUID?.();
   const prefix='game-hub-web.journal.'+encodeURIComponent(basePath)+'.'+gameId+'.',journalKey=prefix+writerId;
   const notify=(state,message)=>{mode=state;onStatus({mode:state,message});};
@@ -63,8 +63,34 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     try{const current=await db.current(gameId);if(current?.writerId!==writerId||current.fence!==record.fence)notify('readonly','另一标签已接管存档，本页只读，可导出备份');}
     catch{notify('readonly','存档连接已失效，本页只读，请导出备份');}
   }
+  const identity=()=>Object.fromEntries(['writerId','fence','revision','sequence'].map(key=>[key,record?.[key]]));
+  const canRestore=()=>{
+    if(mode!=='writable'||!db||!record||draft!==null||sequence!==record.sequence)throw Error('当前存档未保存或只读，不能恢复；请先导出并重新打开');
+  };
+  // Caller must first validate the complete file and the fixed native writer.
+  // Keep candidate/expected private: mutating the UI preview cannot replace them.
+  async function prepareRestore(candidate){
+    preview=null;const replacement=checkEntries(candidate,scope);await flush();canRestore();
+    const token=environment.crypto.randomUUID(),expected=identity();preview={token,expected,entries:replacement};
+    return {token,expected:{...expected},keys:replacement.length,replacedKeys:entries.length};
+  }
+  async function restore(token){
+    const selected=preview;preview=null;
+    if(!selected||selected.token!==token)throw Error('恢复确认已失效，请重新选择备份');
+    await flush();canRestore();
+    if(Object.keys(selected.expected).some(key=>selected.expected[key]!==record[key]))throw Error('存档已变化，请重新预览恢复');
+    const restoreWriter=environment.crypto.randomUUID();
+    notify('readonly','正在恢复，当前页面已停止写入…');
+    try{
+      const restored=await db.restore({gameId,expected:selected.expected,writerId:restoreWriter,entries:selected.entries},scope);
+      // Never replace this old native UI's in-memory state or let its callbacks
+      // resume writing. A new page must acquire the new complete snapshot.
+      channel?.postMessage({fence:restored.fence});notify('readonly','恢复完成，重新打开游戏后生效');
+      return {fence:restored.fence,revision:restored.revision};
+    }catch(error){notify('readonly','恢复未提交，原存档保持；请重新打开后再试');throw error;}
+  }
   return {
-    storage,flush,checkWriter,
+    storage,flush,checkWriter,prepareRestore,restore,cancelRestore(){preview=null;},
     snapshot(){return {entries:checkEntries(draft??entries,scope),mode,pending:sequence>(record?.sequence??0)||draft!==null,canonicalRead:!!record,source:draft?'session-draft':record?'canonical-session':'legacy-only'};},
     async backups(){return db?db.backups(gameId):[];},
     close(){channel?.close();db?.close();}
