@@ -1,7 +1,8 @@
 import {test,expect} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
 import {readCanonical} from './save-fixtures.mjs';
 const inputs={conway:'#importPatternsInput',light:'#file-import',turing:'#fileInput','abelian-sandpile':'#import','lambda-diagram-game':'#import-file','mini-scratch':'#fileInput'};
-for(const [id,input] of Object.entries(inputs))test(`${id} native file import rejects lossy future fields before altering the current game`,async({page,request})=>{
+for(const [id,input] of Object.entries(inputs))test(`${id} native file import rejects lossy future fields before altering the current game`,async({page,request},testInfo)=>{
   const game=(await (await request.get('catalog.json')).json()).games.find(game=>game.id===id);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
   if(id==='lambda-diagram-game'){await page.locator('#convert').click();await page.locator('#save-state').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
   const raw=await page.evaluate(async id=>{
@@ -21,8 +22,8 @@ for(const [id,input] of Object.entries(inputs))test(`${id} native file import re
   if(id==='turing'){
     await expect.poll(async()=>JSON.parse((await readCanonical(page,id)).entries.find(([key])=>key==='turing-machine-simulator.project.v1')?.[1]??'null')?.name).toBe(raw.name);
     await page.evaluate(()=>{window.inputValueDescriptor=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');Object.defineProperty(HTMLInputElement.prototype,'value',{...inputValueDescriptor,set(value){if(this.id==='input'&&value==='11')throw Error('injected native apply failure');return inputValueDescriptor.set.call(this,value);}});});
-    await page.locator(input).setInputFiles({name:'native-fails.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...raw,name:'must not leak',input:'11'}))});await expect(page.locator('#errors')).toContainText('injected native apply failure');await page.evaluate(()=>Object.defineProperty(HTMLInputElement.prototype,'value',inputValueDescriptor));
-    await page.locator('#input').fill('1');await page.locator('#input').dispatchEvent('change');await expect(page.locator('#game-hub-status')).toHaveText('已保存');expect(JSON.parse((await readCanonical(page,id)).entries.find(([key])=>key==='turing-machine-simulator.project.v1')[1]).name).toBe(raw.name);
+    await page.locator(input).setInputFiles({name:'native-fails.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...raw,name:'must not leak',description:'must not leak description',input:'11'}))});await expect(page.locator('#errors')).toContainText('injected native apply failure');await page.evaluate(()=>Object.defineProperty(HTMLInputElement.prototype,'value',inputValueDescriptor));
+    const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#exportProject').click()]),path=testInfo.outputPath('native-project-after-failed-import.json');await download.saveAs(path);const exported=JSON.parse(await readFile(path,'utf8'));expect(exported.name).toBe(raw.name);expect(exported.description).toBe(raw.description);
   }
   if(id==='abelian-sandpile'){await expect(page.locator('#confirm-dialog')).toBeVisible();await page.locator('#confirm-action').click();await expect(page.locator('#amount')).toHaveValue('2');await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
   if(id==='lambda-diagram-game'){await expect(page.locator('#expression')).toHaveValue(raw.draft);await expect(page.locator('#save-feedback')).toContainText('存档已导入');}
