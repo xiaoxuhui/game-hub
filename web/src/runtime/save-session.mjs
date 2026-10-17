@@ -45,8 +45,10 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     })();
     try{await pending;}finally{pending=null;}
   }
-  const storage=createFacade(scope,entries,nextEntries=>{
-    draft=nextEntries;
+  const storage=createFacade(scope,entries,(nextEntries,operation)=>{
+    const attempted=new Map(draft??entries);
+    if(operation.type==='clear')attempted.clear();else if(operation.type==='remove')attempted.delete(operation.key);else attempted.set(operation.key,operation.value);
+    draft=checkEntries([...attempted],scope);
     if(mode!=='writable')throw Error('存档只读，请导出备份');
     if(sequence===Number.MAX_SAFE_INTEGER){notify('readonly','存档序号已满，请导出备份');throw Error('Save counter exhausted');}
     const proposed={...record,sequence:sequence+1,entries:nextEntries};

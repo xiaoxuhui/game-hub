@@ -43,12 +43,12 @@ export function commitRecord(current,proposed,scope){
 }
 export function createFacade(scope,initial,onMutate){
   let entries=new Map(checkEntries(initial,scope));
-  const update=map=>{const snapshot=checkEntries([...map],scope);onMutate(snapshot);entries=map;};
+  const update=(map,operation)=>{const snapshot=checkEntries([...map],scope);onMutate(snapshot,operation);entries=map;};
   const methods={
     getItem(key){return entries.get(String(key))??null;},
-    setItem(key,value){key=String(key);if(!owns(scope,key))throw Error('Save scope violation');const map=new Map(entries);map.set(key,String(value));update(map);},
-    removeItem(key){key=String(key);if(!owns(scope,key))throw Error('Save scope violation');const map=new Map(entries);map.delete(key);update(map);},
-    clear(){update(new Map());},key(index){return [...entries.keys()][Number(index)>>>0]??null;}
+    setItem(key,value){key=String(key);value=String(value);if(!owns(scope,key))throw Error('Save scope violation');const map=new Map(entries);map.set(key,value);update(map,{type:'set',key,value});},
+    removeItem(key){key=String(key);if(!owns(scope,key))throw Error('Save scope violation');const map=new Map(entries);map.delete(key);update(map,{type:'remove',key});},
+    clear(){update(new Map(),{type:'clear'});},key(index){return [...entries.keys()][Number(index)>>>0]??null;}
   };
   return new Proxy(Object.create(null),{
     get(_target,key){if(key===Symbol.toStringTag)return 'Storage';if(key==='length')return entries.size;if(Object.hasOwn(methods,key))return methods[key];return entries.get(key);},
