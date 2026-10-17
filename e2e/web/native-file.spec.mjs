@@ -2,8 +2,8 @@ import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {readCanonical} from './save-fixtures.mjs';
 const inputs={conway:'#importPatternsInput',light:'#file-import',turing:'#fileInput','abelian-sandpile':'#import','lambda-diagram-game':'#import-file','mini-scratch':'#fileInput'};
-for(const [id,input] of Object.entries(inputs))test(`${id} native file import rejects lossy future fields before altering the current game`,async({page,request},testInfo)=>{
-  const game=(await (await request.get('catalog.json')).json()).games.find(game=>game.id===id);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
+for(const [id,input,entryPage] of Object.entries(inputs).flatMap(([id,input])=>id==='mini-scratch'?[[id,input,null],[id,input,'play.html']]:[[id,input,null]]))test(`${id}${entryPage?' standalone':''} native file import rejects lossy future fields before altering the current game`,async({page,request},testInfo)=>{
+  const game=(await (await request.get('catalog.json')).json()).games.find(game=>game.id===id);await page.goto(entryPage?game.entryUrl.replace(/[^/]+$/,entryPage):game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
   if(id==='lambda-diagram-game'){await page.locator('#convert').click();await page.locator('#save-state').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
   const raw=await page.evaluate(async id=>{
     if(id==='conway')return JSON.parse(PatternLibrary.serializeLibrary(PatternLibrary.createLibrary([PatternLibrary.createPatternFromWorld(LifeEngine.createWorld([[0,0],[0,1]]),{name:'原生图案验证'})])));
