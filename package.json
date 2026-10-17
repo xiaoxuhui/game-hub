@@ -22,8 +22,8 @@
   },
   "packageManager": "pnpm@11.19.0",
   "scripts": {
-    "test": "node --test",
-    "check": "node --check scripts/bundle.mjs && node --test",
+    "test": "node scripts/test-core.mjs",
+    "check": "node --check scripts/bundle.mjs && node scripts/test-core.mjs",
     "bundle": "node scripts/bundle.mjs",
     "verify:bundle": "node scripts/bundle.mjs --verify",
     "audit:storage": "node scripts/audit-storage.mjs",

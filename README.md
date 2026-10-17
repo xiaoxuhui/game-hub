@@ -31,6 +31,26 @@ v0.4.0 发行时，v2 目录序列 4 提供阿贝尔沙滩 0.1.2、Lambda 线路
 
 ## 在独立检出中构建
 
+### 网页目标（本地技术预览）
+
+网页版位于 `web/`，使用独立的 `0.1.0` 候选版本线，八游戏输入冻结在 `web/sources.lock.json`。正式域名与托管平台尚未确定；离线安装和每日网页资源发行按[网页实施计划](doc/网页版大厅实施计划.md)继续开发。当前能力与真实验证范围见[网页测试报告](doc/网页版大厅测试报告.md)，桌面WebKit不能代替iPad验收。
+
+网页开发需要Node.js 24和pnpm 11.19。在独立检出安装依赖后运行：
+
+```bash
+pnpm install --frozen-lockfile
+pnpm test
+pnpm run prepare:web
+pnpm run test:web
+pnpm run build:web -- --base /hub/
+pnpm run verify:web
+pnpm run serve:web
+```
+
+本地入口为 `http://127.0.0.1:18427/hub/`；使用HTTP服务打开，双击HTML文件不支持ES模块、异步资源和浏览器存档合同。`pnpm test/check`保留原15份直属Android/资源核心测试，`test:web`单独运行网页测试，须先安装依赖和准备冻结资源；网页CI两套都运行。浏览器交互测试另用 `pnpm run test:web:browser`，须事先安装匹配的Playwright浏览器。
+
+### Android目标
+
 需要 Node.js 24、pnpm 11.19、JDK 17、Android SDK 34，以及可访问四个来源仓库的 Git。以下命令必须在新检出的工作目录执行；不要在四个原游戏仓库或本仓库的开发工作树运行构建。
 
 ```bash
