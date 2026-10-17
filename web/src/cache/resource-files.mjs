@@ -42,7 +42,6 @@ export async function verifyCache(cache,{record,game,origin,basePath,signal}){
   insist(record.id===game.id&&record.contentCode===game.contentCode&&record.digest===game.digest&&game.csp===GAME_CSP&&Array.isArray(game.files)&&game.files.length>0&&game.files.length<=LIMITS.files&&fileTreeDigest(game.files)===game.digest,'Cache manifest identity mismatch');
   const marker=completionMarker(record,origin,basePath),urls=game.files.map(f=>resourceURL(origin,basePath,game,f.path)),expected=[...urls,marker.url].map(u=>'GET '+u).sort(),keys=(await cache.keys()).map(k=>k.method+' '+k.url).sort();abort(signal);
   insist(JSON.stringify(keys)===JSON.stringify(expected),'Cache is incomplete or has unlisted entries');
-  const response=await cache.match(marker.url);insist(response?.status===200&&['basic','default'].includes(response.type)&&response.redirected===false&&response.headers.get('content-type')?.split(';')[0].trim()==='application/json','Missing completion marker');
-  const raw=await readBody(response,1024,signal),parsed=strictJson(raw,1024),wanted=strictJson(marker.bytes,1024);insist(JSON.stringify(parsed)===JSON.stringify(wanted),'Completion marker identity mismatch');
+  const raw=await verifyResponse(await cache.match(marker.url),{path:'marker.json',bytes:marker.bytes.length,sha256:sha256Hex(marker.bytes),mime:'application/json'},{signal}),parsed=strictJson(raw,1024),wanted=strictJson(marker.bytes,1024);insist(JSON.stringify(parsed)===JSON.stringify(wanted),'Completion marker identity mismatch');
   let bytes=0;for(let i=0;i<game.files.length;i++){await verifyResponse(await cache.match(urls[i]),game.files[i],{signal});bytes+=game.files[i].bytes;}return {files:game.files.length,bytes};
 }
