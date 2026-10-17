@@ -10,7 +10,7 @@ async function open(page,{controlled=true}={}){
   if(controlled)await page.reload();
   await page.evaluate(()=>{
     window.rpc=async(action,args={},change={},active=false)=>{
-      const {BUILD}=await import('./build-context.mjs'),channel=new MessageChannel(),nonce=crypto.randomUUID();window.lastTaskId=nonce;
+      const nonce=crypto.randomUUID();window.lastTaskId=nonce;const {BUILD}=await import('./build-context.mjs'),channel=new MessageChannel();
       return await new Promise(async(resolve,reject)=>{
         const timer=setTimeout(()=>{channel.port1.close();reject(Error('RPC timeout'));},20000);channel.port1.onmessage=event=>{const data=event.data;if(data.progress){window.progress=data.progress;return;}clearTimeout(timer);channel.port1.close();resolve(data);};
         const target=active?(await navigator.serviceWorker.ready).active:navigator.serviceWorker.controller;
