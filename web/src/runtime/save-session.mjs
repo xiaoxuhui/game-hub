@@ -4,7 +4,11 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
   let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly',preview=null;
   const writerId=environment.crypto?.randomUUID?.();
   const prefix='game-hub-web.journal.'+encodeURIComponent(basePath)+'.'+gameId+'.',journalKey=prefix+writerId;
-  const notify=(state,message)=>{mode=state;onStatus({mode:state,message});};
+  const notify=(state,message)=>{
+    mode=state;
+    // A view callback must never change transaction or writer semantics.
+    try{onStatus({mode:state,message});}catch(error){console.error('存档状态界面更新失败',error);}
+  };
   function journals(){
     const rows=[];
     for(let i=0;i<nativeStorage.length;i++){
