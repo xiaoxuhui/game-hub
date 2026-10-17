@@ -102,11 +102,16 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     const token=environment.crypto.randomUUID();importPreview={token,expected};return {token,expected:{...expected}};
   }
   async function commitImport(token){
-    const selected=importPreview;importPreview=null;
+    const selected=importPreview,generation=importGeneration;importPreview=null;
     if(!selected||selected.token!==token)throw Error('导入确认已失效，请重新选择文件');
-    await flush();canRestore();if(Object.keys(selected.expected).some(key=>selected.expected[key]!==record[key]))throw Error('存档已变化，请重新预览导入');
+    const checkGeneration=()=>{if(generation!==importGeneration)throw Error('导入确认已失效，请重新选择文件');};
+    await flush();checkGeneration();canRestore();if(Object.keys(selected.expected).some(key=>selected.expected[key]!==record[key]))throw Error('存档已变化，请重新预览导入');
+    checkGeneration();
     try{await db.checkpoint({gameId,expected:selected.expected},scope);}
     catch(error){notify('readonly','导入前备份未完成，已停止导入，请重新打开');throw error;}
+    // Cancellation may race a successful backup. Keep that harmless backup,
+    // but never authorize the old file or invalidate a newer preview.
+    checkGeneration();
     // No candidate bytes are applied here. Only after this checkpoint commits
     // may the caller return the validated file to the original native importer.
     return {...selected.expected};
