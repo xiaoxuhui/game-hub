@@ -2,13 +2,27 @@ import {readFileSync,existsSync,mkdirSync,realpathSync,lstatSync} from 'node:fs'
 import {join,resolve} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 import {strictJson} from '../resource-protocol.mjs';
 import {validateSourceLock} from '../../web/src/core/contracts.mjs';
 import {files,metadata,inside} from './files.mjs';
 
 export const projectRoot=fileURLToPath(new URL('../../',import.meta.url));
 export function git(root,args){return execFileSync('git',args,{cwd:root,encoding:'utf8',env:{...process.env,GIT_TERMINAL_PROMPT:'0',GIT_OPTIONAL_LOCKS:'0',GIT_HTTP_LOW_SPEED_LIMIT:'1024',GIT_HTTP_LOW_SPEED_TIME:'60'}}).trim();}
-export function assertClean(root){if(git(root,['status','--porcelain=v1','--untracked-files=all']))throw Error('Web build requires clean independent checkout');if(process.env.GAME_HUB_LOCAL_SOURCES)throw Error('Original worktree source override refused');}
+export function assertClean(root){
+  if(git(root,['status','--porcelain=v1','--untracked-files=all']))throw Error('Web build requires clean independent checkout');
+  if(process.env.GAME_HUB_LOCAL_SOURCES)throw Error('Original worktree source override refused');
+  // Git's clean filters can hide CRLF working bytes that differ from HEAD.
+  // Prove the actual bytes of every tracked build input, not only porcelain.
+  const algorithm=git(root,['rev-parse','--show-object-format']);if(!['sha1','sha256'].includes(algorithm))throw Error('Unknown Git object format');
+  const paths=['web','scripts/web','scripts/bundle.mjs','scripts/resource-protocol.mjs','package.json','pnpm-lock.yaml','LICENSE','THIRD_PARTY_NOTICES.md','licenses','android/icon-source/game-hub-icon.svg','android/app/src/main/res/drawable-nodpi','android/app/src/main/res/drawable'];
+  for(const entry of git(root,['ls-tree','-r','-z','HEAD','--',...paths]).split('\0').filter(Boolean)){
+    const tab=entry.indexOf('\t'),[mode,type,objectId]=entry.slice(0,tab).split(' '),path=entry.slice(tab+1),full=join(root,path);
+    if(type!=='blob'||!['100644','100755'].includes(mode)||lstatSync(full).isSymbolicLink()||realpathSync(full)!==resolve(full))throw Error('Build input must be an ordinary tracked file');
+    const bytes=readFileSync(full),actual=createHash(algorithm).update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
+    if(actual!==objectId)throw Error('Committed input bytes differ: '+path);
+  }
+}
 export function sourceLock(root=projectRoot){return validateSourceLock(strictJson(readFileSync(join(root,'web/sources.lock.json')),4*1024*1024));}
 export function sourceDirectory(root,source){return source.buildKind==='dynamic'?join(root,'.build/dynamic-sources',source.id,source.sourceDirectory):join(root,'.build/resource-source-assets/games',source.id);}
 export function readSource(root,source){

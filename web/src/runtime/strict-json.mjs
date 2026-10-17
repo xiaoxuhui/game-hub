@@ -45,4 +45,3 @@ export function strictJson(bytes, max = 4*1024*1024) {
   }
   const parsed = value(); ws(); if (at !== text.length) throw new Error('Trailing JSON'); return parsed;
 }
-
