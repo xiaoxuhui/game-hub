@@ -6,7 +6,8 @@ const cases={
   quota:['quota failure aborts authority proof and installation as one transaction',{rejected:true,empty:true,keys:0,retryFence:1}],
   undefined:['existing undefined authority and proof keys are preserved on refusal',{authorityRejected:true,authorityPreserved:true,proofRejected:true,proofPreserved:true}],
   expiry:['expiry and cancellation block ready while retaining the reservation',{expired:true,staging:true,failed:true,late:true}],
-  late:['a cancellation during real signature await invalidates the complete CAS',{rejected:true,phase:'failed'}]
+  late:['a cancellation during real signature await invalidates the complete CAS',{rejected:true,phase:'failed'}],
+  'proof-late':['proof deletion during signature await cannot commit ready against an unchanged ledger',{rejected:true,phase:'staging',proofPreserved:true}]
 };
 for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page,request})=>{
   const catalog=await (await request.get('catalog.json')).json(),payload=signedPayload({catalog,origin:'http://127.0.0.1:18427'});
@@ -52,7 +53,12 @@ for(const [which,[name,expected]] of Object.entries(cases))test(name,async({page
     }
     const {record}=await repo.begin(envelope,'conway');let signal,release;const reached=new Promise(resolve=>signal=resolve),gate=new Promise(resolve=>release=resolve);
     const slow=createResourceRepository({database:db,authority:{...authority,async fresh(...args){const receipt=await authority.fresh(...args);signal();await gate;return receipt;}},now:()=>now});
-    const pending=slow.complete(record.fence,{manifestDigest:record.digest,complete:true});await reached;await repo.cancel(record.fence);release();let rejected=false;try{await pending;}catch{rejected=true;}const phase=(await repo.inspect()).state.installations[0].phase;repo.close();return {rejected,phase};
+    const pending=slow.complete(record.fence,{manifestDigest:record.digest,complete:true});await reached;
+    if(which==='proof-late'){
+      const raw=await rawOpen();await putRaw(raw,'proof:'+record.proofHash,undefined);release();let rejected=false;try{await pending;}catch{rejected=true;}
+      const state=await readRaw(raw,'current'),proof=await readRaw(raw,'proof:'+record.proofHash);raw.close();repo.close();return {rejected,phase:state.value.installations[0].phase,proofPreserved:proof.present&&proof.value===undefined};
+    }
+    await repo.cancel(record.fence);release();let rejected=false;try{await pending;}catch{rejected=true;}const phase=(await repo.inspect()).state.installations[0].phase;repo.close();return {rejected,phase};
   },{which,bytes:[...bytes],spki:[...testSpki],keyId:TEST_KEY_ID,start:which==='concurrent'?999:TEST_TIME});
   expect(result).toEqual(expected);
 });
