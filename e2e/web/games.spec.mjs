@@ -8,6 +8,7 @@ for(const [id,control] of games)test(`${id} loads fixed resources, survives refr
   page.on('request',r=>requests.push(r.url()));page.on('response',r=>{if(r.status()>=400)failures.push(r.status()+' '+r.url());});
   page.on('requestfailed',r=>networkFailures.push(r.url()+' '+r.failure()?.errorText));
   await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
+  await expect(page.locator('#game-hub-version')).toHaveText(`v${game.version} · 资源 #${game.contentCode}`);await expect(page.locator('#game-hub-version')).toBeVisible();
   const toolbar=await page.locator('#game-hub-toolbar').boundingBox();
   const topSpace=await page.evaluate(()=>parseFloat(getComputedStyle(document.body).paddingTop));
   expect(topSpace,'toolbar needs reserved space above original game content').toBeGreaterThanOrEqual(toolbar.height);
@@ -26,6 +27,7 @@ for(const [id,control] of games)test(`${id} loads fixed resources, survives refr
     expect(worker.url()).toContain('/assets/route-worker-');await expect(page.locator('#routeStatus')).toContainText('已显示');
   }
   await page.reload();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
+  await expect(page.locator('#game-hub-version')).toHaveText(`v${game.version} · 资源 #${game.contentCode}`);
   await page.screenshot({path:testInfo.outputPath('game.png')});
   const prefix=new URL('.',new URL(game.entryUrl,'http://127.0.0.1:18427')).href;
   for(const url of requests.filter(url=>/^http/.test(url)))expect(url.startsWith(prefix),url).toBe(true);

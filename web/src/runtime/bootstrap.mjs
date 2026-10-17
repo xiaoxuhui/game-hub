@@ -10,11 +10,14 @@ const bar=document.createElement('aside');bar.id='game-hub-toolbar';bar.setAttri
 const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('./toolbar.css',import.meta.url);document.head.append(style);
 const back=document.createElement('a');back.textContent='← 大厅';back.id='game-hub-return';
 const status=document.createElement('span');status.id='game-hub-status';status.setAttribute('role','status');
-bar.append(back,status);document.body.append(bar);
+const identity=document.createElement('span');identity.id='game-hub-version';
+const sessionInfo=document.createElement('div');sessionInfo.id='game-hub-session';sessionInfo.append(status,identity);
+bar.append(back,sessionInfo);document.body.append(bar);
 try{
   const response=await fetch(contextURL);if(!response.ok)throw Error('游戏配置无法读取');const context=await response.json();
   back.href=context.basePath;
   document.documentElement.dataset.hubGameId=context.id;
+  identity.textContent=`v${context.version} · 资源 #${context.contentCode}`;identity.title=`${context.name} · ${identity.textContent} · 来源 ${context.sourceRevision}`;
   status.textContent=`${context.name} · 在线`;
   const saves=await startSaveSession({gameId:context.id,scope:context.storage,basePath:context.basePath,onStatus:state=>{status.textContent=state.message;status.title=state.message;status.dataset.saveMode=state.mode;}});
   Object.defineProperty(window,'localStorage',{configurable:false,get:()=>saves.storage});

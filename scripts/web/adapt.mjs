@@ -69,7 +69,7 @@ export function adaptGame(root,source,raw,base){
   if(source.id==='lambda-diagram-game')for(const item of nativeLambda(source,raw))entries.push({...item,path:'hub-runtime/native/'+item.path});
   entries.push({path:'hub-runtime/favicon.svg',data:readFileSync(join(root,'android/icon-source/game-hub-icon.svg'))});
   entries.push({path:'hub-runtime/source-proof.json',data:Buffer.from(sourceProofBytes({id:source.id,sourceRepository:source.repository,sourceRevision:source.revision,sourceFiles:metadata(raw)}))});
-  entries.push({path:'hub-runtime/context.json',data:Buffer.from(JSON.stringify({schemaVersion:1,id:source.id,name:source.displayName,version:source.version,sourceRevision:source.revision,storage:source.storage,basePath:base,pages,preflightAfter})+'\n')});
+  entries.push({path:'hub-runtime/context.json',data:Buffer.from(JSON.stringify({schemaVersion:1,id:source.id,name:source.displayName,version:source.version,contentCode:source.webContentCode,sourceRevision:source.revision,storage:source.storage,basePath:base,pages,preflightAfter})+'\n')});
   entries.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   if(new Set(entries.map(f=>f.path.toLowerCase())).size!==entries.length)throw Error('Adapted output collision');
   return {entries,digest:treeHash(entries),files:metadata(entries)};
