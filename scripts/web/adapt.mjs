@@ -37,7 +37,16 @@ export function adaptGame(root,source,raw,base){
   normalizeBase(base);if(raw.some(f=>f.path.startsWith('hub-runtime/')||f.path.startsWith('hub-inline-')))throw Error('Reserved adapter path');
   const paths=new Set(raw.map(f=>f.path)),pages={},entries=[];
   for(const item of raw){
-    if(!item.path.endsWith('.html')){entries.push(item);continue;}
+    if(!item.path.endsWith('.html')){
+      if(source.id==='light'&&item.path==='scripts/storage.js'){
+        const text=item.data.toString('utf8'),probe='      const probe = STORAGE_KEY + "/probe";\n      storage.setItem(probe, "1");\n      storage.removeItem(probe);\n';
+        if(text.split(probe).length!==2)throw Error('Unreviewed light persistence probe');
+        // The hall facade already detects storage failure. A foreign probe key
+        // would select the native memory fallback and bypass durable saves.
+        entries.push({...item,data:Buffer.from(text.replace(probe,'      // Hall save facade reports persistent storage availability and failures.\n'))});
+      }else entries.push(item);
+      continue;
+    }
     const adapted=adaptPage({path:item.path,text:item.data.toString('utf8'),paths});
     entries.push({path:item.path,data:adapted.html},...adapted.generated);pages[item.path]=adapted.scripts;
   }
