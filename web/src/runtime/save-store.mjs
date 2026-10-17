@@ -49,6 +49,11 @@ export function restoreRecord(current,{gameId,expected,writerId,entries},scope){
   if(typeof writerId!=='string'||!writerId||writerId===current.writerId)throw Error('New restore writer required');
   return {...current,writerId,fence:next(current.fence),revision:next(current.revision),sequence:0,entries:checkEntries(entries,scope)};
 }
+export function checkpointRecord(current,{gameId,expected},scope){
+  checkRecord(current,gameId,scope);
+  if(!expected||['writerId','fence','revision','sequence'].some(key=>expected[key]!==current[key]))throw Error('Save conflict: native import preview expired');
+  return current;
+}
 export function createFacade(scope,initial,onMutate){
   let entries=new Map(checkEntries(initial,scope));
   const update=(map,operation)=>{const snapshot=checkEntries([...map],scope);onMutate(snapshot,operation);entries=map;};
@@ -96,6 +101,7 @@ export function openSaveStore({indexedDB,basePath,timeout=4000}){
         acquire(options){return transact(options.gameId,options.scope,previous=>acquireRecord(previous,options));},
         commit(proposed,scope,{backup=false}={}){return transact(proposed.gameId,scope,current=>({record:commitRecord(current,proposed,scope),backups:backup?[current]:[]}));},
         restore(options,scope){return transact(options.gameId,scope,current=>({record:restoreRecord(current,options,scope),backups:[current]}));},
+        checkpoint(options,scope){return transact(options.gameId,scope,current=>({record:checkpointRecord(current,options,scope),backups:[current]}));},
         backups(gameId){return new Promise((done,fail)=>{const tx=db.transaction('backups'),request=tx.objectStore('backups').index('gameId').getAll(gameId);let rows;request.onsuccess=()=>{rows=request.result;};tx.oncomplete=()=>done(rows);tx.onabort=()=>fail(tx.error);});},
         close(){db.close();}
       });

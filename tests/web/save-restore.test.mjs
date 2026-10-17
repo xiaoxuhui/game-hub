@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {decodeBackup,decodeHistoryRecord} from '../../web/src/runtime/save-backup.mjs';
-import {restoreRecord,acquireRecord,commitRecord} from '../../web/src/runtime/save-store.mjs';
+import {restoreRecord,acquireRecord,commitRecord,checkpointRecord} from '../../web/src/runtime/save-store.mjs';
 const scope={keys:['game.save'],prefixes:['game.backup.']},context={id:'demo',storage:scope};
 const backup=()=>({format:'game-hub-save',schemaVersion:1,gameId:'demo',gameVersion:'1.0.0',sourceRevision:'a'.repeat(40),createdAt:'2026-10-17T00:00:00.000Z',entries:[['game.save','{"unknown":42}']],mode:'writable',pending:false,canonicalRead:true,source:'canonical-session'});
 const bytes=value=>new TextEncoder().encode(JSON.stringify(value));
@@ -9,6 +9,11 @@ test('historical snapshot requires complete known record identity before native 
   const record=acquireRecord(null,{gameId:'demo',writerId:'a',scope,legacy:[['game.save','opaque']],journals:[]}).record;
   assert.deepEqual(decodeHistoryRecord(bytes(record),context).entries,record.entries);
   for(const patch of [{schema:2},{gameId:'foreign'},{future:true},{fence:-1},{writerId:''}])assert.throws(()=>decodeHistoryRecord(bytes({...record,...patch}),context));
+});
+test('pre-import checkpoint checks all writer fields and never alters a canonical snapshot',()=>{
+  const original=acquireRecord(null,{gameId:'demo',writerId:'a',scope,legacy:[['game.save','old opaque bytes']],journals:[]}).record;
+  assert.deepEqual(checkpointRecord(original,{gameId:'demo',expected:original},scope),original);
+  for(const patch of [{writerId:'b'},{fence:2},{revision:1},{sequence:1}])assert.throws(()=>checkpointRecord(original,{gameId:'demo',expected:{...original,...patch}},scope),/conflict/);
 });
 test('complete backup decoding preserves original strings and accepts a committed historical readonly snapshot',()=>{
   assert.deepEqual(decodeBackup(bytes(backup()),context).entries,backup().entries);

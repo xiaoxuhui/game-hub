@@ -1,7 +1,7 @@
 import {checkEntries,createFacade,legacyEntries,openSaveStore,SAVE_LIMITS} from './save-store.mjs';
 
 export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},environment=globalThis}){
-  let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly',preview=null;
+  let nativeStorage,db,record,channel,sequence=0,entries=[],draft=null,backupNeeded=false,pending=null,mode='readonly',preview=null,importPreview=null,importGeneration=0;
   const writerId=environment.crypto?.randomUUID?.();
   const prefix='game-hub-web.journal.'+encodeURIComponent(basePath)+'.'+gameId+'.',journalKey=prefix+writerId;
   const notify=(state,message)=>{
@@ -95,12 +95,29 @@ export async function startSaveSession({gameId,scope,basePath,onStatus=()=>{},en
     notify('readonly','恢复完成，重新打开游戏后生效');
     return {fence:restored.fence,revision:restored.revision};
   }
+  async function prepareImport(){
+    const generation=++importGeneration;importPreview=null;await flush();canRestore();const expected=identity(),current=await db.current(gameId);canRestore();
+    if(generation!==importGeneration)throw Error('导入预览已失效');
+    if(Object.keys(expected).some(key=>expected[key]!==current?.[key])){notify('readonly','存档已变化，本页只读，请重新打开');throw Error('Save conflict: native import owner changed');}
+    const token=environment.crypto.randomUUID();importPreview={token,expected};return {token,expected:{...expected}};
+  }
+  async function commitImport(token){
+    const selected=importPreview;importPreview=null;
+    if(!selected||selected.token!==token)throw Error('导入确认已失效，请重新选择文件');
+    await flush();canRestore();if(Object.keys(selected.expected).some(key=>selected.expected[key]!==record[key]))throw Error('存档已变化，请重新预览导入');
+    try{await db.checkpoint({gameId,expected:selected.expected},scope);}
+    catch(error){notify('readonly','导入前备份未完成，已停止导入，请重新打开');throw error;}
+    // No candidate bytes are applied here. Only after this checkpoint commits
+    // may the caller return the validated file to the original native importer.
+    return {...selected.expected};
+  }
   return {
     storage,flush,checkWriter,prepareRestore,restore,cancelRestore(){preview=null;},
     protectWrites(message){preview=null;notify('readonly',message);},
+    prepareImport,commitImport,cancelImport(){importGeneration++;importPreview=null;},
     committedSnapshot(){if(!record)throw Error('尚未读取完整存档');return {entries:checkEntries(record.entries,scope),mode:'readonly',pending:false,canonicalRead:true,source:'canonical-session'};},
     snapshot(){return {entries:checkEntries(draft??entries,scope),mode,pending:sequence>(record?.sequence??0)||draft!==null,canonicalRead:!!record,source:draft?'session-draft':record?'canonical-session':'legacy-only'};},
     async backups(){return db?db.backups(gameId):[];},
-    close(){channel?.close();db?.close();}
+    close(){importGeneration++;importPreview=null;channel?.close();db?.close();}
   };
 }
