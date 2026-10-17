@@ -3,6 +3,7 @@ import {mountRestore} from './restore-ui.mjs';
 import {validateNativeSave} from './native-save.mjs';
 import {downloadSnapshot} from './backup-download.mjs';
 import {nativeFileReader} from './native-file.mjs';
+import {nativeImportConfirmation} from './native-import-ui.mjs';
 const contextURL=new URL('./context.json',import.meta.url),gameRoot=new URL('../',import.meta.url);
 const bar=document.createElement('aside');bar.id='game-hub-toolbar';bar.setAttribute('aria-label','游戏大厅工具栏');
 const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('./toolbar.css',import.meta.url);document.head.append(style);
@@ -20,7 +21,7 @@ try{
   captureProject(saves.storage.getItem('turing-machine-simulator.project.v1'));
   Object.defineProperty(window,'GameHubTuringProjectField',{configurable:false,writable:false,value:(key,fallback)=>Object.hasOwn(turingMetadata,key)?turingMetadata[key]:fallback});
   Object.defineProperty(window,'GameHubAcceptTuringProject',{configurable:false,writable:false,value:captureProject});
-  Object.defineProperty(window,'GameHubReadNativeFile',{configurable:false,writable:false,value:nativeFileReader({context,gameRoot,saves,onError:error=>{status.textContent='导入已拒绝：'+error.message;},onValidated:()=>{status.textContent='文件已校验，等待游戏导入';}})});
+  Object.defineProperty(window,'GameHubReadNativeFile',{configurable:false,writable:false,value:nativeFileReader({context,gameRoot,saves,confirm:nativeImportConfirmation(),onError:error=>{status.textContent='导入已拒绝：'+error.message;},onValidated:()=>{status.textContent='原档已备份，等待游戏导入';}})});
   const exportButton=document.createElement('button');exportButton.id='game-hub-backup';exportButton.type='button';exportButton.textContent=saves.snapshot().canonicalRead?'备份':'应急导出';exportButton.title=saves.snapshot().canonicalRead?'导出本页当前游戏全部存档键值':'未能读取正式存档，仅导出旧档或本页草稿';bar.append(exportButton);
   exportButton.addEventListener('click',()=>{
     downloadSnapshot(context,saves.snapshot());

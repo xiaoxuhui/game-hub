@@ -17,12 +17,13 @@ for(const [id,input] of Object.entries(inputs))test(`${id} native file import re
   await expect(page.locator('#game-hub-status')).toContainText('导入已拒绝');expect((await readCanonical(page,id)).entries).toEqual(before.entries);
   if(id==='conway')await page.keyboard.press('Escape');
   await page.locator(input).setInputFiles({name:'native.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(raw))});
+  await page.locator('#hub-native-import-confirm').click();
   if(id==='conway'){await expect(page.locator('#confirmImportPatternsButton')).toBeEnabled();await page.locator('#confirmImportPatternsButton').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');expect(JSON.parse((await readCanonical(page,id)).entries.find(([key])=>key==='conway-life-game.custom-patterns.v1')[1]).patterns[0].name).toBe('原生图案验证');}
   if(id==='light')await expect.poll(()=>page.evaluate(()=>LightLevels.getLevel('web-native-proof')?.title)).toBe('原生关卡验证');
   if(id==='turing'){
     await expect.poll(async()=>JSON.parse((await readCanonical(page,id)).entries.find(([key])=>key==='turing-machine-simulator.project.v1')?.[1]??'null')?.name).toBe(raw.name);
     await page.evaluate(()=>{window.inputValueDescriptor=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');Object.defineProperty(HTMLInputElement.prototype,'value',{...inputValueDescriptor,set(value){if(this.id==='input'&&value==='11')throw Error('injected native apply failure');return inputValueDescriptor.set.call(this,value);}});});
-    await page.locator(input).setInputFiles({name:'native-fails.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...raw,name:'must not leak',description:'must not leak description',input:'11'}))});await expect(page.locator('#errors')).toContainText('injected native apply failure');await page.evaluate(()=>Object.defineProperty(HTMLInputElement.prototype,'value',inputValueDescriptor));
+    await page.locator(input).setInputFiles({name:'native-fails.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...raw,name:'must not leak',description:'must not leak description',input:'11'}))});await page.locator('#hub-native-import-confirm').click();await expect(page.locator('#errors')).toContainText('injected native apply failure');await page.evaluate(()=>Object.defineProperty(HTMLInputElement.prototype,'value',inputValueDescriptor));
     const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#exportProject').click()]),path=testInfo.outputPath('native-project-after-failed-import.json');await download.saveAs(path);const exported=JSON.parse(await readFile(path,'utf8'));expect(exported.name).toBe(raw.name);expect(exported.description).toBe(raw.description);
   }
   if(id==='abelian-sandpile'){await expect(page.locator('#confirm-dialog')).toBeVisible();await page.locator('#confirm-action').click();await expect(page.locator('#amount')).toHaveValue('2');await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
@@ -32,6 +33,7 @@ for(const [id,input] of Object.entries(inputs))test(`${id} native file import re
 test('EML native FileReader retains unknown state fields and rejects invalid UTF8 without replacing saves',async({page,request})=>{
   const game=(await (await request.get('catalog.json')).json()).games.find(game=>game.id==='eml');await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
   const raw=await page.evaluate(()=>({...JSON.parse(EMLPersistence.serialize(EMLValueStore.createInitialState())),future:{opaque:'EML retained'}}));await page.locator('#importFile').setInputFiles({name:'eml.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(raw))});
+  await page.locator('#hub-native-import-confirm').click();
   await expect.poll(async()=>JSON.parse((await readCanonical(page,'eml')).entries.find(([key])=>key==='eml_workbench_v2')?.[1]??'null')?.future?.opaque).toBe('EML retained');const before=await readCanonical(page,'eml');
   await page.locator('#importFile').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from([0xff])});await expect(page.locator('#game-hub-status')).toContainText('导入已拒绝');expect((await readCanonical(page,'eml')).entries).toEqual(before.entries);
 });
