@@ -11,7 +11,7 @@ function receiptToken(value,present){
 }
 
 // The resource database never opens or modifies the independent saves database.
-export function openResourceDatabase({indexedDB,basePath,timeout=4000}){
+export function openResourceDatabase({indexedDB,basePath,timeout=4000,now=()=>Date.now()}){
   normalizeBase(basePath);
   return new Promise((resolve,reject)=>{
     let request,expired=false;
@@ -40,6 +40,11 @@ export function openResourceDatabase({indexedDB,basePath,timeout=4000}){
         tx.oncomplete=()=>done(result);tx.onabort=()=>fail(cause??tx.error??Error('Signed resource transaction aborted'));
         const store=tx.objectStore('state'),stateRead=store.get('current'),stateKey=store.getKey('current'),authRead=store.get('authority'),authKey=store.getKey('authority');
         const abort=error=>{cause=error;tx.abort();};
+        const checkAuthorization=()=>{
+          if(!command?.receipt)return;
+          const a=command.authorization,time=now();
+          if(!a||Object.keys(a).length!==2||!['notBefore','expiresAt'].every(k=>Object.hasOwn(a,k)&&Number.isSafeInteger(a[k]))||!Number.isSafeInteger(time)||time<0||Object.is(time,-0)||!Number.isFinite(new Date(time).getTime())||time<a.notBefore||time>=a.expiresAt)throw Error('Authorization expired or clock changed before commit');
+        };
         authKey.onsuccess=()=>{try{
           const state=stateKey.result===undefined?emptyLedger():stateRead.result;validateLedger(state,basePath);
           const present=authKey.result!==undefined,authority=authRead.result;
@@ -56,13 +61,16 @@ export function openResourceDatabase({indexedDB,basePath,timeout=4000}){
             if(command.event){outcome=applyLedger(state,command.event,{basePath});next=outcome.state;}
             else{if(state.revision===Number.MAX_SAFE_INTEGER)throw Error('Ledger counter exhausted');next={...state,revision:state.revision+1};validateLedger(next,basePath);}
             if(command.receipt){receiptToken(command.receipt,true);if(command.receipt.schemaVersion!==1)throw Error('Unknown receipt');}
+            checkAuthorization();let lastWrite;
             if(command.proof){
               const hash=command.proof.history.payloadSha256,existing=proofs[hash];
               if(command.event?.type!=='begin'||command.event.proofHash!==hash||command.receipt?.history.payloadSha256!==hash)throw Error('Unbound installation proof');
               if((command.expectedProofToken??'absent')!==proofTokens[hash])throw Error('Installation proof changed or orphaned; preserved');
-              receiptToken(command.proof,true);if(!existing.present)store.put(command.proof,'proof:'+hash);
+              receiptToken(command.proof,true);if(!existing.present)lastWrite=store.put(command.proof,'proof:'+hash);
             }
-            store.put(next,'current');if(command.receipt)store.put(command.receipt,'authority');result={state:next,result:outcome?.result??null};
+            lastWrite=store.put(next,'current');if(command.receipt)lastWrite=store.put(command.receipt,'authority');
+            lastWrite.onsuccess=()=>{try{checkAuthorization();}catch(error){abort(error);}};
+            result={state:next,result:outcome?.result??null};
           }catch(error){abort(error);}};
           if(!remaining){finish();return;}
           for(const hash of hashes){const value=store.get('proof:'+hash),key=store.getKey('proof:'+hash);key.onsuccess=()=>{try{

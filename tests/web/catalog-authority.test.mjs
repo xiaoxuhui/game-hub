@@ -39,3 +39,8 @@ test('small clock rollback keeps verifiedAt separate from a later acceptedAt wat
   assert.throws(()=>a.requireFresh(restored,{now:TEST_TIME-1000}));assert.throws(()=>a.requireFresh(second,{now:TEST_TIME}));
   const third=payload();third.catalogSequence='3';await a.fresh(signPayload(third),{previous:restored,now:TEST_TIME});
 });
+test('stored authority continuity rejects older signed watermarks without issuing a fresh brand',async()=>{
+  const a=authority(),first=await a.fresh(signPayload(payload()),{now:TEST_TIME}),next=payload();next.catalogSequence='2';
+  const second=await a.fresh(signPayload(next),{previous:first,now:TEST_TIME+1}),older=await a.restore(a.serialize(first)),newer=await a.restore(a.serialize(second));
+  assert.equal(await a.assertSuccessor(newer,older),undefined);assert.throws(()=>a.requireFresh(newer,{now:TEST_TIME+1}));await assert.rejects(()=>a.assertSuccessor(older,newer));await assert.rejects(()=>a.assertSuccessor(structuredClone(newer),older));
+});

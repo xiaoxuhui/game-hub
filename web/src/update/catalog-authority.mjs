@@ -31,6 +31,13 @@ export function createCatalogAuthority({spki,keyId,origin,basePath,crypto=global
       const entry=known(receipt),record={schemaVersion:1,envelope:new Uint8Array(entry.envelope),verifiedAt:entry.verifiedAt,history:structuredClone(receipt.history)};
       return {...record,receiptSha256:checksum(record)};
     },
+    async assertSuccessor(later,earlier){
+      const entry=known(later);known(earlier);
+      insist(later.history.acceptedAt>=earlier.history.acceptedAt,'Accepted clock watermark rollback');
+      // Recheck the signed transition at its original verification time. The
+      // result is deliberately discarded and never receives a fresh brand.
+      await verifySignedCatalog(entry.envelope,{...trust,history:earlier.history,now:entry.verifiedAt});
+    },
     requireFresh(receipt,{now=Date.now()}={}){
       insist(known(receipt).kind==='fresh','Stored receipt cannot authorize new work');clock(now);
       insist(now<Date.parse(receipt.catalog.expiresAt)&&now>=Date.parse(receipt.catalog.issuedAt)-300000&&now>=receipt.history.acceptedAt-300000,'Authorization is no longer fresh');return receipt;
