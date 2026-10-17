@@ -64,7 +64,7 @@ export function adaptGame(root,source,raw,base){
     entries.push({path:item.path,data:adapted.html},...adapted.generated);pages[item.path]=adapted.scripts;
   }
   const guarded=guardAudioStart(source.id,guardNativeFileReads(source.id,entries));entries.splice(0,entries.length,...guarded);
-  for(const item of files(join(root,'web/src/runtime')))entries.push({path:'hub-runtime/'+item.path,data:item.data});
+  for(const item of files(join(root,'web/src/runtime')))entries.push({path:'hub-runtime/'+item.path,data:item.path==='strict-json.mjs'?readFileSync(join(root,'web/src/core/strict-json.mjs')):item.data});
   if(source.id==='turing')for(const item of nativeTuring(root,source))entries.push({...item,path:'hub-runtime/native/turing/'+item.path});
   if(source.id==='lambda-diagram-game')for(const item of nativeLambda(source,raw))entries.push({...item,path:'hub-runtime/native/'+item.path});
   entries.push({path:'hub-runtime/favicon.svg',data:readFileSync(join(root,'android/icon-source/game-hub-icon.svg'))});
