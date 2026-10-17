@@ -37,7 +37,14 @@ export async function validateNativeSave(context,entries,gameRoot){
     }
     case 'abelian-sandpile':{
       const key=g.SandpileStorage.KEYS.experiment;
-      if(has(key)){const text=read(key),decoded=g.SandpileStorage.decode(text,g.SandpileLevels);lossless(JSON.parse(text),JSON.parse(g.SandpileStorage.encode(decoded,g.SandpileLevels)));}
+      if(has(key)){
+        const text=read(key),decoded=g.SandpileStorage.decode(text,g.SandpileLevels);lossless(JSON.parse(text),JSON.parse(g.SandpileStorage.encode(decoded,g.SandpileLevels)));
+        // Native save rewrites both mirrors from the authoritative envelope.
+        // Missing mirrors can be generated; supplied mirrors must agree exactly.
+        for(const field of ['progress','settings'])if(has(g.SandpileStorage.KEYS[field])){
+          const mirror=parse(read(g.SandpileStorage.KEYS[field]),g.SandpileStorage.MAX_BYTES);lossless(mirror,decoded[field]);lossless(decoded[field],mirror);
+        }
+      }
       else if(Object.values(g.SandpileStorage.KEYS).some(has))throw Error('沙堆备份缺少权威完整实验存档');
       break;
     }
