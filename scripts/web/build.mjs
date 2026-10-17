@@ -4,12 +4,12 @@ import {fileURLToPath} from 'node:url';
 import {strictJson} from '../resource-protocol.mjs';
 import {normalizeBase,resourcePath} from '../../web/src/core/contracts.mjs';
 import {files,metadata,treeHash,sha256,inside,removeOwned} from './files.mjs';
-import {projectRoot,sourceLock,readSource,prepareInputs,assertClean,git} from './inputs.mjs';
+import {projectRoot,sourceLock,readSource,prepareInputs,assertClean,git,recursiveBuildInputs} from './inputs.mjs';
 import {replaceLocalOutput} from './local-output.mjs';
 import {adaptGame,gameCsp} from './adapt.mjs';
 import {vectorIcon} from './icons.mjs';
 
-export function adapterFiles(root){return [...files(join(root,'web/src')).map(f=>({...f,path:'web/src/'+f.path})),...files(join(root,'scripts/web')).map(f=>({...f,path:'scripts/web/'+f.path})),{path:'web/package.json',data:readFileSync(join(root,'web/package.json'))}].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);}
+export function adapterFiles(root){return [...recursiveBuildInputs.flatMap(directory=>files(join(root,directory)).map(f=>({...f,path:directory+'/'+f.path}))),{path:'web/package.json',data:readFileSync(join(root,'web/package.json'))}].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);}
 function put(root,path,data){inside(root,join(root,path));mkdirSync(dirname(join(root,path)),{recursive:true});writeFileSync(join(root,path),data);}
 export function expectedPayload(root,base){
   normalizeBase(base);const lock=sourceLock(root),version=JSON.parse(readFileSync(join(root,'web/package.json'))).version;
