@@ -2,7 +2,7 @@
   "package": "@noble/hashes",
   "version": "1.8.0",
   "source": "https://github.com/paulmillr/noble-hashes/tree/1.8.0",
-  "changes": "ESM utils crypto import made relative; optional source-map comments removed; algorithms unchanged",
+  "changes": "ESM utils crypto import made relative; optional source-map comments and trailing horizontal whitespace removed; algorithms unchanged",
   "licenseSha256": "4f221aee6e072336700c408c68ab3b96a3fc09f6aebe6f48f1bd99e5ef13faec",
   "files": [
     {
@@ -23,7 +23,7 @@
     {
       "path": "utils.js",
       "originalSha256": "4cf4c1e05affedcb4fd584a43d76ae1a3711e34a36e2251b90c27e33ecc74fad",
-      "adaptedSha256": "c79100fa890e0473647baf28b8d87c1073f588868f6836019e72577e086bab43"
+      "adaptedSha256": "43f45f8b84e104cab2625841be981a18882e0c2538f92783a6aed7a16176dfc1"
     },
     {
       "path": "crypto.js",

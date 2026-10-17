@@ -37,7 +37,7 @@ async function check(){
     catalog=next;previous=snapshot(next);lastSuccess=Date.now();render();
     const messages=[];if(diff.updated.length)messages.push(`${diff.updated.length} 个游戏资源有更新`);if(diff.added.length)messages.push(`新增 ${diff.added.length} 个游戏`);if(diff.shell)messages.push('大厅有新版本');
     $('update-notice').hidden=messages.length===0;$('update-notice').textContent=messages.join(' · ');$('reload-shell').hidden=!diff.shell;
-    $('status').textContent=messages.length?'检查成功 · 新入口已就绪':'检查成功 · 当前目录无新增更新';persist();
+    $('status').textContent=messages.length?'检查成功 · 已发现新入口':'检查成功 · 当前目录无新增更新';persist();
   }catch(error){$('status').textContent='检查失败：'+(error.name==='AbortError'?'网络超时，请稍后重试':error.message);}
   finally{clearTimeout(timer);busy=false;$('check-update').disabled=false;$('last-check').textContent=lastSuccess?'最近成功：'+new Date(lastSuccess).toLocaleString('zh-CN'):'尚未成功检查';}
 }
