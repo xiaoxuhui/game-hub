@@ -1,6 +1,7 @@
 import {normalizeBase} from '../core/contracts.mjs';
 import {emptyLedger,validateLedger,applyLedger} from './ledger.mjs';
 import {sha256Hex} from '../core/digests.mjs';
+import {controllerToken,nextController} from '../core/controller.mjs';
 
 function receiptToken(value,present){
   if(!present)return 'absent';
@@ -38,24 +39,25 @@ export function openResourceDatabase({indexedDB,basePath,timeout=4000,now=()=>Da
       const signedTransaction=(command=null)=>new Promise((done,fail)=>{
         let tx,result,cause;try{tx=db.transaction('state',command?'readwrite':'readonly');}catch(error){fail(error);return;}
         tx.oncomplete=()=>done(result);tx.onabort=()=>fail(cause??tx.error??Error('Signed resource transaction aborted'));
-        const store=tx.objectStore('state'),stateRead=store.get('current'),stateKey=store.getKey('current'),authRead=store.get('authority'),authKey=store.getKey('authority');
+        const store=tx.objectStore('state'),stateRead=store.get('current'),stateKey=store.getKey('current'),authRead=store.get('authority'),authKey=store.getKey('authority'),controlRead=store.get('controller'),controlKey=store.getKey('controller');
         const abort=error=>{cause=error;tx.abort();};
         const checkAuthorization=()=>{
           if(!command?.receipt)return;
           const a=command.authorization,time=now();
           if(!a||Object.keys(a).length!==2||!['notBefore','expiresAt'].every(k=>Object.hasOwn(a,k)&&Number.isSafeInteger(a[k]))||!Number.isSafeInteger(time)||time<0||Object.is(time,-0)||!Number.isFinite(new Date(time).getTime())||time<a.notBefore||time>=a.expiresAt)throw Error('Authorization expired or clock changed before commit');
         };
-        authKey.onsuccess=()=>{try{
+        controlKey.onsuccess=()=>{try{
           const state=stateKey.result===undefined?emptyLedger():stateRead.result;validateLedger(state,basePath);
           const present=authKey.result!==undefined,authority=authRead.result;
-          const token={ledger:sha256Hex(JSON.stringify({present:stateKey.result!==undefined,state})),authority:receiptToken(authority,present)};
+          const controller={present:controlKey.result!==undefined,record:controlRead.result};
+          const token={ledger:sha256Hex(JSON.stringify({present:stateKey.result!==undefined,state})),authority:receiptToken(authority,present),controller:controllerToken(controller.record,controller.present)};
           const referenced=[...new Set(state.installations.map(r=>r.proofHash))];
           const hashes=[...new Set([...referenced,...(command?.proof?[command.proof.history.payloadSha256]:[])])];
           if(hashes.some(h=>typeof h!=='string'||!/^[a-f0-9]{64}$/.test(h)))throw Error('Invalid proof key');
           const proofs=Object.create(null),proofTokens=Object.create(null);let remaining=hashes.length,total=0;
           const finish=()=>{try{
-            if(!command){result={state,authority:{present,record:authority},proofs,proofTokens,token};return;}
-            if(command.expected?.ledger!==token.ledger||command.expected?.authority!==token.authority)throw Error('Resource snapshot changed; retry');
+            if(!command){result={state,authority:{present,record:authority},controller,proofs,proofTokens,token};return;}
+            if(command.expected?.ledger!==token.ledger||command.expected?.authority!==token.authority||command.expected?.controller!==token.controller)throw Error('Resource snapshot or controller changed; retry');
             if(referenced.some(hash=>command.expectedProofTokens?.[hash]!==proofTokens[hash]))throw Error('Referenced proof changed; retry');
             let next,outcome;
             if(command.event){outcome=applyLedger(state,command.event,{basePath});next=outcome.state;}
@@ -80,9 +82,21 @@ export function openResourceDatabase({indexedDB,basePath,timeout=4000,now=()=>Da
           }catch(error){abort(error);}};}
         }catch(error){abort(error);}};
       });
+      const activateController=input=>new Promise((done,fail)=>{
+        const captured=structuredClone(input);nextController(null,captured);let tx,result,cause;
+        try{tx=db.transaction('state','readwrite');}catch(error){fail(error);return;}
+        tx.oncomplete=()=>done(result);tx.onabort=()=>fail(cause??tx.error??Error('Controller transaction aborted'));
+        const store=tx.objectStore('state'),read=store.get('controller'),key=store.getKey('controller'),ledger=store.get('current'),ledgerKey=store.getKey('current');
+        ledgerKey.onsuccess=()=>{try{
+          const present=key.result!==undefined;controllerToken(read.result,present);
+          const state=ledgerKey.result===undefined?emptyLedger():ledger.result;validateLedger(state,basePath);
+          if(!present&&state.revision>0)throw Error('Controller missing from used resource ledger; repair required');
+          result=nextController(present?read.result:null,captured);store.put(result,'controller');
+        }catch(error){cause=error;tx.abort();}};
+      });
       resolve({
         read:()=>transact(null),apply:event=>event&&typeof event==='object'&&!Array.isArray(event)?transact(structuredClone(event)):Promise.reject(Error('Ledger event required')),
-        snapshot:()=>signedTransaction(),commit:command=>signedTransaction(structuredClone(command)),close:()=>db.close()
+        snapshot:()=>signedTransaction(),commit:command=>signedTransaction(structuredClone(command)),activateController,close:()=>db.close()
       });
     };
   });

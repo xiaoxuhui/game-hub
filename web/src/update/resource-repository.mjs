@@ -1,3 +1,4 @@
+import {controllerToken} from '../core/controller.mjs';
 function insist(value,message){if(!value)throw Error(message);}
 function capture(bytes){insist(bytes instanceof Uint8Array&&bytes.length>0&&bytes.length<=8*1024*1024,'Invalid signature envelope');return new Uint8Array(bytes);}
 export function reservationBytes(game,receipt){
@@ -6,10 +7,11 @@ export function reservationBytes(game,receipt){
 
 // Internal coordinator factory. Its production wrapper pins trust and the clock.
 // Cache completeness and current controller are verified by the installer/SW.
-export function createResourceRepository({database,authority,now=Date.now}){
+export function createResourceRepository({database,authority,now=Date.now,controller=null}){
+  const expectedController=controllerToken(controller,controller!==null);
   const windowFor=receipt=>({notBefore:Math.max(Date.parse(receipt.catalog.issuedAt)-300000,receipt.history.acceptedAt-300000),expiresAt:Date.parse(receipt.catalog.expiresAt)});
   async function snapshot(){
-    const snapshot=await database.snapshot();let current=null;
+    const snapshot=await database.snapshot();insist(snapshot.token.controller===expectedController,'Resource controller generation changed');let current=null;
     if(snapshot.authority.present)current=await authority.restore(snapshot.authority.record);
     insist(current||snapshot.state.installations.length===0,'Authority missing; resource repair required');
     const proofs=new Map();
