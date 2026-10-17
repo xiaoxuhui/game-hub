@@ -1,5 +1,14 @@
 import {normalizeBase} from '../core/contracts.mjs';
 import {emptyLedger,validateLedger,applyLedger} from './ledger.mjs';
+import {sha256Hex} from '../core/digests.mjs';
+
+function receiptToken(value,present){
+  if(!present)return 'absent';
+  const fields=['schemaVersion','envelope','verifiedAt','history','receiptSha256'];
+  if(!value||typeof value!=='object'||Object.keys(value).length!==fields.length||!fields.every(k=>Object.hasOwn(value,k))||!(value.envelope instanceof Uint8Array)||value.envelope.length===0||value.envelope.length>8*1024*1024)throw Error('Unknown resource receipt; preserved');
+  // Include actual original bytes and metadata, not merely its claimed checksum.
+  return sha256Hex(JSON.stringify({...value,envelope:sha256Hex(value.envelope),fields:Object.keys(value)}));
+}
 
 // The resource database never opens or modifies the independent saves database.
 export function openResourceDatabase({indexedDB,basePath,timeout=4000}){
@@ -26,7 +35,45 @@ export function openResourceDatabase({indexedDB,basePath,timeout=4000}){
           else result=current;
         }catch(error){cause=error;tx.abort();}};
       });
-      resolve({read:()=>transact(null),apply:event=>event&&typeof event==='object'&&!Array.isArray(event)?transact(structuredClone(event)):Promise.reject(Error('Ledger event required')),close:()=>db.close()});
+      const signedTransaction=(command=null)=>new Promise((done,fail)=>{
+        let tx,result,cause;try{tx=db.transaction('state',command?'readwrite':'readonly');}catch(error){fail(error);return;}
+        tx.oncomplete=()=>done(result);tx.onabort=()=>fail(cause??tx.error??Error('Signed resource transaction aborted'));
+        const store=tx.objectStore('state'),stateRead=store.get('current'),stateKey=store.getKey('current'),authRead=store.get('authority'),authKey=store.getKey('authority');
+        const abort=error=>{cause=error;tx.abort();};
+        authKey.onsuccess=()=>{try{
+          const state=stateKey.result===undefined?emptyLedger():stateRead.result;validateLedger(state,basePath);
+          const present=authKey.result!==undefined,authority=authRead.result;
+          const token={ledger:sha256Hex(JSON.stringify({present:stateKey.result!==undefined,state})),authority:receiptToken(authority,present)};
+          const hashes=command?(command.proof?[command.proof.history.payloadSha256]:[]):[...new Set(state.installations.map(r=>r.proofHash))];
+          if(hashes.some(h=>typeof h!=='string'||!/^[a-f0-9]{64}$/.test(h)))throw Error('Invalid proof key');
+          const proofs=Object.create(null),proofTokens=Object.create(null);let remaining=hashes.length,total=0;
+          const finish=()=>{try{
+            if(!command){result={state,authority:{present,record:authority},proofs,proofTokens,token};return;}
+            if(command.expected?.ledger!==token.ledger||command.expected?.authority!==token.authority)throw Error('Resource snapshot changed; retry');
+            let next,outcome;
+            if(command.event){outcome=applyLedger(state,command.event,{basePath});next=outcome.state;}
+            else{if(state.revision===Number.MAX_SAFE_INTEGER)throw Error('Ledger counter exhausted');next={...state,revision:state.revision+1};validateLedger(next,basePath);}
+            if(command.receipt){receiptToken(command.receipt,true);if(command.receipt.schemaVersion!==1)throw Error('Unknown receipt');}
+            if(command.proof){
+              const hash=command.proof.history.payloadSha256,existing=proofs[hash];
+              if(command.event?.type!=='begin'||command.event.proofHash!==hash||command.receipt?.history.payloadSha256!==hash)throw Error('Unbound installation proof');
+              if((command.expectedProofToken??'absent')!==proofTokens[hash])throw Error('Installation proof changed or orphaned; preserved');
+              receiptToken(command.proof,true);if(!existing.present)store.put(command.proof,'proof:'+hash);
+            }
+            store.put(next,'current');if(command.receipt)store.put(command.receipt,'authority');result={state:next,result:outcome?.result??null};
+          }catch(error){abort(error);}};
+          if(!remaining){finish();return;}
+          for(const hash of hashes){const value=store.get('proof:'+hash),key=store.getKey('proof:'+hash);key.onsuccess=()=>{try{
+            const exists=key.result!==undefined,record=value.result;proofTokens[hash]=receiptToken(record,exists);proofs[hash]={present:exists,record};
+            if(exists){total+=record.envelope.length+new TextEncoder().encode(JSON.stringify({...record,envelope:undefined})).length;if(total>150*1024*1024)throw Error('Stored proofs exceed resource limit');}
+            if(--remaining===0)finish();
+          }catch(error){abort(error);}};}
+        }catch(error){abort(error);}};
+      });
+      resolve({
+        read:()=>transact(null),apply:event=>event&&typeof event==='object'&&!Array.isArray(event)?transact(structuredClone(event)):Promise.reject(Error('Ledger event required')),
+        snapshot:()=>signedTransaction(),commit:command=>signedTransaction(structuredClone(command)),close:()=>db.close()
+      });
     };
   });
 }
