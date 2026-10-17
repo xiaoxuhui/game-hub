@@ -20,7 +20,9 @@ for(const [id,control] of games)test(`${id} loads fixed resources, survives refr
   else if(id==='light'){await page.locator(control).click();await page.keyboard.press('Escape');}
   else if(id==='turing'){
     await page.locator('#routeSteps').fill('10');
-    const workerReady=page.waitForEvent('worker');await page.locator(control).click();const worker=await workerReady;
+    const overflow=await page.locator('#routeSteps').evaluate(input=>input.getBoundingClientRect().right-input.parentElement.getBoundingClientRect().right);
+    expect(overflow,'route input must fit its label without covering adjacent buttons').toBeLessThanOrEqual(1);
+    const [worker]=await Promise.all([page.waitForEvent('worker'),page.locator(control).click()]);
     expect(worker.url()).toContain('/assets/route-worker-');await expect(page.locator('#routeStatus')).toContainText('已显示');
   }
   await page.reload();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');

@@ -40,3 +40,11 @@ jobs:
           name: game-hub-web-preview
           path: .build/web-dist/
           if-no-files-found: error
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: game-hub-web-test-evidence
+          path: |
+            .build/web-browser/
+            .build/web-browser-result.json
+          if-no-files-found: ignore
