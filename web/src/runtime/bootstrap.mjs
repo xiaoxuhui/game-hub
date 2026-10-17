@@ -16,7 +16,10 @@ try{
   status.textContent=`${context.name} · 在线`;
   const saves=await startSaveSession({gameId:context.id,scope:context.storage,basePath:context.basePath,onStatus:state=>{status.textContent=state.message;status.title=state.message;status.dataset.saveMode=state.mode;}});
   Object.defineProperty(window,'localStorage',{configurable:false,get:()=>saves.storage});
-  Object.defineProperty(window,'GameHubReadNativeFile',{configurable:false,writable:false,value:nativeFileReader({context,gameRoot,saves,onError:error=>{status.textContent='导入已拒绝：'+error.message;},onValidated:()=>{status.textContent='文件已校验，等待游戏导入';}})});
+  let turingMetadata={};const captureProject=text=>{if(context.id==='turing'){try{const raw=JSON.parse(text);turingMetadata=Object.fromEntries(['name','description'].filter(key=>typeof raw?.[key]==='string').map(key=>[key,raw[key]]));}catch{/* Invalid project stays protected by native preflight; use native defaults. */}}};
+  captureProject(saves.storage.getItem('turing-machine-simulator.project.v1'));
+  Object.defineProperty(window,'GameHubTuringProjectField',{configurable:false,writable:false,value:(key,fallback)=>Object.hasOwn(turingMetadata,key)?turingMetadata[key]:fallback});
+  Object.defineProperty(window,'GameHubReadNativeFile',{configurable:false,writable:false,value:nativeFileReader({context,gameRoot,saves,onError:error=>{status.textContent='导入已拒绝：'+error.message;},onValidated:text=>{captureProject(text);status.textContent='文件已校验，等待游戏导入';}})});
   const exportButton=document.createElement('button');exportButton.id='game-hub-backup';exportButton.type='button';exportButton.textContent=saves.snapshot().canonicalRead?'备份':'应急导出';exportButton.title=saves.snapshot().canonicalRead?'导出本页当前游戏全部存档键值':'未能读取正式存档，仅导出旧档或本页草稿';bar.append(exportButton);
   exportButton.addEventListener('click',()=>{
     downloadSnapshot(context,saves.snapshot());

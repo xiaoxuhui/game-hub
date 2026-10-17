@@ -22,7 +22,21 @@ export function guardNativeFileReads(id,entries){
     }
     visit(ast);if(changes.length!==count)throw Error('Unreviewed native import call count');let adapted=text;
     for(const change of changes.sort((a,b)=>b.start-a.start))adapted=adapted.slice(0,change.start)+change.text+adapted.slice(change.end);
-    file.data=Buffer.from(adapted);
+    file.data=Buffer.from(id==='turing'?preserveTuringMetadata(adapted):adapted);
   }
   return output;
+}
+function preserveTuringMetadata(text){
+  const ast=ts.createSourceFile('turing-ui.js',text,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS),changes=[];let builders=0;
+  function visit(node){
+    if(ts.isObjectLiteralExpression(node)){
+      const fields=new Map(node.properties.filter(ts.isPropertyAssignment).map(property=>[property.name.getText(ast),property]));
+      if(fields.get('format')?.initializer.getText(ast)==='"turing-machine-simulator"'&&fields.has('name')&&fields.has('description')){
+        if(node.properties.length!==14||!['name','description'].every(key=>ts.isStringLiteral(fields.get(key).initializer)))throw Error('Unreviewed Turing metadata builder');builders++;
+        for(const key of ['name','description']){const value=fields.get(key).initializer;changes.push({start:value.getStart(ast),end:value.end,text:`globalThis.GameHubTuringProjectField("${key}",${value.getText(ast)})`});}
+      }
+    }
+    ts.forEachChild(node,visit);
+  }
+  visit(ast);if(builders!==1)throw Error('Unreviewed Turing project builder count');let output=text;for(const change of changes.sort((a,b)=>b.start-a.start))output=output.slice(0,change.start)+change.text+output.slice(change.end);return output;
 }
