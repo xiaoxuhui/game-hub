@@ -1,0 +1,37 @@
+import {test,expect} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
+import {replaceCanonical,readCanonical} from './save-fixtures.mjs';
+const ids=['conway','eml','light','turing','abelian-sandpile','lambda-diagram-game','red-green-puzzle','mini-scratch'];
+async function samples(page,game){
+  if(game.id==='lambda-diagram-game'){await page.locator('#expression').fill('(λp.p) (λq.q)');await page.locator('#convert').click();await page.locator('#save-state').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
+  return page.evaluate(async game=>{
+    let entries;
+    if(game.id==='conway')entries=[['conway-life-game.custom-patterns.v1',PatternLibrary.serializeLibrary(PatternLibrary.createLibrary([PatternLibrary.createPatternFromWorld(LifeEngine.createWorld([[0,0],[1,1]]),{name:'Whole backup pattern'})]))],['conway-life-game.logic-functions.v1',LogicFunctionLibrary.serializeLibrary(LogicFunctionLibrary.createLibrary())]];
+    if(game.id==='eml'){const state=JSON.parse(EMLPersistence.serialize(EMLValueStore.createInitialState()));state.inputXId=state.valueOrder[0];state.inputYId=state.valueOrder[0];state.future={opaque:'retained EML extension'};entries=[['eml_workbench_v2',JSON.stringify(state)]];}
+    if(game.id==='light'){const raw=LightStorage.emptySave();raw.stars.t01=3;entries=[['light-game/save',LightStorage.serializeSave(raw)]];}
+    if(game.id==='turing')entries=[['turing-machine-simulator.project.v1',JSON.stringify({format:'turing-machine-simulator',version:1,name:'Whole backup project',description:'Preserve both strings',input:'101',blankSymbol:'_',initialState:'q0',acceptStates:'',rejectStates:'',haltStates:'HALT',rules:'q0,1 -> HALT,1,N',maxSteps:1000,speed:10})],['turing-machine-simulator.campaign.v1','{"version":1,"completedLevelIds":[],"drafts":{}}']];
+    if(game.id==='abelian-sandpile'){const state=SandpileApp.snapshot();state.settings.amount=7;entries=[['abelian-sandpile.experiment.v1',SandpileStorage.encode(state,SandpileLevels)]];}
+    if(game.id==='lambda-diagram-game')entries=Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]);
+    if(game.id==='red-green-puzzle')entries=[['red-green-puzzle.parameters.v1','{ "schemaVersion":1, "size":4 }']];
+    if(game.id==='mini-scratch'){const {example}=await import(new URL('src/project.js',location.href));entries=[['inspiration-blocks-v5',JSON.stringify({...example(),name:'Whole backup project'})],['inspiration-blocks-v4-legacy-backup','opaque damaged legacy bytes']];}
+    if(game.storage.prefixes[0])entries.push([game.storage.prefixes[0]+'whole-backup-proof',' opaque historical bytes \u0000 keep spacing ']);return entries;
+  },game);
+}
+async function assertBase(page,id){
+  if(id==='conway')expect(await page.evaluate(()=>PatternLibrary.loadLibrary(localStorage).patterns[0].name)).toBe('Whole backup pattern');
+  if(id==='eml'){await expect(page.locator('#addButton')).toBeEnabled();expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('eml_workbench_v2')).future.opaque)).toBe('retained EML extension');}
+  if(id==='light')expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('light-game/save')).stars.t01)).toBe(3);
+  if(id==='turing')await expect(page.locator('#input')).toHaveValue('101');
+  if(id==='abelian-sandpile')await expect(page.locator('#amount')).toHaveValue('7');
+  if(id==='lambda-diagram-game')await expect(page.locator('#expression')).toHaveValue('(λp.p) (λq.q)');
+  if(id==='red-green-puzzle')await expect(page.locator('#sizeInput')).toHaveValue('4');
+  if(id==='mini-scratch')await expect(page.locator('#projectName')).toHaveValue('Whole backup project');
+}
+for(const id of ids)test(`${id} native reader and complete backup restore retain exact entries before reload`,async({page,request},testInfo)=>{
+  const errors=[];page.on('pageerror',error=>errors.push(error.message));const game=(await(await request.get('catalog.json')).json()).games.find(game=>game.id===id);
+  await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');const entries=await samples(page,game);await page.goto('/hub/');await replaceCanonical(page,id,entries);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await assertBase(page,id);
+  if(id==='lambda-diagram-game'){await page.locator('#save-state').click();await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
+  if(id==='abelian-sandpile')await expect(page.locator('#save-status')).toContainText('已自动保存在本机');
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#game-hub-backup').click()]),path=testInfo.outputPath('whole-backup.json');await download.saveAs(path);const bytes=await readFile(path),backup=JSON.parse(bytes);expect(backup.pending).toBe(false);expect(backup.entries).toEqual((await readCanonical(page,id)).entries);expect(backup.entries.length).toBeGreaterThan(0);
+  await page.goto('/hub/');await replaceCanonical(page,id,[]);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await page.locator('#game-hub-restore').click();await page.locator('#hub-restore-file').setInputFiles({name:'whole-backup.json',mimeType:'application/json',buffer:bytes});await expect(page.locator('#hub-restore-confirm')).toBeEnabled();await page.locator('#hub-restore-confirm').click();await expect(page.locator('#hub-restore-message')).toContainText('恢复完成');expect((await readCanonical(page,id)).entries).toEqual(backup.entries);await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','readonly');await page.locator('#hub-restore-reload').click();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await assertBase(page,id);await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','writable');expect(errors).toEqual([]);
+});
