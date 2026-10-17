@@ -29,6 +29,9 @@ jobs:
           run_install: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check:web
+      # Native adapter tests consume the verified frozen EML/Lambda inputs.
+      # A fresh runner has no .build cache; prepare it before those tests.
+      - run: pnpm run prepare:web
       - run: pnpm run test:web
       - run: pnpm run audit:web:native
       - run: pnpm run build:web -- --base /hub/
