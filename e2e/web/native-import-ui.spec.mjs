@@ -1,0 +1,25 @@
+import {test,expect} from '@playwright/test';
+import {createHash} from 'node:crypto';
+import {readCanonical} from './save-fixtures.mjs';
+async function setup(page,request){
+  const game=(await(await request.get('catalog.json')).json()).games.find(game=>game.id==='mini-scratch');await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
+  const raw=await page.evaluate(async()=>{const {example}=await import(new URL('src/project.js',location.href));const value={...example(),name:'Current project'};localStorage.setItem('inspiration-blocks-v5',JSON.stringify(value));return {...value,name:'Imported project'};});await expect(page.locator('#game-hub-status')).toHaveText('已保存');
+  return {raw,before:await readCanonical(page,'mini-scratch')};
+}
+async function select(page,raw,name='native-project.json'){const bytes=Buffer.from(JSON.stringify(raw));await page.locator('#fileInput').setInputFiles({name,mimeType:'application/json',buffer:bytes});return bytes;}
+async function backups(page){return page.evaluate(()=>new Promise((resolve,reject)=>{const request=indexedDB.open('game-hub-web.saves./hub/',1);request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result,tx=db.transaction('backups'),query=tx.objectStore('backups').index('gameId').getAll('mini-scratch');let rows;query.onsuccess=()=>{rows=query.result;};tx.oncomplete=()=>{db.close();resolve(rows);};};}));}
+test('native file preview binds exact bytes and cancel preserves saves; confirmation backs up before applying',async({page,request})=>{
+  const {raw,before}=await setup(page,request),bytes=await select(page,raw);await expect(page.locator('#hub-native-import-dialog')).toBeVisible();
+  await expect(page.locator('#hub-native-import-preview')).toContainText(createHash('sha256').update(bytes).digest('hex'));await expect(page.locator('#hub-native-import-preview')).toContainText('native-project.json');await expect(page.locator('#hub-native-import-preview')).toContainText(`revision: ${before.revision}`);
+  expect((await readCanonical(page,'mini-scratch')).entries).toEqual(before.entries);expect(await backups(page)).toEqual([]);await page.locator('#hub-native-import-cancel').click();expect((await readCanonical(page,'mini-scratch')).entries).toEqual(before.entries);expect(await backups(page)).toEqual([]);
+  await select(page,raw);await page.locator('#hub-native-import-confirm').click();await expect(page.locator('#projectName')).toHaveValue('Imported project');await expect(page.locator('#game-hub-status')).toHaveText('已保存');expect((await backups(page)).some(row=>JSON.stringify(row.record.entries)===JSON.stringify(before.entries))).toBe(true);
+});
+test('native import rejects editing after preview and preserves the new edit',async({page,request})=>{
+  const {raw}=await setup(page,request);await select(page,raw);await expect(page.locator('#hub-native-import-dialog')).toBeVisible();await page.evaluate(raw=>localStorage.setItem('inspiration-blocks-v5',JSON.stringify({...raw,name:'Newer edit'})),raw);await expect(page.locator('#game-hub-status')).toHaveText('已保存');await page.locator('#hub-native-import-confirm').click();await expect(page.locator('#game-hub-status')).toContainText('导入已拒绝');const current=await readCanonical(page,'mini-scratch');expect(JSON.parse(current.entries.find(([key])=>key==='inspiration-blocks-v5')[1]).name).toBe('Newer edit');expect(await backups(page)).toEqual([]);
+});
+test('native import backup failure prevents native UI and canonical replacement',async({page,request})=>{
+  const {raw,before}=await setup(page,request);await select(page,raw);await expect(page.locator('#hub-native-import-dialog')).toBeVisible();await page.evaluate(()=>{window.nativePut=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(value,...args){if(this.name==='backups')throw new DOMException('injected quota','QuotaExceededError');return nativePut.call(this,value,...args);};});await page.locator('#hub-native-import-confirm').click();await expect(page.locator('#game-hub-status')).toContainText('导入已拒绝');await page.evaluate(()=>{IDBObjectStore.prototype.put=nativePut;});expect((await readCanonical(page,'mini-scratch')).entries).toEqual(before.entries);await expect(page.locator('#projectName')).not.toHaveValue('Imported project');expect(await backups(page)).toEqual([]);
+});
+test('a replacement file invalidates the previous native preview',async({page,request})=>{
+  const {raw}=await setup(page,request);await select(page,raw,'old.json');await expect(page.locator('#hub-native-import-preview')).toContainText('old.json');await select(page,{...raw,name:'Latest file'},'latest.json');await expect(page.locator('#hub-native-import-preview')).toContainText('latest.json');await page.locator('#hub-native-import-confirm').click();await expect(page.locator('#projectName')).toHaveValue('Latest file');
+});
