@@ -11,6 +11,6 @@ test('fixed catalog lists eight version-addressed links without script errors',a
 });
 test('catalog HTTP failure is visible and never presented as latest',async({page})=>{
   await page.route('**/catalog.json',route=>route.fulfill({status:503,body:'unavailable'}));
-  await page.goto('./');await expect(page.getByRole('status')).toHaveText('目录暂不可用');
+  await page.goto('./');await expect(page.locator('#status')).toHaveText('检查失败：目录暂不可用');
   await expect(page.locator('#games a')).toHaveCount(0);
 });

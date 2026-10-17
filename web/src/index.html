@@ -1,5 +1,15 @@
 <!doctype html>
 <html lang="zh-CN">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10141c"><title>游戏大厅</title><link rel="icon" href="./assets/hub.svg"><link rel="stylesheet" href="./style.css"></head>
-<body><main><img src="./assets/hub.svg" width="64" height="64" alt=""><h1>游戏大厅</h1><p id="status" role="status">正在读取游戏目录…</p><nav id="games" aria-label="游戏"></nav></main><script type="module" src="./app.mjs"></script></body>
+<body>
+<main>
+  <header class="masthead"><div class="brand"><img src="./assets/hub.svg" width="48" height="48" alt=""><div><h1>游戏大厅</h1><p>好奇一下，玩一会儿。</p></div></div><span class="mode">在线版</span></header>
+  <section class="collection"><div class="section-heading"><h2>我的游戏 <span id="count"></span></h2><button id="check-update" class="quiet">↻ 检查更新</button></div>
+    <div id="update-notice" role="status" hidden></div><button id="reload-shell" class="quiet" hidden>刷新大厅</button>
+    <nav id="filters" aria-label="游戏分类"></nav><nav id="games" aria-label="游戏"></nav><p id="empty" hidden>这个分类还没有游戏。</p>
+  </section>
+  <footer><p id="status" role="status">正在读取游戏目录…</p><p id="last-check">尚未成功检查</p><small>存档保存在当前浏览器。离线保存功能开发中。</small></footer>
+</main>
+<dialog id="details" aria-labelledby="detail-title"><form method="dialog"><button class="close" aria-label="关闭详情">×</button></form><img id="detail-icon" width="64" height="64" alt=""><h2 id="detail-title"></h2><p id="detail-meta"></p><dl><dt>来源提交</dt><dd id="detail-source"></dd><dt>资源大小</dt><dd id="detail-size"></dd></dl><p class="detail-note">在线游玩；原生存档导入、导出在游戏内操作。跨设备请主动导出文件迁移。</p><a id="detail-play" class="primary">开始游戏 →</a></dialog>
+<script type="module" src="./app.mjs"></script></body>
 </html>
