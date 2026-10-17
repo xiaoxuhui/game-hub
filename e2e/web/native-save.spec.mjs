@@ -1,4 +1,7 @@
 import {test,expect} from '@playwright/test';
+async function canonical(page,gameId,entries=null){return page.evaluate(({gameId,entries})=>new Promise((resolve,reject)=>{
+  const request=indexedDB.open('game-hub-web.saves./hub/',1);request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result,tx=db.transaction('saves',entries===null?'readonly':'readwrite'),store=tx.objectStore('saves');let result;tx.oncomplete=()=>{db.close();resolve(result);};tx.onabort=()=>{db.close();reject(tx.error);};const read=store.get(gameId);read.onsuccess=()=>{result=read.result;if(entries!==null){result={...result,writerId:crypto.randomUUID(),fence:result.fence+1,revision:result.revision+1,sequence:0,entries};store.put(result);}};};
+}),{gameId,entries});}
 for(const id of ['conway','eml','light','turing','abelian-sandpile','lambda-diagram-game','red-green-puzzle','mini-scratch'])test(`${id} validates native save bytes without changing real storage and rejects a bad primary slot`,async({page,request})=>{
   const game=(await (await request.get('catalog.json')).json()).games.find(g=>g.id===id);await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
   if(id==='lambda-diagram-game'){await page.locator('#convert').click();await expect.poll(()=>page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v3')!==null)).toBe(true);await expect(page.locator('#game-hub-status')).toHaveText('已保存');}
@@ -19,8 +22,13 @@ for(const id of ['conway','eml','light','turing','abelian-sandpile','lambda-diag
     return {exact:JSON.stringify(accepted)===JSON.stringify(entries),rejected,futureRejected,unchanged:JSON.stringify(before)===JSON.stringify(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]))};
   },game);
   expect(result).toEqual({exact:true,rejected:true,futureRejected:id!=='eml',unchanged:true});
-  await page.evaluate(()=>{for(const [key,value] of futureNativeEntries)localStorage.setItem(key,value);});await expect(page.locator('#game-hub-status')).toHaveText('已保存');
-  const errors=[];page.on('pageerror',error=>errors.push(error.message));await page.reload();await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode',id==='eml'?'writable':'readonly');expect(errors).toEqual([]);
+  const future=await page.evaluate(()=>futureNativeEntries);await page.evaluate(()=>{for(const [key,value] of futureNativeEntries)localStorage.setItem(key,value);});await expect(page.locator('#game-hub-status')).toHaveText('已保存');
+  const before=await canonical(page,id);await page.goto('/hub/');const after=await canonical(page,id),hasFuture=record=>JSON.parse(record.entries.find(([key])=>key===future[0][0])?.[1]??'null')?.future?.opaque==='must remain';console.log('fixture pagehide observation',id,{beforeFuture:hasFuture(before),afterFuture:hasFuture(after)});
+  // Leave the old native UI first. Abel/Lambda save their old in-memory model
+  // on pagehide; it is not a new-reader fixture until another writer owns it.
+  const seeded=await canonical(page,id,future);expect(seeded.fence).toBeGreaterThan(after.fence);expect((await canonical(page,id)).entries).toEqual(future);
+  const errors=[];page.on('pageerror',error=>errors.push(error.message));await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode',id==='eml'?'writable':'readonly');expect(errors).toEqual([]);
+  if(id!=='eml')expect((await canonical(page,id)).entries).toEqual(future);
 });
 test('EML clone-based native UI writer retains future state, value and expression fields during a real save',async({page,request})=>{
   const game=(await (await request.get('catalog.json')).json()).games.find(g=>g.id==='eml');await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');
