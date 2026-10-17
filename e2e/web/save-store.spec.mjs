@@ -57,3 +57,29 @@ test('newer future-format crash journal blocks takeover without changing the IDB
   });
   expect(result.blocked).toBe(true);expect(result.retained).toBe(true);expect(result.journal.future).toEqual({opaque:true});
 });
+test('atomic restore keeps the old complete save and fences old callbacks and crash logs',async({page,request})=>{
+  await setup(page,request);
+  const result=await page.evaluate(async()=>{
+    const scope={keys:['test.save'],prefixes:[]},db=await saveModule.openSaveStore({indexedDB,basePath:'/restore/'});
+    const original=await db.acquire({gameId:'demo',writerId:'a',scope,legacy:[['test.save','old complete bytes']],journals:[]});
+    const restored=await db.restore({gameId:'demo',expected:original,writerId:'restore-b',entries:[['test.save','restored']]},scope);
+    const late=await db.commit({...original,sequence:5,entries:[['test.save','late callback']]},scope).then(()=>false,()=>true);
+    const next=await db.acquire({gameId:'demo',writerId:'c',scope,legacy:[],journals:[{...original,sequence:99,entries:[['test.save','old crash journal']]}]});
+    const backups=await db.backups('demo');db.close();return {fence:restored.fence,revision:restored.revision,late,entries:next.entries,backups:backups.map(b=>b.record)};
+  });
+  expect(result).toMatchObject({fence:2,revision:1,late:true,entries:[['test.save','restored']]});expect(result.backups.some(b=>b.writerId==='a'&&b.entries[0][1]==='old complete bytes')).toBe(true);
+});
+test('failure after queuing the restore backup aborts both backup and canonical changes',async({page,request})=>{
+  await setup(page,request);
+  const result=await page.evaluate(async()=>{
+    const scope={keys:['test.save'],prefixes:[]},db=await saveModule.openSaveStore({indexedDB,basePath:'/restore-abort/'});
+    const original=await db.acquire({gameId:'demo',writerId:'a',scope,legacy:[['test.save','keep']],journals:[]});
+    const before=(await db.backups('demo')).length,put=IDBObjectStore.prototype.put;let failed;
+    try{
+      IDBObjectStore.prototype.put=function(value,...args){if(this.name==='saves'&&value.writerId==='restore-b')throw new DOMException('injected quota after backup queued','QuotaExceededError');return put.call(this,value,...args);};
+      failed=await db.restore({gameId:'demo',expected:original,writerId:'restore-b',entries:[['test.save','must not persist']]},scope).then(()=>false,()=>true);
+    }finally{IDBObjectStore.prototype.put=put;}
+    const current=await db.current('demo'),after=(await db.backups('demo')).length;db.close();return {failed,current,before,after};
+  });
+  expect(result.failed).toBe(true);expect(result.current).toMatchObject({writerId:'a',fence:1,revision:0,entries:[['test.save','keep']]});expect(result.after).toBe(result.before);
+});
