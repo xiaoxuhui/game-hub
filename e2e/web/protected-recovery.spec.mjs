@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
 import {readCanonical,replaceCanonical} from './save-fixtures.mjs';
 const KEY='red-green-puzzle.parameters.v1';
 async function setup(page,request){const game=(await(await request.get('catalog.json')).json()).games.find(g=>g.id==='red-green-puzzle');await page.goto(game.entryUrl);await expect(page.locator('html')).toHaveAttribute('data-hub-game-ready','true');return game;}
@@ -13,10 +14,27 @@ for(const [kind,raw] of [['future','{"schemaVersion":1,"size":4,"future":{"retai
   await page.locator('#hub-restore-reload').click();await expect(page.locator('#sizeInput')).toHaveValue('5');await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','writable');
 });
 for(const stage of ['preview','committed'])test(`late readonly draft remains separately exportable during ${stage} recovery`,async({page,request},testInfo)=>{
-  const game=await setup(page,request);const backup=await download(page,testInfo);await page.locator('#game-hub-return').click();await expect(page).toHaveURL(/\/hub\/$/);await expect(page.locator('#games a')).toHaveCount(8);await replaceCanonical(page,game.id,[[KEY,'{"schemaVersion":1,"size":4,"future":true}']]);await setup(page,request);await expect(page.locator('#game-hub-status')).toHaveAttribute('data-save-mode','readonly');
+  const game=await setup(page,request);const backup=await download(page,testInfo);await page.locator('#game-hub-return').click();await expect(page).toHaveURL(/\/hub\/$/);await expect(page.locator('#games a')).toHaveCount(8);await replaceCanonical(page,game.id,[[KEY,'{"schemaVersion":1,"size":4,"future":true}']]);
+  // Optional exact old-module replay proves the regression with the same fixture.
+  // It is test-only, never changes the build and is absent from normal CI.
+  if(process.env.WEB_REPRO_RECOVERY_329==='1'){
+    const revision='329e057a6e9f686c845e381ce88ddd3687fc2cc5';
+    for(const name of ['save-session.mjs','restore-ui.mjs']){
+      const bytes=execFileSync('git',['show',`${revision}:web/src/runtime/${name}`]);
+      await page.route(`**/hub-runtime/${name}`,route=>route.fulfill({status:200,contentType:'application/javascript',body:bytes}));
+    }
+    console.log('TEST ONLY: exact recovery modules replayed from '+revision);
+  }
+  const root=new URL('.',new URL(game.entryUrl,page.url())).href;
+  const state=await page.evaluate(async root=>{
+    const {startSaveSession}=await import(new URL('hub-runtime/save-session.mjs',root)),{mountRestore}=await import(new URL('hub-runtime/restore-ui.mjs',root)),context=await(await fetch(new URL('hub-runtime/context.json',root))).json();
+    const saves=await startSaveSession({gameId:context.id,scope:context.storage,basePath:context.basePath});window.recoverySession=saves;saves.protectWrites('原生格式保护');
+    const bar=document.createElement('aside');document.body.append(bar);mountRestore({bar,saves,context,gameRoot:new URL(root)});return saves.snapshot();
+  },root);
+  expect(state).toMatchObject({canonicalRead:true,pending:false,mode:'readonly'});
   await page.locator('#game-hub-restore').click();await expect(page.locator('#hub-restore-export-draft')).toBeDisabled();
   if(stage==='committed'){await page.locator('#hub-restore-file').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:backup});await expect(page.locator('#hub-restore-confirm')).toBeEnabled();await page.locator('#hub-restore-confirm').click();await expect(page.locator('#hub-restore-message')).toContainText('恢复完成');}
-  await page.evaluate(key=>{try{localStorage.setItem(key,'late draft after modal opened');}catch{}},KEY);
+  await page.evaluate(key=>{try{recoverySession.storage.setItem(key,'late draft after modal opened');}catch{}},KEY);
   if(stage==='preview'){await page.locator('#hub-restore-file').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:backup});await expect(page.locator('#hub-restore-confirm')).toBeEnabled();await expect(page.locator('#hub-restore-preview')).toContainText('未保存草稿');}
   await expect(page.locator('#hub-restore-export-draft')).toBeEnabled();const [d]=await Promise.all([page.waitForEvent('download'),page.locator('#hub-restore-export-draft').click()]);const path=testInfo.outputPath('late-draft.json');await d.saveAs(path);const draft=JSON.parse(await readFile(path,'utf8'));expect(draft.pending).toBe(true);expect(draft.entries).toEqual([[KEY,'late draft after modal opened']]);
   if(stage==='committed')expect((await readCanonical(page,game.id)).entries).toEqual(JSON.parse(backup).entries);
