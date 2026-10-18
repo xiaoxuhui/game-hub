@@ -135,7 +135,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "63c20670c7b347894109b4f9cd95780beb1a73d8",
+      "revision": "3450adc50ca24029bfd9553673a48828b4d54de4",
       "directory": "dist",
       "version": "0.2.1",
       "contentCode": 2,
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "0.2.1：左键单击画布自定义门，独立查看该实例内部，带入当前输入、总线与嵌套延迟状态；退出或Esc返回原电路和视角。拖动仍移动，门库右键仍可编辑。内部查看保持只读，不改变原电路。"
+      "releaseNotes": "0.2.1：左键单击画布自定义门，按编辑时的原始布局查看当前输入、总线和延迟状态，直接子门保持封装；这里不进入定义编辑模式。退出或Esc返回原电路和视角，拖动仍移动，门库右键仍可编辑。"
     }
   ]
 }
