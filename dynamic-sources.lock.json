@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "e5f51f9766d449aa3f8e1333428706a5228bdb24",
+      "revision": "ddbc7fd9a6059cd81ebd5354ac94007adcb24c47",
       "directory": "dist",
-      "version": "0.2.1",
-      "contentCode": 2,
+      "version": "0.2.2",
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "0.2.1：左键单击画布自定义门，按编辑时的原始布局查看当前输入、总线和延迟状态，直接子门保持封装；这里不进入定义编辑模式。退出或Esc返回原电路和视角，拖动仍移动，门库右键仍可编辑。"
+      "releaseNotes": "0.2.2：修复内部电路保存在大坐标位置时进入后空白的问题，自动居中适配并避让工具栏。左键单击画布自定义门，按原始布局查看当前输入、总线和延迟状态，子门保持封装，不进入定义编辑模式；退出或Esc返回原电路，拖动仍移动。"
     }
   ]
 }
