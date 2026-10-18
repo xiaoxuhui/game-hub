@@ -1,0 +1,67 @@
+{
+  "catalogSequence": "19",
+  "catalogAssetId": 652370489,
+  "catalogSha256": "432b6bc2f4039584b6915c41655d8f622a20d4fc028ce190b81e572a31d085ba",
+  "previousCatalogAssetId": 652329672,
+  "previousCatalogName": "catalog-seq18-b76d224955a6.signed.json",
+  "oldOtherGameDescriptorsUnchanged": true,
+  "producerCommit": "b00ee5d0954a9b911b44737f6b5396d38de944de",
+  "logicCircuit": {
+    "id": "logic-circuit",
+    "displayName": "逻辑工坊",
+    "iconKind": "logic",
+    "available": true,
+    "version": "0.2.4",
+    "contentCode": 5,
+    "sourceRepository": "https://github.com/xiaoxuhui/logic-circuit.git",
+    "sourceRevision": "0a14f5ef5d585cb6df7db07cc799c64526862219",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "logic-circuit-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 151642,
+    "archiveSha256": "ad8a36069e5bab59aff74e9ac89e24193e34e2588c48d9eac072d05006a4c7af",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 15354,
+        "sha256": "aa940d0fc7194711e9c62cda231610fcdc24b591d8735e85debed3b8d5d189e2",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 65921,
+        "sha256": "1e6314e167ba76c43430ebba2d7c68717a935604dcb047838a7d7654f7a1c42a",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 32324,
+        "sha256": "7255fe6561803eea76089bd40763f1475e6122de0b41ee42ed2d414bf40711d4",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/expanded.js",
+        "bytes": 12826,
+        "sha256": "14862cd82fef88a4eba8b5ec0f8539a51382b242dc56532301b7a3b9e605e0da",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles.css",
+        "bytes": 23547,
+        "sha256": "b7dcb6df854225bf747f4d9c1e89990668d53d5790e192685fdcb2e2225b8db0",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "0.2.4：删除元件、导线、保存门及内部元件时立即备份删除前后完整电路；从内部编辑恢复备份会返回原电路。嵌套限制统一为32层，修复15层以上已保存门无法编辑的问题。",
+    "assetId": 652368770
+  }
+}
