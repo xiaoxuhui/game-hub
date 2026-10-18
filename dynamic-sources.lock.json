@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "80c0b428eea5e8b024d8bfbb7af8b40d9f54becd",
+      "revision": "3a88e24b45f4469ccafd8eaca54472dc100fd01d",
       "directory": "dist",
-      "version": "0.2.7",
-      "contentCode": 8,
+      "version": "0.2.8",
+      "contentCode": 9,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "0.2.7：优先零重叠路径；不可达时按连续重叠次数、重叠长度、总长度依次择优，仍然禁止穿过逻辑门。预览与落线一致，保留撤销和原有存档。"
+      "releaseNotes": "0.2.8：修复固定端口引线漏掉窄通道的问题，优先可用零重叠路径；20、12、9像素出口保留门体安全间距，仍支持最少重叠降级、预览、撤销及旧存档。"
     }
   ]
 }
