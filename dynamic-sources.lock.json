@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "08f0ce588a580a2683fdedef424575817f0671a3",
+      "revision": "0b9eed698b2160edc86257bed1c152344422eba2",
       "directory": "dist",
-      "version": "0.2.3",
-      "contentCode": 4,
+      "version": "0.2.4",
+      "contentCode": 5,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "0.2.3：刷新/关闭前自动备份，保留最近10份不同内容并按时间恢复；大电路读取失败不覆盖原存档。优化与非门等数量缓存、无环依赖计算和无关子电路复用；支持逐层点击查看内部信号、逐层退出。"
+      "releaseNotes": "0.2.4：删除元件、导线、保存门及内部元件时立即备份删除前后完整电路；从内部编辑恢复备份会返回原电路。嵌套限制统一为32层，修复15层以上已保存门无法编辑的问题。"
     }
   ]
 }
