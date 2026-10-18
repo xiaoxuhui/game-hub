@@ -1,0 +1,67 @@
+{
+  "catalogSequence": "15",
+  "catalogAssetId": 652152660,
+  "catalogSha256": "0eb07895d68c1a307571c726bd58158a80dc8bf3a030ecef93f2add1cac10f30",
+  "previousCatalogAssetId": 644809132,
+  "previousCatalogName": "catalog-seq14-bdb9889af98e.signed.json",
+  "oldGameDescriptorsUnchanged": true,
+  "producerCommit": "f655d273a50eaafcf4ee162a311dcd5d47e2ac09",
+  "logicCircuit": {
+    "id": "logic-circuit",
+    "displayName": "逻辑工坊",
+    "iconKind": "logic",
+    "available": true,
+    "version": "0.2.0",
+    "contentCode": 1,
+    "sourceRepository": "https://github.com/xiaoxuhui/logic-circuit.git",
+    "sourceRevision": "4d986e4ec445a2de3ab872730f2fcc9f89e09163",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "logic-circuit-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 135904,
+    "archiveSha256": "63079c4dbd9686bc3f061bcf5edce845f94b1b6e3a09710653930a3dcf52feda",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 14703,
+        "sha256": "a1b8dd14f61517babff5d555d2685827b19016e2d980971cec85413685ee4cd6",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 58889,
+        "sha256": "91b911a19b1777b09822541e7486a2aaa368c114fbaa2fc659e45e248f8a3912",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 26585,
+        "sha256": "f08b600d15eb9f23b13e3c098f4dc01f7f2a04b29e01e8cfba34eceec27c8408",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/expanded.js",
+        "bytes": 10852,
+        "sha256": "ace71a477d0aac1fb02351a1e8aa018b0aa9dd404b55e3c4b04f8032da866c10",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles.css",
+        "bytes": 23205,
+        "sha256": "5548b9655a9c257ba3742643ef72a6509a58cf7e55c37c0a6df11af164a9ba36",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "逻辑工坊首次接入：无限画布 NAND 与延迟线、1–256位总线、真值表、原位编辑与级联更新、只读查看、框选移动复制、临时导线输入、全局数值显示及完整存档。支持离线运行，延迟线下一步同时采样。",
+    "assetId": 652150688
+  }
+}
