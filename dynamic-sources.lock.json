@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "4d986e4ec445a2de3ab872730f2fcc9f89e09163",
+      "revision": "4a79e9693d671d53a12cf35b82231f9e725c6639",
       "directory": "dist",
-      "version": "0.2.0",
-      "contentCode": 1,
+      "version": "0.2.1",
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "逻辑工坊首次接入：无限画布 NAND 与延迟线、1–256位总线、真值表、原位编辑与级联更新、只读查看、框选移动复制、临时导线输入、全局数值显示及完整存档。支持离线运行，延迟线下一步同时采样。"
+      "releaseNotes": "0.2.1：左键单击画布自定义门，独立查看该实例内部，带入当前输入、总线与嵌套延迟状态；退出或Esc返回原电路和视角。拖动仍移动，门库右键仍可编辑。内部查看保持只读，不改变原电路。"
     }
   ]
 }
