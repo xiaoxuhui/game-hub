@@ -135,7 +135,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "3450adc50ca24029bfd9553673a48828b4d54de4",
+      "revision": "e5f51f9766d449aa3f8e1333428706a5228bdb24",
       "directory": "dist",
       "version": "0.2.1",
       "contentCode": 2,
