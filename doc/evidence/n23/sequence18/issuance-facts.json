@@ -1,0 +1,67 @@
+{
+  "catalogSequence": "18",
+  "catalogAssetId": 652329672,
+  "catalogSha256": "b76d224955a64e56088bb2d00c433f0d9dd030e965be2916b967722c92419fb8",
+  "previousCatalogAssetId": 652233466,
+  "previousCatalogName": "catalog-seq17-8252d546f7f8.signed.json",
+  "oldOtherGameDescriptorsUnchanged": true,
+  "producerCommit": "44671abaddec7570413c91d310e4342cb34507f9",
+  "logicCircuit": {
+    "id": "logic-circuit",
+    "displayName": "逻辑工坊",
+    "iconKind": "logic",
+    "available": true,
+    "version": "0.2.3",
+    "contentCode": 4,
+    "sourceRepository": "https://github.com/xiaoxuhui/logic-circuit.git",
+    "sourceRevision": "08f0ce588a580a2683fdedef424575817f0671a3",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "logic-circuit-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 150760,
+    "archiveSha256": "9e450f31291b5931e51a4453c142f368556fcdccf82e5b7a8f0ba8f6fd8d83e3",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 15333,
+        "sha256": "2927e380fe4a173e19842ec7bce8cb3a9d4d1512eb0433a2f3d3024231741d74",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 65106,
+        "sha256": "81dd0c0dda89908dae85a98c6c809623e0921bdc3037b5b4b0c0ff2e6f7820f6",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 32287,
+        "sha256": "6093c1b66d243fb15800792757913efd7a77f0f9bfedec8a8e9271dba06e9fa1",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/expanded.js",
+        "bytes": 12817,
+        "sha256": "a7fd021b3c09fbccef0962992933ce1ffa341a6662f5b449a351f6bcfb940ac2",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles.css",
+        "bytes": 23547,
+        "sha256": "b7dcb6df854225bf747f4d9c1e89990668d53d5790e192685fdcb2e2225b8db0",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "0.2.3：刷新/关闭前自动备份，保留最近10份不同内容并按时间恢复；大电路读取失败不覆盖原存档。优化与非门等数量缓存、无环依赖计算和无关子电路复用；支持逐层点击查看内部信号、逐层退出。",
+    "assetId": 652327836
+  }
+}
