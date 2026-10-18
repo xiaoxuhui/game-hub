@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "e814f718512c22afe4fa7e9600c9794c8e0b2687",
+      "revision": "25e817e7a4cc649d2876902745158f15c99f8faf",
       "directory": "dist",
-      "version": "0.2.5",
-      "contentCode": 6,
+      "version": "0.2.6",
+      "contentCode": 7,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "0.2.5：左键拉线时同时按住右键即可平移画布，松开右键继续布线，松开左键完成连接；支持先右后左、缩放、撤销与取消。"
+      "releaseNotes": "0.2.6：自动布线严格检查线段重叠与穿门，去掉错误兜底，拥挤端口独立引线；无合法路径时保留原电路并提示。加载及门编辑可安全修复旧自动线路，保留分支、信号与撤销。"
     }
   ]
 }
