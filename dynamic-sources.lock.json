@@ -128,6 +128,28 @@
         "src/style.css"
       ],
       "releaseNotes": "0.5.0：变量分类加入列表，可编辑数字、文字、布尔初始项；支持末尾添加、替换、插入、删除、清空，列表项与长度可作为返回值。舞台实时分页监视；序号从1开始，插入长度+1为末尾，错误序号明确提示。独立v5存档保留v4及旧槽与备份。"
+    },
+    {
+      "id": "logic-circuit",
+      "displayName": "逻辑工坊",
+      "iconKind": "logic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
+      "revision": "071990cdfd04ab5cc5f73cbeb7b96e368f54b1f9",
+      "directory": "dist",
+      "version": "0.2.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "logic-circuit-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "index.html",
+        "styles.css",
+        "src/core.js",
+        "src/expanded.js",
+        "src/app.js"
+      ],
+      "releaseNotes": "逻辑工坊首次接入：无限画布 NAND 与延迟线、1–256位总线、真值表、原位编辑与级联更新、只读查看、框选移动复制、临时导线输入、全局数值显示及完整存档。支持离线运行，延迟线下一步同时采样。"
     }
   ]
 }
