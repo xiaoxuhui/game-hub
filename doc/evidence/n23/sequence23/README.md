@@ -1,0 +1,9 @@
+# 逻辑工坊0.2.8已发布（2026-10-18）
+
+固定来源3a88e24b45f4469ccafd8eaca54472dc100fd01d，CI39134660721成功：111项核心/分发检查和完整19套浏览器回归通过。本机窄通道专项、旋转和预览/落线一致性也已验证。
+
+大厅生产来源75b572a6db394ff43fa93597a83d7ca86bcb28ff，本地86项检查和CI39134720725成功。两轮8文件完全一致。
+
+0.2.8/contentCode9，签名目录23，catalog asset653642068，SHA256 d8ab297689477370688b351b860029b5db6d4e389bacc99ba8b9a8e99c4db1ff。游戏ZIP asset653640013，162111字节，SHA256 a544c5b32a9702c8435e1258e7d0b2e68f17b1759a09ce2190b1b5ce4f5e10d3。
+
+资源标识同步前停止签名，原上传记录经安全准入后接续；目录激活后等待缓存同步，再只读匿名核验。最终Verified online sequence 23, 24 cumulative resources across 23 signed catalogs。目录22以catalog-seq22-f4b7e118d889.signed.json保留，其它游戏和历史资源不变。用户本机几何未上传。
