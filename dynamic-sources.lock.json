@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "25e817e7a4cc649d2876902745158f15c99f8faf",
+      "revision": "80c0b428eea5e8b024d8bfbb7af8b40d9f54becd",
       "directory": "dist",
-      "version": "0.2.6",
-      "contentCode": 7,
+      "version": "0.2.7",
+      "contentCode": 8,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "0.2.6：自动布线严格检查线段重叠与穿门，去掉错误兜底，拥挤端口独立引线；无合法路径时保留原电路并提示。加载及门编辑可安全修复旧自动线路，保留分支、信号与撤销。"
+      "releaseNotes": "0.2.7：优先零重叠路径；不可达时按连续重叠次数、重叠长度、总长度依次择优，仍然禁止穿过逻辑门。预览与落线一致，保留撤销和原有存档。"
     }
   ]
 }
