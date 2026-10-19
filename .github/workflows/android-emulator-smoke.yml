@@ -22,7 +22,7 @@ jobs:
       - run: pnpm test
       - run: pnpm run bundle
       - run: pnpm run verify:bundle
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
