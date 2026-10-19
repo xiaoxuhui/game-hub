@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "3a88e24b45f4469ccafd8eaca54472dc100fd01d",
+      "revision": "fb5ade6067155c344215634a423e35cb2f9c1127",
       "directory": "dist",
-      "version": "0.2.8",
-      "contentCode": 9,
+      "version": "0.3.0",
+      "contentCode": 10,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -149,7 +149,7 @@
         "src/expanded.js",
         "src/app.js"
       ],
-      "releaseNotes": "0.2.8：修复固定端口引线漏掉窄通道的问题，优先可用零重叠路径；20、12、9像素出口保留门体安全间距，仍支持最少重叠降级、预览、撤销及旧存档。"
+      "releaseNotes": "0.3.0：大型电路按需状态真值表与后台分层展开；内外右键状态面板、元件替换和直接改带宽；所有连线自动补零或截断高位，混合带宽逐位或合并；端口一格间距、短出口直连及逐步绕行；修复缩放跳远、输入误联动并增强备份恢复。"
     }
   ]
 }
