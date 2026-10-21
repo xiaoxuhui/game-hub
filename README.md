@@ -47,6 +47,8 @@ cd android
 
 调试 APK 位于 `android/app/build/outputs/apk/debug/app-debug.apk`。GitHub Actions 的 [Android 检查](.github/workflows/android-check.yml) 运行同类步骤，并上传调试 APK 与摘要；[Android 模拟器烟测](.github/workflows/android-emulator-smoke.yml) 可手动运行，验证四入口和返回大厅，并上传截图与 UI 层级。工作流不会发布。资源组装完成前，`audit:storage` 没有输入，需按上述顺序运行。`pnpm run bundle` 只接受干净的独立检出，防止把开发中未提交的文件误打进 APK。
 
+只预览已经组装好的浏览器版大厅（不构建 Android）时，用 `scripts/start-browser-hall.command`；大厅目录与端口可用环境变量覆盖，见[浏览器版大厅本地启动](doc/浏览器版大厅本地启动.md)。
+
 ## 使用与数据
 
 在首页进入项目；系统返回键优先返回当前项目的上一网页，随后回到大厅。文件导入使用系统选择器，导出使用系统“创建文档”界面。四个项目共享 WebView origin，固定来源中已知的存储键互不相同，但路径不构成数据隔离。旧版独立 APK 的私有数据不会自动迁移；可迁移的内容见 [迁移说明](doc/迁移说明.md)。
