@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('legacy','n9','n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23')][string]$TaskScope='legacy',
+    [ValidateSet('legacy','n9','n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24')][string]$TaskScope='legacy',
     [switch]$ResumeAfterUploads
 )
 $ErrorActionPreference='Stop'
@@ -61,6 +61,10 @@ if($TaskScope -ieq 'n23'){
     $taskCheckout='D:\soft\.ci-tmp\game-hub-n23\work'
     $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n23\evidence\publication'
 }
+if($TaskScope -ieq 'n24'){
+    $taskCheckout='D:\soft\.ci-tmp\game-hub-n24\work'
+    $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n24\evidence\publication'
+}
 $taskApi='https://api.github.com/repos/xiaoxuhui/game-hub'
 $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resource-successor';'X-GitHub-Api-Version'='2022-11-28'}
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null
@@ -68,7 +72,7 @@ if($Commit -notmatch '^[0-9a-f]{40}$' -or $ExpectedPreviousSha -notmatch '^[0-9a
 $taskDirectory=[IO.Path]::GetFullPath($EvidenceDirectory)
 if(-not $taskDirectory.StartsWith($taskEvidenceRoot+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Exact task evidence subdirectory required'}
 if($ResumeAfterUploads){
-    if($TaskScope -notin @('n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23')){throw 'Resume is restricted to reviewed N10/N12/N13/N14/N15/N16/N18/N19/N20/N21/N22/N23 scopes'}
+    if($TaskScope -notin @('n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24')){throw 'Resume is restricted to reviewed N10/N12/N13/N14/N15/N16/N18/N19/N20/N21/N22/N23/N24 scopes'}
     foreach($taskRequired in @('before-snapshot.json','previous.signed.json','uploaded-resources.json')){
         if(-not (Test-Path -LiteralPath (Join-Path $taskDirectory $taskRequired) -PathType Leaf)){throw 'Verified post-upload records required for resume'}
     }

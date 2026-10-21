@@ -156,6 +156,29 @@
         "src/vendor/three.provenance.json"
       ],
       "releaseNotes": "0.3.1：新增我的世界三维红石观察与运行模式，支持拉杆、红石灯、逐刻运行、与非门/或非基础模式及逻辑门模块定位；修复运行降频时仿真推进落后，改进真实门型与输出读数，并保留替换元件的输入输出接线和朝向。"
+    },
+    {
+      "id": "traffic-planner",
+      "displayName": "路流 · 交通规划",
+      "iconKind": "generic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/traffic-planner.git",
+      "revision": "800ae8c9b2d55e9d50bdc0dfaf59f2a7ea16e3a1",
+      "directory": "dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "traffic-planner-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "index.html",
+        "styles.css",
+        "src/core.js",
+        "src/examples.js",
+        "src/simulation.js",
+        "src/app.js"
+      ],
+      "releaseNotes": "首次接入路流：空白地图自由修路、单向方向、红绿灯、随机出口、逐段指定路线和上下跨线；含城市、高架、菱形、四叶草、盘龙和单向环路六例。自动选路参考道路负载；支持方案保存和JSON导入导出。"
     }
   ]
 }

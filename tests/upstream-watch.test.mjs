@@ -12,9 +12,9 @@ const getter = (options = {}) => async path => {
   return {default_branch: 'main'};
 };
 
-test('eight actual upstreams include direct dynamic sources and separate red-green baseline', () => {
+test('nine actual upstreams include direct dynamic sources and separate red-green baseline', () => {
   const sources = loadSources();
-  assert.equal(sources.length, 8);
+  assert.equal(sources.length, 9);
   const turing = sources.find(s => s.id === 'turing');
   assert.deepEqual(turing.consumers.map(c => c.id), ['turing', 'red-green-puzzle']);
   assert.notEqual(turing.consumers[0].revision, turing.consumers[1].revision);
@@ -30,6 +30,10 @@ test('eight actual upstreams include direct dynamic sources and separate red-gre
   assert.equal(logic.repository,'https://github.com/xiaoxuhui/logic-circuit.git');
   assert.equal(logic.consumers.length,1);
   assert.ok(logic.consumers[0].inputs.includes('dist/src/core.js'));
+  const traffic=sources.find(s=>s.id==='traffic-planner');
+  assert.equal(traffic.repository,'https://github.com/xiaoxuhui/traffic-planner.git');
+  assert.equal(traffic.consumers.length,1);assert.ok(traffic.consumers[0].inputs.includes('dist/src/simulation.js'));
+  assert.equal(classifyChanges([{filename:'dist/src/simulation.js'}],traffic.consumers[0].inputs).status,'resource-change-pending-review');
 });
 test('release versions distinguish newer, equal and older without numeric rounding', () => {
   assert.equal(versionOrder('v1.2.4', '1.2.3'), 'new-release');
