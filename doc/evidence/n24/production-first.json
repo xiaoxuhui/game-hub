@@ -1,0 +1,47 @@
+[
+  {
+    "name": "candidate.json",
+    "bytes": 164,
+    "sha256": "0aff76ccfe0d83c367ecebb9afc537430613744322206aa198b9b0e99e1c4085"
+  },
+  {
+    "name": "game-abelian-sandpile-2-47a35517606c.zip",
+    "bytes": 83688,
+    "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3"
+  },
+  {
+    "name": "game-lambda-diagram-game-3-fcef92bb937e.zip",
+    "bytes": 117813,
+    "sha256": "fcef92bb937ec4df8fe57a853a1c28fa930ad35c74acf6540880c8c0789908b5"
+  },
+  {
+    "name": "game-logic-circuit-11-cd2bd6a07a53.zip",
+    "bytes": 988554,
+    "sha256": "cd2bd6a07a53bf0c7ec937bbb05faaab09b9265d91adc656a98a12c16f93f692"
+  },
+  {
+    "name": "game-memory-demo-2-178d01e9ee05.zip",
+    "bytes": 9510,
+    "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+  },
+  {
+    "name": "game-mini-scratch-7-29548a43c015.zip",
+    "bytes": 312805,
+    "sha256": "29548a43c01500b539c009a15b47b869358a60d1fe638999ee3fff7601534593"
+  },
+  {
+    "name": "game-red-green-puzzle-1-81edc7c967f7.zip",
+    "bytes": 14620,
+    "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+  },
+  {
+    "name": "game-traffic-planner-1-392675062340.zip",
+    "bytes": 87528,
+    "sha256": "392675062340ef6d9c9a4854468f114b7d6b4824e83729d451e8f3af3a5db5d9"
+  },
+  {
+    "name": "games.unsigned.json",
+    "bytes": 19688,
+    "sha256": "9c9945ff6a2b5b5de86985738840be518f23ba4f4e4c904e1e9a00c1d92f8619"
+  }
+]

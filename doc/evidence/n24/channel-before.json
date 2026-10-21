@@ -1,0 +1,39 @@
+{
+  "releaseId": 407394942,
+  "previousSequence": "25",
+  "nextSequence": "26",
+  "previousSha256": "ce97ad7a5b7ca5c13e3e78b41b1d55d866c55c8c04e3d3c8dce6dc5878d531c0",
+  "catalogAssetId": 658980575,
+  "games": [
+    {
+      "id": "memory-demo",
+      "version": "1.0.1",
+      "contentCode": 2
+    },
+    {
+      "id": "abelian-sandpile",
+      "version": "0.1.2",
+      "contentCode": 2
+    },
+    {
+      "id": "lambda-diagram-game",
+      "version": "0.3.3",
+      "contentCode": 3
+    },
+    {
+      "id": "red-green-puzzle",
+      "version": "1.0.0",
+      "contentCode": 1
+    },
+    {
+      "id": "mini-scratch",
+      "version": "0.5.0",
+      "contentCode": 7
+    },
+    {
+      "id": "logic-circuit",
+      "version": "0.3.1",
+      "contentCode": 11
+    }
+  ]
+}
