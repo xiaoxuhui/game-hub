@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "959f1b7195eea3eb0acb4679647d4b20fcf5d189",
+      "revision": "450a20a79da3da1326d40efd33d40483515391db",
       "directory": "dist",
-      "version": "0.3.9",
-      "contentCode": 19,
+      "version": "0.3.10",
+      "contentCode": 20,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.9：持续直接运行现在真正连续无延迟推进并实时更新反馈电路，循环不会自动停止；支持手动停止。保留单次直接计算、默认OR/NOT及密集八位布线修复。"
+      "releaseNotes": "0.3.10：持续直接运行后台旁路全部中继器和延迟通道，前台保留块体；火把每30ms同步更新一帧，多层逐帧传播；停止恢复原生时序，并缓存连接关系提高运行效率。"
     },
     {
       "id": "traffic-planner",
