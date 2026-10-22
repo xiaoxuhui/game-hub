@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "409315c644a2b804ee145cf5d9a323dcb189f725",
+      "revision": "2439000d4c01708bdd760708ae23586a91680b79",
       "directory": "dist",
-      "version": "0.3.1",
-      "contentCode": 11,
+      "version": "0.3.2",
+      "contentCode": 12,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.1：新增我的世界三维红石观察与运行模式，支持拉杆、红石灯、逐刻运行、与非门/或非基础模式及逻辑门模块定位；修复运行降频时仿真推进落后，改进真实门型与输出读数，并保留替换元件的输入输出接线和朝向。"
+      "releaseNotes": "0.3.2：我的世界模式加入隐藏界面/显示界面按钮，隐藏工具栏、状态、图例、飞行面板及文字标记；保留准星与恢复按钮，隐藏时仍可移动、切换拉杆并继续红石运行，重新进入默认显示。"
     },
     {
       "id": "traffic-planner",
