@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "ed27afebed76718b90c811c64c1a4dfa54c87f10",
+      "revision": "511115a530a7d0aab8a89042a9029837969d7e5a",
       "directory": "dist",
-      "version": "0.3.12",
-      "contentCode": 22,
+      "version": "0.3.13",
+      "contentCode": 23,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.12：小电路低层布线失败后继续升高重试，尝试16、32、48层并扩展爬升范围；端口保护不再无限延伸到上空。"
+      "releaseNotes": "0.3.13：自动汇流点补齐输入输出端口保护，修复入口被其他线路围死导致的断口。"
     },
     {
       "id": "traffic-planner",
