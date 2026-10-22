@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "c623ecf38500915aa30adb751239d0125c8df505",
+      "revision": "2138ebb3be033e6783a7ce7aef3b141e4219a0b5",
       "directory": "dist",
-      "version": "0.3.7",
-      "contentCode": 17,
+      "version": "0.3.8",
+      "contentCode": 18,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.7：网格寻路按代价提前剪枝、缓存格子检查；绘制复用最终粉线邻接表，直接生成紧凑Float32缓冲。完整模型指纹不变；复杂布线样例约2倍，30000个物理门样例单次16.65秒降至14.87秒，编译型电路收益有限。"
+      "releaseNotes": "0.3.8：密集八位电路使用保护端口坡道与分层寻路，修复未布通线路；新增直接计算和持续直接运行，跳过红石延迟但仍计算真实物理连接，反馈振荡有界停止；三维默认或门＋非门，仍可切回与非门。"
     },
     {
       "id": "traffic-planner",
