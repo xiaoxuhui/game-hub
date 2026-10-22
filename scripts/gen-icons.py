@@ -75,6 +75,32 @@ def intersect(a, b):
     return lambda x, y: max(a(x, y), b(x, y))
 
 
+def sd_polygon(points):
+    """Distance to a closed polygon, negative inside (sharp corners kept)."""
+    def f(x, y):
+        dist2 = float("inf")
+        inside = False
+        n = len(points)
+        for i in range(n):
+            ax, ay = points[i]
+            bx, by = points[(i + 1) % n]
+            dx, dy = bx - ax, by - ay
+            if dx == 0.0 and dy == 0.0:
+                continue
+            t = ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy)
+            t = 0.0 if t < 0.0 else (1.0 if t > 1.0 else t)
+            ex, ey = x - (ax + t * dx), y - (ay + t * dy)
+            d2 = ex * ex + ey * ey
+            if d2 < dist2:
+                dist2 = d2
+            if (ay > y) != (by > y):
+                if x < ax + (y - ay) * dx / dy:
+                    inside = not inside
+        dist = math.sqrt(dist2)
+        return -dist if inside else dist
+    return f
+
+
 # --- canvas -----------------------------------------------------------------
 
 class Canvas:
@@ -204,11 +230,38 @@ def icon_traffic_planner(path):
     return write_png(path, c.px)
 
 
+def icon_mini_scratch(path):
+    """灵感积木: the page favicon — purple tile with the white block glyph.
+
+    The favicon in index.html is an inline data: URI, so the 40x40 geometry here
+    is transcribed from it, keeping the 12/40 corner ratio and the block path.
+    """
+    c = Canvas(rgb("#f6f5f1"))
+    purple, white = rgb("#7555cd"), rgb("#ffffff")
+    tile = 360.0
+    c.fill(sd_rrect(256, 256, tile / 2, tile / 2, tile * 12 / 40), purple,
+           (256 - tile / 2, 256 - tile / 2, 256 + tile / 2, 256 + tile / 2))
+    s = 9.4  # 40-unit favicon space -> pixels
+
+    def P(u, v):
+        return (256 + (u - 20) * s, 256 + (v - 20) * s)
+
+    block = [(10, 12), (18, 12), (18, 9), (25, 9), (25, 12), (31, 12),
+             (31, 20), (28, 20), (28, 26), (31, 26), (31, 31), (10, 31),
+             (10, 23), (13, 23), (13, 18), (10, 18)]
+    pts = [P(u, v) for u, v in block]
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    c.fill(sd_polygon(pts), white, (min(xs), min(ys), max(xs), max(ys)))
+    return write_png(path, c.px)
+
+
 ICONS = {
     "memory-demo": icon_memory_demo,
     "red-green-puzzle": icon_red_green,
     "logic-circuit": icon_logic_circuit,
     "traffic-planner": icon_traffic_planner,
+    "mini-scratch": icon_mini_scratch,
 }
 
 if __name__ == "__main__":
