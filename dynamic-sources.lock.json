@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "a67911b599cd2da1efebd750c3ded4c11dcdc4ec",
+      "revision": "623081f4e85e8a221839b271e26416a4ecc8d7e8",
       "directory": "dist",
-      "version": "0.3.5",
-      "contentCode": 15,
+      "version": "0.3.6",
+      "contentCode": 16,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.5：去掉我的世界模式中逻辑门模块的彩色半透明区域、立体外框和名称边框，保留无框名称、编号与侧栏定位。包含隐藏界面、A∨A=A化简和梯状重复布线清理。 隐藏时跳过标签生成，显示时惰性创建并缓存复用。 删除重复线路后不再遗留无用支撑方块，同时保留防串线遮挡。"
+      "releaseNotes": "0.3.6：无关线路与支撑柱和拉杆之间保留一格空隙，输入组沿原朝向外移两格，保留相对布局；紧凑布局同样预留拉杆出线通道。"
     },
     {
       "id": "traffic-planner",
