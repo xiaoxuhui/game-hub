@@ -1,0 +1,265 @@
+{
+  "catalogSequence": "31",
+  "catalogAssetId": 664674638,
+  "catalogSha256": "339d1cf870a20339c4957bb6d33c103b5c35438b6abdb46b34a5c84787aca62a",
+  "historyAssetId": 664583280,
+  "verifiedHistorySequences": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31"
+  ],
+  "resources": [
+    {
+      "id": "memory-demo",
+      "contentCode": 1,
+      "assetId": 623482293,
+      "bytes": 8490,
+      "sha256": "27f1df3b689e6b4592cbfcae4a80e759a274cfd7857e2764ac2203d27bb0876b"
+    },
+    {
+      "id": "memory-demo",
+      "contentCode": 2,
+      "assetId": 625120403,
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "id": "abelian-sandpile",
+      "contentCode": 1,
+      "assetId": 625246315,
+      "bytes": 83690,
+      "sha256": "8e9db7fc872072b43ed035673107d58e86bd6e486f83b05d44f57bb392f369e5"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "contentCode": 1,
+      "assetId": 625246403,
+      "bytes": 89571,
+      "sha256": "5e418cdff45e84ea6ed0b3b1d29d99e0ebb4d1841bc5f2171d48b20f1bf81bb8"
+    },
+    {
+      "id": "red-green-puzzle",
+      "contentCode": 1,
+      "assetId": 625642734,
+      "bytes": 14620,
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "contentCode": 2,
+      "assetId": 628444055,
+      "bytes": 102362,
+      "sha256": "0ee2f0ef41545e2364172a3ec2c74481c9cb16ae3c6361a66786f24d0594cdb9"
+    },
+    {
+      "id": "abelian-sandpile",
+      "contentCode": 2,
+      "assetId": 631376685,
+      "bytes": 83688,
+      "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "contentCode": 3,
+      "assetId": 637155800,
+      "bytes": 117813,
+      "sha256": "fcef92bb937ec4df8fe57a853a1c28fa930ad35c74acf6540880c8c0789908b5"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 1,
+      "assetId": 644018323,
+      "bytes": 102015,
+      "sha256": "1323c534ffba8405448c52cf73c4b048f1596dd88f4c6b231258239d354e0d13"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 2,
+      "assetId": 644169215,
+      "bytes": 188863,
+      "sha256": "12d3953b9369755e246e1a3859a506f86cf9db2f120a29efbae13e125a5aadec"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 3,
+      "assetId": 644248725,
+      "bytes": 188863,
+      "sha256": "12d3953b9369755e246e1a3859a506f86cf9db2f120a29efbae13e125a5aadec"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 4,
+      "assetId": 644536836,
+      "bytes": 194491,
+      "sha256": "c9f604bc2d8b1ca6fd84a425fd351b77db898f5f8ad555acfa5952790a5c4b62"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 5,
+      "assetId": 644643800,
+      "bytes": 274032,
+      "sha256": "ebb50a24d9f573256d31fd810617951b7e13944ca7b52f863d3ab21e2f74b1c1"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 6,
+      "assetId": 644737060,
+      "bytes": 282205,
+      "sha256": "18bacdca60bbf0620778172d20f9ccd2204e8e64d3f0f7d73e78f634e61a4426"
+    },
+    {
+      "id": "mini-scratch",
+      "contentCode": 7,
+      "assetId": 644807162,
+      "bytes": 312805,
+      "sha256": "29548a43c01500b539c009a15b47b869358a60d1fe638999ee3fff7601534593"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 1,
+      "assetId": 652150688,
+      "bytes": 135904,
+      "sha256": "63079c4dbd9686bc3f061bcf5edce845f94b1b6e3a09710653930a3dcf52feda"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 2,
+      "assetId": 652212759,
+      "bytes": 138954,
+      "sha256": "9b5968298fc4690d038d9b2a716b2406bbbe4de9db28ced03d7af06e770308de"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 3,
+      "assetId": 652231340,
+      "bytes": 139121,
+      "sha256": "df3710af342e9a978049cc69f12ebb0686490b64cee925e544883a71d759ebcf"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 4,
+      "assetId": 652327836,
+      "bytes": 150760,
+      "sha256": "9e450f31291b5931e51a4453c142f368556fcdccf82e5b7a8f0ba8f6fd8d83e3"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 5,
+      "assetId": 652368770,
+      "bytes": 151642,
+      "sha256": "ad8a36069e5bab59aff74e9ac89e24193e34e2588c48d9eac072d05006a4c7af"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 6,
+      "assetId": 653410390,
+      "bytes": 152755,
+      "sha256": "a0a91c17f20cfe76fe05303d1d81cb27495eb1259df727a67218a986ee90e833"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 7,
+      "assetId": 653480600,
+      "bytes": 156006,
+      "sha256": "8e1c2694a33aeaa560e76ad0180e7b1b45cd09d7c34d37151205b472cc825278"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 8,
+      "assetId": 653586991,
+      "bytes": 161818,
+      "sha256": "03584c7314a8e736c12af72f4dfa27f26b8a4cedfceb440bca5e19aa3398c861"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 9,
+      "assetId": 653640013,
+      "bytes": 162111,
+      "sha256": "a544c5b32a9702c8435e1258e7d0b2e68f17b1759a09ce2190b1b5ce4f5e10d3"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 10,
+      "assetId": 656523461,
+      "bytes": 225320,
+      "sha256": "128a47f78490a52ca9c1a4a56699ac7243e8b556cad304132a25dda6cdb19faa"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 11,
+      "assetId": 658976717,
+      "bytes": 988554,
+      "sha256": "cd2bd6a07a53bf0c7ec937bbb05faaab09b9265d91adc656a98a12c16f93f692"
+    },
+    {
+      "id": "traffic-planner",
+      "contentCode": 1,
+      "assetId": 662886084,
+      "bytes": 87528,
+      "sha256": "392675062340ef6d9c9a4854468f114b7d6b4824e83729d451e8f3af3a5db5d9"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 12,
+      "assetId": 664364781,
+      "bytes": 989801,
+      "sha256": "eab705b7197a5e68b2309f3d1b8466db57b78b75708c8da2772012595a3fe4cb"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 13,
+      "assetId": 664394265,
+      "bytes": 990272,
+      "sha256": "44ebef1b3b905f8d73e45dbeddbbab53fee08af0330a8901ee43b478f4270343"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 14,
+      "assetId": 664459790,
+      "bytes": 991481,
+      "sha256": "687577f0710d1d95ea1d8d5d4f8361afd99397eb8256fc4a378b391548230121"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 15,
+      "assetId": 664582595,
+      "bytes": 991836,
+      "sha256": "ceab22fbd34103f41fdad718cea6c898f91914d4bfbab2405f3e7f57ad63c755"
+    },
+    {
+      "id": "logic-circuit",
+      "contentCode": 16,
+      "assetId": 664674018,
+      "bytes": 992421,
+      "sha256": "d844ff871208f9d1200d47104e66231bdb7ef9f2f1909fa4dd2958a2382cc472"
+    }
+  ]
+}
