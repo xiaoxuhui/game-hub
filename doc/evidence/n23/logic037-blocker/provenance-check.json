@@ -1,0 +1,29 @@
+{
+  "baselineBeforeIntegration": "85fac70",
+  "hallCandidate": "3d5d6675f7d00eaf2f8a2467b7bb5e3838e24d0f",
+  "check": "verifyRedGreenSource",
+  "error": "Adapted output bytes differ from reviewed provenance",
+  "reviewed": [
+    {
+      "path": "LICENSE",
+      "unchanged": true
+    },
+    {
+      "path": "app.js",
+      "unchanged": true
+    },
+    {
+      "path": "core.js",
+      "unchanged": true
+    },
+    {
+      "path": "index.html",
+      "unchanged": true
+    }
+  ],
+  "unexpectedFiles": [
+    "icon.png"
+  ],
+  "preexisting": true,
+  "releaseAttempted": false
+}
