@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "ad2515290c041889f6d0451baf0c9dff60d9acb8",
+      "revision": "ed27afebed76718b90c811c64c1a4dfa54c87f10",
       "directory": "dist",
-      "version": "0.3.11",
-      "contentCode": 21,
+      "version": "0.3.12",
+      "contentCode": 22,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.11：显示实际支撑方块、红石粉、火把、中继器、拉杆和红石灯数量；不重复统计绘制部件，后台旁路后保留前台统计，支持手机换行布局。"
+      "releaseNotes": "0.3.12：小电路低层布线失败后继续升高重试，尝试16、32、48层并扩展爬升范围；端口保护不再无限延伸到上空。"
     },
     {
       "id": "traffic-planner",
