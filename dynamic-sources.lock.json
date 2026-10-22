@@ -135,7 +135,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "52b5b454a896d9e64f7245955515cb78f651eb6c",
+      "revision": "34a66f14dfae9f55febc4ae9ec5258facd4e873d",
       "directory": "dist",
       "version": "0.3.5",
       "contentCode": 15,
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.5：去掉我的世界模式中逻辑门模块的彩色半透明区域、立体外框和名称边框，保留无框名称、编号与侧栏定位。包含隐藏界面、A∨A=A化简和梯状重复布线清理。"
+      "releaseNotes": "0.3.5：去掉我的世界模式中逻辑门模块的彩色半透明区域、立体外框和名称边框，保留无框名称、编号与侧栏定位。包含隐藏界面、A∨A=A化简和梯状重复布线清理。 隐藏时跳过标签生成，显示时惰性创建并缓存复用。"
     },
     {
       "id": "traffic-planner",
