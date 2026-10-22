@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "878e301ba62dadebdeedb799a21b33ca8b0fb374",
+      "revision": "4444ae6fd610238d7095042c1129efa0a4c55c68",
       "directory": "dist",
-      "version": "0.3.3",
-      "contentCode": 13,
+      "version": "0.3.4",
+      "contentCode": 14,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.3：三维转换按A∨A=A清除相同信号与等价表达式带来的多余或门，支持嵌套结构；按信号身份而非当前电平判断，保留独立输入、强制值、延迟与反馈。包含隐藏/显示三维界面功能。"
+      "releaseNotes": "0.3.4：清除三维布线中相邻分叉点形成的梯状同网回环，补上重复走廊清理遗漏；移除前验证所有邻点仍互通，保护器件接点、门内部和定向连接，并重新计算实际路径与信号增强位置。包含A∨A=A化简和隐藏界面。"
     },
     {
       "id": "traffic-planner",
