@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "4444ae6fd610238d7095042c1129efa0a4c55c68",
+      "revision": "52b5b454a896d9e64f7245955515cb78f651eb6c",
       "directory": "dist",
-      "version": "0.3.4",
-      "contentCode": 14,
+      "version": "0.3.5",
+      "contentCode": 15,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.4：清除三维布线中相邻分叉点形成的梯状同网回环，补上重复走廊清理遗漏；移除前验证所有邻点仍互通，保护器件接点、门内部和定向连接，并重新计算实际路径与信号增强位置。包含A∨A=A化简和隐藏界面。"
+      "releaseNotes": "0.3.5：去掉我的世界模式中逻辑门模块的彩色半透明区域、立体外框和名称边框，保留无框名称、编号与侧栏定位。包含隐藏界面、A∨A=A化简和梯状重复布线清理。"
     },
     {
       "id": "traffic-planner",
