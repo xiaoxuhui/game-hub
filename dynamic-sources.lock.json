@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "511115a530a7d0aab8a89042a9029837969d7e5a",
+      "revision": "b65b4184e470986f12b3a0236b8f84c6bd9ada71",
       "directory": "dist",
-      "version": "0.3.13",
-      "contentCode": 23,
+      "version": "0.3.14",
+      "contentCode": 24,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.13：自动汇流点补齐输入输出端口保护，修复入口被其他线路围死导致的断口。"
+      "releaseNotes": "0.3.14：三维线路显示加粗加长的浅蓝流向箭头，标示输入输出、转弯及各分叉，低电平也可见，不计入材料或修改物理连接。"
     },
     {
       "id": "traffic-planner",
