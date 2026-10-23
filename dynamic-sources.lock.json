@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "067ba838f5f4501d89dcf6a68922d489061044c9",
+      "revision": "690f4b606aa280560e8540fc513755527e07387e",
       "directory": "dist",
-      "version": "0.3.16",
-      "contentCode": 26,
+      "version": "0.3.17",
+      "contentCode": 27,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.16：方向箭头保持约22屏幕像素，远景可读，连续线保留最小屏幕宽度，重复标记自动拉开间隔。"
+      "releaseNotes": "0.3.17：显著减少重复方向箭头，目标屏幕间距96像素，保留分叉、输入输出与连续路线。"
     },
     {
       "id": "traffic-planner",
