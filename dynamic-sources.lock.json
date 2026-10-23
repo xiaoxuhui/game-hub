@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "b65b4184e470986f12b3a0236b8f84c6bd9ada71",
+      "revision": "c17d4c9b4892ff583efdabf117ed92e1cd03de71",
       "directory": "dist",
-      "version": "0.3.14",
-      "contentCode": 24,
+      "version": "0.3.15",
+      "contentCode": 25,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.14：三维线路显示加粗加长的浅蓝流向箭头，标示输入输出、转弯及各分叉，低电平也可见，不计入材料或修改物理连接。"
+      "releaseNotes": "0.3.15：连续流向长线覆盖整条红石路径，转弯、分叉、上下坡首尾连接，可一路跟随至输出。"
     },
     {
       "id": "traffic-planner",
