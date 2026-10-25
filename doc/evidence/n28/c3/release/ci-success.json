@@ -1,0 +1,15 @@
+{
+  "producerCommit": "afcda0eaea0da1745e362f7dcbdd62bf291c78d8",
+  "runId": 40234759034,
+  "jobId": 121293826064,
+  "job": [
+    {
+      "id": 121293826064,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "afcda0eaea0da1745e362f7dcbdd62bf291c78d8",
+      "html_url": "https://github.com/xiaoxuhui/game-hub/actions/runs/40234759034/job/121293826064"
+    }
+  ],
+  "scope": "Android check workflow: Linux159 pass plus1 Windows-only skip; local160 pass; no resource issuance"
+}

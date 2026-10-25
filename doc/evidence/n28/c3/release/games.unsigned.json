@@ -1,0 +1,496 @@
+[
+  {
+    "id": "conway",
+    "version": "0.17.0",
+    "contentCode": 3,
+    "sourceRepository": "https://github.com/xiaoxuhui/conway-life-game.git",
+    "sourceRevision": "a531a560b3ecce070be80fb6470cbc916971bce4",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "conway-baseline-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 328473,
+    "archiveSha256": "f9207e077589e67bc7d9d531e302a95fffc4027c8497035509ca258f803e6285",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "hub-source-proof.json",
+        "bytes": 1698,
+        "sha256": "03efebfbb882bbe487f295fd8755e5b3540db3ae991cabf041b54ca7ca676e3a",
+        "mime": "application/json"
+      },
+      {
+        "path": "index.html",
+        "bytes": 23948,
+        "sha256": "7871f0c89f1c4dbd5faba4e1d05bcc7e561a9225dbd8b5e4f0e0473729698ddd",
+        "mime": "text/html"
+      },
+      {
+        "path": "scripts/app.js",
+        "bytes": 53602,
+        "sha256": "5604fc312c2510a87c882d11105cd899d0c84824df4714f42bb83951b5353afa",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/dialogs.js",
+        "bytes": 48043,
+        "sha256": "598142d2423c091a66f696ef3de338782e49ef74350ce2b216b105978c63f93e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/file-backup.js",
+        "bytes": 4040,
+        "sha256": "0862b59e5caa52af10b199fe9a54e7edda7d0c38bc44a4edade0ef8cfc053768",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/hub-world-archive-ui.js",
+        "bytes": 8252,
+        "sha256": "d90c5ec205f929e8b3ae96d9f924f08dc44ac98bdd6c8523a41cf9090def2b17",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/hub-world-archive.js",
+        "bytes": 10484,
+        "sha256": "c0b4a54b0db2071c022bcfafb9e97b47fd39fdc3b1ba30fc1fd53bded43a400b",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/life-engine.js",
+        "bytes": 12050,
+        "sha256": "a5e4543ab7baaadcf8f03a8de52ef0dbc0e783fb61ef257f0c64689fc6f0d3f8",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-code.js",
+        "bytes": 17656,
+        "sha256": "d826166e4a44ae3636d059db3e528cf6ca0d350b6c909c25325f1da14503eb1e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-compile.js",
+        "bytes": 33187,
+        "sha256": "f31f23a497d1287b4a82ade7e2202df4268b04efaa4ff781183a05f0542f9ac8",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-expand.js",
+        "bytes": 6099,
+        "sha256": "889f30008397e6c1427400c07bf0c88cf72861d171e4318de2dd4b18cb1adc6d",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-function-library.js",
+        "bytes": 11280,
+        "sha256": "358bf696dcbdd0cf7cfc95ef9259c6df1ecf54bdff9da14befdecba6be05fa66",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-layout.js",
+        "bytes": 2862,
+        "sha256": "91cfeafdcee4601e26176de6f64d3e6218b97229bb9368876379997044a3e005",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-parse.js",
+        "bytes": 10383,
+        "sha256": "d17d919e5701fa21f35223abd5d342257a89e8581f817c908160061ae450daa8",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-safety.js",
+        "bytes": 5955,
+        "sha256": "954a2976e7e845bd1df03131e8782747092bc5e8e611eb0a1cf39626d810c513",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/pattern-library.js",
+        "bytes": 13177,
+        "sha256": "fbe924083f53efa4772d6bca815f13323ceb1e62eb002663f259bbc4a02687da",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/presets.js",
+        "bytes": 22716,
+        "sha256": "85ec6112ef879d31252d614389637e5eadfdbf66db7afa2051de1f95655bd3fb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/record-import.js",
+        "bytes": 4317,
+        "sha256": "5336b9abde16095798d540d5f8d1ac7a2de84a05d34baf27128b5913f72b5818",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/renderer.js",
+        "bytes": 14030,
+        "sha256": "39b14ccda77be01f38cfa761bfdcb0379053dfefa6c1c7cddb8e8583cd38aad3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/speed-control.js",
+        "bytes": 1817,
+        "sha256": "fda1e74202f712af6069d00e9904f2ac2ac7254bdad2db9dce2f8d52bd1f9509",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles/main.css",
+        "bytes": 19181,
+        "sha256": "023399964f2361347e1ce1c8a0e66d71acee4931af4936488b925eb66daad389",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "固定上游a531a560，增加自定义演化规则及完整世界备份/恢复。新导出保留合法v2基础和rule扩展；旧版只能恢复格局、代数、视图，非默认规则在旧版按B3/S23演化。完整原文备份、显式旧档规则选择和保存失败保护；完整MIT随包。"
+  },
+  {
+    "id": "eml",
+    "version": "1.3.1",
+    "contentCode": 2,
+    "sourceRepository": "https://github.com/xiaoxuhui/EML.git",
+    "sourceRevision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "eml-baseline-v1",
+    "entryPage": "eml-workbench.html",
+    "archiveBytes": 843507,
+    "archiveSha256": "6f3dff273d70e47243bce75b167a9ce5ab4b6513deed35b363b903ddc5738935",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "eml-workbench.html",
+        "bytes": 203064,
+        "sha256": "fafe7eaa57d9bedcb409c14270840ebdb61a5bbf31b23b1d71266542048d3a73",
+        "mime": "text/html"
+      },
+      {
+        "path": "hub-source-proof.json",
+        "bytes": 19486,
+        "sha256": "2efbb73c0e73026f2b963ab46fbe632343084bde93b1104137377147b88bff91",
+        "mime": "application/json"
+      },
+      {
+        "path": "hub/eml-format.js",
+        "bytes": 7254,
+        "sha256": "2127bdc900707cf6ddfa7db3391e4bed268d367e5e4b6bb3b88c9e73f0177731",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "hub/eml-legacy-reader.js",
+        "bytes": 25997,
+        "sha256": "f4831267f94c4414eaf7d0fce4d1682a4b34a4d58755711b1ea49a2fc13e52db",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "hub/eml-preservation.js",
+        "bytes": 13865,
+        "sha256": "b93779b15692956a661d3fd4321de31eb14f8f50ad99eb399cf08907c17c53c1",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "hub/eml-ui.js",
+        "bytes": 13296,
+        "sha256": "61997f94e0fdcb45a81bf54993ea1dedfdb94a18106df5a8ec13a129eb3d8fe0",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "katex/fonts/KaTeX_AMS-Regular.woff2",
+        "bytes": 28076,
+        "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Caligraphic-Bold.woff2",
+        "bytes": 6912,
+        "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Caligraphic-Regular.woff2",
+        "bytes": 6908,
+        "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Fraktur-Bold.woff2",
+        "bytes": 11348,
+        "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Fraktur-Regular.woff2",
+        "bytes": 11316,
+        "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Main-Bold.woff2",
+        "bytes": 25324,
+        "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Main-BoldItalic.woff2",
+        "bytes": 16780,
+        "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Main-Italic.woff2",
+        "bytes": 16988,
+        "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Main-Regular.woff2",
+        "bytes": 26272,
+        "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Math-BoldItalic.woff2",
+        "bytes": 16400,
+        "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Math-Italic.woff2",
+        "bytes": 16440,
+        "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_SansSerif-Bold.woff2",
+        "bytes": 12216,
+        "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_SansSerif-Italic.woff2",
+        "bytes": 12028,
+        "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_SansSerif-Regular.woff2",
+        "bytes": 10344,
+        "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Script-Regular.woff2",
+        "bytes": 9644,
+        "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Size1-Regular.woff2",
+        "bytes": 5468,
+        "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Size2-Regular.woff2",
+        "bytes": 5208,
+        "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Size3-Regular.woff2",
+        "bytes": 3624,
+        "sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Size4-Regular.woff2",
+        "bytes": 4928,
+        "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/fonts/KaTeX_Typewriter-Regular.woff2",
+        "bytes": 13568,
+        "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+        "mime": "application/octet-stream"
+      },
+      {
+        "path": "katex/katex.js",
+        "bytes": 271963,
+        "sha256": "2137463f72df91421fa3367bc2e1d2ad1e588fc1bbcc48f6f1fd6098554aa62c",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "katex/katex.min.css",
+        "bytes": 21218,
+        "sha256": "0c7351312859d2b8a4ac4d8851f97ca238083948d3305f2842212cc3d89d8757",
+        "mime": "text/css"
+      },
+      {
+        "path": "licenses/katex-0.16.21.MIT.txt",
+        "bytes": 1107,
+        "sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
+        "mime": "text/plain"
+      },
+      {
+        "path": "licenses/katex-fonts.MIT.txt",
+        "bytes": 1079,
+        "sha256": "a7bd44abd8419bf78185be51f34216356af1adb0806ce39d6a9ca0940bd49b70",
+        "mime": "text/plain"
+      }
+    ],
+    "releaseNotes": "固定上游63cbfd8f，增加组合函数与cos表达式。兼容导出保留旧版可表达数值/EML公式及完整原文扩展；旧版编辑后明确选择恢复，完整保护先于缓存镜像，失败可手动导出。补齐离线KaTeX20字体与MIT许可，正文MIT随包。"
+  },
+  {
+    "id": "light",
+    "version": "1.2.1",
+    "contentCode": 2,
+    "sourceRepository": "https://github.com/xiaoxuhui/light_game.git",
+    "sourceRevision": "85163534ccae2b023928c877e002581a8f35f0cb",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "light-baseline-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 115671,
+    "archiveSha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 3532,
+        "sha256": "14a78b2e55fa1336e90544f28e5d9265fb990933dde23fb72f74b904c058f344",
+        "mime": "text/html"
+      },
+      {
+        "path": "scripts/app.js",
+        "bytes": 31240,
+        "sha256": "50900439da27dad2faaef1ffabaa2e8c5461bf0c5aadf80f40014a40564e312b",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/levels.js",
+        "bytes": 21309,
+        "sha256": "3752f90d97e743f197f266eded44bb73e90ebc171b78963a3d58549c72d42fc7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/light-core.js",
+        "bytes": 11327,
+        "sha256": "71e8992db1e79ddb0f34bf101f60b60acd2e1d8cd1d2426ed21b7ffc5eef6f80",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/light-engine.js",
+        "bytes": 7234,
+        "sha256": "96374b9174c5d6674157251e2a0394d6f0ea5f3c568ab69a2af580d41ec11f0f",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/renderer.js",
+        "bytes": 14985,
+        "sha256": "dd93a2a0a3184e472934e268651b59156fea443ba37dccd279d0b7e755aa232a",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/storage.js",
+        "bytes": 14755,
+        "sha256": "d1ca8a8a08cdd8773c97cb709674d55895e6d597542897b87825c68bc2e3b89e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles/main.css",
+        "bytes": 9229,
+        "sha256": "ed89d9eadf9eb42fdb536f6fe1cf3366226b5aed77397d81279bf645b4ab51b4",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "正式版本 1.2.1 的兼容资源更新，固定上游 85163534ccae2b023928c877e002581a8f35f0cb；沿用原存档格式与存储合同，完整MIT许可随包。"
+  },
+  {
+    "id": "turing",
+    "version": "0.5.1",
+    "contentCode": 2,
+    "sourceRepository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+    "sourceRevision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "turing-baseline-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 86435,
+    "archiveSha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "assets/campaign-CBioli0a.css",
+        "bytes": 9021,
+        "sha256": "aa75e851850078402158fc7669310657f2611277aa78c295fab2d2fbcfaf6440",
+        "mime": "text/css"
+      },
+      {
+        "path": "assets/campaign-DK81-Kun.js",
+        "bytes": 27829,
+        "sha256": "3a6fb75f1c146fa00cefee46d9f08af26950eb99f3050fe5a4ed380d22a9061c",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "assets/core-BmS44wlX.js",
+        "bytes": 3571,
+        "sha256": "defddab3e9965b38b9088816288801efc6f4b42607290af9169a34e097584912",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "assets/main-BJgtYmnF.css",
+        "bytes": 9749,
+        "sha256": "54320c1dbc78a5e99eabdbe3e6ee5edec4ce6840772a3c2ae5dde02dde975f43",
+        "mime": "text/css"
+      },
+      {
+        "path": "assets/main-Cq8er0ZM.js",
+        "bytes": 30137,
+        "sha256": "598c2e7ed729a07d67ffcd0d41d48a93bcd7991c009e83603fbe9b17fb50056a",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "assets/route-worker--cIr4Dp-.js",
+        "bytes": 2817,
+        "sha256": "1cc23d89b84c9329dccd88b8abbe93aecb8c914a45468879cc31dff36209ce6e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "campaign.html",
+        "bytes": 592,
+        "sha256": "1403dff3d7e1c1996de5b932b916b5a0806eab8b126e04498aa10e46fd73eec4",
+        "mime": "text/html"
+      },
+      {
+        "path": "index.html",
+        "bytes": 575,
+        "sha256": "8a86de228fd28889a6ea94ea903c1c59196a42dc8f38f9b6395356bc9fcb2936",
+        "mime": "text/html"
+      }
+    ],
+    "releaseNotes": "正式版本 0.5.1 的兼容资源更新，固定上游 32eb3b95eb78eab703abe8e64214bd8dbbb939c7；沿用原存档格式与存储合同，完整MIT许可随包。"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "input": "c3-e-fixed-production-first.log",
+    "rawSha256": "b73e616cf5a6c6e8821f0d315cba72a816d19d354aa73c7961e8369b7d56b086",
+    "publicFile": "production-first.log",
+    "publicSha256": "432a7dc5b1a41a1442996655fcff1df357556fa2d2de27e8969d402c29773307",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-e-fixed-production-second.log",
+    "rawSha256": "d801248831e4e4c91208b0095f1b379f6772f64bb33a8af1c324e80b0aa2d051",
+    "publicFile": "production-second.log",
+    "publicSha256": "7d5e51af1763da8ed93d3e6f374b0f6bb45a221ee05d3f93a21d3b51fc5a04ac",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-e-actual-zip-browser.log",
+    "rawSha256": "5eef68c3d2afdbbbd06ec635e20d8ac9ba2403ff0c4053fabb79273622a91a52",
+    "publicFile": "candidate-browser.log",
+    "publicSha256": "5202d0235935778d400480b333419a4cd135f2bf76849cf705899b71ff0e0b7e",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-e-cli-storage.log",
+    "rawSha256": "b57a546f19001255e569653a96ab4b73835a083a5143628cd929a6231a3053a5",
+    "publicFile": "storage-audit.log",
+    "publicSha256": "1dcb4e08cb4017d6223324c78420105df219ba279620cfdcdbce387394b8761e",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-e-preflight.log",
+    "rawSha256": "8ff7a46039916805baa2b7655d41807983568b6d88bc3f898b82023079210ed4",
+    "publicFile": "preflight.log",
+    "publicSha256": "fccd51d2dd7d9c4df878922fe77d00f94bce3d67cc4f228395ac4c3625a4841f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-publication-console.log",
+    "rawSha256": "3b416121d33aaa4347049670e5a4a65ee141af6ba70eeb11c07551ce8fad14ea",
+    "publicFile": "publication.log",
+    "publicSha256": "4011f98184e923e57dad0ce59fedcb947ffa197e02d2aba46939e27d2b367439",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-public-issued-probe.log",
+    "rawSha256": "fa479d4b44deb71292a9d79e31a1ee005e2643bb038648533adc680898cf7d5c",
+    "publicFile": "public-probe.log",
+    "publicSha256": "533303c0f24635c21c52ed4bfc20fd2d0d7c78bfcb4400b80f28eecc73417828",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-final-ci-raw.json (content)",
+    "rawSha256": "3ddf4efbfd62c5a2f9d0007098e164c1a6a9f9f500aefc08abc3f8717d4f9fb0",
+    "publicFile": "ci-excerpt.log",
+    "publicSha256": "e4f70d0966e6792bbd53d41ad9550e372ff827341abda0ad712e809d09c6b9fb",
+    "selection": "actual counts/build/default storage verification excerpt; full raw received log privately retained"
+  }
+]
