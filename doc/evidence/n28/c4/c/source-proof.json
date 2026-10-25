@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "integration": "turing-max-full-preservation-v1",
+  "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+  "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+  "inputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "campaign.html",
+      "bytes": 418,
+      "sha256": "587bee799629977d1374559a39f28587a037740f39c5edf4c48d81d5e21f78af"
+    },
+    {
+      "path": "index.html",
+      "bytes": 400,
+      "sha256": "033ad43dfff25e047d695e7eca290f8409a1f212f16fa288143404c0fc4045ea"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1292,
+      "sha256": "273a33488fabf5e78b8551f30e599b3e015dcf6d05d035869ef956eb32f845db"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 30977,
+      "sha256": "af41b59c6d9a31d62855311d7a745e34680058e5615b513a56d1b1087f96ca08"
+    },
+    {
+      "path": "src/busy-beaver-examples.ts",
+      "bytes": 1913,
+      "sha256": "3ca0b926af4265a797b0b240f0d0544a27704aae69acc3c206eb734eb128e9ef"
+    },
+    {
+      "path": "src/campaign-backup.ts",
+      "bytes": 2395,
+      "sha256": "1b95d2ddcbc07797d4bc9d8066125c63f09c19a4c752cf1b8da838fffb1d4a3a"
+    },
+    {
+      "path": "src/campaign-main.ts",
+      "bytes": 21747,
+      "sha256": "b28d58467b37630d9eb30abc035859b0f6e6320e4405b7b74321df3c0cd3a5ee"
+    },
+    {
+      "path": "src/campaign-styles.css",
+      "bytes": 11320,
+      "sha256": "6733d0d1b2f7c2bf6ea8747afafc72336392ab2fa268bb79d369f44c4eaf6634"
+    },
+    {
+      "path": "src/campaign.ts",
+      "bytes": 22086,
+      "sha256": "24d36f62d6448906637b325972277ba41f4a6081af806abe0e68817726cfd4ec"
+    },
+    {
+      "path": "src/conjecture-examples.ts",
+      "bytes": 4459,
+      "sha256": "e64185a75f4df5f4ac3fae0f56520fe898a72c6d5822d460dd5d7defe943f2a6"
+    },
+    {
+      "path": "src/core.ts",
+      "bytes": 8123,
+      "sha256": "54e6e45544790c87301e19dcb69bffb3390467b4a1473bb9116dfc932b9430b0"
+    },
+    {
+      "path": "src/examples.ts",
+      "bytes": 2861,
+      "sha256": "6c11553eec7d451a5ef9a6345e8b4f3eadd0acbfe36e9b3cc2c73e8bfb7a8726"
+    },
+    {
+      "path": "src/execution-log.test.ts",
+      "bytes": 1072,
+      "sha256": "44ca0f9948bfc236a49f73be99c06e037e0032c6ddc9def4516cf9099e53be72"
+    },
+    {
+      "path": "src/execution-log.ts",
+      "bytes": 1219,
+      "sha256": "248656e142eaec05e181673dfd2d31234e4d78f02654dcdf657dc7f3f117ef74"
+    },
+    {
+      "path": "src/execution-scheduler.ts",
+      "bytes": 1881,
+      "sha256": "1094b60ca462c2e7994640a7ee395ee72b9a3a23a79eadc1756937ed41d2e071"
+    },
+    {
+      "path": "src/gijswijt-direct.ts",
+      "bytes": 2928,
+      "sha256": "b14402173ebdfb5288c320656fbb829cfc4d74446dd7bb1d6a3dc2c85e264226"
+    },
+    {
+      "path": "src/gijswijt-tm.ts",
+      "bytes": 6603,
+      "sha256": "623d6d9413804ea0eb6ca6bf804d0642e29d2085a1cd8f69e3998b6c6aba68a8"
+    },
+    {
+      "path": "src/gijswijt-worker.ts",
+      "bytes": 763,
+      "sha256": "8251390e316f3a54439cb3c1e5e1943cd6139f14dfdad21ef366f4780abdf195"
+    },
+    {
+      "path": "src/gijswijt.ts",
+      "bytes": 1090,
+      "sha256": "b9969b755265dcb5681907733cbc2951f12148457de03cfcdcaadef1045dbdef"
+    },
+    {
+      "path": "src/hyperoperation-examples.ts",
+      "bytes": 5342,
+      "sha256": "54cf4d684286e04d99812c8a3ccdc94e1a100d8f3c9da83f1f9d6ecdfaefa331"
+    },
+    {
+      "path": "src/main.ts",
+      "bytes": 41345,
+      "sha256": "638f863dae9613c822e686f9a212afb1e177b9af6cc57b4c9113269738f0fbb9"
+    },
+    {
+      "path": "src/project-codec.test.ts",
+      "bytes": 1852,
+      "sha256": "88444f30f9c19344bccb6a7092fafd989c28e6fbfe3dbf40433371d24c3e6f1a"
+    },
+    {
+      "path": "src/project-codec.ts",
+      "bytes": 3064,
+      "sha256": "bc4876603162e36183aa282139941cc65ebcdf83c6fd430d351ac50e7803db26"
+    },
+    {
+      "path": "src/project-state.ts",
+      "bytes": 656,
+      "sha256": "7300a6c262ef435fc5bf9866c5abb401e8cce71e8434c4504e67d3c0a8ce3202"
+    },
+    {
+      "path": "src/register-tm.ts",
+      "bytes": 7206,
+      "sha256": "774c5ea41c6d250b966fa74f899e87a5dd9a5ffec8f866996e29e9a09c7feda0"
+    },
+    {
+      "path": "src/route-bounds.ts",
+      "bytes": 346,
+      "sha256": "7db512e63559d55cd4d68e75df9df5ae6c7f57ce1281b113775f0668f09d7ad0"
+    },
+    {
+      "path": "src/route-controller.ts",
+      "bytes": 2302,
+      "sha256": "b7853c57e90917bb2897abe1b957cf41cbde15e0d1fa20bf330c078c7f0d759e"
+    },
+    {
+      "path": "src/route-view.ts",
+      "bytes": 662,
+      "sha256": "85ec1b7196b838078a516958cd17bbe210bca519926feb31c87b048bc91a8bc8"
+    },
+    {
+      "path": "src/route-worker.ts",
+      "bytes": 1895,
+      "sha256": "4440ba6404ed467da7aa8ae882efefc1a484ddcb29e0d4c90209bf768d37d1ed"
+    },
+    {
+      "path": "src/rule-source.ts",
+      "bytes": 439,
+      "sha256": "80b3a54a1e60f27fc211f3d58c40a5c699410123ca41b9199fcbe8c6793aa611"
+    },
+    {
+      "path": "src/shuffle.test.ts",
+      "bytes": 547,
+      "sha256": "ee97c6c9b66b0b550a7bc5d4306dc130ecc9fffbef74dadc97e13f0f681ed7c8"
+    },
+    {
+      "path": "src/shuffle.ts",
+      "bytes": 506,
+      "sha256": "82a4bc9695c5c4f50c791c2110fa12e5b05a3cb58f703273be2641b450eca408"
+    },
+    {
+      "path": "src/speed-input.ts",
+      "bytes": 1152,
+      "sha256": "f6803f2bfaf9cae9c6b68bff8ae935daf5867eda03d2ef030cd2ff16d3526b6a"
+    },
+    {
+      "path": "src/speed-preference.ts",
+      "bytes": 725,
+      "sha256": "5a650230af1d02efb9ebe2e62bd1ac04a39d0569ccda01d9171ca53c42ab6956"
+    },
+    {
+      "path": "src/speed.ts",
+      "bytes": 365,
+      "sha256": "7ef102e27d48b162a87cd62ec647f260aaf62da0fd20cd21b3a81472b0e5d61e"
+    },
+    {
+      "path": "src/styles.css",
+      "bytes": 13903,
+      "sha256": "173b1325b8faf5292e9bd309cc25d9f525d6fc655a4303af67c00369e9a7fff0"
+    },
+    {
+      "path": "src/tape-drag.ts",
+      "bytes": 2663,
+      "sha256": "7e512bd757369b984c54aea898f64c96f0531981bedb227852dff2531db6179a"
+    },
+    {
+      "path": "src/text-insertion.ts",
+      "bytes": 540,
+      "sha256": "49a37187e4b02f6192a9511de2f409beec7cd1ba7d6e5d02ecad4b1bc8b3a0de"
+    },
+    {
+      "path": "src/tile-puzzle.ts",
+      "bytes": 4240,
+      "sha256": "a1dd57f60c67206ba1db03d14d8f200db7d53e95652d75149c68c9510813ab0c"
+    },
+    {
+      "path": "src/unary-examples.ts",
+      "bytes": 4732,
+      "sha256": "a30a4daa719f39a152c6abe20015d8ce317cd5207bb87341d3bf94bbb093c892"
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 473,
+      "sha256": "68d415e18753095c170f8d2ca5c1c21894b2a974e3cac71edfe14047dfdc1621"
+    },
+    {
+      "path": "vite.config.ts",
+      "bytes": 741,
+      "sha256": "a62eb09ec320e715e1003ce277087a313c1a0ceb98b9cd6838a00d0af24e45c4"
+    }
+  ],
+  "legacyReader": {
+    "schemaVersion": 1,
+    "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+    "compiler": {
+      "package": "typescript",
+      "version": "5.9.3",
+      "target": "ES2022",
+      "module": "CommonJS",
+      "onlyResolutionRewrite": "require(\"./core\") -> require(\"./core.cjs\")"
+    },
+    "sources": [
+      {
+        "kind": "old",
+        "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+        "path": "src/core.ts",
+        "fixture": "old/core.ts.txt",
+        "bytes": 8123,
+        "sha256": "54e6e45544790c87301e19dcb69bffb3390467b4a1473bb9116dfc932b9430b0",
+        "compiledFixture": "old/core.cjs",
+        "compiledSha256": "4da386980d8db9c6c6b660c0ebfb47a3c936d0fbb45fd26a30fda76d1470c729"
+      },
+      {
+        "kind": "old",
+        "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+        "path": "src/project-codec.ts",
+        "fixture": "old/project-codec.ts.txt",
+        "bytes": 3012,
+        "sha256": "2f6a5c0ccb5afba3bc3eda042af3a70e9f9b550e0bffd79002104a34fcfe473a",
+        "compiledFixture": "old/project-codec.cjs",
+        "compiledSha256": "81149b9fa6ee4aa30f6af12a29fcc8ea244aca769ea035e53e7f4d358b1fffc7"
+      },
+      {
+        "kind": "old",
+        "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+        "path": "LICENSE",
+        "fixture": "old/LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+      },
+      {
+        "kind": "new",
+        "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+        "path": "src/core.ts",
+        "fixture": "new/core.ts.txt",
+        "bytes": 8123,
+        "sha256": "54e6e45544790c87301e19dcb69bffb3390467b4a1473bb9116dfc932b9430b0",
+        "compiledFixture": "new/core.cjs",
+        "compiledSha256": "4da386980d8db9c6c6b660c0ebfb47a3c936d0fbb45fd26a30fda76d1470c729"
+      },
+      {
+        "kind": "new",
+        "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+        "path": "src/project-codec.ts",
+        "fixture": "new/project-codec.ts.txt",
+        "bytes": 3064,
+        "sha256": "bc4876603162e36183aa282139941cc65ebcdf83c6fd430d351ac50e7803db26",
+        "compiledFixture": "new/project-codec.cjs",
+        "compiledSha256": "32074ce75aaf8fdf42da1a4a768f0dfaf5e85a09f115182707381363e9478b88"
+      },
+      {
+        "kind": "new",
+        "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+        "path": "LICENSE",
+        "fixture": "new/LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+      }
+    ]
+  },
+  "reviewedOutputsSha256": "abdc3cbc3f1f0f2905cc05741ca30682bff08dca4022ee60a348849862f457ca",
+  "adaptedSources": {
+    "src/main.ts": "a94b2807d5b84832f9f3a38a13c6592502db3963a8928ff68e280c38ba320e3e",
+    "src/campaign-main.ts": "abd9c7279cd1062c9b1699074642e9179f506fdb5ba6036ee52e6715b64762ab",
+    "src/styles.css": "512e99098122ea62c7356abf899c1dee3dabc41a55e67a7aaa940ab503d1aa84",
+    "index.html": "8ab0569e368503134a9429c6936a5473f1398eae2826331feffa6961dee853bb"
+  },
+  "runtimeFiles": {
+    "hub/turing-legacy.js": "1c2e431b725627d53f015e5d9208b14fe218c54ed1dc16f4d020816f072b1628",
+    "hub/turing-format.js": "9656e6aad7d50146d012aac1309a509eddf59a0ae742abdec7afac6cd6377e22",
+    "hub/turing-preservation.js": "550aa88d17228d02a09e0225c4ab15065017afe7074f6c128c7150a685a93604",
+    "hub/turing-ui.js": "52dcb88b79cc100bc3e13cfbabebf08de2fa1d458dbf8839d029d715d71267e3"
+  },
+  "adapters": {
+    "turing-resource-integration.mjs": "8a246b4208b97ebcc4b3366354218f238ba35c1bfe08f04679addee98a5233c1",
+    "turing-legacy-reader.mjs": "2ece63a4f539ebd52af9a1a0e084685902cd105567b056841657dd02f41a2f8b",
+    "turing-compatibility.mjs": "8387f0e6b3231de2ede5a8d4c43d341b218aa53ed1ffb843b977ce4ed96ff54d",
+    "turing-preservation.mjs": "f78b415da412e0e137ae8969771fd25d313e498adbcc605464e944d9a216af67",
+    "turing-compatibility-ui.mjs": "804ac40b8d886197a3279d0e49c07e85f55368096db88df31b352a4d9ae2a3cb"
+  },
+  "outputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "assets/campaign-CL-dVuZQ.css",
+      "bytes": 9661,
+      "sha256": "1bc77f76883b08e9234bb9c0140c2d8507bce2e606eca3962fe0b18561227784"
+    },
+    {
+      "path": "assets/campaign-iMEr2cx1.js",
+      "bytes": 31907,
+      "sha256": "14e476e413ff47a55a40000d235d947c6029ced89063b6a96c4e4ff6fe8f4ba9"
+    },
+    {
+      "path": "assets/core-BmS44wlX.js",
+      "bytes": 3571,
+      "sha256": "defddab3e9965b38b9088816288801efc6f4b42607290af9169a34e097584912"
+    },
+    {
+      "path": "assets/gijswijt-worker-BVTAjsju.js",
+      "bytes": 584,
+      "sha256": "09c150d910bb7629a0eb4a842b0bb5d2f20c29b0cf987c696586719d322f6eef"
+    },
+    {
+      "path": "assets/main-CIj5DFoc.css",
+      "bytes": 12469,
+      "sha256": "516078ac27069bc623dad4538a60e88c640573c85fd158e064fe801f4fc64c5c"
+    },
+    {
+      "path": "assets/main-CZju3U6O.js",
+      "bytes": 56313,
+      "sha256": "4cad23f089e7026e75ed53d6242268aaefb0234f1a7b854594344e42690af406"
+    },
+    {
+      "path": "assets/route-worker--cIr4Dp-.js",
+      "bytes": 2817,
+      "sha256": "1cc23d89b84c9329dccd88b8abbe93aecb8c914a45468879cc31dff36209ce6e"
+    },
+    {
+      "path": "campaign.html",
+      "bytes": 592,
+      "sha256": "580783008329239cd5129a210ead5b9437e004ed919505860192719761f18c19"
+    },
+    {
+      "path": "hub/turing-format.js",
+      "bytes": 5425,
+      "sha256": "9656e6aad7d50146d012aac1309a509eddf59a0ae742abdec7afac6cd6377e22"
+    },
+    {
+      "path": "hub/turing-legacy.js",
+      "bytes": 10905,
+      "sha256": "1c2e431b725627d53f015e5d9208b14fe218c54ed1dc16f4d020816f072b1628"
+    },
+    {
+      "path": "hub/turing-preservation.js",
+      "bytes": 11819,
+      "sha256": "550aa88d17228d02a09e0225c4ab15065017afe7074f6c128c7150a685a93604"
+    },
+    {
+      "path": "hub/turing-ui.js",
+      "bytes": 14694,
+      "sha256": "52dcb88b79cc100bc3e13cfbabebf08de2fa1d458dbf8839d029d715d71267e3"
+    },
+    {
+      "path": "index.html",
+      "bytes": 781,
+      "sha256": "cdd3dab3d2bd87618349ccbe0c7b411d4c1d2630f8c625a8069a75c5646a4a83"
+    }
+  ]
+}

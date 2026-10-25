@@ -1,0 +1,37 @@
+[
+  {
+    "input": "c4-c-full-initial.log",
+    "rawSha256": "e4292e371f82d6a18e1b4d515f629780e4800aa91b4c5e49dc00ef1db304f380",
+    "publicFile": "historic-scope-assertion-red.log",
+    "publicSha256": "f07119a07abb28f9ef7efd75aeb7dbda41a5a9bc4637006e17b83a3e7dcab472",
+    "normalization": "task path placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-c-full-green.log",
+    "rawSha256": "8fe819514a91a673c3daae928b16ad7d0e0032c273572543ddd1f563a1972e9b",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "b3b52f6f2943896401245cc7c61e2b71aa9254f6102b34c2a90c822e4e0ba50c",
+    "normalization": "task path placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-c-assets-gates.log",
+    "rawSha256": "18786c22da1c578ccdce4be135b32b2bf79dc74b7a4fadb1beee90e383ed1a4a",
+    "publicFile": "actual-output-gates.log",
+    "publicSha256": "0841bec7f4a158f188d1c5faf9ad341fe0aa92afa04646a6bb579c61119a2eba",
+    "normalization": "task path placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-c-build.log",
+    "rawSha256": "a7296026b14bea53522bc4ba22c666f4aeffc3b037b3a62a5f20a00f2e49df56",
+    "publicFile": "build.log",
+    "publicSha256": "b55447244fc8caaf5e70743a6a95872eacca44e0e58e5a27c8a146986d973942",
+    "normalization": "task path placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-c-reviewed-output-freeze.log",
+    "rawSha256": "21aec179214dadc91b2876673c05e4d4451cd0702e086484808d115c25e15610",
+    "publicFile": "reviewed-output-freeze.log",
+    "publicSha256": "e664f36738fe4bc84981018f23bad56dd0663a56692c62c8edc4d1a9007d1e9f",
+    "normalization": "task path placeholders, LF, trailing whitespace, single terminal newline"
+  }
+]

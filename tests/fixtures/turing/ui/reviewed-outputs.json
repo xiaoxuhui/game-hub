@@ -1,0 +1,67 @@
+[
+  {
+    "path": "assets/campaign-CL-dVuZQ.css",
+    "bytes": 9661,
+    "sha256": "1bc77f76883b08e9234bb9c0140c2d8507bce2e606eca3962fe0b18561227784"
+  },
+  {
+    "path": "assets/campaign-iMEr2cx1.js",
+    "bytes": 31907,
+    "sha256": "14e476e413ff47a55a40000d235d947c6029ced89063b6a96c4e4ff6fe8f4ba9"
+  },
+  {
+    "path": "assets/core-BmS44wlX.js",
+    "bytes": 3571,
+    "sha256": "defddab3e9965b38b9088816288801efc6f4b42607290af9169a34e097584912"
+  },
+  {
+    "path": "assets/gijswijt-worker-BVTAjsju.js",
+    "bytes": 584,
+    "sha256": "09c150d910bb7629a0eb4a842b0bb5d2f20c29b0cf987c696586719d322f6eef"
+  },
+  {
+    "path": "assets/main-CIj5DFoc.css",
+    "bytes": 12469,
+    "sha256": "516078ac27069bc623dad4538a60e88c640573c85fd158e064fe801f4fc64c5c"
+  },
+  {
+    "path": "assets/main-CZju3U6O.js",
+    "bytes": 56313,
+    "sha256": "4cad23f089e7026e75ed53d6242268aaefb0234f1a7b854594344e42690af406"
+  },
+  {
+    "path": "assets/route-worker--cIr4Dp-.js",
+    "bytes": 2817,
+    "sha256": "1cc23d89b84c9329dccd88b8abbe93aecb8c914a45468879cc31dff36209ce6e"
+  },
+  {
+    "path": "campaign.html",
+    "bytes": 592,
+    "sha256": "580783008329239cd5129a210ead5b9437e004ed919505860192719761f18c19"
+  },
+  {
+    "path": "hub/turing-format.js",
+    "bytes": 5425,
+    "sha256": "9656e6aad7d50146d012aac1309a509eddf59a0ae742abdec7afac6cd6377e22"
+  },
+  {
+    "path": "hub/turing-legacy.js",
+    "bytes": 10905,
+    "sha256": "1c2e431b725627d53f015e5d9208b14fe218c54ed1dc16f4d020816f072b1628"
+  },
+  {
+    "path": "hub/turing-preservation.js",
+    "bytes": 11819,
+    "sha256": "550aa88d17228d02a09e0225c4ab15065017afe7074f6c128c7150a685a93604"
+  },
+  {
+    "path": "hub/turing-ui.js",
+    "bytes": 14694,
+    "sha256": "52dcb88b79cc100bc3e13cfbabebf08de2fa1d458dbf8839d029d715d71267e3"
+  },
+  {
+    "path": "index.html",
+    "bytes": 781,
+    "sha256": "cdd3dab3d2bd87618349ccbe0c7b411d4c1d2630f8c625a8069a75c5646a4a83"
+  }
+]
