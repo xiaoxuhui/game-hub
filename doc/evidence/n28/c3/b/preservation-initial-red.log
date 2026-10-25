@@ -1,0 +1,83 @@
+✔ normal autosaves refresh one complete current record without filling destructive history and leave other games intact (9.3077ms)
+✖ first migration preserves the exact legacy source including opaque metadata before later normal saves (1.2395ms)
+✔ destructive raw preservation deduplicates at capacity, refuses eviction and preserves current and unknown metadata (1.7763ms)
+✔ own-record quota failure never writes legacy; legacy-mirror failure keeps full candidate for explicit pending recovery (2.4448ms)
+✔ interruption after own durable write and old cache deletion both require explicit recovery and preserve original full state (2.5304ms)
+✖ real legacy no-op wrapper is recognized; its original outer metadata is preserved across later normal saves (1.5524ms)
+✖ bare old same-base cache cannot silently choose current when multiple archived full states share that base (1.9516ms)
+✔ new standalone opaque full cache with same old projection is an explicit conflict rather than discarded extension (0.8438ms)
+✔ corrupt/future/duplicate/invalid bindings protect raw archives and allow preview-bound own-key clear only (1.1179ms)
+✔ external changes and own/legacy readback disagreement never trigger blind rollback or overwrite (2.1354ms)
+✔ stale recovery and clear confirmations refuse deletion or replacement after another instance changed either key (1.8463ms)
+✔ protection byte cap refuses oversized complete data without losing original or manual full-file route (124.4351ms)
+✔ collection merge retains incoming current as history and opaque metadata, never replaces live world, and rejects metadata conflicts (3.5255ms)
+✔ same emitted browser preservation factory executes; explicit invalidation blocks writes but still permits original raw export (2.1372ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 11
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 268.1249
+
+✖ failing tests:
+
+test at tests\eml-preservation.test.mjs:11:1
+✖ first migration preserves the exact legacy source including opaque metadata before later normal saves (1.2395ms)
+  AssertionError [ERR_ASSERTION]: first complete legacy raw must outlive mirrorBefore replacement
+      at TestContext.<anonymous> (file:///<task-root>/work/tests/eml-preservation.test.mjs:12:222)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\eml-preservation.test.mjs:25:1
+✖ real legacy no-op wrapper is recognized; its original outer metadata is preserved across later normal saves (1.5524ms)
+  AssertionError [ERR_ASSERTION]: observed legacy raw with opaque fields must remain available
+      at TestContext.<anonymous> (file:///<task-root>/work/tests/eml-preservation.test.mjs:26:352)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\eml-preservation.test.mjs:28:1
+✖ bare old same-base cache cannot silently choose current when multiple archived full states share that base (1.9516ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'current'
+  - 'conflict'
+
+      at TestContext.<anonymous> (file:///<task-root>/work/tests/eml-preservation.test.mjs:29:243)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'current',
+    expected: 'conflict',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

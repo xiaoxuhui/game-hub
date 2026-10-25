@@ -1,0 +1,30 @@
+[
+  {
+    "input": "c3-b-preservation-initial.log",
+    "rawSha256": "eb17d49ea6a1b89b0fd4f9722506e56161fc8141a985a456f86974fac227d511",
+    "publicFile": "preservation-initial-red.log",
+    "publicSha256": "b52ed329b4cc6255f384672c0bb61e532ce16c021a10b99c54321f2e89267c7a",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-b-selection-cap-red.log",
+    "rawSha256": "f038b5b2087ae74bf18f80b92370afd8a0dc1eae313b1d11784dcffc91be8c07",
+    "publicFile": "selection-cap-red.log",
+    "publicSha256": "8fc570cadec3d51ab72c5b3acc440614a0ec2f7da2d357df6b42f25cb17bb080",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-b-preservation-reviewed-green.log",
+    "rawSha256": "97cf5aed5cb1f837fc2bbf7531424983ccb0feeda4f7f68ba33cf86b18b95f8a",
+    "publicFile": "preservation-green.log",
+    "publicSha256": "07f44a60776437a51125c4d7c5bf912c05d695d14db29e1061d42cef47ebbeab",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-b-final-full-unit.log",
+    "rawSha256": "90f512fa792e99005249c903fac3665f3bcd13f700e312db8ab5701aa83b1df4",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "89bb3ac2cfc1718561d00ecc3212dba63f5f6785a2c07d4a4fef450c70c70319",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  }
+]

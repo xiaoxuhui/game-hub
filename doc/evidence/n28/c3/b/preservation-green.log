@@ -1,0 +1,25 @@
+✔ normal autosaves refresh one complete current record without filling destructive history and leave other games intact (9.7648ms)
+✔ first migration preserves the exact legacy source including opaque metadata before later normal saves (0.9325ms)
+✔ destructive raw preservation deduplicates at capacity, refuses eviction and preserves current and unknown metadata (1.5779ms)
+✔ own-record quota failure never writes legacy; legacy-mirror failure keeps full candidate for explicit pending recovery (2.9443ms)
+✔ interruption after own durable write and old cache deletion both require explicit recovery and preserve original full state (2.4795ms)
+✔ real legacy no-op wrapper is recognized; its original outer metadata is preserved across later normal saves (1.4757ms)
+✔ bare old same-base cache cannot silently choose current when multiple archived full states share that base (1.6533ms)
+✔ explicit selection at capacity reuses already protected parties rather than duplicating every historical inner full file (3.9731ms)
+✔ new standalone opaque full cache with same old projection is an explicit conflict rather than discarded extension (0.8224ms)
+✔ corrupt/future/duplicate/invalid bindings protect raw archives and allow preview-bound own-key clear only (1.3257ms)
+✔ external changes and own/legacy readback disagreement never trigger blind rollback or overwrite (1.7471ms)
+✔ external legacy write between durable protection and mirror is kept while the candidate full remains protected (1.3957ms)
+✔ readback access failure and thrown-after-write outcomes remain recoverable without destructive rollback (2.3357ms)
+✔ stale recovery and clear confirmations refuse deletion or replacement after another instance changed either key (1.5073ms)
+✔ protection byte cap refuses oversized complete data without losing original or manual full-file route (116.4368ms)
+✔ collection merge retains incoming current as history and opaque metadata, never replaces live world, and rejects metadata conflicts (3.1226ms)
+✔ same emitted browser preservation factory executes; explicit invalidation blocks writes but still permits original raw export (2.3553ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 259.0176
