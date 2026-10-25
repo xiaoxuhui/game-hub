@@ -1,10 +1,11 @@
-// Actual signed-channel candidate at the game subpath and exact host CSP/bridge.
-// Browser evidence does not certify Android SAF, device lifecycle or cold start.
+// Actual candidate ZIP on loopback with the /assets/games/<id>/ path shape,
+// synthetic strict CSP, and production bridge JS injected with a native stub.
+// This does not certify Android WebView/SAF, device lifecycle or cold start.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {chromium}=require('playwright');
 (async()=>{
  const {readStoredZip}=await import('./resource-bundle.mjs'),{assetName,mime}=await import('./resource-protocol.mjs'),root=path.resolve(__dirname,'..'),game=JSON.parse(fs.readFileSync(path.join(root,'.build/dynamic-candidate/games.unsigned.json'))).find(g=>g.id==='langtons-ant');assert.ok(game);
- const entries=new Map(readStoredZip(fs.readFileSync(path.join(root,'.build/dynamic-candidate',assetName(game)))).map(e=>[e.path,e.data])),prefix='/games/langtons-ant/',key='langtons-ant.save.v1';
+ const entries=new Map(readStoredZip(fs.readFileSync(path.join(root,'.build/dynamic-candidate',assetName(game)))).map(e=>[e.path,e.data])),prefix='/assets/games/langtons-ant/',key='langtons-ant.save.v1';
  const kt=fs.readFileSync(path.join(root,'android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt'),'utf8'),bridge=kt.match(/private val EXPORT_BRIDGE_JS = """([\s\S]*?)"""\.trimIndent\(\)/)[1].replaceAll('__BRIDGE__','TestBridge');
  const csp="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'";
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost'),rel=url.pathname.slice(prefix.length)||'index.html';if(req.method!=='GET'||!url.pathname.startsWith(prefix)||!entries.has(rel)){res.writeHead(404).end();return;}res.writeHead(200,{'Content-Type':mime(rel),'Content-Security-Policy':csp,'X-Content-Type-Options':'nosniff'});res.end(entries.get(rel));});
@@ -14,7 +15,7 @@ const {chromium}=require('playwright');
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.addInitScript({content:'window.TestBridge={saveFile:()=>{}};\n'+bridge});
   const check=async(name,fn)=>{await fn();console.log(`PASS A${++passed} ${label} ${name}`);},saved=()=>page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key),activate=async selector=>mobile?await page.locator(selector).tap():await page.locator(selector).click();
   await page.goto(origin+prefix+'index.html');
-  await check('actual ZIP loads with host CSP at game subpath',async()=>{assert.equal(await page.title(),'兰顿蚂蚁');assert.ok(await page.locator('#world').isVisible());assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.evaluate(()=>localStorage.setItem('other-game-sentinel','keep'));});
+  await check('actual ZIP loads at simulated asset subpath under synthetic strict CSP and bridge JS stub',async()=>{assert.equal(await page.title(),'兰顿蚂蚁');assert.ok(await page.locator('#world').isVisible());assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.evaluate(()=>localStorage.setItem('other-game-sentinel','keep'));});
   await check('single step and run/pause use real controls',async()=>{await activate('#step');let s=await saved();assert.equal(s.steps,1);assert.deepEqual(s.ant,{x:1,y:0,dir:1});await activate('#play');await page.waitForFunction(()=>Number(document.getElementById('steps').textContent.replaceAll(',',''))>2);await activate('#play');assert.equal(await page.locator('#play').innerText(),'开始');s=await saved();await page.waitForTimeout(100);assert.equal((await saved()).steps,s.steps);});
   await check('draw erase and pan work through actual mouse/touch gestures',async()=>{
    await activate('#reset');await page.locator('#follow').uncheck();const b=await page.locator('#world').boundingBox(),x=b.x+30,y=b.y+60;
