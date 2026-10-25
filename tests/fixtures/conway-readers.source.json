@@ -1,0 +1,18 @@
+[
+  {
+    "repository": "https://github.com/xiaoxuhui/conway-life-game.git",
+    "revision": "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be",
+    "sourcePath": "scripts/life-engine.js",
+    "fixturePath": "conway-reader-7d857.cjs",
+    "bytes": 9382,
+    "sha256": "0d9f9c1877b8d4742137378dcb34ecb5651e34948cef58fb8585a2a4c75461e6"
+  },
+  {
+    "repository": "https://github.com/xiaoxuhui/conway-life-game.git",
+    "revision": "a531a560b3ecce070be80fb6470cbc916971bce4",
+    "sourcePath": "scripts/life-engine.js",
+    "fixturePath": "conway-reader-a531.cjs",
+    "bytes": 11982,
+    "sha256": "a2993a60198ca2cc5517435b8b94d312afbe0fef28909ac6c30080b06367d89a"
+  }
+]

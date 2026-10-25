@@ -103,6 +103,20 @@ test('failed checkout or missing locked resource preserves the last complete bun
     assert.throws(() => assemble([{ ...source, files: ['../outside'] }], hub, output, 'a'.repeat(40)), /Unsafe asset path/);
     assert.equal(readFileSync(join(output, 'bundle-manifest.json'), 'utf8'), before);
     assert.ok(existsSync(join(output, 'games', 'fixture', 'index.html')));
+    const apkBefore = readFileSync(join(output, 'bundle-manifest.json'));
+    assert.throws(() => assemble([source], hub, output, 'a'.repeat(40), {afterCopy(){}}), /Resource-only transformation target/);
+    assert.throws(() => assemble([source], hub, output, 'a'.repeat(40), {beforeBuild:'not a function'}), /Invalid resource transformation/);
+    const resourceOutput = join(hub, '.build/resource-source-assets'), events=[];
+    assemble([source], hub, resourceOutput, 'a'.repeat(40), {
+      beforeBuild(locked, checkout) {assert.equal(locked.revision,sha);assert.notEqual(checkout,original);events.push('before');writeFileSync(join(checkout,'index.html'),'<h1>resource adapted</h1>');},
+      afterCopy(locked, directory) {assert.equal(locked.id,'fixture');assert.equal(readFileSync(join(directory,'index.html'),'utf8'),'<h1>resource adapted</h1>');events.push('after');writeFileSync(join(directory,'helper.js'),'window.fixtureResource=true;');writeFileSync(join(directory,'index.html'),'<script src="helper.js"></script>');},
+    });
+    assert.deepEqual(events,['before','after']);assert.equal(verifyBundle(resourceOutput,[source],'a'.repeat(40)).files.length,6);
+    assert.deepEqual(readFileSync(join(output,'bundle-manifest.json')),apkBefore);
+    assert.equal(readFileSync(join(original,'index.html'),'utf8'),'<h1>fixture</h1>');
+    const resourceBefore=readFileSync(join(resourceOutput,'bundle-manifest.json'));
+    assert.throws(()=>assemble([source],hub,resourceOutput,'a'.repeat(40),{afterCopy(){throw Error('Injected adaptation failure');}}),/Injected adaptation failure/);
+    assert.deepEqual(readFileSync(join(resourceOutput,'bundle-manifest.json')),resourceBefore);
     assert.equal(git(['status', '--porcelain=v1', '--untracked-files=all']), '');
   } finally {
     if (priorEnv === undefined) delete process.env.GAME_HUB_LOCAL_SOURCES;

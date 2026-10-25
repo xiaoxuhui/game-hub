@@ -114,7 +114,7 @@ function sourceIdentity(source) {
   return { id: source.id, displayName: source.displayName, repository: source.repository, revision: source.revision, version: source.version, entryPage: source.entryPage, contentCode: 1, resourceProtocol: 1, storageContract: `${source.id}-baseline-v1` };
 }
 
-function stageSource(source, staging, gamesDir, root = repoRoot) {
+function stageSource(source, staging, gamesDir, root = repoRoot, options = {}) {
   const checkout = join(staging, 'sources', source.id);
   const origin = sourceCloneUrl(source);
   run('git', ['clone', '--quiet', '--no-local', '--no-checkout', origin, checkout], root);
@@ -124,6 +124,7 @@ function stageSource(source, staging, gamesDir, root = repoRoot) {
   if (actual !== source.revision) throw new Error(`Revision mismatch for ${source.id}: ${actual}`);
   const packageFile = JSON.parse(readFileSync(join(checkout, 'package.json'), 'utf8'));
   if (packageFile.version !== source.version) throw new Error(`Version mismatch for ${source.id}`);
+  options.beforeBuild?.(source, checkout);
   if (source.buildKind === 'eml') run(process.execPath, ['scripts/build.mjs'], checkout);
   if (source.buildKind === 'turing') {
     run('pnpm', ['install', '--frozen-lockfile'], checkout);
@@ -154,6 +155,7 @@ function stageSource(source, staging, gamesDir, root = repoRoot) {
     if (!existsSync(join(gameDir, 'campaign.html'))) throw new Error('Missing turing campaign.html');
     if (!listFiles(gameDir).some((name) => /route-worker.*\.js$/.test(name))) throw new Error('Missing turing Worker');
   }
+  options.afterCopy?.(source, gameDir);
   assertReferences(gameDir);
   if (process.env.GAME_HUB_LOCAL_SOURCES) sourceCloneUrl(source);
   return sourceIdentity(source);
@@ -182,7 +184,9 @@ function verifyBundle(output, sources, bundleCommit) {
   return manifest;
 }
 
-function assemble(sourcesToBuild, root, output, bundleCommit) {
+function assemble(sourcesToBuild, root, output, bundleCommit, options = {}) {
+  if (!options || Object.keys(options).some(key => !['beforeBuild','afterCopy'].includes(key)) || ['beforeBuild','afterCopy'].some(key => options[key] !== undefined && typeof options[key] !== 'function')) throw new Error('Invalid resource transformation options');
+  if ((options.beforeBuild || options.afterCopy) && resolve(output) !== resolve(root, '.build/resource-source-assets')) throw new Error('Resource-only transformation target required');
   const buildRoot = join(root, '.build');
   ensureInside(root, output);
   mkdirSync(buildRoot, { recursive: true });
@@ -192,7 +196,7 @@ function assemble(sourcesToBuild, root, output, bundleCommit) {
   const payload = join(staging, 'payload');
   mkdirSync(join(payload, 'games'), { recursive: true });
   try {
-    const sources = sourcesToBuild.map((source) => stageSource(source, staging, join(payload, 'games'), root));
+    const sources = sourcesToBuild.map((source) => stageSource(source, staging, join(payload, 'games'), root, options));
     const hubLicense = join(root, 'LICENSE');
     if (!existsSync(hubLicense) || !/^MIT License\r?\n/.test(readFileSync(hubLicense, 'utf8'))) {
       throw new Error('Missing or unexpected game-hub MIT license');
