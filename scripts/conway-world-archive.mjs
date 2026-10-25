@@ -3,7 +3,7 @@ import {strictJson} from './resource-protocol.mjs';
 // This self-contained factory is also emitted verbatim into the game resource.
 export function createConwayArchive(storage, life, subtle, parseJson) {
   const key = 'conway-hub-world-archive-v1';
-  const limits = Object.freeze({maxEntries:10, maxBytes:3*1048576, maxTextBytes:1048576});
+  const limits = Object.freeze({maxEntries:10, maxBytes:3*1048576, maxTextBytes:1_000_000});
   const encoder = new TextEncoder();
   let pending = Promise.resolve(), invalidated = false, lastConflict = null;
   const bytes = value => encoder.encode(value);
@@ -21,7 +21,7 @@ export function createConwayArchive(storage, life, subtle, parseJson) {
     return [...new Uint8Array(result)].map(value => value.toString(16).padStart(2,'0')).join('');
   }
   async function describe(fullText) {
-    if (typeof fullText !== 'string' || bytes(fullText).length > limits.maxTextBytes) throw Error('单份完整存档超过 1 MiB 上限。');
+    if (typeof fullText !== 'string' || bytes(fullText).length > limits.maxTextBytes) throw Error('单份完整存档超过 1,000,000 字节上限。');
     const state = life.deserialize(fullText);
     const base = life.serialize(state.world, state.generation, state.view, life.DEFAULT_RULE);
     delete base.rule;
@@ -127,11 +127,24 @@ export function createConwayArchive(storage, life, subtle, parseJson) {
         return {status:'saved'};
       });
     },
-    clear(confirmed) {
+    previewClear() {
+      return queue(async () => {
+        const raw = storage.getItem(key);
+        let count = null;
+        try { count = (await parse(raw)).entries.length; } catch { /* Keep unreadable raw available for explicit preservation/clear. */ }
+        return {expectedRaw:raw, count, unreadable:count===null};
+      });
+    },
+    clear(confirmed, expectedRaw) {
       return queue(() => {
         if (confirmed !== true) throw Error('清理完整备份需要明确确认。');
+        if (expectedRaw !== null && typeof expectedRaw !== 'string') throw Error('请先预览并确认要清理的备份内容。');
         writable();
         const before = storage.getItem(key);
+        if (before !== expectedRaw) {
+          rememberConflict(expectedRaw, before, null);
+          throw Error('其他页面已修改备份，确认内容已过时，未执行清理。');
+        }
         storage.removeItem(key);
         const after = storage.getItem(key);
         if (after !== null) {
