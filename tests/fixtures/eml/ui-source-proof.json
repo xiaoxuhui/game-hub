@@ -1,0 +1,42 @@
+[
+  {
+    "repository": "https://github.com/xiaoxuhui/EML.git",
+    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "path": "src/app.js",
+    "fixture": "new-app.txt",
+    "bytes": 43013,
+    "sha256": "16313a1f0d1936cc7b2939c41fb93c6238367db6ae5dc426485113102dbb9c4d"
+  },
+  {
+    "repository": "https://github.com/xiaoxuhui/EML.git",
+    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "path": "src/template.html",
+    "fixture": "new-template.txt",
+    "bytes": 6236,
+    "sha256": "9869438937e1b7015407c438d2a1b52b40edb534885d391ae7bd2e89fb4e21ca"
+  },
+  {
+    "repository": "https://github.com/xiaoxuhui/EML.git",
+    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "path": "src/styles.css",
+    "fixture": "new-styles.txt",
+    "bytes": 14671,
+    "sha256": "7fd33f9ecc7ab100657e6332ddf3411267de2321bd61340695301e9d3f91eb7f"
+  },
+  {
+    "repository": "https://github.com/xiaoxuhui/EML.git",
+    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "path": "scripts/build.mjs",
+    "fixture": "new-build.txt",
+    "bytes": 1523,
+    "sha256": "ea20b11c982141b14d82b777bb2b2f4e9b0ea689daab844eee4d7740e80540ec"
+  },
+  {
+    "repository": "https://github.com/xiaoxuhui/EML.git",
+    "revision": "2616c9e9b081762b01599cc79da919d20340d0a2",
+    "path": "tests/interaction-fixture.json",
+    "fixture": "old-interaction.json",
+    "bytes": 1929,
+    "sha256": "bf6207eee0340e76ff27ad5160a8397b998e395d554bf218c6d26d2dddfda0f1"
+  }
+]

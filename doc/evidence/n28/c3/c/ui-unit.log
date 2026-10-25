@@ -1,0 +1,11 @@
+✔ EML exact source UI and old interaction fixture retain source identities and license references (1.7339ms)
+✔ EML resource UI waits for explicit cache choice and wraps all real persistence/file controls with relative runtime closure (3.2059ms)
+✔ EML UI identity or any fixed input change rejects before source writes (1.2363ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 111.0923

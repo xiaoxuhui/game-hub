@@ -10,6 +10,6 @@
 - 首轮夹具误把同规则不同原文当唯一导致strict locator错误；修为核对全部实际归档条目。新增快捷键负例曾在选择弹窗期间修改背后世界，实际红；修后同一交互绿。原始红/初轮日志私有留存，不隐去失败。
 - 首审两项P2分别实际红：`empty current world including changed view must survive replacement`、`empty custom world must have a manual export route`。改为导入前无条件保全当前完整世界、资源界面空世界导出可用，两项桌面/手机实际绿。新增测试首跑的modal异步夹具竞态另行保留，等待真正关闭后才构成上述两次产品红。
 - 手机截图已实际查看，无横向溢出，新增管理入口采用原页面button样式。原生modal中的快捷键不再透传到世界。
-- 浏览器为Chromium，路径模拟`/assets/games/conway/`并使用生产CSP/导出桥；不声称Android WebView、SAF、物理机、Safari或离线冷启动通过。9f83a7f候选及最终de5e8e4实际ZIP22项、重复生产和精确CI均已验；最终正式资源发行及其线上核验已完成，e4fb442发行后独立终审CLOSED。
+- 浏览器为Chromium，路径模拟`/assets/games/conway/`并使用合成CSP与生产导出桥JS/native stub；不声称Android WebView、SAF、物理机、Safari或离线冷启动通过。9f83a7f候选及最终de5e8e4实际ZIP22项、重复生产和精确CI均已验；最终正式资源发行及其线上核验已完成，e4fb442发行后独立终审CLOSED。
 
 单元及浏览器实际输出随提交保存；B1模块13专项/120全根与独立CLOSED历史见N28开发与审阅记录。

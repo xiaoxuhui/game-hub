@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>EML 计算台</title>
+  <link rel="stylesheet" href="katex/katex.min.css?v=0.16.21-core">
+  <style>
+/*__STYLES__*/
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">符号计算工作台</p>
+        <h1>EML</h1>
+        <p class="base-formula" aria-label="基础公式：EML x y 等于 e 的 x 次方减去 y 的自然对数">
+          EML(x, y) = e<sup>x</sup> - ln(y)
+        </p>
+      </div>
+      <div class="file-actions" aria-label="文件操作">
+        <a href="#" id="saveButton" class="button-link" download="eml-workbench-v2.json">保存列表</a>
+        <button type="button" id="importButton">导入列表</button>
+        <button type="button" id="clearButton" class="danger-button">清空非初始值</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+      </div>
+    </header>
+
+    <section class="calculator" aria-labelledby="calculatorTitle">
+      <h2 id="calculatorTitle">函数应用</h2>
+      <div class="formula-line">
+        <span class="formula-name">EML(</span>
+        <button type="button" class="input-slot" id="slotX" data-slot="x" aria-label="x 输入位置">x</button>
+        <span class="formula-punctuation">,</span>
+        <button type="button" class="input-slot" id="slotY" data-slot="y" aria-label="y 输入位置">y</button>
+        <span class="formula-punctuation">) =</span>
+        <output class="result-slot" id="resultOutput" aria-live="polite">?</output>
+        <button type="button" class="primary-button add-button" id="addButton" disabled>添加</button>
+      </div>
+      <div class="direct-preview" id="directPreview">等待 x、y</div>
+      <div class="notice" id="notice" role="status" aria-live="polite"></div>
+      <div class="custom-function-applications" id="customFunctionApplications"></div>
+    </section>
+
+    <section class="function-definition-section" aria-labelledby="customDefinitionTitle">
+      <h2 id="customDefinitionTitle">函数定义</h2>
+      <div class="definition-signature">
+        <label>函数名 <input id="customDefinitionName" class="definition-name-input" type="text" placeholder="f" autocomplete="off"></label>
+        <label>变量 <input id="customDefinitionParameters" class="definition-parameters-input" type="text" placeholder="x, y" autocomplete="off"></label>
+      </div>
+      <div class="definition-expression-row">
+        <span id="customDefinitionSignature" class="definition-signature-preview">f(x)</span>
+        <span class="definition-equals">=</span>
+        <div id="customDefinitionExpression" class="definition-expression" aria-label="函数表达式"></div>
+        <button type="button" id="customApplyButton">保存定义</button>
+        <button type="button" id="customCancelEditButton" hidden>取消编辑</button>
+      </div>
+      <div class="definition-sources" aria-label="函数定义可用来源">
+        <div><span class="definition-source-label">函数</span><div id="definitionFunctionSources" class="definition-source-list"></div></div>
+        <div><span class="definition-source-label">变量</span><div id="definitionParameterSources" class="definition-source-list"></div></div>
+        <div><span class="definition-source-label">数值栏</span><div id="definitionValueSources" class="definition-source-list"></div></div>
+      </div>
+      <div id="customDefinitionStatus" class="custom-definition-status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="values-section" aria-labelledby="valuesTitle">
+      <div class="section-heading">
+        <div>
+          <h2 id="valuesTitle">数值栏</h2>
+          <span class="count" id="valueCount">1 个数值</span>
+        </div>
+      </div>
+      <div class="value-list" id="valueList"></div>
+    </section>
+
+    <section class="details-section" aria-labelledby="detailsTitle">
+      <div class="section-heading">
+        <h2 id="detailsTitle">公式详情</h2>
+      </div>
+      <div class="details-empty" id="detailsEmpty">选择一个数值查看公式来源</div>
+      <div class="details-content" id="detailsContent" hidden>
+        <div class="selected-value-line">当前数值：<strong id="selectedValue"></strong></div>
+        <div class="detail-block">
+          <h3>直接公式</h3>
+          <div id="directFormulaList"></div>
+        </div>
+        <div class="detail-block">
+          <div class="trace-heading">
+            <h3>推导过程</h3>
+            <span id="traceSummary" class="trace-summary" aria-live="polite"></span>
+          </div>
+          <div id="derivationTrace" class="trace-list"></div>
+        </div>
+        <div class="detail-block">
+          <div class="tree-heading">
+            <h3>完整计算树</h3>
+            <div class="tree-controls" aria-label="计算树视图控制">
+              <button type="button" id="treeZoomOut" class="icon-button" title="缩小计算树" aria-label="缩小计算树">−</button>
+              <output id="treeZoomLevel" class="zoom-level" aria-live="polite">100%</output>
+              <button type="button" id="treeZoomIn" class="icon-button" title="放大计算树" aria-label="放大计算树">+</button>
+              <button type="button" id="treeResetView" class="icon-button" title="复位计算树视图" aria-label="复位计算树视图">↺</button>
+            </div>
+          </div>
+          <div class="tree-viewer">
+            <div id="calculationTreeViewport" class="tree-viewport" tabindex="0" aria-label="完整计算树，可拖动或使用 W A S D 键移动">
+              <div id="calculationTree" class="tree-canvas"></div>
+            </div>
+            <input id="treeVerticalScroll" class="tree-vertical-scroll" type="range" min="0" max="1000" value="0" aria-label="拖动以浏览计算树高度" disabled>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="katex/katex.js?v=0.16.21-core"></script>
+  <script>
+/*__SCRIPTS__*/
+  </script>
+</body>
+</html>

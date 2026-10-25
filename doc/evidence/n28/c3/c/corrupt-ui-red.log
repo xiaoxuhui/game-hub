@@ -1,0 +1,14 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+'{broken' !== null
+
+    at <task-root>\work\scripts\eml-hall-browser.cjs:33:111
+    at async check (<task-root>\work\scripts\eml-hall-browser.cjs:27:36)
+    at async <task-root>\work\scripts\eml-hall-browser.cjs:28:3 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '{broken',
+  expected: null,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

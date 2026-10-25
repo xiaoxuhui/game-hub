@@ -1,0 +1,23 @@
+PASS C1 desktop corrupt protection stays exportable and explicit own-key clear preserves the original legacy cache
+PASS C2 desktop fixed old file loads, real calculator edits persist legal old cache and production bridge exports without altering other games
+PASS C3 desktop COS imports, renders real KaTeX, cancellation leaves all data unchanged and accepted old-base export retains full extension
+PASS C4 desktop composition functions remain usable and old compatible export never invents EML composition provenance
+PASS C5 desktop startup pending mirror lets user explicitly restore protected complete candidate
+PASS C6 desktop canceling old-write conflict opens a readonly session; manual recovery later resumes guarded automatic saves
+PASS C7 desktop own quota import cancellation preserves complete state and both keys; explicit memory-only continuation remains manually exportable
+PASS C8 desktop functions-only initial list is protected from clear when quota confirmation is canceled
+PASS C9 desktop stale file import lists explicit base/full/cancel choices and modal shortcuts cannot undo the current list
+PASS C10 desktop invalid import and collection file controls preserve live state; imported current becomes recoverable history with opaque metadata
+PASS C11 desktop real same-origin second-page old save triggers storage invalidation and blocks autosave while full manual export remains available
+PASS C12 phone corrupt protection stays exportable and explicit own-key clear preserves the original legacy cache
+PASS C13 phone fixed old file loads, real calculator edits persist legal old cache and production bridge exports without altering other games
+PASS C14 phone COS imports, renders real KaTeX, cancellation leaves all data unchanged and accepted old-base export retains full extension
+PASS C15 phone composition functions remain usable and old compatible export never invents EML composition provenance
+PASS C16 phone startup pending mirror lets user explicitly restore protected complete candidate
+PASS C17 phone canceling old-write conflict opens a readonly session; manual recovery later resumes guarded automatic saves
+PASS C18 phone own quota import cancellation preserves complete state and both keys; explicit memory-only continuation remains manually exportable
+PASS C19 phone functions-only initial list is protected from clear when quota confirmation is canceled
+PASS C20 phone stale file import lists explicit base/full/cancel choices and modal shortcuts cannot undo the current list
+PASS C21 phone invalid import and collection file controls preserve live state; imported current becomes recoverable history with opaque metadata
+PASS C22 phone real same-origin second-page old save triggers storage invalidation and blocks autosave while full manual export remains available
+PASS 22 EML actual resource-control checks; pageerrors=0 external=0 missing=0; Android/SAF not claimed

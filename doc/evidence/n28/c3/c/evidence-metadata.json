@@ -1,0 +1,58 @@
+[
+  {
+    "input": "c3-c-corrupt-ui-red.log",
+    "rawSha256": "198f8de7523c137fad94d87098969b85b2e1d45f649470be3e130fc4e0805976",
+    "publicFile": "corrupt-ui-red.log",
+    "publicSha256": "8b505f5039178c17d2b4cabab9ee3d86fc433eb9f1389488e534b67378dd71e3",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-c-browser-touch-final.log",
+    "rawSha256": "d4496aa128e0ff306d1337a8f164c4e395dc749a64271c87fe607262980eb934",
+    "publicFile": "browser.log",
+    "publicSha256": "d066bbeb032799125b61b4b0aed88b75dc827ac2610cc20dcb4faa44ef47a404",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-c-ui-unit-first.log",
+    "rawSha256": "3e25647aa7766374f56c9490775a6fe6562eafd81978d1044f0c9a22dcfa2ca7",
+    "publicFile": "ui-unit.log",
+    "publicSha256": "3f58de8e9e047b15887ad7e89450a1b86112e13f6204b5dc065b849a44bbaef2",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-c-full-unit.log",
+    "rawSha256": "db5ced403347cf66a301174115acfaffe61321c98f62d0225476d0d13a73aeff",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "c8221d83aba51db9ee84a22ecf7b332491961c98aacddc87c5b284a58a96ada5",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-source-build.log",
+    "rawSha256": "3482bbfb97337a1bcd5877fc327e77e9a37d56062cb9d6c5e5ea4c707b9f8f00",
+    "publicFile": "upstream-build.log",
+    "publicSha256": "c7d6dd4d9fc9e41cdfc16d6111668b0cf63b3ab78b2ab6892d700e5365a470da",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-source-android-sync.log",
+    "rawSha256": "a9286763b76a525713315f0179b7e37cdfad05fa3b300d5ad21932c4b8d1c742",
+    "publicFile": "upstream-android-sync.log",
+    "publicSha256": "f405f3dd77d1974467b7df399a4c4a1840cf2c84f1954dfd02f83cc5fb8770a1",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-source-core.log",
+    "rawSha256": "5a13eb4ae49cde59f6471d5d3c00bd0a25a5b4a1e549802381e370a6df167ec7",
+    "publicFile": "upstream-core.log",
+    "publicSha256": "a664ad06a8bc9780e6022b62ad24193bc54b568d60b37cca9bb5c1efa52c2a5f",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-c-stage-final.log",
+    "rawSha256": "43f24041a3e10961579ed7de6e66b03a832794815ebf59b19411e7f987910002",
+    "publicFile": "staged-build.log",
+    "publicSha256": "10d284980ae850efd364e4b5d2779357792cf7e3ffd7f7ee14832e2751ec7d83",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  }
+]
