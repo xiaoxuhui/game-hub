@@ -1,0 +1,23 @@
+✔ empty and actual old project inspection is read-only; first migration protects exact old opaque raw and later autosaves do not fill history (11.4935ms)
+✔ Max cannot be cached without an explicit finite choice; chosen limit survives reopen while full raw and unknown fields stay unchanged (2.3034ms)
+✔ own quota failure leaves the exact legacy raw untouched; mirror failure keeps the full candidate and requires explicit pending selection (3.2767ms)
+✔ changed old known fields and external raw modifications block stale autosave and keep both complete originals available (2.8571ms)
+✔ a bare unchanged legacy base restores protected Max, but same-base alternate full histories force explicit choice (2.2544ms)
+✔ invalid legacy or own records are never initialized over; corrupt and invalid input raw remains exportable and explicit clear keeps legacy (1.3361ms)
+✔ readback failures preserve observed and attempted raw without blind rollback (0.904ms)
+✔ all read errors are surfaced without writes and invalidation blocks autosave but leaves raw export routes (0.3616ms)
+✔ history is exact-raw deduplicated, refuses capacity without evicting, and selection adds only actual replaced raw (2.9406ms)
+✔ valid large files remain readable while protection capacity fails before touching the legacy key (127.3013ms)
+✔ stale selection and stale explicit clear are rejected even before any storage event is delivered (1.8838ms)
+✔ history-only clear preserves current and actual legacy; whole clear preserves legacy and refuses unconfirmed requests (0.8385ms)
+✔ collection import only merges histories and preserves current, unknown headers/current metadata and original legacy choice (1.523ms)
+✔ opaque merge conflicts and prototype metadata are not silently overwritten or assigned to prototypes (0.9332ms)
+✔ emitted browser preservation executes the same transaction behavior with explicit Max choice and exact reopen (4.3873ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 281.9937

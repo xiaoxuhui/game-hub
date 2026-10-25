@@ -1,0 +1,23 @@
+[
+  {
+    "input": "c4-b1-first.log",
+    "rawSha256": "4c81373a64e0fafbcc160a9eb46593b66d52e2802504aa1554dea67d4fe3256a",
+    "publicFile": "initial-15.log",
+    "publicSha256": "803b2302b2ac9ab136a5660c48acde590940b2b7d46436032a082c9e90ec0431",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b1-final.log",
+    "rawSha256": "2c89aac8649334868e9e52e6b71a45894b79c1a408214be295335c313958d1c7",
+    "publicFile": "preservation.log",
+    "publicSha256": "b93a5862ff7800284dc55a98130ecfb9a1a05640faacf263d4afad06915ef11f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b1-full.log",
+    "rawSha256": "4a60c2b8a38541d8b3576c370a34271ecb58ce4f03a831221681a5433a0d26a5",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "3e51a95b412b83f1c4c3471c2629c4b8f35c9c922cbf1c45bdc64ce0ea511e36",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  }
+]
