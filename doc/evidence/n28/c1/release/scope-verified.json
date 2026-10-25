@@ -1,0 +1,13 @@
+{
+  "producerCommit": "21421c429dad65dd637d8edef05bc1a7214c157c",
+  "previousSequence": "33",
+  "previousSignedSha256": "4f3b35a5456ea0174e529161cd52cb0604ccd475e6ddd7c560d737957adf821f",
+  "nextSequence": "34",
+  "changed": [
+    "logic-circuit",
+    "traffic-planner"
+  ],
+  "unchangedCompleteObjects": 7,
+  "noRemoteWrites": true,
+  "formalAssetIdsStillRequired": true
+}

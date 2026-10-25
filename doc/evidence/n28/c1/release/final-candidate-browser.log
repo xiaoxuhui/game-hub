@@ -1,0 +1,15 @@
+PASS C1 desktop logic-circuit old v1 layout imports and exports through bridge stub
+PASS C2 desktop logic-circuit invalid import preserves complete circuit and stable key survives reload
+PASS C3 desktop logic-circuit actual ZIP loads local 3D engine and Worker then returns without editing source
+PASS C4 desktop logic-circuit loaded offline circuit remains editable and exportable
+PASS C5 desktop traffic-planner fixed old 800ae v1 layout imports and exact JSON exports through bridge stub
+PASS C6 desktop traffic-planner simulation and invalid import do not replace design; stable save restores
+PASS C7 desktop traffic-planner loaded offline plan advances simulation clock and exports without changing design
+PASS C8 phone logic-circuit old v1 layout imports and exports through bridge stub
+PASS C9 phone logic-circuit invalid import preserves complete circuit and stable key survives reload
+PASS C10 phone logic-circuit actual ZIP loads local 3D engine and Worker then returns without editing source
+PASS C11 phone logic-circuit loaded offline circuit remains editable and exportable
+PASS C12 phone traffic-planner fixed old 800ae v1 layout imports and exact JSON exports through bridge stub
+PASS C13 phone traffic-planner simulation and invalid import do not replace design; stable save restores
+PASS C14 phone traffic-planner loaded offline plan advances simulation clock and exports without changing design
+PASS 14 actual ZIP browser checks; pageerrors=0 external=0; Android/SAF/cold start not claimed

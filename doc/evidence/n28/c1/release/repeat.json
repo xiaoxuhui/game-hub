@@ -1,0 +1,170 @@
+{
+  "producer": "21421c429dad65dd637d8edef05bc1a7214c157c",
+  "gameCount": 9,
+  "allDescriptorsAndZipShaIdentical": true,
+  "descriptorSha256": "7120a8fa325b036d328b564c12384bc1752f85d9cff6f0d05d285c48496bda55",
+  "changed": [
+    {
+      "id": "logic-circuit",
+      "displayName": "逻辑工坊",
+      "iconKind": "logic",
+      "available": true,
+      "version": "0.3.17",
+      "contentCode": 28,
+      "sourceRepository": "https://github.com/xiaoxuhui/logic-circuit.git",
+      "sourceRevision": "690f4b606aa280560e8540fc513755527e07387e",
+      "minHostVersionCode": 4,
+      "maxHostVersionCode": 2147483647,
+      "resourceProtocol": 2,
+      "bridgeProtocol": 1,
+      "storageContract": "logic-circuit-dynamic-v1",
+      "entryPage": "index.html",
+      "archiveBytes": 1014838,
+      "archiveSha256": "c36fb78d68637511a59e498ac2f4765b7a270a4f40bee8a4b0a6c7f404b535e4",
+      "files": [
+        {
+          "path": "LICENSE",
+          "bytes": 1066,
+          "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+          "mime": "text/plain"
+        },
+        {
+          "path": "index.html",
+          "bytes": 20902,
+          "sha256": "fff6d15c2d662258dbebdb3bbcee15bb49ba6ca544f7994c87a8816f8d6743a6",
+          "mime": "text/html"
+        },
+        {
+          "path": "src/app.js",
+          "bytes": 98698,
+          "sha256": "fc3d04a102bbd2037d75929f72ceb1dd9f8203a957dac5eea711706f61f80d9e",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/core.js",
+          "bytes": 55878,
+          "sha256": "36996b11ed2ae4e29e169ae7c5c841f04c9cf606242574d62231c8af63decfd0",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/expanded.js",
+          "bytes": 27924,
+          "sha256": "fd3aaffa8952305e33eed6916406edf7dee586a2e0cf57a04f3e703481ad4db8",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/minecraft-model.js",
+          "bytes": 65727,
+          "sha256": "1dfeccbf447f99699ba71cd45d3414081049dab2857dd2750bbd693f907ba7c5",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/minecraft-redstone.js",
+          "bytes": 9972,
+          "sha256": "5bffde45b7bdce5732c1502d572e7d1686e052ba6c22ecc4ac40e9f7abee6bb9",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/minecraft-view.js",
+          "bytes": 30778,
+          "sha256": "a7e24a0c98e3d170d409ad12068ad55180cca7bdc8b19b8cbed2de7e61837d17",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/vendor/THREE-LICENSE.txt",
+          "bytes": 1081,
+          "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+          "mime": "text/plain"
+        },
+        {
+          "path": "src/vendor/three.min.js",
+          "bytes": 669884,
+          "sha256": "170c6789f43217c96b3170f4b42fafe135de7f7cd48497a4218f9757ee1d49fa",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/vendor/three.provenance.json",
+          "bytes": 332,
+          "sha256": "25469667df31f9eb5be4f32c6656679e0e91e57cb5fa5b4c899a5e02f7807ec8",
+          "mime": "application/json"
+        },
+        {
+          "path": "styles.css",
+          "bytes": 31234,
+          "sha256": "a18d760ec576d471faff9f50bc2506373bf141778a818d7059243622a19e1117",
+          "mime": "text/css"
+        }
+      ],
+      "releaseNotes": "0.3.17：追平已审默认分支690f4b6，更新红石3D直接/连续计算、布线间距、几何和稀疏方向箭头等显示；布局读取与核心v1格式保持，旧布局可继续使用。"
+    },
+    {
+      "id": "traffic-planner",
+      "displayName": "路流 · 交通规划",
+      "iconKind": "generic",
+      "available": true,
+      "version": "0.1.0",
+      "contentCode": 2,
+      "sourceRepository": "https://github.com/xiaoxuhui/traffic-planner.git",
+      "sourceRevision": "86f8fb77de41c9ddef37fbd998c44d01c0623727",
+      "minHostVersionCode": 4,
+      "maxHostVersionCode": 2147483647,
+      "resourceProtocol": 2,
+      "bridgeProtocol": 1,
+      "storageContract": "traffic-planner-dynamic-v1",
+      "entryPage": "index.html",
+      "archiveBytes": 99665,
+      "archiveSha256": "86aa41c3f09304f1234131e61a8c4dcba34b9c41d5b2dc92a80a732e93ebc2c6",
+      "files": [
+        {
+          "path": "LICENSE",
+          "bytes": 1066,
+          "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+          "mime": "text/plain"
+        },
+        {
+          "path": "index.html",
+          "bytes": 12928,
+          "sha256": "32c96244f3daba9bd8e411737e23ac7cc45841c59e902d9d2500fa6dcb880c68",
+          "mime": "text/html"
+        },
+        {
+          "path": "src/app.js",
+          "bytes": 34293,
+          "sha256": "4743cc3cb44ac710e2eeb177e0543ce6ed7c9d617cee0af5ce987d583cecd35e",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/core.js",
+          "bytes": 10792,
+          "sha256": "12a790b47a48ad49a2d2c48cd6e394da8b9d7bf7f3e563a9765e2a4f937c2069",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/examples.js",
+          "bytes": 4259,
+          "sha256": "b4ea1aa7296509d0e4842b8eec9427b1aca4e42190500bd819f53ca3d708bac9",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/reversing.js",
+          "bytes": 2924,
+          "sha256": "886d3ce9fbe3b54ff5b105943bad4dfba1ef19eb8e77061066e9a039eeffe330",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "src/simulation.js",
+          "bytes": 10124,
+          "sha256": "840b741c16654d9f71365ea7d339ca6ded087d07cb7a31e9ddfeef7bd65398da",
+          "mime": "application/javascript"
+        },
+        {
+          "path": "styles.css",
+          "bytes": 22457,
+          "sha256": "b5755c112f899423fa438955039a3779b36e9284deb9c859c398dcf62d4c3a4d",
+          "mime": "text/css"
+        }
+      ],
+      "releaseNotes": "同版源码更新86f8fb7：拥堵时安全倒车让路与重新寻路，保持v1方案/路线存档；新增倒车模块随离线包，完整MIT保留。"
+    }
+  ]
+}

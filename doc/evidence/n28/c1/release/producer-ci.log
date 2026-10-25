@@ -1,0 +1,19 @@
+Exact producer 21421c429dad65dd637d8edef05bc1a7214c157c; GitHub run 40219709744; job 121248405878; conclusion success
+2026-10-25T18:07:16.0402331Z Verified 1 sources and 5 resources
+2026-10-25T18:07:16.9398519Z Verified 4 sources and 10 resources
+2026-10-25T18:07:16.9471784Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T18:07:16.9481229Z Verified 4 sources and 10 resources
+2026-10-25T18:07:16.9483798Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T18:07:16.9549127Z Verified 4 sources and 10 resources
+2026-10-25T18:07:16.9630075Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T18:07:16.9633911Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T18:07:17.1291319Z ℹ tests 100
+2026-10-25T18:07:17.1292263Z ℹ pass 99
+2026-10-25T18:07:17.1292653Z ℹ fail 0
+2026-10-25T18:07:17.1293459Z ℹ skipped 1
+2026-10-25T18:07:25.3935651Z Verified 4 sources and 40 resources
+2026-10-25T18:07:25.9045947Z Verified 6 distinct storage keys in four pinned APK bundles; no direct broad clear
+2026-10-25T18:07:57.5797797Z BUILD SUCCESSFUL in 14s
+2026-10-25T18:07:58.1804299Z Verified 4 sources and 40 APK resources for 21421c429dad65dd637d8edef05bc1a7214c157c
+2026-10-25T18:08:17.1130900Z BUILD SUCCESSFUL in 12s
+

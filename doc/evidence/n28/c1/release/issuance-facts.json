@@ -1,0 +1,35 @@
+{
+  "producerCommit": "21421c429dad65dd637d8edef05bc1a7214c157c",
+  "catalogSequence": "34",
+  "catalogAssetId": 675758883,
+  "catalogSha256": "976cc7c92be148ebf2026c38071a6aa15b7c922a16cc3541c452e4bc66b91233",
+  "changed": [
+    "logic-circuit",
+    "traffic-planner"
+  ],
+  "unchangedCompleteObjects": 7,
+  "resources": [
+    {
+      "id": "logic-circuit",
+      "version": "0.3.17",
+      "contentCode": 28,
+      "sourceRevision": "690f4b606aa280560e8540fc513755527e07387e",
+      "assetId": 675758096,
+      "bytes": 1014838,
+      "sha256": "c36fb78d68637511a59e498ac2f4765b7a270a4f40bee8a4b0a6c7f404b535e4",
+      "publicEqualsCandidate": true
+    },
+    {
+      "id": "traffic-planner",
+      "version": "0.1.0",
+      "contentCode": 2,
+      "sourceRevision": "86f8fb77de41c9ddef37fbd998c44d01c0623727",
+      "assetId": 675758235,
+      "bytes": 99665,
+      "sha256": "86aa41c3f09304f1234131e61a8c4dcba34b9c41d5b2dc92a80a732e93ebc2c6",
+      "publicEqualsCandidate": true
+    }
+  ],
+  "productionSignatureVerified": true,
+  "physicalAndroidTested": false
+}
