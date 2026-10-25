@@ -1,0 +1,10 @@
+✔ Conway exact upstream UI is transformed only into resource controls with valid JavaScript and relative dependency closure (3.8046ms)
+✔ Conway resource integration rejects unknown identity before writes and binds all input, output, and adapter bytes (19.1834ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 114.4718
