@@ -138,7 +138,7 @@
       "revision": "690f4b606aa280560e8540fc513755527e07387e",
       "directory": "dist",
       "version": "0.3.17",
-      "contentCode": 27,
+      "contentCode": 28,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.17：显著减少重复方向箭头，目标屏幕间距96像素，保留分叉、输入输出与连续路线。"
+      "releaseNotes": "0.3.17：追平已审默认分支690f4b6，更新红石3D直接/连续计算、布线间距、几何和稀疏方向箭头等显示；布局读取与核心v1格式保持，旧布局可继续使用。"
     },
     {
       "id": "traffic-planner",
@@ -163,10 +163,10 @@
       "iconKind": "generic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/traffic-planner.git",
-      "revision": "800ae8c9b2d55e9d50bdc0dfaf59f2a7ea16e3a1",
+      "revision": "86f8fb77de41c9ddef37fbd998c44d01c0623727",
       "directory": "dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "traffic-planner-dynamic-v1",
       "files": [
@@ -175,10 +175,11 @@
         "styles.css",
         "src/core.js",
         "src/examples.js",
+        "src/reversing.js",
         "src/simulation.js",
         "src/app.js"
       ],
-      "releaseNotes": "首次接入路流：空白地图自由修路、单向方向、红绿灯、随机出口、逐段指定路线和上下跨线；含城市、高架、菱形、四叶草、盘龙和单向环路六例。自动选路参考道路负载；支持方案保存和JSON导入导出。"
+      "releaseNotes": "同版源码更新86f8fb7：拥堵时安全倒车让路与重新寻路，保持v1方案/路线存档；新增倒车模块随离线包，完整MIT保留。"
     },
     {
       "id": "hex-cell-lab",
