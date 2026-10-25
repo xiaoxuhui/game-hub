@@ -20,10 +20,10 @@
       "releaseNotes": "正式版本 1.2.1 的兼容资源更新，固定上游 85163534ccae2b023928c877e002581a8f35f0cb；沿用原存档格式与存储合同，完整MIT许可随包。"
     },
     "turing": {
-      "contentCode": 3,
-      "sourceRevision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "contentCode": 2,
+      "sourceRevision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
       "storageContract": "turing-baseline-v1",
-      "releaseNotes": "Max不限步数、扩展示例与数列工具；完整项目保护及明确旧版有限兼容视图，课程备份与速度偏好。"
+      "releaseNotes": "正式版本 0.5.1 的兼容资源更新，固定上游 32eb3b95eb78eab703abe8e64214bd8dbbb939c7；沿用原存档格式与存储合同，完整MIT许可随包。"
     }
   }
 }

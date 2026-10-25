@@ -96,14 +96,13 @@
       "id": "turing",
       "displayName": "图灵机实验台",
       "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
-      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
-      "version": "0.6.0",
+      "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+      "version": "0.5.1",
       "buildKind": "turing",
       "entryPage": "index.html",
       "files": [
         "dist/**"
-      ],
-      "resourceIntegration": "turing-max-full-preservation-v1"
+      ]
     }
   ]
 }
