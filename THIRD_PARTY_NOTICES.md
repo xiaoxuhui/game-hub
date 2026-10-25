@@ -68,3 +68,12 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
 ```
 
 构建阶段使用 Node.js、pnpm、Vite、TypeScript、Android Gradle Plugin 与 Gradle；这些工具不作为运行依赖复制进 APK。每次正式候选变更依赖后需重新生成依赖图、核对许可并更新此文件。
+
+## 独立 EML 资源中的 KaTeX（MIT）
+
+EML 1.3.1 资源适配使用固定上游 `63cbfd8fdce98874802cf1ac608b1084c8e48d40` 自定义打包的 KaTeX 0.16.21 运行代码及 20 个字体，不将自定义 JS 称为官方分发 JS 的逐字节副本。字体与原始 CSS 已同官方固定 npm 包逐字节核对，来源与完整性记录见 [KaTeX 来源证明](licenses/katex-0.16.21.proof.json)。此处说明独立可下载资源，不改变 APK 内置四游戏源锁。
+
+- KaTeX：Copyright (c) 2013-2020 Khan Academy and other contributors，[完整 MIT](licenses/katex-0.16.21.MIT.txt)；官方固定提交 [923f2aa](https://github.com/KaTeX/KaTeX/tree/923f2aa15692d06ef77051bfb018c17339ef1ab4)。
+- 字体仓：Copyright (c) 2018 Khan Academy，[完整 MIT](licenses/katex-fonts.MIT.txt)；官方固定提交 [56e79c9](https://github.com/KaTeX/katex-fonts/tree/56e79c93c88c9054b017cc92e496b383e0bf82d7)。
+
+两份许可随 EML 资源放入 `licenses/`，正文原 MIT `LICENSE` 同时保留。资源 CSS 仅移除上游没有提供的 woff/ttf 后备引用，保留 20 个 woff2、字体名称、字重、样式和其余全部规则；现有字体 MIME 合同保持。

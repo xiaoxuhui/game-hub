@@ -1,0 +1,51 @@
+[
+  {
+    "input": "c3-d-full-unit.log",
+    "rawSha256": "5a25a4681e0713981b67644fb7b5803dde1a7340337c7ed7019f12de73650e8e",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "6cc69b91531456b5221792a2f03dbfb745949b95e5088235ec6905a4588ed8aa",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-d-unit-initial.log",
+    "rawSha256": "f1e88b19ac88f6161ab495a904e52defd631e557f0cad24ff27dd54315147562",
+    "publicFile": "assets-unit.log",
+    "publicSha256": "723d57a60d78cc87909d765911114fda03d52b077f908c057577bdfc6921cd7f",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-d-final-stage.log",
+    "rawSha256": "4706aa4de973838c244aa3b1a1fc4a481f8e6583adf87dca9003819b07efcd56",
+    "publicFile": "staged-build.log",
+    "publicSha256": "8fe587e9b3329cd084d2cc352783da011e55acb32ff7c50fbe9be7f0457cab05",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-d-final-assets-gates.log",
+    "rawSha256": "004315edb2488d8d3f15384fe88ef954d92bf31cbb0cfab244743466917ab60b",
+    "publicFile": "artifact-gates.log",
+    "publicSha256": "66a6237ba1a6dc800348fd7958d032e8c867e8b2161618b49ca0f2416b64a433",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-d-final-assets-browser.log",
+    "rawSha256": "5eef68c3d2afdbbbd06ec635e20d8ac9ba2403ff0c4053fabb79273622a91a52",
+    "publicFile": "browser.log",
+    "publicSha256": "5202d0235935778d400480b333419a4cd135f2bf76849cf705899b71ff0e0b7e",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-d-final-storage.json",
+    "rawSha256": "dcc5bf16e852b0e0f8788f345c8b2a4877e4e212203f80ba2a20817a884639e8",
+    "publicFile": "storage.json",
+    "publicSha256": "dcc5bf16e852b0e0f8788f345c8b2a4877e4e212203f80ba2a20817a884639e8",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-katex-official-freeze.log",
+    "rawSha256": "826b60e2bdb42d5bc48ab5f526ede326d694ecf2b372c8c1bc0090173a75c417",
+    "publicFile": "official-verification.log",
+    "publicSha256": "499456f4f266d294cad008902c80689b3a383d8ad6d15da94d6fa4560056799e",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  }
+]

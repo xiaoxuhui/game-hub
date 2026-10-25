@@ -6,14 +6,18 @@ import { validateLock, assemble } from './bundle.mjs';
 import { strictJson, sha256, CONTRACTS } from './resource-protocol.mjs';
 import {CONWAY_INTEGRATION,CONWAY_REVISION} from './conway-compatibility.mjs';
 import {integrateConwayResource} from './conway-resource-integration.mjs';
+import {EML_REVISION,EML_INTEGRATION} from './eml-legacy-reader.mjs';
+import {prepareEMLResource,finalizeEMLResource} from './eml-resource-integration.mjs';
 
 export function resourceIntegrationOptions(sources, independent = true) {
   for (const source of sources) {
-    if (source.resourceIntegration !== undefined && (!independent || source.id !== 'conway' || source.revision !== CONWAY_REVISION || source.resourceIntegration !== CONWAY_INTEGRATION)) throw new Error('Unreviewed resource integration source');
+    const reviewed=(source.id==='conway'&&source.revision===CONWAY_REVISION&&source.resourceIntegration===CONWAY_INTEGRATION)||(source.id==='eml'&&source.revision===EML_REVISION&&source.resourceIntegration===EML_INTEGRATION);
+    if (source.resourceIntegration !== undefined && (!independent || !reviewed)) throw new Error('Unreviewed resource integration source');
     if (independent && source.id === 'conway' && source.revision === CONWAY_REVISION && source.resourceIntegration !== CONWAY_INTEGRATION) throw new Error('Conway compatibility integration required');
+    if (independent && source.id === 'eml' && source.revision === EML_REVISION && source.resourceIntegration !== EML_INTEGRATION) throw new Error('EML compatibility integration required');
   }
   if (!sources.some(source => source.resourceIntegration !== undefined)) return {};
-  return {afterCopy(source, directory) { if (source.resourceIntegration === CONWAY_INTEGRATION) integrateConwayResource(source, directory); }};
+  return {beforeBuild(source,directory){if(source.resourceIntegration===EML_INTEGRATION)prepareEMLResource(source,directory);},afterCopy(source, directory) { if (source.resourceIntegration === CONWAY_INTEGRATION) integrateConwayResource(source, directory); if(source.resourceIntegration===EML_INTEGRATION)finalizeEMLResource(source,directory); }};
 }
 
 export function resourceInputs(root, independent = false) {

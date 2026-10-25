@@ -1,0 +1,37 @@
+{
+  "scope": "actual exported directories: EML final assets plus unchanged prior Conway/Light/Turing resource directories; not clean producer CLI",
+  "keys": [
+    [
+      "conway-life-game.custom-patterns.v1",
+      "conway"
+    ],
+    [
+      "conway-life-game.logic-functions.v1",
+      "conway"
+    ],
+    [
+      "conway-hub-world-archive-v1",
+      "conway"
+    ],
+    [
+      "eml_workbench_v2",
+      "eml"
+    ],
+    [
+      "eml-hub-preservation-v1",
+      "eml"
+    ],
+    [
+      "light-game/save",
+      "light"
+    ],
+    [
+      "turing-machine-simulator.project.v1",
+      "turing"
+    ],
+    [
+      "turing-machine-simulator.campaign.v1",
+      "turing"
+    ]
+  ]
+}
