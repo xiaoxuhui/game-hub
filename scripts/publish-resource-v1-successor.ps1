@@ -80,7 +80,7 @@ try {
             $name="game-$($game.id)-$($game.contentCode)-$($game.archiveSha256.Substring(0,12)).zip"
             $uploads+=Upload-Asset (Join-Path "$taskCheckout\.build\resource-candidate" $name) $name
         }
-        $uploads | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $taskDirectory 'uploaded-resources.json') -Encoding utf8
+        ConvertTo-Json -InputObject @($uploads) -Depth 10 | Set-Content -LiteralPath (Join-Path $taskDirectory 'uploaded-resources.json') -Encoding utf8
     }
     node scripts/resource-v1-successor.mjs payload $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Fresh complete asset-bound payload failed'}

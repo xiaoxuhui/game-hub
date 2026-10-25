@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createPublicKey } from 'node:crypto';
+import { createPublicKey, randomUUID } from 'node:crypto';
 import { assetName, signCatalog, verifyEnvelope, validateCatalog, strictJson } from './resource-protocol.mjs';
 
 export function attachAssets(games, release, assets, tag = 'game-resources-v1') {
@@ -32,7 +32,10 @@ export async function captureReleaseSnapshot(request = fetch, tag = 'game-resour
   const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'game-hub-resource-publisher', 'Cache-Control': 'no-cache' };
   let total = 0;
   async function get(url) {
-    const response = await request(url, { headers, redirect: 'error', signal: AbortSignal.timeout(30000) });
+    // GitHub metadata can lag immediately after an upload/rename at a cached URL.
+    // Construct every URL ourselves; pagination Links remain validation-only.
+    const fresh = new URL(url); fresh.searchParams.set('snapshot_request', randomUUID());
+    const response = await request(String(fresh), { headers, redirect: 'error', signal: AbortSignal.timeout(30000) });
     if (!response.ok) throw new Error(`Release snapshot HTTP ${response.status}`);
     const reader = response.body.getReader(); const chunks = [];
     while (true) { const { value, done } = await reader.read(); if (done) break; total += value.length; if (total > 4 * 1048576) { await reader.cancel(); throw new Error('Release snapshot byte limit'); } chunks.push(Buffer.from(value)); }
