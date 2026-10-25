@@ -1,0 +1,12 @@
+✔ EML third-party identity is pinned to verified official bytes with complete fonts and original MIT attribution (1.558ms)
+✔ reviewed CSS pruning retains every font and changes only unavailable fallback src parts, with no residual missing references (1.7367ms)
+✔ EML source/release activation is exact, resource-only and does not change other fixed identities (2.2183ms)
+✔ default APK still audits six keys; resource Conway plus EML profiles audit eight with complete cross-game ownership (0.5189ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 98.9249
