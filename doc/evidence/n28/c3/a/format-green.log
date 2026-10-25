@@ -1,0 +1,20 @@
+✔ EML frozen old/new module fixtures preserve complete public source identities and MIT licenses (3.5005ms)
+✔ actual old reader refuses both new cos and composition; base/full wrapper restores the exact full original for new reader (8.6759ms)
+✔ legacy projection preserves every representable numeric expression without inventing composition provenance or dangling indices (1.2269ms)
+✔ actual legacy serialize and saveToCache may retain unknown full extension; no-op preserves full but edits are explicit conflicts (1.8866ms)
+✔ new reader accepts fixed old plain v2 and original new plain full files without narrowing source mathematics (0.6077ms)
+✔ real old EML calculation and its complete provenance survive the compatibility projection (6.3526ms)
+✔ malformed, future, duplicate, nested and wrongly bound full extensions reject without silently falling back (1.0153ms)
+✔ user-file parser retains upstream decimal/exponent grammar and valid deep expression shapes while rejecting duplicate keys (2.4939ms)
+✔ full compatibility envelope above 5MiB is refused while a valid full backup remains accessible unchanged (201.7503ms)
+✔ valid old UTF-16 length-limited Chinese full file remains readable even when its UTF-8 size exceeds 5MiB (239.6279ms)
+✔ upstream-valid self-reference provenance that old reader rejects must be omitted without deleting the exact value (0.6514ms)
+✔ emitted frozen legacy reader is isolated from the live new expression global and actual emitted codec reads full extensions (5.2961ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 586.4992

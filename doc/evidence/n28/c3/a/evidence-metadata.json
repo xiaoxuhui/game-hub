@@ -1,0 +1,37 @@
+[
+  {
+    "input": "c3-format-baseline-red.log",
+    "rawSha256": "cdd0d271068999b6b9c79a2f8aabe8d543c6c60671b99a5e4731cec787ea1f46",
+    "publicFile": "baseline-red.log",
+    "publicSha256": "967ec6c0d754c0faba7094411e39388865a6bf495a4b5dbcd0948673d00bcc2e",
+    "normalization": "task-root path placeholders, LF and trailing-whitespace removal; assertions unchanged"
+  },
+  {
+    "input": "c3-a-format-initial.log",
+    "rawSha256": "c5a91a6e4ad59bb531e19841635da33908f06ffb02d2c00e6bd564e5280adece",
+    "publicFile": "self-provenance-red.log",
+    "publicSha256": "990dcbf22e9694626e7621c870bbc29d04b898a5040f933903f01df877c5cf7c",
+    "normalization": "task-root path placeholders, LF and trailing-whitespace removal; assertions unchanged"
+  },
+  {
+    "input": "c3-a-chinese-boundary-red.log",
+    "rawSha256": "f0c0305d750a92635fc4f8c2bb41e52996ae9dbb560d0ce9b4a915af79a87330",
+    "publicFile": "chinese-boundary-red.log",
+    "publicSha256": "2c82e51b815f4db6832ff0599ab093d51ea335f7a45f18e2eea999d622dab132",
+    "normalization": "task-root path placeholders, LF and trailing-whitespace removal; assertions unchanged"
+  },
+  {
+    "input": "c3-a-format-final-green.log",
+    "rawSha256": "aea7c896d294042e5b5844beea3952a28eb3c3a26616ba092b584b9379e535eb",
+    "publicFile": "format-green.log",
+    "publicSha256": "3870fe44d67e6cff50f5e584c36217a164de481c1a6d305370deee6b28d58371",
+    "normalization": "task-root path placeholders, LF and trailing-whitespace removal; assertions unchanged"
+  },
+  {
+    "input": "c3-a-full-unit.log",
+    "rawSha256": "cc73f48f05dab79cca991219d9177db7538bef1cdfe9bea95f12778d7dc7a687",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "7685c9d357aef8e586a704dd69e208d52967a0d789eccf294f5a92ed8c6961ad",
+    "normalization": "task-root path placeholders, LF and trailing-whitespace removal; assertions unchanged"
+  }
+]

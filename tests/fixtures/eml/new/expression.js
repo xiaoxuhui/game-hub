@@ -1,0 +1,390 @@
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  root.EMLExpression = api;
+})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+  "use strict";
+
+  const TYPES = Object.freeze({
+    CONSTANT: "constant",
+    INTEGER: "integer",
+    NEG: "neg",
+    ADD: "add",
+    SUB: "sub",
+    MUL: "mul",
+    DIV: "div",
+    POW: "pow",
+    LN: "ln",
+    SQRT: "sqrt",
+    SIN: "sin",
+    COS: "cos",
+  });
+
+  const constant = (name) => ({ type: TYPES.CONSTANT, name });
+  const integer = (value) => ({ type: TYPES.INTEGER, value: Number(value) });
+  const neg = (child) => ({ type: TYPES.NEG, child });
+  const add = (left, right) => ({ type: TYPES.ADD, left, right });
+  const sub = (left, right) => ({ type: TYPES.SUB, left, right });
+  const mul = (left, right) => ({ type: TYPES.MUL, left, right });
+  const div = (numerator, denominator) => ({ type: TYPES.DIV, numerator, denominator });
+  const pow = (base, exponent) => ({ type: TYPES.POW, base, exponent });
+  const ln = (argument) => ({ type: TYPES.LN, argument });
+  const sqrt = (argument) => ({ type: TYPES.SQRT, argument });
+  const sin = (argument) => ({ type: TYPES.SIN, argument });
+  const cos = (argument) => ({ type: TYPES.COS, argument });
+
+  const ONE = integer(1);
+  const ZERO = integer(0);
+  const E = constant("e");
+  const PI = constant("pi");
+  const I = constant("i");
+  const MAX_EXPRESSION_DEPTH = 64;
+  const MAX_EXPRESSION_NODES = 2000;
+  const ALLOWED_CONSTANTS = new Set(["e", "pi", "i"]);
+
+  function canonicalKey(expression) {
+    switch (expression.type) {
+      case TYPES.CONSTANT:
+        return `const:${expression.name}`;
+      case TYPES.INTEGER:
+        return `int:${expression.value}`;
+      case TYPES.NEG:
+        return `neg(${canonicalKey(expression.child)})`;
+      case TYPES.ADD: {
+        const keys = [canonicalKey(expression.left), canonicalKey(expression.right)].sort();
+        return `add(${keys[0]},${keys[1]})`;
+      }
+      case TYPES.SUB:
+        return `sub(${canonicalKey(expression.left)},${canonicalKey(expression.right)})`;
+      case TYPES.MUL: {
+        const keys = [canonicalKey(expression.left), canonicalKey(expression.right)].sort();
+        return `mul(${keys[0]},${keys[1]})`;
+      }
+      case TYPES.DIV:
+        return `div(${canonicalKey(expression.numerator)},${canonicalKey(expression.denominator)})`;
+      case TYPES.POW:
+        return `pow(${canonicalKey(expression.base)},${canonicalKey(expression.exponent)})`;
+      case TYPES.LN:
+        return `ln(${canonicalKey(expression.argument)})`;
+      case TYPES.SQRT:
+        return `sqrt(${canonicalKey(expression.argument)})`;
+      case TYPES.SIN:
+        return `sin(${canonicalKey(expression.argument)})`;
+      case TYPES.COS:
+        return `cos(${canonicalKey(expression.argument)})`;
+      default:
+        throw new Error(`未知表达式类型：${expression.type}`);
+    }
+  }
+
+  const isSame = (left, right) => canonicalKey(left) === canonicalKey(right);
+  const isInteger = (expression, value) => expression.type === TYPES.INTEGER && expression.value === value;
+  const isConstant = (expression, name) => expression.type === TYPES.CONSTANT && expression.name === name;
+
+  function precedence(expression) {
+    if ([TYPES.ADD, TYPES.SUB].includes(expression.type)) return 1;
+    if ([TYPES.MUL, TYPES.DIV].includes(expression.type)) return 2;
+    if (expression.type === TYPES.POW) return 3;
+    return 4;
+  }
+
+  function render(expression, parentPrecedence = 0) {
+    const ownPrecedence = precedence(expression);
+    let text;
+    switch (expression.type) {
+      case TYPES.CONSTANT:
+        text = expression.name === "pi" ? "π" : expression.name;
+        break;
+      case TYPES.INTEGER:
+        text = String(expression.value);
+        break;
+      case TYPES.NEG:
+        if (expression.child.type === TYPES.NEG) {
+          text = `-(${render(expression.child)})`;
+        } else if (expression.child.type === TYPES.MUL) {
+          // -ab 与 -(ab) 等价；乘积不必再额外包一层括号。
+          text = `-${render(expression.child)}`;
+        } else {
+          text = `-${render(expression.child, ownPrecedence)}`;
+        }
+        break;
+      case TYPES.ADD:
+        text = `${render(expression.left, ownPrecedence)} + ${render(expression.right, ownPrecedence)}`;
+        break;
+      case TYPES.SUB:
+        text = `${render(expression.left, ownPrecedence)} - ${render(expression.right, ownPrecedence + 1)}`;
+        break;
+      case TYPES.MUL: {
+        const leftText = render(expression.left, ownPrecedence);
+        const rightText = render(expression.right, ownPrecedence);
+        const compact = [expression.left, expression.right].every((part) =>
+          [TYPES.CONSTANT, TYPES.INTEGER].includes(part.type)
+        );
+        text = compact ? `${leftText}${rightText}` : `${leftText} × ${rightText}`;
+        break;
+      }
+      case TYPES.DIV:
+        text = `${render(expression.numerator, ownPrecedence)} / ${render(expression.denominator, ownPrecedence + 1)}`;
+        break;
+      case TYPES.POW: {
+        const baseText = render(expression.base, ownPrecedence);
+        const exponentText = render(expression.exponent);
+        text = `${baseText}^(${exponentText})`;
+        break;
+      }
+      case TYPES.LN:
+        // 保留 ln(i) 的 AST，方便参与 e^ln、对数和等规则；仅把最终显示写成主值。
+        text = isConstant(expression.argument, "i") ? "iπ / 2" : `ln(${render(expression.argument)})`;
+        break;
+      case TYPES.SQRT:
+        text = `√(${render(expression.argument)})`;
+        break;
+      case TYPES.SIN:
+        text = `sin(${render(expression.argument)})`;
+        break;
+      case TYPES.COS:
+        text = `cos(${render(expression.argument)})`;
+        break;
+      default:
+        throw new Error(`未知表达式类型：${expression.type}`);
+    }
+    return ownPrecedence < parentPrecedence ? `(${text})` : text;
+  }
+
+  function renderTex(expression, parentPrecedence = 0) {
+    const ownPrecedence = precedence(expression);
+    let tex;
+    switch (expression.type) {
+      case TYPES.CONSTANT:
+        tex = expression.name === "pi" ? "\\pi" : expression.name;
+        break;
+      case TYPES.INTEGER:
+        tex = String(expression.value);
+        break;
+      case TYPES.NEG:
+        tex = `-${renderTex(
+          expression.child,
+          [TYPES.POW, TYPES.MUL].includes(expression.child.type) ? 0 : ownPrecedence
+        )}`;
+        break;
+      case TYPES.ADD:
+        tex = `${renderTex(expression.left, ownPrecedence)} + ${renderTex(expression.right, ownPrecedence)}`;
+        break;
+      case TYPES.SUB:
+        tex = `${renderTex(expression.left, ownPrecedence)} - ${renderTex(expression.right, ownPrecedence + 1)}`;
+        break;
+      case TYPES.MUL: {
+        const compact = [expression.left, expression.right].every((part) =>
+          [TYPES.CONSTANT, TYPES.INTEGER].includes(part.type)
+        );
+        tex = compact
+          ? `${renderTex(expression.left, ownPrecedence)}${renderTex(expression.right, ownPrecedence)}`
+          : `${renderTex(expression.left, ownPrecedence)} \\times ${renderTex(expression.right, ownPrecedence)}`;
+        break;
+      }
+      case TYPES.DIV:
+        tex = expression.numerator.type === TYPES.NEG
+          ? `-\\frac{${renderTex(expression.numerator.child)}}{${renderTex(expression.denominator)}}`
+          : `\\frac{${renderTex(expression.numerator)}}{${renderTex(expression.denominator)}}`;
+        break;
+      case TYPES.POW:
+        tex = `{${renderTex(expression.base, ownPrecedence)}}^{${renderTex(expression.exponent)}}`;
+        break;
+      case TYPES.LN:
+        tex = isConstant(expression.argument, "i")
+          ? "\\frac{i\\pi}{2}"
+          : `\\ln\\left(${renderTex(expression.argument)}\\right)`;
+        break;
+      case TYPES.SQRT:
+        tex = `\\sqrt{${renderTex(expression.argument)}}`;
+        break;
+      case TYPES.SIN:
+        tex = `\\sin\\left(${renderTex(expression.argument)}\\right)`;
+        break;
+      case TYPES.COS:
+        tex = `\\cos\\left(${renderTex(expression.argument)}\\right)`;
+        break;
+      default:
+        throw new Error(`未知表达式类型：${expression.type}`);
+    }
+    return ownPrecedence < parentPrecedence ? `\\left(${tex}\\right)` : tex;
+  }
+
+  function approximate(expression) {
+    const make = (re, im = 0) => ({ re, im });
+    const addComplex = (a, b) => make(a.re + b.re, a.im + b.im);
+    const subComplex = (a, b) => make(a.re - b.re, a.im - b.im);
+    const mulComplex = (a, b) => make(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+    const divComplex = (a, b) => {
+      const denominator = b.re * b.re + b.im * b.im;
+      if (denominator === 0) return null;
+      return make(
+        (a.re * b.re + a.im * b.im) / denominator,
+        (a.im * b.re - a.re * b.im) / denominator
+      );
+    };
+    const expComplex = (z) => {
+      const scale = Math.exp(z.re);
+      return make(scale * Math.cos(z.im), scale * Math.sin(z.im));
+    };
+    const logComplex = (z) => {
+      const magnitudeSquared = z.re * z.re + z.im * z.im;
+      if (magnitudeSquared === 0) return null;
+      return make(0.5 * Math.log(magnitudeSquared), Math.atan2(z.im, z.re));
+    };
+
+    switch (expression.type) {
+      case TYPES.CONSTANT:
+        if (expression.name === "e") return make(Math.E);
+        if (expression.name === "pi") return make(Math.PI);
+        if (expression.name === "i") return make(0, 1);
+        return null;
+      case TYPES.INTEGER:
+        return make(expression.value);
+      case TYPES.NEG: {
+        const value = approximate(expression.child);
+        return value ? make(-value.re, -value.im) : null;
+      }
+      case TYPES.ADD: {
+        const left = approximate(expression.left);
+        const right = approximate(expression.right);
+        return left && right ? addComplex(left, right) : null;
+      }
+      case TYPES.SUB: {
+        const left = approximate(expression.left);
+        const right = approximate(expression.right);
+        return left && right ? subComplex(left, right) : null;
+      }
+      case TYPES.MUL: {
+        const left = approximate(expression.left);
+        const right = approximate(expression.right);
+        return left && right ? mulComplex(left, right) : null;
+      }
+      case TYPES.DIV: {
+        const numerator = approximate(expression.numerator);
+        const denominator = approximate(expression.denominator);
+        return numerator && denominator ? divComplex(numerator, denominator) : null;
+      }
+      case TYPES.POW: {
+        const base = approximate(expression.base);
+        const exponent = approximate(expression.exponent);
+        if (!base || !exponent) return null;
+        if (Math.abs(base.re - Math.E) < 1e-12 && Math.abs(base.im) < 1e-12) return expComplex(exponent);
+        const logBase = logComplex(base);
+        return logBase ? expComplex(mulComplex(exponent, logBase)) : null;
+      }
+      case TYPES.LN: {
+        const argument = approximate(expression.argument);
+        return argument ? logComplex(argument) : null;
+      }
+      case TYPES.SQRT: {
+        const argument = approximate(expression.argument);
+        if (!argument) return null;
+        const magnitude = Math.hypot(argument.re, argument.im);
+        return make(
+          Math.sqrt((magnitude + argument.re) / 2),
+          Math.sign(argument.im || 1) * Math.sqrt(Math.max(0, (magnitude - argument.re) / 2))
+        );
+      }
+      case TYPES.SIN: {
+        const argument = approximate(expression.argument);
+        return argument
+          ? make(Math.sin(argument.re) * Math.cosh(argument.im), Math.cos(argument.re) * Math.sinh(argument.im))
+          : null;
+      }
+      case TYPES.COS: {
+        const argument = approximate(expression.argument);
+        return argument
+          ? make(Math.cos(argument.re) * Math.cosh(argument.im), -Math.sin(argument.re) * Math.sinh(argument.im))
+          : null;
+      }
+      default:
+        return null;
+    }
+  }
+
+  function validateExpression(expression, options) {
+    const maxDepth = options?.maxDepth ?? MAX_EXPRESSION_DEPTH;
+    const maxNodes = options?.maxNodes ?? MAX_EXPRESSION_NODES;
+    const active = new Set();
+    let nodeCount = 0;
+
+    function visit(node, depth) {
+      if (!node || typeof node !== "object" || Array.isArray(node)) return false;
+      if (depth > maxDepth || nodeCount >= maxNodes || active.has(node)) return false;
+      nodeCount += 1;
+      active.add(node);
+      let valid = false;
+      switch (node.type) {
+        case TYPES.CONSTANT:
+          valid = ALLOWED_CONSTANTS.has(node.name);
+          break;
+        case TYPES.INTEGER:
+          valid = typeof node.value === "number" && Number.isSafeInteger(node.value);
+          break;
+        case TYPES.NEG:
+          valid = visit(node.child, depth + 1);
+          break;
+        case TYPES.ADD:
+        case TYPES.SUB:
+        case TYPES.MUL:
+          valid = visit(node.left, depth + 1) && visit(node.right, depth + 1);
+          break;
+        case TYPES.DIV:
+          valid = visit(node.numerator, depth + 1) && visit(node.denominator, depth + 1);
+          break;
+        case TYPES.POW:
+          valid = visit(node.base, depth + 1) && visit(node.exponent, depth + 1);
+          break;
+        case TYPES.LN:
+        case TYPES.SQRT:
+        case TYPES.SIN:
+        case TYPES.COS:
+          valid = visit(node.argument, depth + 1);
+          break;
+        default:
+          valid = false;
+      }
+      active.delete(node);
+      return valid;
+    }
+
+    return { ok: visit(expression, 0), nodeCount };
+  }
+
+  function isValidExpression(expression, options) {
+    return validateExpression(expression, options).ok;
+  }
+
+  return {
+    TYPES,
+    constant,
+    integer,
+    neg,
+    add,
+    sub,
+    mul,
+    div,
+    pow,
+    ln,
+    sqrt,
+    sin,
+    cos,
+    ONE,
+    ZERO,
+    E,
+    PI,
+    I,
+    MAX_EXPRESSION_DEPTH,
+    MAX_EXPRESSION_NODES,
+    canonicalKey,
+    isSame,
+    isInteger,
+    isConstant,
+    render,
+    renderTex,
+    approximate,
+    isValidExpression,
+    validateExpression,
+  };
+});

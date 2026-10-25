@@ -1,0 +1,32 @@
+✔ EML frozen old/new module fixtures preserve complete public source identities and MIT licenses (4.3845ms)
+✔ actual old reader refuses both new cos and composition; base/full wrapper restores the exact full original for new reader (10.1405ms)
+✔ legacy projection preserves every representable numeric expression without inventing composition provenance or dangling indices (1.3556ms)
+✔ actual legacy serialize and saveToCache may retain unknown full extension; no-op preserves full but edits are explicit conflicts (2.1239ms)
+✔ new reader accepts fixed old plain v2 and original new plain full files without narrowing source mathematics (0.587ms)
+✔ malformed, future, duplicate, nested and wrongly bound full extensions reject without silently falling back (1.3367ms)
+✔ user-file parser retains upstream decimal/exponent grammar and valid deep expression shapes while rejecting duplicate keys (4.577ms)
+✔ full compatibility envelope above 5MiB is refused while a valid full backup remains accessible unchanged (203.4841ms)
+✖ upstream-valid self-reference provenance that old reader rejects must be omitted without deleting the exact value (0.6546ms)
+✔ emitted frozen legacy reader is isolated from the live new expression global and actual emitted codec reads full extensions (5.8252ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 347.4144
+
+✖ failing tests:
+
+test at tests\eml-compatibility.test.mjs:49:1
+✖ upstream-valid self-reference provenance that old reader rejects must be omitted without deleting the exact value (0.6546ms)
+  Error: 旧版基础校验失败：公式来源存在循环引用
+      at Object.project (file:///<task-root>/work/scripts/eml-compatibility.mjs:74:24)
+      at TestContext.<anonymous> (file:///<task-root>/work/tests/eml-compatibility.test.mjs:50:408)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)

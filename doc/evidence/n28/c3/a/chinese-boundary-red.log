@@ -1,0 +1,43 @@
+✔ EML frozen old/new module fixtures preserve complete public source identities and MIT licenses (5.3407ms)
+✔ actual old reader refuses both new cos and composition; base/full wrapper restores the exact full original for new reader (10.8051ms)
+✔ legacy projection preserves every representable numeric expression without inventing composition provenance or dangling indices (1.627ms)
+✔ actual legacy serialize and saveToCache may retain unknown full extension; no-op preserves full but edits are explicit conflicts (2.3921ms)
+✔ new reader accepts fixed old plain v2 and original new plain full files without narrowing source mathematics (0.5271ms)
+✔ real old EML calculation and its complete provenance survive the compatibility projection (6.7246ms)
+✔ malformed, future, duplicate, nested and wrongly bound full extensions reject without silently falling back (1.2279ms)
+✔ user-file parser retains upstream decimal/exponent grammar and valid deep expression shapes while rejecting duplicate keys (6.6547ms)
+✔ full compatibility envelope above 5MiB is refused while a valid full backup remains accessible unchanged (206.4304ms)
+✖ valid old UTF-16 length-limited Chinese full file remains readable even when its UTF-8 size exceeds 5MiB (33.2892ms)
+✔ upstream-valid self-reference provenance that old reader rejects must be omitted without deleting the exact value (0.6358ms)
+✔ emitted frozen legacy reader is isolated from the live new expression global and actual emitted codec reads full extensions (5.418ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 408.8996
+
+✖ failing tests:
+
+test at tests\eml-compatibility.test.mjs:54:1
+✖ valid old UTF-16 length-limited Chinese full file remains readable even when its UTF-8 size exceeds 5MiB (33.2892ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  false !== true
+
+      at TestContext.<anonymous> (file:///<task-root>/work/tests/eml-compatibility.test.mjs:55:299)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
