@@ -12,7 +12,7 @@ const {chromium}=require('playwright');
  const out=path.resolve(root,'../evidence/hex-candidate-browser');fs.mkdirSync(out,{recursive:true});
  try{for(const [label,viewport,mobile] of [['desktop',{width:1440,height:1000},false],['phone',{width:390,height:844},true]]){
    const context=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile});await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==origin){external.push(route.request().url());return route.abort();}return route.continue();});
-   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));await page.addInitScript(bridge=>{window.__saved=[];window.TestBridge={saveFile:(name,content)=>window.__saved.push({name,content})};(0,eval)(bridge);},bridge);
+   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));await page.addInitScript({content:'window.__saved=[];window.TestBridge={saveFile:(name,content)=>window.__saved.push({name,content})};\n'+bridge});
    const check=async(name,fn)=>{await fn();console.log(`PASS H${++passed} ${label} ${name}`);};const state=()=>page.evaluate(()=>CellLab.getState());
    await page.goto(origin+prefix+'index.html');
    await check('candidate at game subpath loads complete offline closure',async()=>{assert.equal(await page.title(),'元胞实验室 · CELL LAB');assert.ok(await page.locator('#board').isVisible());assert.equal((await state()).rule.text,'B3/S23');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);});
