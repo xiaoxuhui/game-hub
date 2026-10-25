@@ -9,7 +9,8 @@
   "changes": [
     "Extract unchanged Gray domain rules; validate 1..10 before allocation",
     "Restore valid local parameters and truthful clipboard fallback",
-    "Use local ES module entry and preserve full MIT"
+    "Use local ES module entry and preserve full MIT",
+    "Include existing N26 icon in the complete output proof; domain rules unchanged"
   ],
   "inputs": [
     {
@@ -38,6 +39,11 @@
       "path": "core.js",
       "bytes": 1486,
       "sha256": "b6103520dca3c91f8af2d596e47e028da4d6421c2500ffbc32c68a3fa778a477"
+    },
+    {
+      "path": "icon.png",
+      "bytes": 6539,
+      "sha256": "7defb6ef2d82aa68da72d9e108619f93cca4243a8df18745141e898ffabb9061"
     },
     {
       "path": "index.html",

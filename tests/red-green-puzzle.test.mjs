@@ -11,7 +11,8 @@ const originalBuild = vm.runInNewContext(originalCore + ';buildSolution');
 test('adaptation retains exact frozen HTML fixture, full MIT and reviewed output hashes', () => {
   const proof = verifyRedGreenSource();
   assert.equal(proof.revision,'592027dbc5cab9cb83f91b904f4f23a9e3cbe24b');
-  assert.deepEqual(proof.outputs.map(o=>o.path),['LICENSE','app.js','core.js','index.html']);
+  assert.deepEqual(proof.outputs.map(o=>o.path),['LICENSE','app.js','core.js','icon.png','index.html']);
+  assert.equal(proof.outputs.find(o=>o.path==='icon.png').sha256,'7defb6ef2d82aa68da72d9e108619f93cca4243a8df18745141e898ffabb9061');
 });
 
 // Enumerate legal neighbours with integer bit masks, independently of the string/Gray implementation.
