@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "id": "hex-cell-lab",
+  "repository": "https://github.com/xiaoxuhui/hex-cell-lab.git",
+  "revision": "5040dde0521e9e38a5b640c80993a567f18a25c0",
+  "version": "1.4.0",
+  "buildKind": "static-copy",
+  "entryPage": "index.html",
+  "inputs": [
+    {
+      "path": "index.html",
+      "bytes": 11159,
+      "sha256": "e7334a45d4c439359577a58ef5cb4ef0fbcf04c03c56e9fdd7b2abd9aa8759ac"
+    },
+    {
+      "path": "styles/main.css",
+      "bytes": 13576,
+      "sha256": "ebc28cf4725003955a9e3a634bfff42e778a27347424319a48e3e8623c1a6d84"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 5840,
+      "sha256": "267c39ee747f6dc402ea2d1ad7ce104136f30a960567ff33bbedc35b312c0b10"
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 17305,
+      "sha256": "af6f9fe995e4f11d819c0cd864f0e493a23a0471e85a0cd168aedd4632ed88c5"
+    },
+    {
+      "path": "src/expression.js",
+      "bytes": 5224,
+      "sha256": "7443befffdc4e25fe3c624129a765cd2e291ee2158166ec44e07e595ddc11c41"
+    },
+    {
+      "path": "src/presets.js",
+      "bytes": 1532,
+      "sha256": "c7ca83e681119fb9f67df97860d6c15fa117b718dce8a5402a2a6d2c0f4a70ca"
+    },
+    {
+      "path": "vendor/jsep-1.4.0/dist/iife/jsep.iife.js",
+      "bytes": 29241,
+      "sha256": "d1f2976f2a18c7bddf13b11da1d18e11cc16c46ce79bae7a2db223acac853514"
+    },
+    {
+      "path": "vendor/jsep-1.4.0/LICENSE",
+      "bytes": 1093,
+      "sha256": "4a4cffde4afd302689cd6aad9b05463a798d3dbe4cb2488bda45af1977affe33"
+    },
+    {
+      "path": "package.json",
+      "bytes": 534,
+      "sha256": "d5119bbc107e69ccf472eed068aa562169467ebd379c973fcd08db10edcce996"
+    },
+    {
+      "path": "scripts/build.cjs",
+      "bytes": 494,
+      "sha256": "acecce249989695e7967714db0545a02b1f1140c67926054e00d55a1571925d4"
+    }
+  ],
+  "license": {
+    "spdx": "MIT",
+    "copyright": "2026 xiaoxuhui",
+    "authorization": "Author explicitly approved MIT resource publication in conversation on 2026-10-25",
+    "thirdParty": "vendor/jsep-1.4.0/LICENSE preserved byte-for-byte"
+  },
+  "adaptations": [],
+  "outputs": [
+    {
+      "path": "index.html",
+      "bytes": 11159,
+      "sha256": "e7334a45d4c439359577a58ef5cb4ef0fbcf04c03c56e9fdd7b2abd9aa8759ac"
+    },
+    {
+      "path": "styles/main.css",
+      "bytes": 13576,
+      "sha256": "ebc28cf4725003955a9e3a634bfff42e778a27347424319a48e3e8623c1a6d84"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 5840,
+      "sha256": "267c39ee747f6dc402ea2d1ad7ce104136f30a960567ff33bbedc35b312c0b10"
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 17305,
+      "sha256": "af6f9fe995e4f11d819c0cd864f0e493a23a0471e85a0cd168aedd4632ed88c5"
+    },
+    {
+      "path": "src/expression.js",
+      "bytes": 5224,
+      "sha256": "7443befffdc4e25fe3c624129a765cd2e291ee2158166ec44e07e595ddc11c41"
+    },
+    {
+      "path": "src/presets.js",
+      "bytes": 1532,
+      "sha256": "c7ca83e681119fb9f67df97860d6c15fa117b718dce8a5402a2a6d2c0f4a70ca"
+    },
+    {
+      "path": "vendor/jsep-1.4.0/dist/iife/jsep.iife.js",
+      "bytes": 29241,
+      "sha256": "d1f2976f2a18c7bddf13b11da1d18e11cc16c46ce79bae7a2db223acac853514"
+    },
+    {
+      "path": "vendor/jsep-1.4.0/LICENSE",
+      "bytes": 1093,
+      "sha256": "4a4cffde4afd302689cd6aad9b05463a798d3dbe4cb2488bda45af1977affe33"
+    }
+  ]
+}
