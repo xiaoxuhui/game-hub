@@ -12,7 +12,7 @@ export function hexSelectionRecord(old,candidates,{producerCommit,previousSha,se
   return {schemaVersion:1,selector:'hex-cell-lab',producerCommit,previousSha,nextSequence:sequence,previousGamesSha256:sha256(JSON.stringify(old.games)),selected:[{id:game.id,contentCode:game.contentCode,archiveBytes:game.archiveBytes,archiveSha256:game.archiveSha256,descriptorSha256:sha256(JSON.stringify(game)),assetName:assetName(game)}]};
 }
 export function verifyHexSelection(record,old,candidates,context){insist(JSON.stringify(record)===JSON.stringify(hexSelectionRecord(old,candidates,context)),'Publication selection changed or missing');}
-export function assertFreshHexAssets(assets){insist(!assets.some(a=>/^game-hex-cell-lab-[1-9][0-9]*-[a-f0-9]{12}\.zip$/.test(a.name)),'Existing hex asset requires inspection and verified resume');}
+export function assertFreshHexAssets(assets){insist(!assets.some(a=>typeof a.name==='string'&&a.name.toLowerCase().startsWith('game-hex-cell-lab')),'Existing hex asset requires inspection and verified resume');}
 export function assertHexOnlySuccessor(old,next,game){
   selectResourceCandidates(old,[game],'hex-cell-lab');insist(next.games.length===old.games.length+1&&new Set(next.games.map(g=>g.id)).size===next.games.length,'Hex-only successor must add exactly one game');
   for(const before of old.games)insist(JSON.stringify(next.games.find(g=>g.id===before.id))===JSON.stringify(before),'Hex-only publication altered an existing game');

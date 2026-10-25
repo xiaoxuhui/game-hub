@@ -112,6 +112,8 @@ try {
         $taskChosen=$taskSelection.selected[0];$taskHex=$taskUploadGames[0]
         $taskHexAsset="game-hex-cell-lab-$($taskHex.contentCode)-$($taskHex.archiveSha256.Substring(0,12)).zip"
         if($taskChosen.id -cne 'hex-cell-lab' -or $taskChosen.contentCode -ne 1 -or $taskHex.contentCode -ne 1 -or $taskChosen.archiveBytes -ne $taskHex.archiveBytes -or $taskChosen.archiveSha256 -cne $taskHex.archiveSha256 -or $taskChosen.assetName -cne $taskHexAsset){throw 'Hex upload differs from exact immutable selected ZIP'}
+        node scripts/resource-successor.mjs upload-preflight $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
+        if($LASTEXITCODE -ne 0){throw 'Full selected descriptor/previous games proof failed before credentials or uploads'}
     }
     $taskSnapshotName=if($ResumeAfterUploads){'resume-snapshot.json'}else{'before-snapshot.json'}
     $taskBefore=Get-Content -LiteralPath (Join-Path $taskDirectory $taskSnapshotName) -Raw | ConvertFrom-Json

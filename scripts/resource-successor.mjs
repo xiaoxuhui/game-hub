@@ -80,7 +80,12 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
     const context=()=>({producerCommit:json(root,'.build/dynamic-candidate/candidate.json').bundleCommit,previousSha:expected,sequence});
     const candidates=old=>{const all=verifyDynamicResources(),selected=selectResourceCandidates(old,all,selector);if(selector&&mode!=='preflight')verifyHexSelection(json(directory,'publication-selection.json'),old,all,context());return selected;};
     const successor=(old,games,snapshot)=>{const payload=successorPayload(old,games,snapshot,sequence);if(selector)assertHexOnlySuccessor(old,payload,games[0]);return payload;};
-    if(mode==='resume'){
+    if(mode==='upload-preflight'){
+      if(selector!=='hex-cell-lab')throw Error('Selected upload guard requires explicit hex selection');
+      const old=previous(directory,expected),games=candidates(old);
+      if(games.length!==1)throw Error('Exactly one selected upload required');
+      console.log('Verified full immutable selection and signed previous catalog before credentials/uploads');
+    }else if(mode==='resume'){
       const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2'),before=json(directory,'before-snapshot.json');
       const originals=before.assetPages.flatMap(p=>p.assets).filter(a=>a.name==='catalog.signed.json');
       if(originals.length!==1||originals[0].digest!==`sha256:${expected}`)throw new Error('Original current catalog record differs');
