@@ -8,7 +8,7 @@ export function adaptConwayCore(bytes){
  let text=bytes.toString('utf8');
  const replacements=[
   ['version: FORMAT_VERSION,','version: PREVIOUS_VERSION,'],
-  ['const rule = data.version === FORMAT_VERSION ? parseRule(data.rule).canonical : DEFAULT_RULE;','const rule = data.version === LEGACY_VERSION || data.rule === undefined ? DEFAULT_RULE : parseRule(data.rule).canonical;'],
+  ['const rule = data.version === FORMAT_VERSION ? parseRule(data.rule).canonical : DEFAULT_RULE;','const rule = data.version === LEGACY_VERSION || (data.version === PREVIOUS_VERSION && data.rule === undefined) ? DEFAULT_RULE : parseRule(data.rule).canonical;'],
  ];
  for(const [before,after]of replacements){if(text.split(before).length!==2)throw Error('Conway reviewed format marker changed');text=text.replace(before,after);}
  return Buffer.from(text);
