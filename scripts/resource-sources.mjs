@@ -4,6 +4,17 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateLock, assemble } from './bundle.mjs';
 import { strictJson, sha256, CONTRACTS } from './resource-protocol.mjs';
+import {CONWAY_INTEGRATION,CONWAY_REVISION} from './conway-compatibility.mjs';
+import {integrateConwayResource} from './conway-resource-integration.mjs';
+
+export function resourceIntegrationOptions(sources, independent = true) {
+  for (const source of sources) {
+    if (source.resourceIntegration !== undefined && (!independent || source.id !== 'conway' || source.revision !== CONWAY_REVISION || source.resourceIntegration !== CONWAY_INTEGRATION)) throw new Error('Unreviewed resource integration source');
+    if (independent && source.id === 'conway' && source.revision === CONWAY_REVISION && source.resourceIntegration !== CONWAY_INTEGRATION) throw new Error('Conway compatibility integration required');
+  }
+  if (!sources.some(source => source.resourceIntegration !== undefined)) return {};
+  return {afterCopy(source, directory) { if (source.resourceIntegration === CONWAY_INTEGRATION) integrateConwayResource(source, directory); }};
+}
 
 export function resourceInputs(root, independent = false) {
   const baselineBytes = readFileSync(join(root, 'sources.lock.json'));
@@ -11,6 +22,7 @@ export function resourceInputs(root, independent = false) {
   const codeBytes = readFileSync(join(root, 'resource-releases.lock.json'));
   const baseline = validateLock(strictJson(baselineBytes));
   const lock = validateLock(strictJson(sourceBytes));
+  resourceIntegrationOptions(lock.sources, independent);
   const releases = strictJson(codeBytes);
   if (releases.schemaVersion !== 1 || Object.keys(releases.games).sort().join() !== baseline.sources.map(s => s.id).sort().join()) throw new Error('Resource release identities');
   for (const source of lock.sources) {
@@ -30,7 +42,7 @@ export async function prepareResources(root) {
   if (process.env.GAME_HUB_LOCAL_SOURCES) throw new Error('Resource preparation must clone remote immutable commits');
   const commit = git(['rev-parse', 'HEAD']);
   const { lock } = resourceInputs(root, true);
-  assemble(lock.sources, root, join(root, '.build/resource-source-assets'), commit);
+  assemble(lock.sources, root, join(root, '.build/resource-source-assets'), commit, resourceIntegrationOptions(lock.sources));
   const { buildResources } = await import('./resource-bundle.mjs');
   return buildResources(root, { expectedCommit: commit, independent: true });
 }

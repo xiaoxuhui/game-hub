@@ -6,6 +6,7 @@ import {join,dirname} from 'node:path';
 import {sha256} from '../scripts/resource-protocol.mjs';
 import {CONWAY_INTEGRATION,CONWAY_REVISION} from '../scripts/conway-compatibility.mjs';
 import {adaptConwayUI,integrateConwayResource,CONWAY_UI_INPUTS} from '../scripts/conway-resource-integration.mjs';
+import {resourceIntegrationOptions} from '../scripts/resource-sources.mjs';
 const inputs=Object.fromEntries(Object.entries({'scripts/app.js':'app','index.html':'index','styles/main.css':'css'}).map(([path,name])=>[path,readFileSync(new URL(`fixtures/conway-a531-${name}.txt`,import.meta.url))]));
 test('Conway exact upstream UI is transformed only into resource controls with valid JavaScript and relative dependency closure',()=>{
  for(const [path,bytes]of Object.entries(inputs))assert.equal(sha256(bytes),CONWAY_UI_INPUTS[path]);
@@ -18,6 +19,16 @@ test('Conway exact upstream UI is transformed only into resource controls with v
  assert.match(out['scripts/hub-world-archive-ui.js'].toString(),/clear\(true, preview.expectedRaw\)/);
  assert.equal(inputs['scripts/app.js'].includes(Buffer.from('hubWorldController')),false);
  for(const path of Object.keys(inputs)){const bad={...inputs,[path]:Buffer.concat([inputs[path],Buffer.from('\n')])};assert.throws(()=>adaptConwayUI(bad),/Unreviewed/);}
+});
+test('resource preparation activates only reviewed Conway identity and rejects missing or misplaced integration',()=>{
+ const source={id:'conway',revision:CONWAY_REVISION,resourceIntegration:CONWAY_INTEGRATION};
+ assert.equal(typeof resourceIntegrationOptions([source]).afterCopy,'function');
+ assert.deepEqual(resourceIntegrationOptions([{id:'conway',revision:'7d857cc9b9eb6a9ccf55afc15f05b0a2079970be'}]),{});
+ assert.throws(()=>resourceIntegrationOptions([source],false),/Unreviewed/);
+ assert.throws(()=>resourceIntegrationOptions([{...source,id:'eml'}]),/Unreviewed/);
+ assert.throws(()=>resourceIntegrationOptions([{...source,revision:'0'.repeat(40)}]),/Unreviewed/);
+ assert.throws(()=>resourceIntegrationOptions([{...source,resourceIntegration:'unreviewed'}]),/Unreviewed/);
+ assert.throws(()=>resourceIntegrationOptions([{id:'conway',revision:CONWAY_REVISION}]),/required/);
 });
 test('Conway resource integration rejects unknown identity before writes and binds all input, output, and adapter bytes',()=>{
  const directory=mkdtempSync(join(tmpdir(),'conway-ui-'));

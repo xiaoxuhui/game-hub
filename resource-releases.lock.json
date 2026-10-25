@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "games": {
     "conway": {
-      "contentCode": 2,
-      "sourceRevision": "7d857cc9b9eb6a9ccf55afc15f05b0a2079970be",
+      "contentCode": 3,
+      "sourceRevision": "a531a560b3ecce070be80fb6470cbc916971bce4",
       "storageContract": "conway-baseline-v1",
-      "releaseNotes": "康威同版资源修订：批量导入与记录管理，原图案/函数存档格式保持；不支持安全文件保存接口的设备会保留记录并提示使用原有导出。固定上游7d857cc9，完整MIT随包。"
+      "releaseNotes": "固定上游a531a560，增加自定义演化规则及完整世界备份/恢复。新导出保留合法v2基础和rule扩展；旧版只能恢复格局、代数、视图，非默认规则在旧版按B3/S23演化。完整原文备份、显式旧档规则选择和保存失败保护；完整MIT随包。"
     },
     "eml": {
       "contentCode": 1,
