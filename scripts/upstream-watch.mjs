@@ -22,7 +22,7 @@ export function loadSources(root = ROOT) {
     id: source.id, repository: source.repository, version: source.version,
     consumers: [{id: source.id, revision: source.revision, inputs: source.files}]
   }));
-  for (const id of ['abelian-sandpile', 'lambda-diagram-game', 'red-green-puzzle']) {
+  for (const id of ['abelian-sandpile', 'lambda-diagram-game', 'red-green-puzzle', 'hex-cell-lab']) {
     const proof = json(join(root, 'examples', id, 'upstream-source.json'));
     let source = sources.find(s => s.repository === proof.repository);
     if (!source) {
@@ -31,7 +31,7 @@ export function loadSources(root = ROOT) {
     }
     source.consumers.push({id, revision: proof.revision, inputs: proof.inputs.map(i => i.path)});
   }
-  requireValue(sources.length === 6, 'Expected six upstream repositories');
+  requireValue(sources.length === 7, 'Expected seven curated upstream repositories');
   // Direct dynamic sources need their own upstream check; integrated examples above
   // retain their original upstream proof rather than watching the hall repository.
   const dynamic=dynamicSources(readFileSync(join(root,'dynamic-sources.lock.json')));

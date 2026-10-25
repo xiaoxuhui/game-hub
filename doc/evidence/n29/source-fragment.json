@@ -1,0 +1,24 @@
+{
+  "id": "langtons-ant",
+  "displayName": "兰顿蚂蚁",
+  "iconKind": "generic",
+  "available": true,
+  "repository": "https://github.com/xiaoxuhui/langtons-ant.git",
+  "revision": "20e308259c62e7a88ade50e08fab0182e12dbdcf",
+  "directory": "dist",
+  "version": "0.1.0",
+  "contentCode": 1,
+  "entryPage": "index.html",
+  "storageContract": "langtons-ant-dynamic-v1",
+  "files": [
+    "LICENSE",
+    "index.html",
+    "src/app.js",
+    "src/core.js",
+    "src/interaction.js",
+    "src/renderer.js",
+    "src/storage.js",
+    "styles.css"
+  ],
+  "releaseNotes": "0.1.0：独立离线网页，触摸绘制/擦除/平移、本地自动存档，恢复时暂停。"
+}

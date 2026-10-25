@@ -1,0 +1,54 @@
+{
+  "version": "0.1.0",
+  "sourceRevision": "20e308259c62e7a88ade50e08fab0182e12dbdcf",
+  "archive": "langtons-ant-v0.1.0-web.zip",
+  "archiveBytes": 26902,
+  "archiveSha256": "91063cf24ee605cf109975901d72931c5b9dc3bb24c92266ba049b2693238b00",
+  "category": "simulation",
+  "entryPage": "index.html",
+  "storageContract": "langtons-ant-dynamic-v1",
+  "storageKey": "langtons-ant.save.v1",
+  "license": "MIT",
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "index.html",
+      "bytes": 3655,
+      "sha256": "d6a36f2ca63bbc302aa354ab107d85de2cdb37597886a4d757b963d342805756"
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 8033,
+      "sha256": "c46fcc2ab961ec500d42b95fd183ba206297764b13501a4a8f9deabd2a91f5fe"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 1427,
+      "sha256": "306f18ea1fad7c167eea844aa080cf0c7c16e2ed86d18ec424c2367dcba5a3dd"
+    },
+    {
+      "path": "src/interaction.js",
+      "bytes": 597,
+      "sha256": "8bfe8ed01b65b967ba2e928872df5914329635b9afcddebb32d0dd75bed6d437"
+    },
+    {
+      "path": "src/renderer.js",
+      "bytes": 1982,
+      "sha256": "4d31b48c5d9e66b202c99cacdc7f641ca11b5e1a7ae96c62ecb3f9caf4845ea2"
+    },
+    {
+      "path": "src/storage.js",
+      "bytes": 2440,
+      "sha256": "b241429c570541de8ee6116ea11abcff75024644efa66765ccb488ab1ed458cb"
+    },
+    {
+      "path": "styles.css",
+      "bytes": 6882,
+      "sha256": "df54cd736823666604de05778e3ba74fe344bc8538bbf35c9f7a83475f313522"
+    }
+  ]
+}

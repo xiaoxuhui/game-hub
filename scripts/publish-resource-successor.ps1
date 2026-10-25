@@ -5,7 +5,8 @@ param(
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
     [ValidateSet('legacy','n9','n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24','n28')][string]$TaskScope='legacy',
     [switch]$ResumeAfterUploads,
-    [switch]$OnlyNewHex
+    [switch]$OnlyNewHex,
+    [switch]$OnlyNewAnt
 )
 $ErrorActionPreference='Stop'
 $taskCheckout='D:\soft\.ci-tmp\game-hub-work\v030-final'
@@ -74,7 +75,9 @@ if($TaskScope -ieq 'n28'){
 $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resource-successor';'X-GitHub-Api-Version'='2022-11-28'}
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null
 $taskSelectionArgs=@()
-if($OnlyNewHex){if($TaskScope -ine 'n28'){throw 'Hex-only publication is restricted to reviewed N28 scope'};$taskSelectionArgs=@('hex-cell-lab')}
+if($OnlyNewHex -and $OnlyNewAnt){throw 'New-game selection flags are mutually exclusive'}
+$taskSelectedId=if($OnlyNewHex){'hex-cell-lab'}elseif($OnlyNewAnt){'langtons-ant'}else{$null}
+if($taskSelectedId){if($TaskScope -ine 'n28'){throw 'Selected publication is restricted to reviewed N28 scope'};$taskSelectionArgs=@($taskSelectedId)}
 if($Commit -notmatch '^[0-9a-f]{40}$' -or $ExpectedPreviousSha -notmatch '^[0-9a-f]{64}$' -or $NextSequence -notmatch '^[1-9][0-9]{0,18}$'){throw 'Explicit exact commit, previous SHA and sequence required'}
 $taskDirectory=[IO.Path]::GetFullPath($EvidenceDirectory)
 if(-not $taskDirectory.StartsWith($taskEvidenceRoot+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Exact task evidence subdirectory required'}
@@ -105,13 +108,13 @@ try {
     node scripts/resource-successor.mjs $taskAdmissionMode $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
     if($LASTEXITCODE -ne 0){throw 'Anonymous history/candidate admission failed before credentials'}
     $taskUploadGames=@(Get-Content -LiteralPath '.build\dynamic-candidate\games.unsigned.json' -Raw | ConvertFrom-Json)
-    if($OnlyNewHex){
+    if($taskSelectedId){
         $taskSelection=Get-Content -LiteralPath (Join-Path $taskDirectory 'publication-selection.json') -Raw | ConvertFrom-Json
-        $taskUploadGames=@($taskUploadGames | Where-Object id -CEQ 'hex-cell-lab')
-        if($taskSelection.schemaVersion -ne 1 -or $taskSelection.selector -cne 'hex-cell-lab' -or $taskSelection.producerCommit -cne $Commit -or $taskSelection.previousSha -cne $ExpectedPreviousSha -or $taskSelection.nextSequence -cne $NextSequence -or @($taskSelection.selected).Count -ne 1 -or $taskUploadGames.Count -ne 1){throw 'Exact preflight hex selection required before credentials or uploads'}
-        $taskChosen=$taskSelection.selected[0];$taskHex=$taskUploadGames[0]
-        $taskHexAsset="game-hex-cell-lab-$($taskHex.contentCode)-$($taskHex.archiveSha256.Substring(0,12)).zip"
-        if($taskChosen.id -cne 'hex-cell-lab' -or $taskChosen.contentCode -ne 1 -or $taskHex.contentCode -ne 1 -or $taskChosen.archiveBytes -ne $taskHex.archiveBytes -or $taskChosen.archiveSha256 -cne $taskHex.archiveSha256 -or $taskChosen.assetName -cne $taskHexAsset){throw 'Hex upload differs from exact immutable selected ZIP'}
+        $taskUploadGames=@($taskUploadGames | Where-Object id -CEQ $taskSelectedId)
+        if($taskSelection.schemaVersion -ne 1 -or $taskSelection.selector -cne $taskSelectedId -or $taskSelection.producerCommit -cne $Commit -or $taskSelection.previousSha -cne $ExpectedPreviousSha -or $taskSelection.nextSequence -cne $NextSequence -or @($taskSelection.selected).Count -ne 1 -or $taskUploadGames.Count -ne 1){throw 'Exact preflight selection required before credentials or uploads'}
+        $taskChosen=$taskSelection.selected[0];$taskSelected=$taskUploadGames[0]
+        $taskSelectedAsset="game-$taskSelectedId-$($taskSelected.contentCode)-$($taskSelected.archiveSha256.Substring(0,12)).zip"
+        if($taskChosen.id -cne $taskSelectedId -or $taskChosen.contentCode -ne 1 -or $taskSelected.contentCode -ne 1 -or $taskChosen.archiveBytes -ne $taskSelected.archiveBytes -or $taskChosen.archiveSha256 -cne $taskSelected.archiveSha256 -or $taskChosen.assetName -cne $taskSelectedAsset){throw 'Upload differs from exact immutable selected ZIP'}
         node scripts/resource-successor.mjs upload-preflight $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
         if($LASTEXITCODE -ne 0){throw 'Full selected descriptor/previous games proof failed before credentials or uploads'}
     }

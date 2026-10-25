@@ -12,9 +12,11 @@ const getter = (options = {}) => async path => {
   return {default_branch: 'main'};
 };
 
-test('nine actual upstreams include direct dynamic sources and separate red-green baseline', () => {
+test('eleven actual upstreams include Ant and curated hex with their real source inputs', () => {
   const sources = loadSources();
-  assert.equal(sources.length, 9);
+  assert.equal(sources.length, 11);
+  const hex=sources.find(s=>s.id==='hex-cell-lab');assert.equal(hex.repository,'https://github.com/xiaoxuhui/hex-cell-lab.git');assert.ok(hex.consumers[0].inputs.includes('src/core.js'));
+  const ant=sources.find(s=>s.id==='langtons-ant');assert.equal(ant.repository,'https://github.com/xiaoxuhui/langtons-ant.git');assert.ok(ant.consumers[0].inputs.includes('dist/src/core.js'));assert.equal(classifyChanges([{filename:'dist/src/core.js'}],ant.consumers[0].inputs).status,'resource-change-pending-review');
   const turing = sources.find(s => s.id === 'turing');
   assert.deepEqual(turing.consumers.map(c => c.id), ['turing', 'red-green-puzzle']);
   assert.notEqual(turing.consumers[0].revision, turing.consumers[1].revision);

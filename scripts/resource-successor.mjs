@@ -7,7 +7,7 @@ import {captureReleaseSnapshot,validateReleaseSnapshot,attachAssets} from './res
 import {validateSigningInput} from './dynamic-catalog.mjs';
 import {validateDynamicCatalog} from './dynamic-protocol.mjs';
 import {verifyDynamicResources} from './dynamic-resources.mjs';
-import {selectResourceCandidates,hexSelectionRecord,verifyHexSelection,assertFreshHexAssets,assertHexOnlySuccessor} from './resource-selection.mjs';
+import {selectResourceCandidates,selectionRecord,verifySelection,assertFreshSelectedAssets,assertSelectedSuccessor} from './resource-selection.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const releaseId=407394942,keyId='resources-20261008';
 const der=readFileSync(join(root,'android/app/src/main/res/raw/resource_public_key.der'));
@@ -75,13 +75,13 @@ async function download(asset){
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
     const [mode,directory,expected,sequence,selector]=process.argv.slice(2);
-    if(![6,7].includes(process.argv.length)||!directory||!expected||!sequence||selector!==undefined&&selector!=='hex-cell-lab')throw new Error('Usage: resource-successor.mjs preflight|resume|payload|online directory previous-sha next-sequence [hex-cell-lab]');
+    if(![6,7].includes(process.argv.length)||!directory||!expected||!sequence||selector!==undefined&&!['hex-cell-lab','langtons-ant'].includes(selector))throw new Error('Usage: resource-successor.mjs preflight|resume|payload|online directory previous-sha next-sequence [hex-cell-lab|langtons-ant]');
     if(selector===undefined&&existsSync(join(directory,'publication-selection.json')))throw Error('Cannot drop a recorded publication selection');
     const context=()=>({producerCommit:json(root,'.build/dynamic-candidate/candidate.json').bundleCommit,previousSha:expected,sequence});
-    const candidates=old=>{const all=verifyDynamicResources(),selected=selectResourceCandidates(old,all,selector);if(selector&&mode!=='preflight')verifyHexSelection(json(directory,'publication-selection.json'),old,all,context());return selected;};
-    const successor=(old,games,snapshot)=>{const payload=successorPayload(old,games,snapshot,sequence);if(selector)assertHexOnlySuccessor(old,payload,games[0]);return payload;};
+    const candidates=old=>{const all=verifyDynamicResources(),selected=selectResourceCandidates(old,all,selector);if(selector&&mode!=='preflight')verifySelection(json(directory,'publication-selection.json'),old,all,selector,context());return selected;};
+    const successor=(old,games,snapshot)=>{const payload=successorPayload(old,games,snapshot,sequence);if(selector)assertSelectedSuccessor(old,payload,games[0],selector);return payload;};
     if(mode==='upload-preflight'){
-      if(selector!=='hex-cell-lab')throw Error('Selected upload guard requires explicit hex selection');
+      if(!['hex-cell-lab','langtons-ant'].includes(selector))throw Error('Selected upload guard requires explicit reviewed selection');
       const old=previous(directory,expected),games=candidates(old);
       if(games.length!==1)throw Error('Exactly one selected upload required');
       console.log('Verified full immutable selection and signed previous catalog before credentials/uploads');
@@ -103,7 +103,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       put(directory,'previous.signed.json',bytes);put(directory,'before-snapshot.json',JSON.stringify(snapshot,null,2)+'\n');
       const old=previous(directory,expected);validateReleaseSnapshot(old,snapshot,'game-resources-v2');
       if(BigInt(sequence)!==BigInt(old.catalogSequence)+1n)throw new Error('Exact next sequence required');
-      const games=candidates(old);if(selector)assertFreshHexAssets(assets);
+      const games=candidates(old);if(selector)assertFreshSelectedAssets(assets,selector);
       // Validate new metadata, cumulative identities and rollback rules before any credentials or uploads.
       const fake=structuredClone(snapshot);let id=Math.max(...assets.map(a=>a.id))+1;
       for(const game of games){if(!assets.some(a=>a.name===assetName(game)))fake.assetPages.at(-1).assets.push({id:id++,name:assetName(game),state:'uploaded',size:game.archiveBytes,digest:`sha256:${game.archiveSha256}`});}
@@ -111,7 +111,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const all=fake.assetPages.flatMap(p=>p.assets),pages=[];
       for(let i=0;i<all.length;i+=100)pages.push({page:pages.length+1,hasNext:i+100<all.length,assets:all.slice(i,i+100)});
       const admission={...fake,assetPages:pages};
-      successor(old,games,admission);if(selector)put(directory,'publication-selection.json',JSON.stringify(hexSelectionRecord(old,games,context()),null,2)+'\n');
+      successor(old,games,admission);if(selector)put(directory,'publication-selection.json',JSON.stringify(selectionRecord(old,games,selector,context()),null,2)+'\n');
       console.log(`Preflight verified previous sequence ${old.catalogSequence}, ${games.length} immutable candidates`);
     }else if(mode==='payload'){
       const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2');
@@ -129,7 +129,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const bytes=await download(current[0]),local=readFileSync(join(directory,'catalog.signed.json'));
       if(!bytes.equals(local))throw new Error('Online signed bytes differ from reviewed issuance');
       const next=verifyEnvelope(bytes,publicKey,keyId).catalog;validateSigningInput(next,snapshot,old);
-      if(selector){const games=candidates(old);assertHexOnlySuccessor(old,next,games[0]);}
+      if(selector){const games=candidates(old);assertSelectedSuccessor(old,next,games[0],selector);}
       if(next.catalogSequence!==sequence)throw new Error('Online sequence mismatch');
       const history=assets.filter(a=>a.name===`catalog-seq${old.catalogSequence}-${expected.slice(0,12)}.signed.json`);
       if(history.length!==1||sha256(await download(history[0]))!==expected)throw new Error('Archived signed history missing');
