@@ -1,0 +1,12 @@
+2026-10-25T19:10:36.9409257Z Verified 4 sources and 10 resources
+2026-10-25T19:10:36.9586803Z Verified 4 sources and 10 resources
+2026-10-25T19:10:36.9663347Z Verified 4 sources and 10 resources
+2026-10-25T19:10:37.0037924Z ℹ tests 123
+2026-10-25T19:10:37.0038608Z ℹ pass 122
+2026-10-25T19:10:37.0038963Z ℹ fail 0
+2026-10-25T19:10:37.0039726Z ℹ skipped 1
+2026-10-25T19:10:46.7202678Z Verified 4 sources and 40 resources
+2026-10-25T19:10:47.2356464Z Verified 6 distinct storage keys in four pinned APK bundles; no direct broad clear
+2026-10-25T19:11:15.9004662Z BUILD SUCCESSFUL in 13s
+2026-10-25T19:11:16.6218230Z Verified 4 sources and 40 APK resources for 9f83a7ff31ad95b79f20d84194263f6ba7ba31e8
+2026-10-25T19:11:30.9799624Z BUILD SUCCESSFUL in 8s

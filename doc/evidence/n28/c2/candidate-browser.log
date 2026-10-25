@@ -1,0 +1,23 @@
+PASS C1 desktop new rule UI imports and exports legal old v2 base through production bridge stub
+PASS C2 desktop nondefault export cancellation preserves world and produces no download
+PASS C3 desktop same-base different-rule backups offer every explicit choice and cancel preserves world
+PASS C4 desktop changed legacy base needs explicit default-rule acknowledgement; cancel protects full world
+PASS C5 desktop invalid new world is rejected before replacing current state
+PASS C6 desktop backup manager exports complete raw collection and restores a chosen full rule
+PASS C7 desktop quota failure cancellation preserves board, rule, generation, view and raw archive
+PASS C8 desktop backup collection file control imports raw archives and rejects bad collection without replacing originals
+PASS C9 desktop reload keeps raw backups, corrupt archive stays exportable and unrelated key survives confirmed clear
+PASS C10 desktop storage denial still allows game evolution and manual export after explicit backup failure
+PASS C11 desktop empty world with custom rule/generation/view is backed up before replacement and remains manually exportable
+PASS C12 phone new rule UI imports and exports legal old v2 base through production bridge stub
+PASS C13 phone nondefault export cancellation preserves world and produces no download
+PASS C14 phone same-base different-rule backups offer every explicit choice and cancel preserves world
+PASS C15 phone changed legacy base needs explicit default-rule acknowledgement; cancel protects full world
+PASS C16 phone invalid new world is rejected before replacing current state
+PASS C17 phone backup manager exports complete raw collection and restores a chosen full rule
+PASS C18 phone quota failure cancellation preserves board, rule, generation, view and raw archive
+PASS C19 phone backup collection file control imports raw archives and rejects bad collection without replacing originals
+PASS C20 phone reload keeps raw backups, corrupt archive stays exportable and unrelated key survives confirmed clear
+PASS C21 phone storage denial still allows game evolution and manual export after explicit backup failure
+PASS C22 phone empty world with custom rule/generation/view is backed up before replacement and remains manually exportable
+PASS 22 actual Conway resource-control checks; pageerrors=0 external=0; physical device/SAF not claimed

@@ -1,0 +1,43 @@
+{
+  "producerCommit": "9f83a7ff31ad95b79f20d84194263f6ba7ba31e8",
+  "previousSequence": "3",
+  "previousSignedSha256": "6ce1096bd6ff73662fd07464c90c802e24f18e4b45313ce088a4bbac20fbe562",
+  "nextSequence": "4",
+  "changed": [
+    "conway"
+  ],
+  "unchangedCompleteObjects": 3,
+  "repeatDescriptorsAndCandidateExact": true,
+  "noRemoteWrites": true,
+  "formalAssetIdsStillRequired": true,
+  "games": [
+    {
+      "id": "conway",
+      "contentCode": 3,
+      "sourceRevision": "a531a560b3ecce070be80fb6470cbc916971bce4",
+      "archiveBytes": 328473,
+      "archiveSha256": "f9207e077589e67bc7d9d531e302a95fffc4027c8497035509ca258f803e6285"
+    },
+    {
+      "id": "eml",
+      "contentCode": 1,
+      "sourceRevision": "2616c9e9b081762b01599cc79da919d20340d0a2",
+      "archiveBytes": 106336,
+      "archiveSha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6"
+    },
+    {
+      "id": "light",
+      "contentCode": 2,
+      "sourceRevision": "85163534ccae2b023928c877e002581a8f35f0cb",
+      "archiveBytes": 115671,
+      "archiveSha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267"
+    },
+    {
+      "id": "turing",
+      "contentCode": 2,
+      "sourceRevision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+      "archiveBytes": 86435,
+      "archiveSha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "input": "c2-c-production-first.log",
+    "rawSha256": "98323e6b719d216abf8746cafb277f288559ce8c22e5068008ae3aaf63a308fd",
+    "publicFile": "production-first.log",
+    "publicSha256": "3773a62f64d16b3886d87cefc192aaf65979305fbe93c11550f6c6f3fb80860e",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-c-production-second.log",
+    "rawSha256": "86fdecd2281916bc8e66a4092a754e84d2db7eb3983cc46d69717046126d0ce2",
+    "publicFile": "production-second.log",
+    "publicSha256": "a3aa3c963ac4a2853b26d738fea10459589e90fee02f877ee54f2733fe4abcca",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-first-candidate-browser.log",
+    "rawSha256": "b2a1dbc263563d9ebae6228eac745754f270e5264fd79d03ea85b3a9c04202e3",
+    "publicFile": "candidate-browser.log",
+    "publicSha256": "1ee2c9bf7bcb86ada83feceae770299a1cdc4718705deeea6552865cb1ef6f3f",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-resource-storage-audit.log",
+    "rawSha256": "1c18e14c097ed93472467658fa235bd2538e8eb7e79d64d689c807de1948859d",
+    "publicFile": "storage-audit.log",
+    "publicSha256": "50e594b4333c383dfb8e0af604ed4d767f763eb1a8083f1d7492766de6a3b9ab",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-c-activation-unit.log",
+    "rawSha256": "b3d372bfb4885fe386a973511f6abbc4e0270177bf8440cfa411b16df19baf98",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "69cc5374c3468848f85f6ca1bd178a1ebc8f3320f9fe53d4e0382c7da6cc18c3",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-upstream-core.log",
+    "rawSha256": "cb09a6dc74cbb32319cf5178ba61c7085f73d614521833ab3391253e4b8936fb",
+    "publicFile": "upstream-first.log",
+    "publicSha256": "ec1cf219f8463ac15b1e1d084dbdfe0d6fd3a6d35dce278963e7ba4f40c061b8",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-upstream-android-green.log",
+    "rawSha256": "91c31c406b5081b882b133dd42d467be95ec6d0d16dd56f7dc1451159591856c",
+    "publicFile": "upstream-android-green.log",
+    "publicSha256": "84cd6bddf462f36d14a5ffe4c23cb0103f6229b18697f99dcce207792002f141",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-upstream-android-sync.log",
+    "rawSha256": "a3ca0eda56c531f7bb40eedaba28dd33b5ae364607f3935077a8c202185170ed",
+    "publicFile": "upstream-android-sync.log",
+    "publicSha256": "588cab340396744fc5a7099d25485050b41d3685276ad837aa50edb334fe1f8f",
+    "normalization": "task/user-home path placeholders and LF; all assertions unchanged"
+  },
+  {
+    "input": "c2-9f83-ci-full.log",
+    "rawSha256": "832692545f74aa51d06ddc6fce16b378371153656935f39235d069f76d532535",
+    "publicFile": "ci-9f83-excerpt.log",
+    "publicSha256": "6cf63dbee3452650b21f92634120a297a344afcde131228b96d9668f7d3bcade",
+    "selection": "counts/build/asset/storage verification excerpt; full log privately retained"
+  }
+]

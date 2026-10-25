@@ -1,0 +1,322 @@
+[
+  {
+    "id": "conway",
+    "version": "0.17.0",
+    "contentCode": 3,
+    "sourceRepository": "https://github.com/xiaoxuhui/conway-life-game.git",
+    "sourceRevision": "a531a560b3ecce070be80fb6470cbc916971bce4",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "conway-baseline-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 328473,
+    "archiveSha256": "f9207e077589e67bc7d9d531e302a95fffc4027c8497035509ca258f803e6285",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "hub-source-proof.json",
+        "bytes": 1698,
+        "sha256": "03efebfbb882bbe487f295fd8755e5b3540db3ae991cabf041b54ca7ca676e3a",
+        "mime": "application/json"
+      },
+      {
+        "path": "index.html",
+        "bytes": 23948,
+        "sha256": "7871f0c89f1c4dbd5faba4e1d05bcc7e561a9225dbd8b5e4f0e0473729698ddd",
+        "mime": "text/html"
+      },
+      {
+        "path": "scripts/app.js",
+        "bytes": 53602,
+        "sha256": "5604fc312c2510a87c882d11105cd899d0c84824df4714f42bb83951b5353afa",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/dialogs.js",
+        "bytes": 48043,
+        "sha256": "598142d2423c091a66f696ef3de338782e49ef74350ce2b216b105978c63f93e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/file-backup.js",
+        "bytes": 4040,
+        "sha256": "0862b59e5caa52af10b199fe9a54e7edda7d0c38bc44a4edade0ef8cfc053768",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/hub-world-archive-ui.js",
+        "bytes": 8252,
+        "sha256": "d90c5ec205f929e8b3ae96d9f924f08dc44ac98bdd6c8523a41cf9090def2b17",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/hub-world-archive.js",
+        "bytes": 10484,
+        "sha256": "c0b4a54b0db2071c022bcfafb9e97b47fd39fdc3b1ba30fc1fd53bded43a400b",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/life-engine.js",
+        "bytes": 12050,
+        "sha256": "a5e4543ab7baaadcf8f03a8de52ef0dbc0e783fb61ef257f0c64689fc6f0d3f8",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-code.js",
+        "bytes": 17656,
+        "sha256": "d826166e4a44ae3636d059db3e528cf6ca0d350b6c909c25325f1da14503eb1e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-compile.js",
+        "bytes": 33187,
+        "sha256": "f31f23a497d1287b4a82ade7e2202df4268b04efaa4ff781183a05f0542f9ac8",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-expand.js",
+        "bytes": 6099,
+        "sha256": "889f30008397e6c1427400c07bf0c88cf72861d171e4318de2dd4b18cb1adc6d",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-function-library.js",
+        "bytes": 11280,
+        "sha256": "358bf696dcbdd0cf7cfc95ef9259c6df1ecf54bdff9da14befdecba6be05fa66",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-layout.js",
+        "bytes": 2862,
+        "sha256": "91cfeafdcee4601e26176de6f64d3e6218b97229bb9368876379997044a3e005",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-parse.js",
+        "bytes": 10383,
+        "sha256": "d17d919e5701fa21f35223abd5d342257a89e8581f817c908160061ae450daa8",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/logic-safety.js",
+        "bytes": 5955,
+        "sha256": "954a2976e7e845bd1df03131e8782747092bc5e8e611eb0a1cf39626d810c513",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/pattern-library.js",
+        "bytes": 13177,
+        "sha256": "fbe924083f53efa4772d6bca815f13323ceb1e62eb002663f259bbc4a02687da",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/presets.js",
+        "bytes": 22716,
+        "sha256": "85ec6112ef879d31252d614389637e5eadfdbf66db7afa2051de1f95655bd3fb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/record-import.js",
+        "bytes": 4317,
+        "sha256": "5336b9abde16095798d540d5f8d1ac7a2de84a05d34baf27128b5913f72b5818",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/renderer.js",
+        "bytes": 14030,
+        "sha256": "39b14ccda77be01f38cfa761bfdcb0379053dfefa6c1c7cddb8e8583cd38aad3",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/speed-control.js",
+        "bytes": 1817,
+        "sha256": "fda1e74202f712af6069d00e9904f2ac2ac7254bdad2db9dce2f8d52bd1f9509",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles/main.css",
+        "bytes": 19181,
+        "sha256": "023399964f2361347e1ce1c8a0e66d71acee4931af4936488b925eb66daad389",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "固定上游a531a560，增加自定义演化规则及完整世界备份/恢复。新导出保留合法v2基础和rule扩展；旧版只能恢复格局、代数、视图，非默认规则在旧版按B3/S23演化。完整原文备份、显式旧档规则选择和保存失败保护；完整MIT随包。"
+  },
+  {
+    "id": "eml",
+    "version": "1.3.0",
+    "contentCode": 1,
+    "sourceRepository": "https://github.com/xiaoxuhui/EML.git",
+    "sourceRevision": "2616c9e9b081762b01599cc79da919d20340d0a2",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "eml-baseline-v1",
+    "entryPage": "eml-workbench.html",
+    "archiveBytes": 106336,
+    "archiveSha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "eml-workbench.html",
+        "bytes": 105046,
+        "sha256": "2dea1e1b0f5408b35edfa67fe5614edb65706b7e3f6d5f2da1c836a75f80cdf7",
+        "mime": "text/html"
+      }
+    ],
+    "releaseNotes": "首份兼容资源，沿用锁定离线基准。"
+  },
+  {
+    "id": "light",
+    "version": "1.2.1",
+    "contentCode": 2,
+    "sourceRepository": "https://github.com/xiaoxuhui/light_game.git",
+    "sourceRevision": "85163534ccae2b023928c877e002581a8f35f0cb",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "light-baseline-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 115671,
+    "archiveSha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 3532,
+        "sha256": "14a78b2e55fa1336e90544f28e5d9265fb990933dde23fb72f74b904c058f344",
+        "mime": "text/html"
+      },
+      {
+        "path": "scripts/app.js",
+        "bytes": 31240,
+        "sha256": "50900439da27dad2faaef1ffabaa2e8c5461bf0c5aadf80f40014a40564e312b",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/levels.js",
+        "bytes": 21309,
+        "sha256": "3752f90d97e743f197f266eded44bb73e90ebc171b78963a3d58549c72d42fc7",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/light-core.js",
+        "bytes": 11327,
+        "sha256": "71e8992db1e79ddb0f34bf101f60b60acd2e1d8cd1d2426ed21b7ffc5eef6f80",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/light-engine.js",
+        "bytes": 7234,
+        "sha256": "96374b9174c5d6674157251e2a0394d6f0ea5f3c568ab69a2af580d41ec11f0f",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/renderer.js",
+        "bytes": 14985,
+        "sha256": "dd93a2a0a3184e472934e268651b59156fea443ba37dccd279d0b7e755aa232a",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "scripts/storage.js",
+        "bytes": 14755,
+        "sha256": "d1ca8a8a08cdd8773c97cb709674d55895e6d597542897b87825c68bc2e3b89e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles/main.css",
+        "bytes": 9229,
+        "sha256": "ed89d9eadf9eb42fdb536f6fe1cf3366226b5aed77397d81279bf645b4ab51b4",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "正式版本 1.2.1 的兼容资源更新，固定上游 85163534ccae2b023928c877e002581a8f35f0cb；沿用原存档格式与存储合同，完整MIT许可随包。"
+  },
+  {
+    "id": "turing",
+    "version": "0.5.1",
+    "contentCode": 2,
+    "sourceRepository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+    "sourceRevision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+    "minHostVersionCode": 3,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 1,
+    "storageContract": "turing-baseline-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 86435,
+    "archiveSha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "assets/campaign-CBioli0a.css",
+        "bytes": 9021,
+        "sha256": "aa75e851850078402158fc7669310657f2611277aa78c295fab2d2fbcfaf6440",
+        "mime": "text/css"
+      },
+      {
+        "path": "assets/campaign-DK81-Kun.js",
+        "bytes": 27829,
+        "sha256": "3a6fb75f1c146fa00cefee46d9f08af26950eb99f3050fe5a4ed380d22a9061c",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "assets/core-BmS44wlX.js",
+        "bytes": 3571,
+        "sha256": "defddab3e9965b38b9088816288801efc6f4b42607290af9169a34e097584912",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "assets/main-BJgtYmnF.css",
+        "bytes": 9749,
+        "sha256": "54320c1dbc78a5e99eabdbe3e6ee5edec4ce6840772a3c2ae5dde02dde975f43",
+        "mime": "text/css"
+      },
+      {
+        "path": "assets/main-Cq8er0ZM.js",
+        "bytes": 30137,
+        "sha256": "598c2e7ed729a07d67ffcd0d41d48a93bcd7991c009e83603fbe9b17fb50056a",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "assets/route-worker--cIr4Dp-.js",
+        "bytes": 2817,
+        "sha256": "1cc23d89b84c9329dccd88b8abbe93aecb8c914a45468879cc31dff36209ce6e",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "campaign.html",
+        "bytes": 592,
+        "sha256": "1403dff3d7e1c1996de5b932b916b5a0806eab8b126e04498aa10e46fd73eec4",
+        "mime": "text/html"
+      },
+      {
+        "path": "index.html",
+        "bytes": 575,
+        "sha256": "8a86de228fd28889a6ea94ea903c1c59196a42dc8f38f9b6395356bc9fcb2936",
+        "mime": "text/html"
+      }
+    ],
+    "releaseNotes": "正式版本 0.5.1 的兼容资源更新，固定上游 32eb3b95eb78eab703abe8e64214bd8dbbb939c7；沿用原存档格式与存储合同，完整MIT许可随包。"
+  }
+]
