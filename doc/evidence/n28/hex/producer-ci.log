@@ -1,0 +1,25 @@
+2026-10-25T16:17:27.6015856Z Verified 1 sources and 5 resources
+2026-10-25T16:17:28.3110821Z Verified 4 sources and 10 resources
+2026-10-25T16:17:28.3272504Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T16:17:28.3280375Z Verified 4 sources and 10 resources
+2026-10-25T16:17:28.3281844Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T16:17:28.3319786Z Verified 4 sources and 10 resources
+2026-10-25T16:17:28.3402861Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T16:17:28.3465615Z Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+2026-10-25T16:17:28.4654512Z ℹ tests 93
+2026-10-25T16:17:28.4655374Z ℹ pass 93
+2026-10-25T16:17:28.4655749Z ℹ fail 0
+2026-10-25T16:17:28.4657750Z ℹ duration_ms 1168.509293
+2026-10-25T16:17:36.2158004Z Verified 4 sources and 40 resources
+2026-10-25T16:17:36.7564359Z Verified 6 distinct storage keys in four pinned APK bundles; no direct broad clear
+2026-10-25T16:17:51.7468227Z ##[group]Run ./gradlew testDebugUnitTest assembleDebug --no-daemon
+2026-10-25T16:17:51.7468836Z [36;1m./gradlew testDebugUnitTest assembleDebug --no-daemon[0m
+2026-10-25T16:18:05.8440409Z > Task :app:assembleDebug
+2026-10-25T16:18:05.9302379Z BUILD SUCCESSFUL in 14s
+2026-10-25T16:18:06.2582776Z [36;1m"$AAPT" dump permissions "$APK" | tee "$RUNNER_TEMP/apk-permissions.txt"[0m
+2026-10-25T16:18:06.2583894Z [36;1mgrep '^uses-permission' "$RUNNER_TEMP/apk-permissions.txt" | \[0m
+2026-10-25T16:18:06.2588267Z [36;1m  > "$RUNNER_TEMP/unexpected-permissions.txt" || true[0m
+2026-10-25T16:18:06.2589164Z [36;1mif [ -s "$RUNNER_TEMP/unexpected-permissions.txt" ]; then[0m
+2026-10-25T16:18:06.2591854Z [36;1m  cat "$RUNNER_TEMP/unexpected-permissions.txt"[0m
+2026-10-25T16:18:06.5271709Z Verified 4 sources and 40 APK resources for 8de4e1bb1df892e0fd371bf5240c0de1d5b06ebf
+2026-10-25T16:18:28.8706545Z BUILD SUCCESSFUL in 15s

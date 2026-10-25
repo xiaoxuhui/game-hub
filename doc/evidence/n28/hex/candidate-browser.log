@@ -1,0 +1,15 @@
+PASS H1 desktop candidate at game subpath loads complete offline closure
+PASS H2 desktop draw and step use actual controls
+PASS H3 desktop existing v1 save imports through file control
+PASS H4 desktop invalid import leaves actual state intact
+PASS H5 desktop production export bridge receives complete JSON
+PASS H6 desktop stable key and other-game data survive reopen
+PASS H7 desktop loaded game works without network and bridge still exports
+PASS H8 phone candidate at game subpath loads complete offline closure
+PASS H9 phone draw and step use actual controls
+PASS H10 phone existing v1 save imports through file control
+PASS H11 phone invalid import leaves actual state intact
+PASS H12 phone production export bridge receives complete JSON
+PASS H13 phone stable key and other-game data survive reopen
+PASS H14 phone loaded game works without network and bridge still exports
+PASS 14 candidate game/bridge checks; page errors=0 external requests=0; Android device not claimed
