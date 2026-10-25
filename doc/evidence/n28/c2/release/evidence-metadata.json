@@ -1,0 +1,33 @@
+[
+  {
+    "input": "c2-final-candidate-browser.log",
+    "rawSha256": "b2a1dbc263563d9ebae6228eac745754f270e5264fd79d03ea85b3a9c04202e3",
+    "publicFile": "final-candidate-browser.log",
+    "publicSha256": "1ee2c9bf7bcb86ada83feceae770299a1cdc4718705deeea6552865cb1ef6f3f"
+  },
+  {
+    "input": "c2-final-storage-audit.log",
+    "rawSha256": "1c18e14c097ed93472467658fa235bd2538e8eb7e79d64d689c807de1948859d",
+    "publicFile": "storage-audit.log",
+    "publicSha256": "50e594b4333c383dfb8e0af604ed4d767f763eb1a8083f1d7492766de6a3b9ab"
+  },
+  {
+    "input": "c2-publication-console.log",
+    "rawSha256": "15bcc1a8b2de3b614309e26eb77678ce96434d6396ecbe5937e79175f59d949f",
+    "publicFile": "publication.log",
+    "publicSha256": "0cb3d646ccd61fba3caeba9575263c9eb755aadcc77d610938afc4243ecd9c71"
+  },
+  {
+    "input": "c2-public-issued-probe.log",
+    "rawSha256": "dfbb03795e7fe924730784d1052c9bb79a2a048816afbc69e839506b5848c637",
+    "publicFile": "public-probe.log",
+    "publicSha256": "3da3dc4c58aefe8cffe45b2be7ec3e583120811d86ec6598feac4b818adee517"
+  },
+  {
+    "input": "c2-final-ci-full.log",
+    "rawSha256": "e26f54e96833ea63ec7acc95b00fec6b002a6a7de6e72fdf7e16a4d56183ca81",
+    "publicFile": "producer-ci.log",
+    "publicSha256": "e05a9644f1365e6cdeb12bbcee46138b89c30c1baaeb04c62e59831fa4cd383a",
+    "selection": "counts/build/storage excerpt; full original private"
+  }
+]

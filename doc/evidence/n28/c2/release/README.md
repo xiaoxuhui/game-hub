@@ -1,0 +1,12 @@
+# C2 最终发行证据
+
+Producer de5e8e4e9a22b2e1d46aed9fcf7debcf3e53aea0；只发行现有v1通道seq4康威content3，不发APK/新增正式Release，不改v2 seq34或固定标签。
+
+- 最终同提交两次严格远端生产，四完整描述和candidate元数据相同；Conway328473B/f9207e077589e67bc7d9d531e302a95fffc4027c8497035509ca258f803e6285。最终实际ZIP桌面/手机22项，七键审计通过。
+- 精确GitHub CI run40225531850/job121265967841成功，Linux122通过/1Windows专属跳过（本机123通过）。成功元数据及原日志SHA/摘录保留，完整日志私有归档。
+- 固定生产公钥验旧v1seq3/raw6ce109…，新4/只变Conway，旧三对象保持的预检及独立READY后，正常受限N28脚本发行；无中断或重试。
+- current签名目录asset675911732，原字节SHA95322f729b0f7bb66c51400c6d83bb069cfd8983ba8cad1eea7fecc6a3a16909。Conwayasset675911480/content3，固定上游a531a560b3ecce070be80fb6470cbc916971bce4。
+- 严格匿名online验证4份完整签名历史和8个累计ZIP。另独立公网下载新current及ConwayZIP，与签署和被测候选原字节一致；旧EML/Light/Turing三个完整对象含资产ID保持。
+- signed目录保持原字节；公开日志仅任务路径占位及LF处理，元数据列原始与公开SHA。CLI验签显示e5c963…为payload摘要，原signed envelope SHA以95322f…为准。
+
+Chrome/Chromium路径模拟及生产桥JS/native stub仍不代替Android WebView/SAF/物理机/离线冷启动验收。发行后独立审阅待完成，不能据此提前把N28 C/D全部勾完。

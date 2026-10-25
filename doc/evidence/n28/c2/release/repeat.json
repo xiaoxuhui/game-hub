@@ -1,0 +1,32 @@
+{
+  "producerCommit": "de5e8e4e9a22b2e1d46aed9fcf7debcf3e53aea0",
+  "gamesSha256": "d5f749122cb40ffd23f6528d7dca8c46516bc9f21c29e9a1c732a947ae6fedc1",
+  "candidateSha256": "05ea3d6e1782c9c964c27fc819e46c64af9f18201675221af261a1a04113f402",
+  "repeatExact": true,
+  "resources": [
+    {
+      "id": "conway",
+      "contentCode": 3,
+      "archiveBytes": 328473,
+      "archiveSha256": "f9207e077589e67bc7d9d531e302a95fffc4027c8497035509ca258f803e6285"
+    },
+    {
+      "id": "eml",
+      "contentCode": 1,
+      "archiveBytes": 106336,
+      "archiveSha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6"
+    },
+    {
+      "id": "light",
+      "contentCode": 2,
+      "archiveBytes": 115671,
+      "archiveSha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267"
+    },
+    {
+      "id": "turing",
+      "contentCode": 2,
+      "archiveBytes": 86435,
+      "archiveSha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43"
+    }
+  ]
+}

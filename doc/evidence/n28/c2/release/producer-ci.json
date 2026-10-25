@@ -1,0 +1,200 @@
+{
+  "producerCommit": "de5e8e4e9a22b2e1d46aed9fcf7debcf3e53aea0",
+  "run": [
+    {
+      "id": 40225531850,
+      "head_sha": "de5e8e4e9a22b2e1d46aed9fcf7debcf3e53aea0",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/xiaoxuhui/game-hub/actions/runs/40225531850"
+    }
+  ],
+  "jobs": [
+    {
+      "id": 121265967841,
+      "head_sha": "de5e8e4e9a22b2e1d46aed9fcf7debcf3e53aea0",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-25T19:20:13Z",
+          "completed_at": "2026-10-25T19:20:15Z"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-25T19:20:15Z",
+          "completed_at": "2026-10-25T19:20:16Z"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-25T19:20:16Z",
+          "completed_at": "2026-10-25T19:20:18Z"
+        },
+        {
+          "name": "Run pnpm/action-setup@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-25T19:20:18Z",
+          "completed_at": "2026-10-25T19:20:20Z"
+        },
+        {
+          "name": "Verify source lock and assembler",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-25T19:20:20Z",
+          "completed_at": "2026-10-25T19:20:24Z"
+        },
+        {
+          "name": "Build four pinned sources in this isolated checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-25T19:20:24Z",
+          "completed_at": "2026-10-25T19:20:31Z"
+        },
+        {
+          "name": "Verify bundle manifest and resource hashes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-25T19:20:31Z",
+          "completed_at": "2026-10-25T19:20:31Z"
+        },
+        {
+          "name": "Audit shared-origin storage keys",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-25T19:20:31Z",
+          "completed_at": "2026-10-25T19:20:32Z"
+        },
+        {
+          "name": "Run actions/setup-java@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-25T19:20:32Z",
+          "completed_at": "2026-10-25T19:20:32Z"
+        },
+        {
+          "name": "Run gradle/actions/setup-gradle@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-25T19:20:32Z",
+          "completed_at": "2026-10-25T19:20:36Z"
+        },
+        {
+          "name": "Run android-actions/setup-android@v3",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-25T19:20:36Z",
+          "completed_at": "2026-10-25T19:20:47Z"
+        },
+        {
+          "name": "Test Android asset policy and assemble debug APK",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-25T19:20:47Z",
+          "completed_at": "2026-10-25T19:21:01Z"
+        },
+        {
+          "name": "Check APK permissions and included resources",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-25T19:21:01Z",
+          "completed_at": "2026-10-25T19:21:01Z"
+        },
+        {
+          "name": "Verify packaged hashes, app identity and debug signature",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-25T19:21:01Z",
+          "completed_at": "2026-10-25T19:21:02Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-25T19:21:02Z",
+          "completed_at": "2026-10-25T19:21:03Z"
+        },
+        {
+          "name": "Upload build diagnostics on failure",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-25T19:21:03Z",
+          "completed_at": "2026-10-25T19:21:03Z"
+        },
+        {
+          "name": "Post Run gradle/actions/setup-gradle@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-10-25T19:21:03Z",
+          "completed_at": "2026-10-25T19:21:16Z"
+        },
+        {
+          "name": "Post Run actions/setup-java@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-10-25T19:21:16Z",
+          "completed_at": "2026-10-25T19:21:17Z"
+        },
+        {
+          "name": "Post Run pnpm/action-setup@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 30,
+          "started_at": "2026-10-25T19:21:17Z",
+          "completed_at": "2026-10-25T19:21:17Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31,
+          "started_at": "2026-10-25T19:21:17Z",
+          "completed_at": "2026-10-25T19:21:17Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 32,
+          "started_at": "2026-10-25T19:21:17Z",
+          "completed_at": "2026-10-25T19:21:17Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 33,
+          "started_at": "2026-10-25T19:21:17Z",
+          "completed_at": "2026-10-25T19:21:17Z"
+        }
+      ]
+    }
+  ],
+  "rawLog": "c2-final-ci-full.log",
+  "checkedVia": "GitHub connector read-only run/job/log endpoints"
+}
