@@ -1,0 +1,13 @@
+✔ actual old and new campaign core are identical and both normalize every recorded level completion and saved draft (2.7888ms)
+✔ new campaign manual backup carries the unchanged legacy-readable progress object and rejects malformed file versions (2.5565ms)
+✔ Turing UI staging binds forty-three immutable build inputs and rejects every unreviewed text (4.9529ms)
+✔ adapted actual source closes all project persistence and whole-project replacement entries while preserving the original execution scheduler (3.5524ms)
+✔ Turing UI before-build entry refuses wrong identity, repository or integration before accessing a checkout (0.3617ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 142.8127

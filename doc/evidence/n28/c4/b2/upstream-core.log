@@ -1,0 +1,56 @@
+$ vitest run
+
+ RUN  v3.2.7 <task-root>/source-validation/turing-machine-simulator
+
+ ✓ tests/route-bounds.test.ts (2 tests) 16ms
+ ✓ tests/core.test.ts (26 tests) 12ms
+ ✓ tests/gijswijt.test.ts (4 tests) 7ms
+ ✓ tests/register-tm.test.ts (2 tests) 17ms
+ ✓ tests/campaign-backup.test.ts (9 tests) 13ms
+ ✓ tests/campaign.test.ts (34 tests) 18ms
+ ✓ tests/route-controller.test.ts (3 tests) 9ms
+stdout | tests/gijswijt-tm.test.ts > Gijswijt single-tape compiler > threshold 0 stops at term 1
+threshold=0 terms=1 steps=1
+
+stdout | tests/gijswijt-tm.test.ts > Gijswijt single-tape compiler > threshold 1 stops at term 3
+threshold=1 terms=3 steps=28
+
+stdout | tests/gijswijt-tm.test.ts > Gijswijt single-tape compiler > threshold 2 stops at term 9
+threshold=2 terms=9 steps=733
+
+ ✓ tests/tape-drag.test.ts (8 tests) 11ms
+ ✓ tests/tile-puzzle.test.ts (3 tests) 9ms
+stdout | tests/hyperoperation-examples.test.ts > higher arithmetic executed only by ordinary tape transitions > finishes all four default inputs with clean unary answers
+unaryDivide: 2865 tape steps; 349 rules
+unaryPower: 9799 tape steps; 756 rules
+unaryTetration: 10624 tape steps; 1178 rules
+unaryPentation: 18710 tape steps; 1646 rules
+
+ ✓ tests/hyperoperation-examples.test.ts (7 tests) 127ms
+ ✓ tests/speed-preference.test.ts (3 tests) 6ms
+ ✓ tests/speed-input.test.ts (6 tests) 8ms
+ ✓ src/project-codec.test.ts (10 tests) 14ms
+ ✓ src/shuffle.test.ts (2 tests) 5ms
+ ✓ tests/route-view.test.ts (3 tests) 5ms
+ ✓ tests/text-insertion.test.ts (3 tests) 5ms
+ ✓ src/execution-log.test.ts (2 tests) 5ms
+ ✓ tests/speed.test.ts (2 tests) 4ms
+ ✓ tests/rule-source.test.ts (1 test) 4ms
+ ✓ tests/execution-scheduler.test.ts (2 tests) 6ms
+ ✓ tests/project-state.test.ts (1 test) 4ms
+ ✓ tests/examples.test.ts (15 tests) 799ms
+   ✓ built-in examples > runs beaver24 with the published state/symbol counts and result  549ms
+stdout | tests/gijswijt-tm.test.ts > Gijswijt single-tape compiler > threshold 3 stops at term 220
+threshold=3 terms=220 steps=15141538
+
+stdout | tests/gijswijt-tm.test.ts > Gijswijt single-tape compiler > rejects invalid input before expanding rules and compiles a two-digit alphabet
+threshold=10 rules=46027 bytes=1882167
+
+ ✓ tests/gijswijt-tm.test.ts (8 tests) 3578ms
+   ✓ Gijswijt single-tape compiler > threshold 3 stops at term 220  2008ms
+   ✓ Gijswijt single-tape compiler > continues past 4 when the configured threshold is 4  1435ms
+
+ Test Files  23 passed (23)
+      Tests  156 passed (156)
+   Start at  06:11:18
+   Duration  4.70s (transform 2.01s, setup 0ms, collect 4.86s, tests 4.68s, environment 7ms, prepare 6.12s)

@@ -1,0 +1,72 @@
+[
+  {
+    "input": "c4-b2-browser-first.log",
+    "rawSha256": "91a7f210fe2dfe09030338eb711b949f47fc18eb744ed95cd2cbc8fa2b48ff02",
+    "publicFile": "fixture-selector-first.log",
+    "publicSha256": "7548c926c9e9f2391a205f93e78c64fc28ae1e82313843f03d9c31e8dca2526f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-browser-second.log",
+    "rawSha256": "60add114aaffad088a642a48455ed4307f95abf42b7ea0705bed088784b63218",
+    "publicFile": "fixture-confirm-second.log",
+    "publicSha256": "035c4b9018d77caf5fa8822e0409f7e681adf030dc33c229cbfc5e30a5d3acf0",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-course-export-status-red.log",
+    "rawSha256": "e918f127fcd8e04df0594478ffedcc311bfb8a3e406596c21df3d4c8886b134d",
+    "publicFile": "course-export-status-red.log",
+    "publicSha256": "faa59b9bac51acf09461bfefd1d79d680b5c9c387409a15a7528fba70fd4a83f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-browser-final.log",
+    "rawSha256": "0b659c34f5d17aca8bc2484c26dd97fb2f4ee8db813c9bf5e876d41982547d33",
+    "publicFile": "browser.log",
+    "publicSha256": "a12102ce634201499d5f7126526dce0ebd7c418b13bc5f56356ac153a9e349c5",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-full-final-layout.log",
+    "rawSha256": "085860ee68f1fe0cf7c8a63cab78a9ccfca5a9b666b004d0520c2f863c1872c2",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "9406920a0e6fabee1f7f6db3e9a8120b8a0e3bf17e176931607bdeeb6ddef33c",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-unit-after-status.log",
+    "rawSha256": "d6dcafbee15260ed4da71ee4ba8fa7bca134df3a0bcdb63e352f0bb865418e45",
+    "publicFile": "ui-course-unit.log",
+    "publicSha256": "5ce22917f2959025b0e9e8ed784ce29e277ee589452373284f50d702bf2d4326",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-stage-final.log",
+    "rawSha256": "118a52b2e33ccd82a3b00dbc51120d4c1409667f54ea8ad98e0d4083efd77635",
+    "publicFile": "staged-inputs.log",
+    "publicSha256": "31f036c5d5a7b38f5f26aadf4156f211abe1db64982e7d84fb94c1f42da25f86",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-typecheck-final.log",
+    "rawSha256": "1f345e6ac1f9e6ae7c4e70d1f0c8c9f8b8f80218269a1b4473f9ac63a9d4a253",
+    "publicFile": "typecheck.log",
+    "publicSha256": "faeaa94bcf7012d86f91ca647580449f56a263fb7eaf572c54789764f60a9b8f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-build-final.log",
+    "rawSha256": "7f0d5386086f8e1bd36c007e60f850d4bb26a70429e5a2571c1625194ece338a",
+    "publicFile": "build.log",
+    "publicSha256": "a3eab7adfcd89c096d3e69b4467850643d24e72a1abce5c132cdff9e05245473",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-b2-adapted-source-core.log",
+    "rawSha256": "2f4ffc658d82210275851fa4b486402ba66b8dba15944e1f694f5e6948b44dd1",
+    "publicFile": "upstream-core.log",
+    "publicSha256": "e29441a5f0fff770db8f7aefc7a10bf0a2e1b8d811b164a7755208e9acaae50f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  }
+]

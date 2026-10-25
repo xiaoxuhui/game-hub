@@ -1,0 +1,1 @@
+{"revision":"ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3","inputs":43,"runtimes":["hub/turing-legacy.js","hub/turing-format.js","hub/turing-preservation.js","hub/turing-ui.js"],"adapters":["turing-resource-integration.mjs","turing-legacy-reader.mjs","turing-compatibility.mjs","turing-preservation.mjs","turing-compatibility-ui.mjs"]}

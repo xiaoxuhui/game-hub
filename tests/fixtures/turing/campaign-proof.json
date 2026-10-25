@@ -1,0 +1,29 @@
+{
+  "compiler": "typescript@5.9.3/CommonJS/ES2022; require relative resolution suffix only",
+  "inputs": [
+    {
+      "kind": "old",
+      "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+      "path": "src/campaign.ts",
+      "sourceSha256": "24d36f62d6448906637b325972277ba41f4a6081af806abe0e68817726cfd4ec",
+      "fixture": "old/campaign.cjs",
+      "compiledSha256": "81af1fcf7e3dbaf35ee1c29f80e50a8fddf5d0ec8e71e5ca6f50d46b746ceb58"
+    },
+    {
+      "kind": "new",
+      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "path": "src/campaign.ts",
+      "sourceSha256": "24d36f62d6448906637b325972277ba41f4a6081af806abe0e68817726cfd4ec",
+      "fixture": "new/campaign.cjs",
+      "compiledSha256": "81af1fcf7e3dbaf35ee1c29f80e50a8fddf5d0ec8e71e5ca6f50d46b746ceb58"
+    },
+    {
+      "kind": "new",
+      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "path": "src/campaign-backup.ts",
+      "sourceSha256": "1b95d2ddcbc07797d4bc9d8066125c63f09c19a4c752cf1b8da838fffb1d4a3a",
+      "fixture": "new/campaign-backup.cjs",
+      "compiledSha256": "bbb9b89251cb86037d2f3da483b6c33e07691a055b9651874d5a3b1ce996f984"
+    }
+  ]
+}

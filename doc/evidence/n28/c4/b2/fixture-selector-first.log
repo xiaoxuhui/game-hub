@@ -1,0 +1,19 @@
+PASS T1 desktop real old codec output loads and independent speed preference overrides project only as intended on reload
+PASS T2 desktop explicit one-step legacy view never caps actual Max execution; complete and compatible exports restore the same full project
+PASS T3 desktop cancelled Max finite choice writes neither project key and explicit later setting can resume protection
+PASS T4 desktop corrupt own raw and old raw remain separately exportable; explicit clear retains old cache and manual restore resumes
+PASS T5 desktop invalid legacy and invalid import survive startup cancellation and have direct original-text export routes
+PASS T6 desktop durable full candidate after mirror interruption requires explicit startup selection and retains original old raw
+PASS T7 desktop cancelled old-edit startup keeps both originals and later explicit complete restore protects the old edited raw
+PASS T8 desktop quota before replacing an unapplied invalid draft supports true cancel and explicit session-only replacement with full export
+PASS T9 desktop clearing an invalid unapplied draft protects its exact contents before the source editor is emptied
+PASS T10 desktop stale imported file offers base/full/cancel without auto-merging; cancel and original input export precede an explicit finite base import
+PASS T11 desktop collection import only adds recoverable history; explicit full restore preserves opaque metadata and clear-history keeps current
+PASS T12 desktop actual second-page historical save invalidates autosave while the current session remains completely exportable
+locator.fill: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('#directCount')
+
+    at <task-root>\work\scripts\turing-hall-browser.cjs:33:605
+    at async check (<task-root>\work\scripts\turing-hall-browser.cjs:20:212)
+    at async <task-root>\work\scripts\turing-hall-browser.cjs:33:3
