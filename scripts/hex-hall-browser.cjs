@@ -1,0 +1,30 @@
+// Real candidate ZIP + exact production export-bridge JS. This is browser
+// verification, not a claim that Android SAF or a physical device was tested.
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
+const {chromium}=require('playwright');
+(async()=>{
+ const {readStoredZip}=await import('./resource-bundle.mjs'),{assetName,mime}=await import('./resource-protocol.mjs'),root=path.resolve(__dirname,'..'),candidate=JSON.parse(fs.readFileSync(path.join(root,'.build/dynamic-candidate/games.unsigned.json'))),game=candidate.find(g=>g.id==='hex-cell-lab');
+ assert.ok(game);const entries=new Map(readStoredZip(fs.readFileSync(path.join(root,'.build/dynamic-candidate',assetName(game)))).map(e=>[e.path,e.data])),prefix='/games/hex-cell-lab/';
+ const kt=fs.readFileSync(path.join(root,'android/app/src/main/java/com/xiaoxuhui/gamehub/MainActivity.kt'),'utf8'),bridge=kt.match(/private val EXPORT_BRIDGE_JS = """([\s\S]*?)"""\.trimIndent\(\)/)[1].replaceAll('__BRIDGE__','TestBridge');
+ const csp="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'";
+ const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost'),rel=url.pathname.slice(prefix.length)||'index.html';if(req.method!=='GET'||!url.pathname.startsWith(prefix)||!entries.has(rel)){res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime(rel),'Content-Security-Policy':csp,'X-Content-Type-Options':'nosniff'});res.end(entries.get(rel));});
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port,browser=await chromium.launch(),errors=[],external=[];let passed=0;
+ const out=path.resolve(root,'../evidence/hex-candidate-browser');fs.mkdirSync(out,{recursive:true});
+ try{for(const [label,viewport,mobile] of [['desktop',{width:1440,height:1000},false],['phone',{width:390,height:844},true]]){
+   const context=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile});await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==origin){external.push(route.request().url());return route.abort();}return route.continue();});
+   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));await page.addInitScript(bridge=>{window.__saved=[];window.TestBridge={saveFile:(name,content)=>window.__saved.push({name,content})};(0,eval)(bridge);},bridge);
+   const check=async(name,fn)=>{await fn();console.log(`PASS H${++passed} ${label} ${name}`);};const state=()=>page.evaluate(()=>CellLab.getState());
+   await page.goto(origin+prefix+'index.html');
+   await check('candidate at game subpath loads complete offline closure',async()=>{assert.equal(await page.title(),'元胞实验室 · CELL LAB');assert.ok(await page.locator('#board').isVisible());assert.equal((await state()).rule.text,'B3/S23');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);});
+   await page.evaluate(()=>localStorage.setItem('other-game-sentinel','keep'));
+   await check('draw and step use actual controls',async()=>{await page.locator('#clear').click();await page.locator('#board').scrollIntoViewIfNeeded();const p=await page.evaluate(()=>{const r=document.getElementById('board').getBoundingClientRect(),v=CellLab.getView();return{x:r.x+v.ox+36.5*v.size,y:r.y+v.oy+24.5*v.size};});if(mobile)await page.touchscreen.tap(p.x,p.y);else await page.mouse.click(p.x,p.y);assert.equal((await state()).grid[24*72+36],1);await page.locator('#step').click();assert.equal((await state()).generation,1);});
+   await check('existing v1 save imports through file control',async()=>{const value={version:1,width:8,height:8,generation:42,boundary:'zero',rule:{format:'bs',text:'B3/S23'},grid:Array(64).fill(0)};value.grid[27]=1;await page.locator('#file').setInputFiles({name:'old-v1.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(value))});await page.waitForFunction(()=>CellLab.getState().width===8);assert.equal((await state()).generation,42);assert.equal((await state()).grid[27],1);});
+   await check('invalid import leaves actual state intact',async()=>{const before=await state();await page.locator('#file').setInputFiles({name:'broken.json',mimeType:'application/json',buffer:Buffer.from('{"version":1}')});await page.locator('#rule-error').waitFor({state:'visible'});assert.deepEqual(await state(),before);});
+   await check('production export bridge receives complete JSON',async()=>{const before=await state();await page.locator('#export').click();await page.waitForFunction(()=>window.__saved.length>0);assert.deepEqual(JSON.parse(await page.evaluate(()=>window.__saved.at(-1).content)),before);});
+   await check('stable key and other-game data survive reopen',async()=>{await page.waitForFunction(()=>JSON.parse(localStorage.getItem('cell-lab-v1')).width===8);const before=await state();await page.reload();assert.deepEqual(await state(),before);assert.equal(await page.evaluate(()=>localStorage.getItem('other-game-sentinel')),'keep');});
+   await check('loaded game works without network and bridge still exports',async()=>{await context.setOffline(true);const before=await state();await page.locator('#step').click();assert.equal((await state()).generation,before.generation+1);await page.locator('#export').click();await page.waitForFunction(()=>window.__saved.length>0);assert.deepEqual(JSON.parse(await page.evaluate(()=>window.__saved.at(-1).content)),await state());await context.setOffline(false);});
+   await page.screenshot({path:path.join(out,label+'.png'),fullPage:true});await context.close();
+  }
+  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log(`PASS ${passed} candidate game/bridge checks; page errors=0 external requests=0; Android device not claimed`);
+ }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
+})().catch(error=>{console.error(error);process.exitCode=1;});
