@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('n10','n12')][string]$TaskScope='n10',
+    [ValidateSet('n10','n12','n28')][string]$TaskScope='n10',
     [switch]$ResumeAfterUploads
 )
 $ErrorActionPreference='Stop'
@@ -14,6 +14,10 @@ if($TaskScope -ieq 'n12'){
     $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n12\evidence\publication'
 }
 $taskApi='https://api.github.com/repos/xiaoxuhui/game-hub'
+if($TaskScope -ieq 'n28'){
+    $taskCheckout='D:\soft\.ci-tmp\game-hub-n28\work'
+    $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n28\evidence\publication'
+}
 $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resource-successor';'X-GitHub-Api-Version'='2022-11-28'}
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null
 if($Commit -notmatch '^[0-9a-f]{40}$' -or $ExpectedPreviousSha -notmatch '^[0-9a-f]{64}$' -or $NextSequence -notmatch '^[1-9][0-9]{0,18}$'){throw 'Explicit exact commit, previous SHA and sequence required'}

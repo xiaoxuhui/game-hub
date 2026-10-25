@@ -179,6 +179,21 @@
         "src/app.js"
       ],
       "releaseNotes": "首次接入路流：空白地图自由修路、单向方向、红绿灯、随机出口、逐段指定路线和上下跨线；含城市、高架、菱形、四叶草、盘龙和单向环路六例。自动选路参考道路负载；支持方案保存和JSON导入导出。"
+    },
+    {
+      "id": "hex-cell-lab",
+      "displayName": "元胞实验室",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "893f0c238d2eb4f20bf8ea907559f149730161a4",
+      "directory": "examples/hex-cell-lab",
+      "version": "1.4.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "hex-cell-lab-dynamic-v1",
+      "files": ["LICENSE", "index.html", "styles/main.css", "src/core.js", "src/app.js", "src/expression.js", "src/presets.js", "vendor/jsep-1.4.0/dist/iife/jsep.iife.js", "vendor/jsep-1.4.0/LICENSE", "upstream-source.json"],
+      "releaseNotes": "首次接入元胞实验室1.4.0：B/S、SBC、通配及数值表达式规则、Wireworld、随机列表、可调棋盘尺寸和撤销。保留cell-lab-v1存档键，支持JSON导入导出。固定上游5040dde，八运行文件原字节；本体经作者授权MIT，jsep原许可随包。"
     }
   ]
 }
