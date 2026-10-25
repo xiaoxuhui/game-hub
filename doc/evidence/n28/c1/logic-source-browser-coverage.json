@@ -1,0 +1,9 @@
+{
+  "defaultSuiteCount": 57,
+  "priorSuitesPassed": 37,
+  "tailSuitesPassed": 20,
+  "completeDefaultCoverage": true,
+  "calibratedSuite": "minecraft-xor-browser.cjs",
+  "optionalLargeLiveFixtureExcludedByUpstreamDefault": true,
+  "originalRawSuiteNotClaimedGreen": true
+}

@@ -1,0 +1,12 @@
+{
+  "revision": "690f4b606aa280560e8540fc513755527e07387e",
+  "testPath": "tests/minecraft-xor-browser.cjs",
+  "originalSha256": "5d67b746f7d86d094662bd8bd51f51b08ba9a806c763a8cbc629b3affe45f6d7",
+  "calibratedSha256": "67a0bbffb23d91097f660eb88845bc792b7a5e324d063cb381c4e77a94b80c59",
+  "originalThreshold": 312,
+  "unchangedPhysicalThreshold": 312,
+  "excludedBatchKind": "flowArrow",
+  "browserModelBinding": true,
+  "otherAssertionsUnchanged": true,
+  "scope": "independent validation copy only; original repository and packaged runtime unchanged"
+}

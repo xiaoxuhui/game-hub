@@ -1,0 +1,44 @@
+[
+  {
+    "privateLog": "c1-logic-source-unit.log",
+    "rawSha256": "3b40e4884fb0fc379016f37f48837d74305f85f4ec8a1eebafbcc0e68eb79cc8",
+    "publicLog": "logic-unit.log",
+    "localPathsReplaced": true
+  },
+  {
+    "privateLog": "c1-traffic-source-unit.log",
+    "rawSha256": "1e960c323f65d757b2ec89f1a4d5074cd2874a2b181eb99716347e69312605b3",
+    "publicLog": "traffic-unit.log",
+    "localPathsReplaced": true
+  },
+  {
+    "privateLog": "c1-traffic-source-browser.log",
+    "rawSha256": "9cb4475de7c7ce322e925343d5184aebf7198ab3cb578bb5cb3593e0c1d58a1b",
+    "publicLog": "traffic-browser.log",
+    "localPathsReplaced": true
+  },
+  {
+    "privateLog": "c1-logic-source-browser.log",
+    "rawSha256": "a225431626d6b1709e0043570daa1acfe62856abd28d7fcb7d3bdc10a62fc6db",
+    "publicLog": "logic-browser-first.log",
+    "localPathsReplaced": true
+  },
+  {
+    "privateLog": "c1-logic-source-browser-calibrated-tail.log",
+    "rawSha256": "364924743279ba2b3df2a78ba1201ea35b765641c7b37904c30903b2aa11d506",
+    "publicLog": "logic-browser-calibrated-tail.log",
+    "localPathsReplaced": true
+  },
+  {
+    "privateLog": "c1-candidate-browser-initial.log",
+    "rawSha256": "7c694c27e68eaa63a0ca8e76ec9656ac83dee4f2de181f7acceb8d3468298355",
+    "publicLog": "candidate-browser.log",
+    "localPathsReplaced": true
+  },
+  {
+    "privateLog": "c1-final-unit-prepublication.log",
+    "rawSha256": "21e717c9d3ffdf705a824016940dd4ef1a286575e0f64b78e4550221cc8e6022",
+    "publicLog": "hall-unit.log",
+    "localPathsReplaced": true
+  }
+]

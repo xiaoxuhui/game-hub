@@ -1,0 +1,19 @@
+{
+  "catalogSequence": "33",
+  "logic": {
+    "oldRevision": "623081f4e85e8a221839b271e26416a4ecc8d7e8",
+    "newRevision": "690f4b606aa280560e8540fc513755527e07387e",
+    "coreByteIdentical": true,
+    "coreSha256": "36996b11ed2ae4e29e169ae7c5c841f04c9cf606242574d62231c8af63decfd0",
+    "oldArchiveManifestMatched": true,
+    "bidirectionalLayouts": 3
+  },
+  "traffic": {
+    "oldRevision": "800ae8c9b2d55e9d50bdc0dfaf59f2a7ea16e3a1",
+    "newRevision": "86f8fb77de41c9ddef37fbd998c44d01c0623727",
+    "validatorByteIdentical": true,
+    "validatorSha256": "fe2d29597132759780641ad41a04d10091a5d9a47f4a3bc95440095c15aeb049",
+    "bidirectionalExamples": 12
+  },
+  "meaning": "fixed actual published reader and latest reader preserve v1 base layouts; browser/runtime and ZIP validation separate"
+}

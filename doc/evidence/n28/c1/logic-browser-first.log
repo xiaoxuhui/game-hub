@@ -1,0 +1,240 @@
+RUN browser.cjs
+Local: http://127.0.0.1:56321
+Browser: Chromium 151.0.7922.34
+PASS I01 initial board has only NAND and no other logic types
+PASS I02 left mouse gate drag changes position
+PASS I03 palette click does not spawn; dragging adds input and output at release point
+PASS I04 empty-space left drag draws a free wire
+PASS I05 undo and redo restores free wire
+PASS I06 keyboard deletion removes selected wire
+PASS I07 port drags connect inputs and output to NAND
+PASS I08 click input switches runs NAND truth table
+PASS I09 moving connected gate updates anchors and preserves result
+PASS I10 middle mouse drag pans without adding wires
+PASS I11 wheel zoom retains world coordinate under cursor
+PASS I12 gate labels render escaped text without script execution
+PASS I13 package circuit creates reusable gate that drags directly from palette
+PASS I14 custom circuit and camera persist after reload
+PASS I15 JSON download contains nodes wires and custom definition
+PASS I16 invalid import preserves current circuit
+PASS I17 delete saved unused gate by button updates count and empty state without placing a gate
+PASS I18 right click saved gate opens editable original hierarchy and preserves root inputs
+PASS I19 undo redo restores used template and dependent saved gate still drags out
+PASS I20 deleted saved gate remains absent after reload export and import
+PASS I21 deleting final saved gate preserves instances and cleans unused implementations when removed
+PASS I22 hub and splitter drag from palette and expose selectable widths
+PASS I23 wired bus preserves binary data through browser simulation
+PASS I24 bus width mismatch adapts in workbench
+PASS I25 help is keyboard-dismissable and describes wiring
+PASS I26 Ctrl+A highlights all canvas components and Backspace deletes them in one undoable step
+PASS I27 Delete and toolbar handle full selection; empty board and Escape are safe
+PASS I28 Ctrl+A and Backspace in labels or dialogs edit text without deleting circuit
+PASS I29 right mouse pans from blank and components without deleting
+PASS I30 right click input opens a menu and Delete removes that source and attached wire while preserving gates; undo restores it
+PASS I31 right click deletes only targeted wire even with another gate selected
+PASS I32 right drag that returns to gate never deletes; escape and pointercancel cancel deletion
+PASS I33 blank right drag can pass over gate without deleting it
+PASS I34 infinite view can pan thousands of pixels without adding wires
+PASS I35 every base component drops at cursor and supports one-step undo redo
+PASS I36 palette preview follows pointer and cancels outside canvas or with Escape
+PASS I37 drop placement uses current camera after zoom and right pan; gate remains draggable
+PASS I38 multi-bit inputs start as four clickable zero bits and outputs use numeric screen
+PASS I39 canvas bit clicks form 1010 and decimal 10 without moving gate or creating wires
+PASS I40 inspector bit clicks toggle only that bit with one undo and redo
+PASS I41 bit keyboard Space and Enter toggle a single bit without rotating the gate
+PASS I42 eight clickable bits display 255 and persist after reload
+PASS I43 unconnected multi-bit output is decimal zero without unknown display
+PASS I44 hub placement asks for count with no default; 3 creates three inputs and one bus
+PASS I45 splitter count is entered explicitly and creates one bus with chosen outputs
+PASS I46 invalid bus counts do not place nodes and cancel discards pending placement
+PASS I47 click bus tool edits count; dragging only moves; undo restores previous count
+PASS I48 shrinking hub removes only missing-port wires and undo restores them
+PASS I49 expand all recursively shows every custom instance as primitive NAND leaves
+PASS I50 expanded view pans and zooms but cannot edit delete or place gates
+PASS I51 expanded export and automatic storage keep original collapsed circuit
+PASS I52 collapse restores original camera and gates without creating undo steps
+PASS I53 hidden saved dependencies expand and Escape collapses; no-custom board disables button
+PASS I54 all backup labels and single-file export preserve hidden dependencies and free wires
+PASS I55 cancel backup-and-clear keeps every object and shows scope with safe default focus
+PASS I56 backup-and-clear downloads whole source then removes all contents with one undo and redo
+PASS I57 export failure never clears source and leaves retry dialog open
+PASS I58 empty state persists then all-import file chooser restores every field and can undo
+PASS I59 all import replaces entire library and malformed or oversized file preserves current contents
+PASS I60 Space rotates selected connected gate clockwise around center and four presses restore geometry
+PASS I61 held Space does not repeat rotation and text fields retain normal spaces
+PASS I62 Ctrl+A Space rotates all components and a single undo restores every original node
+PASS I63 full import opens text dialog without file chooser and pasted save replaces all data
+PASS I64 copy current save provides complete text even without clipboard permission; invalid paste and cancel preserve content
+PASS I65 expanded network click highlights just one connection and collapse preserves source
+PASS I66 old custom gate with an unused initial NAND expands only its connected implementation
+PASS I67 expanded IO positions keep pairwise x and y offsets and live input changes survive return
+PASS I68 right click canvas NAND menu deletes it and undo restores its circuit
+PASS I69 nested saved gate opens original level and readonly view expands descendants
+PASS I70 mobile viewport has no overflow and visible tools
+PASS I71 touch gesture moves NAND and toolbar can zoom
+PASS I72 mobile palette touch drag, inspector and pan mode work
+PASS I73 mobile multi-bit input clicks switch each bit once without dragging node
+PASS I74 mobile delete button removes exactly one saved template without dragging or breaking circuit
+PASS I75 mobile hub creation asks for N and creates exactly three inputs
+PASS I76 mobile expand and collapse buttons work without overflow or source changes
+PASS I77 mobile complete export and clear can restore all contents through one file
+PASS I78 mobile rotation button turns selected gate once and text import needs no file
+PASS I79 mobile library edit and view modes preserve saved source
+PASS I80 offline file entry runs without HTTP requests
+PASS I81 desktop and mobile finished without browser errors
+RESULT 81 passed, 0 failed; screenshots: tests/artifacts
+RUN component-count-browser.cjs
+Local: http://127.0.0.1:60831
+PASS browser: nested per-instance counts, deletion/undo, edit/view context, propagated definition update, mobile visibility
+RUN context-menu-browser.cjs
+Local: http://127.0.0.1:49696
+PASS context: external menu does not delete; internal replacement propagates to both instances, exit and undo
+PASS context: internal right-click wire retained, external wire deleted immediately, external node delete and undo
+PASS all components: delay is default, every basic type offered, bus width editable, internal input/output replacement propagates and undo restores interfaces
+PASS replacement connections: existing input/output ports stay connected; missing input keeps its wire; undo restores all endpoints
+PASS inputs: changing A leaves unconnected B low, no page errors
+RUN delay-browser.cjs
+Local: http://127.0.0.1:65530
+PASS browser: manual steps, cascade, reset, custom speed, auto/pause, persistence, palette drag, mobile controls
+RUN delay-editor-browser.cjs
+Local: http://127.0.0.1:62405
+PASS delay editor: right drag pans, right click lists nested defaults, toggle immediately affects only target instance, return/undo/redo/save
+PASS delay editor: hex multi-bit input, invalid value preserved, nested direct delay editing, definition unchanged
+PASS delay panel clear: nested target only, similarly prefixed sibling and other instance preserved, output updates, exit/undo and bottom partial reset retained
+PASS delay editor: all-by-default, custom page size, direct page jump, pagination reaches final delay and stays on page after edit, no page errors
+RUN delay-reset-browser.cjs
+Local: http://127.0.0.1:55766
+PASS reset: partial skips visible multi-delay gate including hidden single-delay children, preserves inputs/wires, undo/redo and all reset
+PASS reset: fully expanded visible delay leaves clear and can undo after collapse
+PASS reset interiors: visible child and nested direct delay scopes isolated; all reset clears root memory, stops auto run, exit/undo retain state and definitions
+PASS reset: editor uses current displayed level, definitions unchanged, mobile buttons fit, no page errors
+RUN delete-backup-browser.cjs
+Local: http://127.0.0.1:65308
+PASS browser: immediate before/after wire, node, bulk, template and internal deletion backups; restore from editor returns full root; 15-level source edits succeed
+RUN direct-width-browser.cjs
+Local: http://127.0.0.1:61873
+PASS direct width: all five component types, Enter applies without replacement, low bits preserved, undo
+PASS internal direct width: shared delay truncation, invalid value safe, input interface updates, blur applies and undo restores
+RUN direct-wire-browser.cjs
+Local: http://127.0.0.1:58384
+PASS direct wire browser: actual 112px / 12px-offset case previews and saves one segment, signal correct, old automatic detour shortens once and can undo
+RUN expanded-cache-browser.cjs
+Local: http://127.0.0.1:64431
+PASS large browser: all 30000 NAND leaves retained with viewport drawing, cache reused, collapse preserves definitions, no page errors
+PASS expansion cache browser: shared subtree hit, input return hit, delay step and stable DOM, forced wire targets only one instance, clear force/expand again hit, source/save unchanged
+RUN expansion-anchor-browser.cjs
+Local: http://127.0.0.1:61064
+PASS layer reuse browser: pending DOM retained, 1/2/1 cache hits without Worker, original viewport DOM restored, bounded cache, failure retains old view, format invalidation, obsolete worker cannot overwrite rapid switch
+PASS expansion anchor browser: gate top left, gap midpoint, scale, reducing depth, real Worker positioning, pending user pan wins, no page errors
+RUN expansion-layers-browser.cjs
+Local: http://127.0.0.1:52486
+PASS layer expansion browser: 1/2/all, input/step/format refresh, validation, collapse, desktop/mobile layout, source preserved
+PASS large layer expansion browser: worker preserves 1/2 layer limits and 1002/30002 visible leaves after stepping
+RUN gate-edit-browser.cjs
+Local: http://127.0.0.1:56219
+PASS browser: right-click editable source, delete/wire/undo/redo, direct-parent-grandparent live update, recursion blocks, root return/history, persistence
+RUN gate-interior-browser.cjs
+Local: http://127.0.0.1:62892
+PASS interior run: nested single-step updates entire circuit simultaneously, camera/definitions preserved, auto run/pause and exit retain state
+PASS browser: click focuses one instance, captured current inputs/registers, readonly controls, format, exit/Esc restore, drag stays drag, mobile exit
+RUN gate-modes-browser.cjs
+Local: http://127.0.0.1:63192
+PASS browser: original direct-child hierarchy in edit, expanded readonly view, visible mode, disabled mutation/inputs, pan, roundtrip preserves edits and root return
+RUN group-move-browser.cjs
+Local: http://127.0.0.1:51069
+PASS browser: marquee group drag, fixed offsets/rotation, internal junction/path move, external connections/signals, undo/redo and Esc cancel
+RUN hub-integration-browser.cjs
+PASS hall subpath: Minecraft Worker/engine loading, local dependency closure, native export bridge, text restore, other-game storage isolation; no page errors
+RUN medium-expansion-browser.cjs
+Local: http://127.0.0.1:64414
+PASS 900 NAND browser: compact enabled below old threshold, viewport DOM 1288, independent image pan with frozen SVG, stop/return correct
+RUN minecraft-basis-browser.cjs
+Local: http://127.0.0.1:60741
+PASS default OR/NOT basis: manual NAND switch, nested XOR/AND labels and scopes, eight physical adder rows, pause, mobile controls and unchanged original save
+RUN minecraft-browser.cjs
+Local: http://127.0.0.1:54183
+PASS Minecraft desktop: lazy offline engine, Worker conversion, snapshot, WASD, ascent/descent, mouse view, Esc, overview/home/regenerate/return; source preserved
+PASS Minecraft lifecycle/mobile: close during load, reopen, responsive controls, ascent/cancel, GPU cleanup and no source changes or external requests
+PASS Minecraft context: current instance inputs, register state and navigation depth retained
+PASS Minecraft large: 30000 redundant NANDs simplified through Worker, count visible, flight and exit available
+RUN minecraft-clock-browser.cjs
+Local: http://127.0.0.1:57405
+nand 1000ms interval stable at game tick 30
+or-not 1000ms interval stable at game tick 52
+PASS real browser workers throttled to 1000ms: both bases propagate 010 -> 10 without touching original save
+RUN minecraft-crossing-browser.cjs
+Local: http://127.0.0.1:52323
+PASS crossing bridge: at least layer 3, no missing wires, both independent inputs and outputs correct in all four rows, test save unchanged
+RUN minecraft-direct-browser.cjs
+Local: http://127.0.0.1:52448
+PASS direct buttons: physical outputs in both bases, continuous feedback advances without input, live output updates, explicit stop and unchanged saves
+RUN minecraft-flow-browser.cjs
+Local: http://127.0.0.1:63619
+PASS flow arrows: visible legend, nonzero instanced arrows, intact routing, unchanged source
+RUN minecraft-idempotent-or-browser.cjs
+Local: http://127.0.0.1:64455
+PASS nested A OR A: both bases remove all redundant gates, physical lamp follows right-click transitions; independent source unchanged
+RUN minecraft-identities-browser.cjs
+Local: http://127.0.0.1:55686
+PASS isolated save minecraft-same-nand: input 0/1/0, correct physical output, no missing wires or save changes
+PASS isolated save minecraft-same-and: input 0/1/0, correct physical output, no missing wires or save changes
+PASS isolated save minecraft-double-not: input 0/1/0, correct physical output, no missing wires or save changes
+PASS isolated save minecraft-triple-not: input 0/1/0, correct physical output, no missing wires or save changes
+RUN minecraft-junction-browser.cjs
+Local: http://127.0.0.1:58727
+PASS independent OR/NOT feedback junction: no unrouted connections; 2 levers and 1 lamp; source unchanged
+RUN minecraft-materials-browser.cjs
+Local: http://127.0.0.1:61258
+PASS six real material counts, preserved while bypassing delays, desktop/mobile visibility and unchanged save
+RUN minecraft-modules-browser.cjs
+Local: http://127.0.0.1:54389
+PASS module names without boxes: two bases, five top modules, unique XOR labels, nested focus/reset, stable signals/tick/instances, narrow screen, unchanged save, no errors
+RUN minecraft-native-browser.cjs
+Local: http://127.0.0.1:64373
+PASS native Minecraft: eight parallel independent physical bits; right-click only selected lever; actual delayed lamps; unchanged camera/GPU scene and original save; pause/step, flight and return
+RUN minecraft-nor-browser.cjs
+Local: http://127.0.0.1:55127
+PASS nested NOR: cross-boundary double NOTs cancelled, no omitted wires, right-click inputs and all four physical output rows, original save unchanged
+RUN minecraft-or-barrier-browser.cjs
+Local: http://127.0.0.1:59445
+PASS OR boundary retained in NAND and OR/NOT modes; input changes propagate; original save unchanged; no page errors
+RUN minecraft-output-browser.cjs
+Local: http://127.0.0.1:61142
+PASS actual lever/lamp readout: paused propagation is distinct from stable outputs; 010 settles to 10 in both bases; source module and actual gate labels distinct; original save unchanged
+RUN minecraft-picking-browser.cjs
+Local: http://127.0.0.1:62497
+PASS whole-cell right click: empty lever corner selects lever; original test save unchanged
+PASS whole-cell right click: empty lever corner blocked by foreground wall; original test save unchanged
+RUN minecraft-ui-browser.cjs
+Local: http://127.0.0.1:56694
+PASS hide interface 1500: panels, full canvas, restore/keyboard, running right-click lamp, flight, regenerate/reopen and source unchanged
+PASS hide interface 390: panels, full canvas, restore/keyboard, running right-click lamp, flight, regenerate/reopen and source unchanged
+RUN minecraft-unused-browser.cjs
+Local: http://127.0.0.1:54149
+PASS unused components: private custom sinks, delays, exclusive lever omitted; shared input and output work; source unchanged; no-output scene empty
+RUN minecraft-wide-routing-browser.cjs
+Local: http://127.0.0.1:63423
+PASS independent eight-bit adder: both physical bases have 17 levers, 9 lamps and no unrouted connections; source unchanged
+RUN minecraft-xor-browser.cjs
+Local: http://127.0.0.1:56338
+AssertionError [ERR_ASSERTION]: duplicate square routes and unused extensions are absent
+    at <independent-source>/logic-circuit\tests\minecraft-xor-browser.cjs:2:1040 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+FAIL minecraft-xor-browser.cjs (1 attempt), last output:
+  Local: http://127.0.0.1:56338
+  AssertionError [ERR_ASSERTION]: duplicate square routes and unused extensions are absent
+      at <independent-source>/logic-circuit\tests\minecraft-xor-browser.cjs:2:1040 {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+REPRODUCE node tests/minecraft-xor-browser.cjs

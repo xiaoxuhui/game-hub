@@ -1,0 +1,42 @@
+{
+  "rows": [
+    {
+      "revision": "623081f4e85e8a221839b271e26416a4ecc8d7e8",
+      "instanceCount": 310,
+      "guideInstances": 0,
+      "physicalInstances": 310,
+      "unrouted": 0,
+      "optimization": {
+        "sourceNands": 9,
+        "renderedNands": 3,
+        "removedNands": 6,
+        "cancelledPairs": 2
+      }
+    },
+    {
+      "revision": "690f4b606aa280560e8540fc513755527e07387e",
+      "instanceCount": 441,
+      "guideInstances": 131,
+      "physicalInstances": 310,
+      "materialCounts": {
+        "support": 122,
+        "slab": 0,
+        "dust": 110,
+        "torch": 4,
+        "repeater": 5,
+        "lever": 2,
+        "lamp": 1
+      },
+      "unrouted": 0,
+      "optimization": {
+        "sourceNands": 9,
+        "renderedNands": 3,
+        "removedNands": 6,
+        "cancelledPairs": 2
+      }
+    }
+  ],
+  "physicalCountsEqual": true,
+  "oldThresholdPreserved": true,
+  "scope": "Display guide batches were newly included in total instanceCount; no product assertion removed"
+}

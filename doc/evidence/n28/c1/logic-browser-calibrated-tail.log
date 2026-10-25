@@ -1,0 +1,86 @@
+RUN minecraft-xor-browser.cjs
+Local: http://127.0.0.1:64169
+PASS observed nested XOR: square loops and unused physical output removed, zero omitted wires, raised crossing, all four physical rows, original save unchanged
+RUN number-format-browser.cjs
+Local: http://127.0.0.1:56622
+PASS browser: visible global mode, all IO switch together, labels do not switch, expansion/debug return, saved global format
+RUN performance-browser.cjs
+Local: http://127.0.0.1:54270
+PASS browser: 3000 NANDs; selection keeps DOM and simulation; unrelated input evaluates only 3 root nodes; step does no recount
+RUN port-clearance-browser.cjs
+Local: http://127.0.0.1:64063
+PASS input neighbours: preview and saved route keep one cell, undo
+PASS output neighbours: preview and saved route keep one cell, undo
+PASS existing automatic route repairs near-port approach, signal and undo preserved; no page errors
+RUN port-direction-browser.cjs
+Local: http://127.0.0.1:64237
+PASS port direction: four rotations retain input/output orientation through replacement, full expansion, collapse and undo; no page errors
+RUN refresh-backup-browser.cjs
+Local: http://127.0.0.1:60273
+PASS browser: immediate reload saves input, interior reload preserves root, ten timestamped backups, restore+undo, unreadable source preserved and exportable
+RUN refresh-guard-browser.cjs
+Local: http://127.0.0.1:61721
+PASS refresh guard: all storage writes fail, real reload can be cancelled, retry saves current input
+PASS refresh guard: snapshot failure requests cancellation; backup-only checkpoint automatically recovers latest state
+PASS refresh guard: initial storage read failure never overwrites source on auto-save or pagehide, no page errors
+RUN right-wheel-browser.cjs
+Local: http://127.0.0.1:53472
+PASS external right gate and wheel
+PASS blank right pan and wheel
+PASS internal right gate and wheel
+PASS expanded right pan and wheel
+PASS no page errors
+RUN routing-browser.cjs
+Local: http://127.0.0.1:52106
+PASS browser: drag preview and saved wire avoid gate; signal preserved; no page errors
+RUN selection-browser.cjs
+Local: http://127.0.0.1:62881
+PASS browser: Shift marquee, Ctrl+C/V mouse preview and click placement, Esc cancel, internal wires, repeated paste IDs, signals, undo/redo/delete, custom gates, text shortcuts
+RUN short-exit-browser.cjs
+Local: http://127.0.0.1:53333
+PASS existing safe but long route shortens on load and undo restores it
+PASS actual splitter/ADD positions: 477px short-exit connection, preview/save match, port clearance, signal, undo/redo, no errors
+RUN splitter-adaptation-browser.cjs
+Local: http://127.0.0.1:59641
+PASS splitter 4 -> 8 preserves low bits, actual wire width and stable status
+PASS splitter 8 -> 4 preserves low bits, actual wire width and stable status
+PASS nested truth table, internal view and full expansion agree, no page errors
+RUN truth-table-browser.cjs
+Local: http://127.0.0.1:59264
+PASS browser: truth/state-table labels, simultaneous delay sampling and reset; input/output; original NAND expansion and return; no page errors
+RUN wide-bus-browser.cjs
+Local: http://127.0.0.1:49251
+PASS browser: writable width 16/64, equal bit cells, decimal digit cells, high bit exactness, invalid width rejection
+RUN width-adaptation-browser.cjs
+Local: http://127.0.0.1:53390
+PASS direct bus 4 -> 8
+PASS direct bus 8 -> 4
+PASS direct bus 1 -> 16
+PASS custom boundaries, internal step, state table and zero-extension agree
+RUN wire-force-browser.cjs
+Local: http://127.0.0.1:54706
+PASS browser: one-bit wire click toggle, multi-bit form, conflicting high/low force holds through source changes, branch propagation, next-step samples then clears, invalid input, runtime-only save
+RUN wire-force-views-browser.cjs
+Local: http://127.0.0.1:65214
+PASS views: ordinary pan mode wire click supports temporary input
+PASS views: expanded inner wire affects root output, next step clears, definitions unchanged
+PASS views: nested instance wire uses actual instance path and samples before clearing
+PASS views: library edit and view both allow runtime values without modifying definition
+RUN wire-overlap-browser.cjs
+Local: http://127.0.0.1:52790
+PASS overlap: eight drawn fanouts share points only, avoid gates, signals and undo/redo
+PASS overlap: narrow port corridors use zero overlap, preview and saved path agree, undo preserved
+PASS overlap: least-overlap fallback preview matches saved wire, undo/redo preserved
+PASS overlap: soft overlap still never permits a gate-body endpoint
+PASS overlap: legacy overlap repaired once, nodes/endpoints/signals preserved
+PASS overlap: saved line crossing three gates repaired on edit, signal and root undo preserved, no page errors
+RUN wire-pan-browser.cjs
+Local: http://127.0.0.1:59106
+PASS wire pan: right release continues wire, zoomed endpoint/signal, one undo/redo
+PASS wire pan: left release commits once, remaining right button continues panning
+PASS wire pan: right-first blank pan can start a wire without deleting gates
+PASS wire pan: Esc and pointercancel clear draft/capture, no browser errors
+RUN wired-or-browser.cjs
+Local: http://127.0.0.1:51919
+PASS wired OR browser: T-junction truth rows, temporary zero/step restore, 0101|0011=0111, displayed decimal 7, live bus toggle, custom truth table and expansion
+{"defaultSuiteCount":57,"priorSuitesPassed":37,"tailSuitesPassed":20,"completeDefaultCoverage":true,"calibratedSuite":"minecraft-xor-browser.cjs","optionalLargeLiveFixtureExcludedByUpstreamDefault":true,"originalRawSuiteNotClaimedGreen":true}
