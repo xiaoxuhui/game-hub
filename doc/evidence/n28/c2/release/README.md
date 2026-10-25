@@ -9,4 +9,4 @@ Producer de5e8e4e9a22b2e1d46aed9fcf7debcf3e53aea0；只发行现有v1通道seq4�
 - 严格匿名online验证4份完整签名历史和8个累计ZIP。另独立公网下载新current及ConwayZIP，与签署和被测候选原字节一致；旧EML/Light/Turing三个完整对象含资产ID保持。
 - signed目录保持原字节；公开日志仅任务路径占位及LF处理，元数据列原始与公开SHA。CLI验签显示e5c963…为payload摘要，原signed envelope SHA以95322f…为准。
 
-Chrome/Chromium路径模拟及生产桥JS/native stub仍不代替Android WebView/SAF/物理机/离线冷启动验收。发行后独立审阅待完成，不能据此提前把N28 C/D全部勾完。
+Chrome/Chromium路径模拟及生产桥JS/native stub仍不代替Android WebView/SAF/物理机/离线冷启动验收。e4fb442发行后独立审阅CLOSED，仅C2资源阶段VERIFIED，N28 C3–C5/D仍待完成。
