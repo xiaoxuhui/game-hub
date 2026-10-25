@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/xiaoxuhui/traffic-planner.git",
+  "revision": "800ae8c9b2d55e9d50bdc0dfaf59f2a7ea16e3a1",
+  "sourcePath": "src/core.js",
+  "sourceSha256": "e1ac7741f9f912359f519e2f977611620e2f09b16150c65fd4a5e91571f3dcb4",
+  "fixturePath": "traffic-layout-800ae.json",
+  "fixtureSha256": "cdaf298808b83a8b6223c351126c519b89663a0ba66fda659baab36c87ad0656",
+  "generation": "JSON.stringify(oldReader.validate(oldReader.demo()), null, 2) plus LF"
+}
