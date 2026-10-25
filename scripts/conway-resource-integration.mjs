@@ -17,6 +17,7 @@ function once(text,before,after) {
 export function adaptConwayUI(inputs) {
  for(const [path,expected] of Object.entries(CONWAY_UI_INPUTS)) if(sha256(inputs[path])!==expected)throw Error(`Unreviewed Conway UI bytes: ${path}`);
  let app=inputs['scripts/app.js'].toString('utf8');
+ app=once(app,'elements.export.disabled = alive === 0;', 'elements.export.disabled = false; // Empty worlds still contain rule, generation and view.');
  app=once(app,'return ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName);',
   'return Boolean(document.querySelector(".hub-world-backups[open]")) || ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName);');
  app=once(app,'  function handleKeyUp(event) {',

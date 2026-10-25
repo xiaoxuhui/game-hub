@@ -12,6 +12,7 @@ test('Conway exact upstream UI is transformed only into resource controls with v
  const out=adaptConwayUI(inputs);
  for(const [path,bytes]of Object.entries(out))if(path.endsWith('.js'))assert.doesNotThrow(()=>new Function(bytes.toString()));
  assert.match(out['scripts/app.js'].toString(),/hubWorldController.importText/);
+ assert.match(out['scripts/app.js'].toString(),/elements.export.disabled = false;/);
  assert.ok(out['index.html'].indexOf('hub-world-archive.js')<out['index.html'].indexOf('scripts/app.js'));
  assert.match(out['scripts/hub-world-archive-ui.js'].toString(),/previewClear\(\)/);
  assert.match(out['scripts/hub-world-archive-ui.js'].toString(),/clear\(true, preview.expectedRaw\)/);

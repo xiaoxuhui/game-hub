@@ -33,7 +33,8 @@ export function installConwayArchiveUI(host, life, archives) {
   async function protect(fullText) {
     try {
       const current = host.capture();
-      if (life.countAlive(life.deserialize(current).world)) await archives.add(current);
+      // Even an empty world owns its rule, generation, view and future extensions.
+      await archives.add(current);
       await archives.add(fullText);
       return true;
     } catch (error) {

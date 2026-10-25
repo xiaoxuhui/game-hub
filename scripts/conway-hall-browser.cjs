@@ -41,7 +41,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
    for(const rule of ['B36/S23','B2/S'])assert.equal(await dialog.getByRole('button',{name:new RegExp('恢复 '+rule)}).count(),saved.filter(entry=>entry.rule===rule).length);
    await page.keyboard.press('ArrowRight');await page.keyboard.press('c');assert.equal(await page.locator('#generationValue').textContent(),'42');
    await dialog.getByRole('button',{name:'取消导入'}).click();assert.equal(await page.locator('#activeRule').textContent(),'B2/S');
-   await importFile(base);await dialog.getByRole('button',{name:/恢复 B36\/S23/}).first().click();await page.waitForFunction(()=>document.getElementById('activeRule').textContent==='B36/S23');
+   await importFile(base);await dialog.getByRole('button',{name:/恢复 B36\/S23/}).first().click();await page.waitForFunction(()=>document.getElementById('activeRule').textContent==='B36/S23'&&!document.querySelector('dialog[aria-label="正在处理世界存档"]').open);
   });
   await check('changed legacy base needs explicit default-rule acknowledgement; cancel protects full world',async()=>{
    const base=fixture(undefined,43);delete base.rule;page.once('dialog',d=>d.dismiss());await importFile(base);await page.waitForFunction(()=>!document.querySelector('dialog[aria-label="正在处理世界存档"]').open);await generation(42);
@@ -74,6 +74,32 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
    await page.addInitScript(()=>{const original=Storage.prototype.getItem;Storage.prototype.getItem=function(k){if(k==='conway-hub-world-archive-v1')throw Error('injected denial');return original.call(this,k);};});await page.reload();await page.waitForSelector('#hubWorldBackupsButton');page.once('dialog',d=>d.accept());await importFile(fixture('B3/S23',9));await generation(9);await activate('#stepButton');await generation(10);const before=await page.evaluate(()=>__exports.length);await activate('#exportButton');await page.waitForFunction(n=>__exports.length>n,before);assert.equal(JSON.parse(await page.evaluate(()=>__exports.at(-1).text)).generation,10);
   });
   await page.screenshot({path:path.join(out,label+'-world.png'),fullPage:true});await context.close();
+  await check('empty world with custom rule/generation/view is backed up before replacement and remains manually exportable',async()=>{
+   const extra=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile}),empty=await extra.newPage();
+   empty.on('pageerror',error=>errors.push(error.message));
+   await extra.route('**/*',route=>{const u=new URL(route.request().url());if(u.protocol==='blob:')return route.continue();if(u.origin!==origin||!u.pathname.startsWith(prefix)){external.push(u.href);return route.abort();}return route.continue();});
+   await empty.addInitScript({content:'window.__exports=[];window.GameHubBridge={saveFile:(name,text)=>{window.__exports.push({name,text});return true;}};\n'+bridge});
+   try {
+    await empty.goto(origin+prefix+'index.html');await empty.waitForSelector('#hubWorldBackupsButton');
+    const emptyWorld={...fixture('B36/S23',63),alive:[]};
+    const load=async value=>empty.locator('#importInput').setInputFiles({name:'world.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(value))});
+    await load(emptyWorld);await empty.waitForFunction(()=>document.getElementById('generationValue').textContent==='63'&&!document.querySelector('dialog[aria-label="正在处理世界存档"]').open);
+    await empty.locator('#zoomInButton').click();
+    const before=await empty.evaluate(()=>({rule:document.getElementById('activeRule').textContent,generation:document.getElementById('generationValue').textContent,zoom:document.getElementById('zoomValue').textContent}));
+    await load(fixture('B3/S23',64));await empty.waitForFunction(()=>document.getElementById('generationValue').textContent==='64'&&!document.querySelector('dialog[aria-label="正在处理世界存档"]').open);
+    const saved=await empty.evaluate(()=>JSON.parse(localStorage.getItem('conway-hub-world-archive-v1')).entries);
+    const kept=saved.find(entry=>entry.aliveCount===0&&entry.rule==='B36/S23'&&entry.generation===63&&JSON.parse(entry.fullText).view.cellSize!==12);
+    assert.ok(kept,'empty current world including changed view must survive replacement');
+    await load(JSON.parse(kept.fullText));await empty.waitForFunction(()=>document.getElementById('generationValue').textContent==='63'&&!document.querySelector('dialog[aria-label="正在处理世界存档"]').open);
+    assert.equal(await empty.locator('#zoomValue').textContent(),before.zoom);
+    await empty.evaluate(()=>{const original=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='conway-hub-world-archive-v1')throw Error('injected empty quota');return original.call(this,k,v);};});
+    empty.once('dialog',d=>d.dismiss());await load(fixture('B3/S23',65));await empty.waitForFunction(()=>!document.querySelector('dialog[aria-label="正在处理世界存档"]').open);assert.equal(await empty.locator('#generationValue').textContent(),'63');assert.equal(await empty.locator('#activeRule').textContent(),before.rule);assert.equal(await empty.locator('#zoomValue').textContent(),before.zoom);
+    await empty.evaluate(()=>{const original=Storage.prototype.getItem;Storage.prototype.getItem=function(k){if(k==='conway-hub-world-archive-v1')throw Error('injected empty denial');return original.call(this,k);};});
+    assert.equal(await empty.locator('#exportButton').isEnabled(),true,'empty custom world must have a manual export route');
+    empty.once('dialog',d=>d.accept());await empty.locator('#exportButton').click();await empty.waitForFunction(()=>__exports.length>0);
+    const exported=JSON.parse(await empty.evaluate(()=>__exports.at(-1).text));assert.deepEqual(exported.alive,[]);assert.equal(exported.rule,'B36/S23');assert.equal(exported.generation,63);assert.equal(exported.view.cellSize,JSON.parse(kept.fullText).view.cellSize);assert.equal(old.deserialize(exported).generation,63);
+   }finally{await extra.close();}
+  });
  }
  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log(`PASS ${checks} actual Conway resource-control checks; pageerrors=0 external=0; physical device/SAF not claimed`);
  }finally{await browser.close();await new Promise(r=>server.close(r));}
