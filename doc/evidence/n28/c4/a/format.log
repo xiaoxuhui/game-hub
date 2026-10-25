@@ -1,0 +1,16 @@
+✔ fixed original TypeScript and compiled historical/current readers retain exact reviewed identities and accept the same finite projects (4.3904ms)
+✔ Max is genuinely rejected by the old reader; explicit finite legacy view is accepted and the original full Max text is restored (1.4474ms)
+✔ there is no invented finite default for Max and every finite limit boundary uses the actual old validator (1.0529ms)
+✔ actual old save preserves the extension, while changed known fields produce explicit base/full conflict rather than restoring stale Max (1.1715ms)
+✔ stale binding, wrong limit, future malformed and nested extensions are refused without guessing a full project (0.7154ms)
+✔ standalone old and full files retain unknown raw fields and original JSON numeric syntax, duplicate keys and invalid JSON fail (0.5532ms)
+✔ full input and compatibility output use independent actual 20 MB bounds without dropping full content (382.3077ms)
+✔ emitted isolated reader and exact same factory execute without eval and do not replace unrelated globals (4.2044ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 518.5915

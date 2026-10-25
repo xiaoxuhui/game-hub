@@ -1,0 +1,51 @@
+[
+  {
+    "input": "c4-a-freeze.log",
+    "rawSha256": "4514f3924502ac23e8bd128293fac120b6f1ad43ea888fb015adf7920b7bb4a2",
+    "publicFile": "reader-freeze.log",
+    "publicSha256": "8978aa99a4ca0106400b86716c0b69184d10213aae0ae444e769e1d7d63c895b",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-a-actual-old-max-red.log",
+    "rawSha256": "e89b00a3c8d3298a13c2dc943d865104e80eb432402754614e5b3b1ea5599c6d",
+    "publicFile": "actual-old-max-red.log",
+    "publicSha256": "868db63f69264d353bb2dd562c576f263b55a54284b08235b093decf83961d57",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-a-format-first.log",
+    "rawSha256": "1bc17ed77d69de450ae6ca3288c0d9df7e1e2c04c3ee2dce5b588e91e1d73143",
+    "publicFile": "format.log",
+    "publicSha256": "1af4fdf3619a5bc266a1ad0dc9bd0d9eabf0b596cdfa41140471b62e101562dd",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-a-full-unit.log",
+    "rawSha256": "d6c30c77242d1b7660fe8886d717bbc03277d8b5c40c8ab94ad85c54903e284c",
+    "publicFile": "hall-unit.log",
+    "publicSha256": "0d9625b6f6bf3e7b73d68c55dffcd4c5e71db38a5aad23789d3558cb9c233bda",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-source-core.log",
+    "rawSha256": "6a45440112abc836254d7466702268b5026fa8bff3521936ef74650bbc1d5967",
+    "publicFile": "upstream-core.log",
+    "publicSha256": "d27a21c95d97fcb1e839fb322049d1f560108cd0b37857a5f7fcde9e3eb6af75",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-source-typecheck.log",
+    "rawSha256": "1f345e6ac1f9e6ae7c4e70d1f0c8c9f8b8f80218269a1b4473f9ac63a9d4a253",
+    "publicFile": "upstream-typecheck.log",
+    "publicSha256": "faeaa94bcf7012d86f91ca647580449f56a263fb7eaf572c54789764f60a9b8f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  },
+  {
+    "input": "c4-source-build.log",
+    "rawSha256": "27bb1bfed7c1006134a27c5726ef11f018ca873558c87ef190b6075c0cbbdad6",
+    "publicFile": "upstream-build.log",
+    "publicSha256": "079307390b26f8eb5a03ca9c7d5c32406e6f5f486ec456fcc19bf5fe3403e41f",
+    "normalization": "task/user-home placeholders, LF, trailing whitespace, single terminal newline"
+  }
+]

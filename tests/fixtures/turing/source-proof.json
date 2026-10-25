@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+  "compiler": {
+    "package": "typescript",
+    "version": "5.9.3",
+    "target": "ES2022",
+    "module": "CommonJS",
+    "onlyResolutionRewrite": "require(\"./core\") -> require(\"./core.cjs\")"
+  },
+  "sources": [
+    {
+      "kind": "old",
+      "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+      "path": "src/core.ts",
+      "fixture": "old/core.ts.txt",
+      "bytes": 8123,
+      "sha256": "54e6e45544790c87301e19dcb69bffb3390467b4a1473bb9116dfc932b9430b0",
+      "compiledFixture": "old/core.cjs",
+      "compiledSha256": "4da386980d8db9c6c6b660c0ebfb47a3c936d0fbb45fd26a30fda76d1470c729"
+    },
+    {
+      "kind": "old",
+      "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+      "path": "src/project-codec.ts",
+      "fixture": "old/project-codec.ts.txt",
+      "bytes": 3012,
+      "sha256": "2f6a5c0ccb5afba3bc3eda042af3a70e9f9b550e0bffd79002104a34fcfe473a",
+      "compiledFixture": "old/project-codec.cjs",
+      "compiledSha256": "81149b9fa6ee4aa30f6af12a29fcc8ea244aca769ea035e53e7f4d358b1fffc7"
+    },
+    {
+      "kind": "old",
+      "revision": "32eb3b95eb78eab703abe8e64214bd8dbbb939c7",
+      "path": "LICENSE",
+      "fixture": "old/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "kind": "new",
+      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "path": "src/core.ts",
+      "fixture": "new/core.ts.txt",
+      "bytes": 8123,
+      "sha256": "54e6e45544790c87301e19dcb69bffb3390467b4a1473bb9116dfc932b9430b0",
+      "compiledFixture": "new/core.cjs",
+      "compiledSha256": "4da386980d8db9c6c6b660c0ebfb47a3c936d0fbb45fd26a30fda76d1470c729"
+    },
+    {
+      "kind": "new",
+      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "path": "src/project-codec.ts",
+      "fixture": "new/project-codec.ts.txt",
+      "bytes": 3064,
+      "sha256": "bc4876603162e36183aa282139941cc65ebcdf83c6fd430d351ac50e7803db26",
+      "compiledFixture": "new/project-codec.cjs",
+      "compiledSha256": "32074ce75aaf8fdf42da1a4a768f0dfaf5e85a09f115182707381363e9478b88"
+    },
+    {
+      "kind": "new",
+      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "path": "LICENSE",
+      "fixture": "new/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    }
+  ]
+}

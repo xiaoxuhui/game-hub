@@ -2,3 +2,5 @@
 *.bat text eol=crlf
 *.jar binary
 android/gradlew text eol=lf
+# Exact immutable source fixtures retain the upstream trailing blank line.
+tests/fixtures/turing/*/core.ts.txt -text whitespace=-blank-at-eof

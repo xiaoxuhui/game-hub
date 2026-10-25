@@ -1,0 +1,1 @@
+{"inputs":6,"compiler":{"package":"typescript","version":"5.9.3","target":"ES2022","module":"CommonJS","onlyResolutionRewrite":"require(\"./core\") -> require(\"./core.cjs\")"},"sourceProofSha256":"bfff28f5a7f928795c7bdb49ce7b5a9db03adccc663839d4de3207883be57799"}
