@@ -1,0 +1,16 @@
+{
+  "producerCommit": "bd105f3658e578ce6f2f939bd9b39abd7a9fddc7",
+  "sourceRevision": "20e308259c62e7a88ade50e08fab0182e12dbdcf",
+  "version": "0.1.0",
+  "contentCode": 1,
+  "catalogSequence": "33",
+  "catalogAssetId": 675671517,
+  "catalogSha256": "4f3b35a5456ea0174e529161cd52cb0604ccd475e6ddd7c560d737957adf821f",
+  "zipAssetId": 675670859,
+  "zipBytes": 26902,
+  "zipSha256": "91063cf24ee605cf109975901d72931c5b9dc3bb24c92266ba049b2693238b00",
+  "oldEightExact": true,
+  "candidateEqualsPublicZip": true,
+  "signatureVerified": true,
+  "physicalAndroidTested": false
+}

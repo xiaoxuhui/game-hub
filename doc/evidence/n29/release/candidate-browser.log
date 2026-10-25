@@ -1,0 +1,15 @@
+PASS A1 desktop actual ZIP loads at simulated asset subpath under synthetic strict CSP and bridge JS stub
+PASS A2 desktop single step and run/pause use real controls
+PASS A3 desktop draw erase and pan work through actual mouse/touch gestures
+PASS A4 desktop stable key restores paused with zoom and keeps other game data
+PASS A5 desktop corrupt and future saves survive interaction until explicit reset
+PASS A6 desktop oversized and quota failures preserve last complete snapshot
+PASS A7 desktop loaded offline step remains usable without foreign requests
+PASS A8 phone actual ZIP loads at simulated asset subpath under synthetic strict CSP and bridge JS stub
+PASS A9 phone single step and run/pause use real controls
+PASS A10 phone draw erase and pan work through actual mouse/touch gestures
+PASS A11 phone stable key restores paused with zoom and keeps other game data
+PASS A12 phone corrupt and future saves survive interaction until explicit reset
+PASS A13 phone oversized and quota failures preserve last complete snapshot
+PASS A14 phone loaded offline step remains usable without foreign requests
+PASS 14 candidate checks; page errors=0 external requests=0; physical Android/cold start not claimed

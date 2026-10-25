@@ -1,0 +1,10 @@
+Exact producer bd105f3658e578ce6f2f939bd9b39abd7a9fddc7; GitHub run 40215394350; job 121235319019; conclusion success
+2026-10-25T17:13:20.6356773Z ℹ tests 98
+2026-10-25T17:13:20.6357564Z ℹ pass 97
+2026-10-25T17:13:20.6357925Z ℹ fail 0
+2026-10-25T17:13:20.6358721Z ℹ skipped 1
+2026-10-25T17:13:55.8558494Z BUILD SUCCESSFUL in 13s
+2026-10-25T17:13:56.2434059Z [36;1m"$AAPT" dump permissions "$APK" | tee "$RUNNER_TEMP/apk-permissions.txt"[0m
+2026-10-25T17:13:56.2435084Z [36;1mgrep '^uses-permission' "$RUNNER_TEMP/apk-permissions.txt" | \[0m
+2026-10-25T17:13:56.2441361Z [36;1m  echo '::error title=Unexpected Android permission::APK requests a permission beyond the AndroidX internal receiver permission'[0m
+2026-10-25T17:14:12.9835877Z BUILD SUCCESSFUL in 11s

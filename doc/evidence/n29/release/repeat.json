@@ -1,0 +1,75 @@
+{
+  "producer": "bd105f3658e578ce6f2f939bd9b39abd7a9fddc7",
+  "gameCount": 9,
+  "allDescriptorsAndZipShaIdentical": true,
+  "descriptorSha256": "a83f7bba70c523f156fb359b3bd0784db7bb6cfe12ab7f6848f32e7cd388965a",
+  "ant": {
+    "id": "langtons-ant",
+    "displayName": "兰顿蚂蚁",
+    "iconKind": "generic",
+    "available": true,
+    "version": "0.1.0",
+    "contentCode": 1,
+    "sourceRepository": "https://github.com/xiaoxuhui/langtons-ant.git",
+    "sourceRevision": "20e308259c62e7a88ade50e08fab0182e12dbdcf",
+    "minHostVersionCode": 4,
+    "maxHostVersionCode": 2147483647,
+    "resourceProtocol": 2,
+    "bridgeProtocol": 1,
+    "storageContract": "langtons-ant-dynamic-v1",
+    "entryPage": "index.html",
+    "archiveBytes": 26902,
+    "archiveSha256": "91063cf24ee605cf109975901d72931c5b9dc3bb24c92266ba049b2693238b00",
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 1066,
+        "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
+        "mime": "text/plain"
+      },
+      {
+        "path": "index.html",
+        "bytes": 3655,
+        "sha256": "d6a36f2ca63bbc302aa354ab107d85de2cdb37597886a4d757b963d342805756",
+        "mime": "text/html"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 8033,
+        "sha256": "c46fcc2ab961ec500d42b95fd183ba206297764b13501a4a8f9deabd2a91f5fe",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/core.js",
+        "bytes": 1427,
+        "sha256": "306f18ea1fad7c167eea844aa080cf0c7c16e2ed86d18ec424c2367dcba5a3dd",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/interaction.js",
+        "bytes": 597,
+        "sha256": "8bfe8ed01b65b967ba2e928872df5914329635b9afcddebb32d0dd75bed6d437",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/renderer.js",
+        "bytes": 1982,
+        "sha256": "4d31b48c5d9e66b202c99cacdc7f641ca11b5e1a7ae96c62ecb3f9caf4845ea2",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "src/storage.js",
+        "bytes": 2440,
+        "sha256": "b241429c570541de8ee6116ea11abcff75024644efa66765ccb488ab1ed458cb",
+        "mime": "application/javascript"
+      },
+      {
+        "path": "styles.css",
+        "bytes": 6882,
+        "sha256": "df54cd736823666604de05778e3ba74fe344bc8538bbf35c9f7a83475f313522",
+        "mime": "text/css"
+      }
+    ],
+    "releaseNotes": "0.1.0：独立离线网页，触摸绘制/擦除/平移、本地自动存档，恢复时暂停。"
+  }
+}
