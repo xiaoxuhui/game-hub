@@ -1,0 +1,23 @@
+Verified 4 sources and 13 resources
+✖ complete candidate file manifests use ZIP path order when a directory and hyphenated sibling share a prefix (61.669ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157.9074
+
+✖ failing tests:
+
+test at tests\resource-bundle.test.mjs:79:1
+✖ complete candidate file manifests use ZIP path order when a directory and hyphenated sibling share a prefix (61.669ms)
+  Error: File manifest mismatch
+      at verifyResources (file:///<task-root>/work/scripts/resource-bundle.mjs:114:166)
+      at buildResources (file:///<task-root>/work/scripts/resource-bundle.mjs:91:3)
+      at TestContext.<anonymous> (file:///<task-root>/work/tests/resource-bundle.test.mjs:93:19)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)

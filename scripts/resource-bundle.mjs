@@ -79,7 +79,9 @@ export function buildResources(checkoutRoot = root, { expectedCommit = checkoutC
   const games = lock.sources.map(source => {
     const code = codes.games[source.id];
     if (!code || !Number.isSafeInteger(code.contentCode) || code.contentCode < 1 || code.sourceRevision !== source.revision || code.storageContract !== CONTRACTS[source.id]) throw new Error('Resource lock mismatch');
-    const entries = walk(join(assets, 'games', source.id)); inspectResources(entries, source.id);
+    // A recursive directory walk is not a global path sort (e.g. hub/ vs hub-source).
+    // Keep descriptors in exactly the same code-point path order as createZip.
+    const entries = walk(join(assets, 'games', source.id)).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0); inspectResources(entries, source.id);
     const archive = createZip(entries);
     const game = { id: source.id, version: source.version, contentCode: code.contentCode, sourceRepository: source.repository, sourceRevision: source.revision, minHostVersionCode: 3, maxHostVersionCode: 2147483647, resourceProtocol: 1, storageContract: code.storageContract, entryPage: source.entryPage, archiveBytes: archive.length, archiveSha256: sha256(archive), files: entries.map(e => ({ path: e.path, bytes: e.data.length, sha256: sha256(e.data), mime: mime(e.path) })), releaseNotes: code.releaseNotes };
     writeFileSync(join(staging, assetName(game)), archive);

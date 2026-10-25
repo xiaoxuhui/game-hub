@@ -1,0 +1,30 @@
+[
+  {
+    "input": "c3-e-production-first.log",
+    "rawSha256": "e27f25cfb5f9f272fe5861585e163ba5e07bad5926434ffacb49fcc665df8bc9",
+    "publicFile": "production-red.log",
+    "publicSha256": "4b8d9acf2b3275e382dc5218445b6586a947efb2876b1c00b50fffd2f87fd6f2",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-e-manifest-order-red.log",
+    "rawSha256": "5eb62c6967cf06e05534e2cdfa7188fd84884b3d2e1b52a8e593e6349ecf87b5",
+    "publicFile": "order-red.log",
+    "publicSha256": "6604828298ac1d8be2564994c746931b48cd029254829cf14e109d344b33a3a0",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-e-manifest-order-green.log",
+    "rawSha256": "76e7da73404a3626b0020b040ee48b5b08f4d96317e82db8f2e712c2448bbd7f",
+    "publicFile": "order-green.log",
+    "publicSha256": "c2528cc106b039652c0e4280a25d301695f23ceb25ea0b3b60ab2684b7481b40",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  },
+  {
+    "input": "c3-e-manifest-full-green.log",
+    "rawSha256": "445bb8e5bd24059d1ab3302bf5b0eb5385aa337c1c4321615bfc98e613da785c",
+    "publicFile": "hall-green.log",
+    "publicSha256": "2e1307f2eb1c2fb2fff9fbd3bf416bdf7beb9d6778b293eac7dd3a9c64e4043c",
+    "normalization": "task-root placeholders, LF, trailing whitespace only"
+  }
+]

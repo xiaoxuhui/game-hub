@@ -1,0 +1,31 @@
+Verified 4 sources and 13 resources
+Verified 4 resource ZIPs and complete file manifests; source commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Built four deterministic resource ZIPs from aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Verified 4 resource ZIPs and complete file manifests; source commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Verified 4 sources and 10 resources
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+Built four deterministic resource ZIPs from cccccccccccccccccccccccccccccccccccccccc
+Verified 4 resource ZIPs and complete file manifests; source commit cccccccccccccccccccccccccccccccccccccccc
+✔ strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON (1.3283ms)
+✔ resource paths reject traversal, native binaries, prefix conflicts and case duplicates (0.5415ms)
+✔ ZIP bytes deterministic regardless input order; CRC and central directory tamper rejected (0.8671ms)
+✔ resource inspection rejects service workers, cache proxies and broad storage clear (0.3839ms)
+✔ catalog checks four identities, safe integer bounds, clock, entry and storage contracts (2.5757ms)
+✔ RSA3072 signature binds raw payload; wrong key/id, tamper and duplicate envelope rejected (44.6226ms)
+✔ resource release must be prerelease and uploaded assets uniquely bind digest and size (0.3911ms)
+✔ signing snapshot binds release and asset IDs with complete bounded pagination (0.6713ms)
+✔ complete candidate file manifests use ZIP path order when a directory and hyphenated sibling share a prefix (64.9506ms)
+✔ resource generation failure preserves previous complete candidate and rejects stale commit (107.2902ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 329.4402

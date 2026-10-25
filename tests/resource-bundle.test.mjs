@@ -76,6 +76,28 @@ test('signing snapshot binds release and asset IDs with complete bounded paginat
   assert.throws(() => validateReleaseSnapshot(payload, { ...snapshot, assetPages: [{ page: 1, hasNext: true, assets }, { page: 2, hasNext: false, assets: [] }] }));
   assert.throws(() => validateReleaseSnapshot(payload, { ...snapshot, assetPages: [{ page: 1, hasNext: false, assets: [...assets, assets[0]] }] }));
 });
+test('complete candidate file manifests use ZIP path order when a directory and hyphenated sibling share a prefix', () => {
+  const root = mkdtempSync(join(tmpdir(), 'game-hub-resource-order-')), commit = 'a'.repeat(40);
+  try {
+    const assets = join(root, 'android/app/src/main/assets');
+    writeFileSync(join(root, 'sources.lock.json'), readFileSync(new URL('../sources.lock.json', import.meta.url)));
+    writeFileSync(join(root, 'resource-releases.lock.json'), JSON.stringify({ schemaVersion: 1, games: Object.fromEntries(sources.map(source => [source.id, { contentCode: 1, sourceRevision: source.revision, storageContract: CONTRACTS[source.id], releaseNotes: 'Ordering regression fixture' }])) }));
+    for (const source of sources) {
+      const directory = join(assets, 'games', source.id); mkdirSync(directory, { recursive: true });
+      writeFileSync(join(directory, source.entryPage), '<html>fixture</html>'); writeFileSync(join(directory, 'LICENSE'), 'MIT License');
+      if (source.id === 'turing') { writeFileSync(join(directory, 'campaign.html'), '<html>campaign</html>'); writeFileSync(join(directory, 'route-worker-test.js'), 'self.onmessage = () => {};'); }
+    }
+    const eml = join(assets, 'games/eml'); mkdirSync(join(eml, 'hub')); mkdirSync(join(eml, 'licenses'));
+    writeFileSync(join(eml, 'hub/format.js'), 'const format = 1;'); writeFileSync(join(eml, 'hub-source-proof.json'), '{}'); writeFileSync(join(eml, 'licenses/third-party.txt'), 'license fixture');
+    writeFileSync(join(assets, 'bundle-manifest.json'), JSON.stringify(buildManifest(join(assets, 'games'), sources.map(sourceIdentity), commit)));
+    const games = buildResources(root, { expectedCommit: commit }), game = games.find(item => item.id === 'eml');
+    const entries = readStoredZip(readFileSync(join(root, '.build/resource-candidate', assetName(game))));
+    assert.deepEqual(game.files.map(file => file.path), entries.map(entry => entry.path));
+    assert.ok(game.files.findIndex(file => file.path === 'hub-source-proof.json') < game.files.findIndex(file => file.path === 'hub/format.js'));
+    assert.doesNotThrow(() => verifyResources(join(root, '.build/resource-candidate'), { checkoutRoot: root, expectedCommit: commit }));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
 test('resource generation failure preserves previous complete candidate and rejects stale commit', () => {
   const root = mkdtempSync(join(tmpdir(), 'game-hub-resource-test-'));
   const commit = 'c'.repeat(40);
