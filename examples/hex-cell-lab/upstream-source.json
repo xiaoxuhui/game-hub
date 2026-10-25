@@ -62,6 +62,11 @@
     "spdx": "MIT",
     "copyright": "2026 xiaoxuhui",
     "authorization": "Author explicitly approved MIT resource publication in conversation on 2026-10-25",
+    "sourceRepository": "https://github.com/xiaoxuhui/game-hub.git",
+    "sourceRevision": "11f1dbe51f9fd764d91fffac878c602bfc61a0ee",
+    "path": "LICENSE",
+    "bytes": 1066,
+    "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec",
     "thirdParty": "vendor/jsep-1.4.0/LICENSE preserved byte-for-byte"
   },
   "adaptations": [],
@@ -105,6 +110,11 @@
       "path": "vendor/jsep-1.4.0/LICENSE",
       "bytes": 1093,
       "sha256": "4a4cffde4afd302689cd6aad9b05463a798d3dbe4cb2488bda45af1977affe33"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
     }
   ]
 }
