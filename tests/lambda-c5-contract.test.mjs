@@ -1,31 +1,22 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
-import { execFileSync } from 'node:child_process';
 import { createLambdaStorage } from '../scripts/lambda-storage-integration.mjs';
 
-// Pin the actual shipped content3 reader. Once C5 replaces the tracked asset,
-// this test must continue checking the reader users already have installed.
-const baseline = '23c9e7b101750f5ac0e17d2f5b78a98c00db0a31';
-const gitFile = path => execFileSync('git', ['show', `${baseline}:${path}`], { maxBuffer: 2_000_000 });
-const oldHtmlBytes = gitFile('examples/lambda-diagram-game/lambda-lab.html');
-const oldProofBytes = gitFile('examples/lambda-diagram-game/upstream-source.json');
-const oldHtml = oldHtmlBytes.toString('utf8');
-const oldProof = JSON.parse(oldProofBytes.toString('utf8'));
+// This fixture is the four actual inline modules used by the shipped reader.
+// Its source HTML/proof identities are pinned so future resource updates do not
+// silently replace the backwards-compatibility baseline.
+const oldFixture = JSON.parse(readFileSync(new URL('./fixtures/lambda-content3-reader.json', import.meta.url), 'utf8'));
 
-function scripts(html) {
-  return [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
-}
-
-function readers(html, indices) {
+function readers(inline, indices) {
   const context = { TextEncoder, TextDecoder };
-  const inline = scripts(html);
   for (const index of indices) runInNewContext(inline[index], context);
   return { C: context.LambdaCore, P: context.LambdaPresets, S: context.LambdaSnapshot };
 }
 
-const old = readers(oldHtml, [0, 3, 4, 5]);
+const old = readers(oldFixture.scripts, [0, 1, 2, 3]);
 
 function fullC5Snapshot() {
   return {
@@ -64,9 +55,12 @@ function memoryStorage() {
 }
 
 test('the issued content3 reader is the five-level a5eab9f5 resource', () => {
-  assert.equal(createHash('sha256').update(oldHtmlBytes).digest('hex'), 'ac739314e6e9ec46aa1acb515ad20b1d7e889d1c22adab1eed777860c14b51f7');
-  assert.equal(createHash('sha256').update(oldProofBytes).digest('hex'), '404c81336ff3d9ca1c5b7ee5de29aa977108aad6d98fda3b03187acfd8e72425');
-  assert.equal(oldProof.revision, 'a5eab9f5c14f33d328f39858b6680e43c41ffa25');
+  assert.equal(oldFixture.schemaVersion, 1);
+  assert.equal(oldFixture.issuedHtmlSha256, 'ac739314e6e9ec46aa1acb515ad20b1d7e889d1c22adab1eed777860c14b51f7');
+  assert.equal(oldFixture.sourceProofSha256, '404c81336ff3d9ca1c5b7ee5de29aa977108aad6d98fda3b03187acfd8e72425');
+  assert.equal(createHash('sha256').update(JSON.stringify(oldFixture.scripts)).digest('hex'), 'eafec1d7232927e80c22efc3508fef7eee407030846e33bc86b80ecab09af4e5');
+  assert.equal(oldFixture.upstreamRevision, 'a5eab9f5c14f33d328f39858b6680e43c41ffa25');
+  assert.deepEqual(oldFixture.scriptIndexes, [0, 3, 4, 5]);
   assert.equal(old.P.levels.length, 5);
 });
 
