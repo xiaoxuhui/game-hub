@@ -58,12 +58,12 @@ class DynamicLobbyDeviceTest {
         target.outputStream().use {assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG,100,it))};bitmap.recycle()
         println("Native UI screenshot: ${target.absolutePath}")
     }
-    private fun assertCardIcon(activity:MainActivity,id:String,resource:Int){
+    private fun assertCardIcon(activity:MainActivity,id:String,resource:Int,sizeDp:Int=56){
         @Suppress("UNCHECKED_CAST")
         val cards=MainActivity::class.java.getDeclaredField("gameCards").apply {isAccessible=true}.get(activity) as Map<String,View>
         val card=cards.getValue(id) as android.widget.LinearLayout
         val image=card.getChildAt(0) as android.widget.ImageView
-        val size=(56*activity.resources.displayMetrics.density+0.5f).toInt()
+        val size=(sizeDp*activity.resources.displayMetrics.density+0.5f).toInt()
         fun render(drawable:Drawable):Bitmap {
             val bitmap=Bitmap.createBitmap(size,size,Bitmap.Config.ARGB_8888)
             drawable.setBounds(0,0,size,size)
@@ -141,8 +141,9 @@ class DynamicLobbyDeviceTest {
             else js(scenario,"localStorage.setItem('memory-demo-state-v1', $backup)")
         }
     }}
-    @Test fun renderedDynamicCardsUseDedicatedIconsAndKeepCategoryFallbacks(){withUi {h,owner,scenario->
-        await("catalog query"){!owner.snapshot().busy && owner.snapshot().dynamicCheckedAt!=null}
+    @Test fun renderedDynamicCardsUseDedicatedIconsAndKeepCategoryFallbacks(){
+        ActivityScenario.launch(MainActivity::class.java).use {scenario->
+        await("initial lobby"){visible("游戏目录")}
         val specifications=listOf(
             "abelian-sandpile" to ("Abelian Sandpile" to "puzzle"),
             "lambda-diagram-game" to ("Lambda Diagram Game" to "puzzle"),
@@ -156,12 +157,20 @@ class DynamicLobbyDeviceTest {
             "turbowarp-neural-network" to ("TurboWarp Neural Network" to "simulation"),
             "turbowarp-logic-lab" to ("TurboWarp Logic Lab" to "unknown")
         )
-        val sample=h.current.first.games.single()
-        val remotes=specifications.map {(id,metadata)->sample.copy(id=id,displayName=metadata.first,iconKind=metadata.second)}
+        val remotes=specifications.map {(id,metadata)->ResourceGame(
+            id=id,version="1.0.0",contentCode=1,sourceRepository="https://github.com/xiaoxuhui/game-hub.git",
+            sourceRevision="a".repeat(40),minHost=1,maxHost=100,storageContract="$id-dynamic-v1",entry="index.html",
+            assetId=1,archiveBytes=1,archiveSha256="b".repeat(64),files=emptyList(),notes="icon rendering fixture",
+            resourceProtocol=2,bridgeProtocol=1,displayName=metadata.first,iconKind=metadata.second
+        )}
         val locals=remotes.associate {game->game.id to LocalResourceInfo(ResourceSelection(active=game.identity,highestCode=1),game,null,null,null,null,true)}
-        val snapshot=owner.snapshot().copy(dynamicCatalogGames=remotes,localDynamicResources=locals,dynamicResources=emptyList())
-        UpdateCoordinator::class.java.getDeclaredField("state").apply {isAccessible=true}.set(owner,snapshot)
-        scenario.onActivity {MainActivity::class.java.getDeclaredMethod("renderUpdates",UpdateSnapshot::class.java).apply {isAccessible=true}.invoke(it,snapshot)}
+        scenario.onActivity {activity->
+            val owner=MainActivity::class.java.getDeclaredField("updates").apply {isAccessible=true}.get(activity) as UpdateCoordinator
+            owner.presence(false,false,false)
+            val snapshot=owner.snapshot().copy(dynamicCatalogGames=remotes,localDynamicResources=locals,dynamicResources=emptyList())
+            UpdateCoordinator::class.java.getDeclaredField("state").apply {isAccessible=true}.set(owner,snapshot)
+            MainActivity::class.java.getDeclaredMethod("renderUpdates",UpdateSnapshot::class.java).apply {isAccessible=true}.invoke(activity,snapshot)
+        }
         val expected=mapOf(
             "abelian-sandpile" to R.drawable.game_icon_abelian_sandpile,
             "lambda-diagram-game" to R.drawable.game_icon_lambda_diagram_game,
@@ -175,8 +184,23 @@ class DynamicLobbyDeviceTest {
             "turbowarp-neural-network" to R.drawable.game_dynamic_simulation,
             "turbowarp-logic-lab" to R.drawable.game_dynamic_generic
         )
-        scenario.onActivity {activity->expected.forEach {(id,resource)->assertCardIcon(activity,id,resource)}}
-    }}
+        scenario.onActivity {activity->
+            expected.forEach {(id,resource)->assertCardIcon(activity,id,resource)}
+            assertCardIcon(activity,"conway",R.drawable.game_conway,76)
+            assertCardIcon(activity,"eml",R.drawable.game_eml,76)
+            assertCardIcon(activity,"light",R.drawable.game_light,76)
+            assertCardIcon(activity,"turing",R.drawable.game_turing,76)
+        }
+        click("Abelian Sandpile")
+        await("dynamic card open route reaches normal resource handling"){visible("返回大厅")}
+        scenario.onActivity {activity->
+            val field=MainActivity::class.java.getDeclaredField("currentGame").apply {isAccessible=true}
+            assertEquals("abelian-sandpile",field.get(activity)?.let {it.javaClass.getDeclaredField("id").apply {isAccessible=true}.get(it)})
+        }
+        click("返回大厅",false)
+        await("return to original four-card lobby"){visible("游戏目录")}
+        }
+    }
     @Test fun largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(){withUi {h,owner,scenario->
         await("query"){!owner.snapshot().busy && owner.snapshot().dynamicCheckedAt!=null}
         val priorFont=shell("settings get system font_scale")
