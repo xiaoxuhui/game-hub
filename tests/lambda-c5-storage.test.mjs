@@ -42,6 +42,14 @@ function memoryStorage(entries = {}) {
   const map = new Map(Object.entries(entries));
   return { map, getItem: key => map.get(key) ?? null, setItem: (key, value) => map.set(key, value), removeItem: key => map.delete(key) };
 }
+function validOldState(version = 3) {
+  return old.S.decode(JSON.stringify({
+    version, draft: 'λx.x', functions: [], completed: [], mode: 'free', level: 0,
+    session: { original: old.C.parse('λx.x'), steps: 0, dirty: false, halt: '', paths: [] },
+    view: { speed: 600, strategy: 'normal', direction: 'left', scale: 1, autoFit: true, panX: 0, panY: 0, historyOpen: false, helpOpen: false, hintOpen: false },
+    selection: { start: 0, end: 0 }, error: ''
+  }));
+}
 
 test('C5 stores the complete new state and an actual content3-readable five-level projection', () => {
   assert.equal(currentFixture.upstreamRevision, '2ce0fa371e583bb9b57e74ace1f5cd2a7b14bd2c');
@@ -99,6 +107,51 @@ test('a content3 edit may strip the mirror extension but cannot change the autho
   assert.equal(storage.getItem('lambda-lab-hub-v4'), full);
   assert.equal(old.S.decode(storage.getItem('lambda-lab-hub-v3')).view.speed, 177);
   assert.equal(JSON.parse(storage.getItem('lambda-lab-hub-v3')).lambdaHubC5, undefined);
+  assert.throws(() => c5.getItem('lambda-lab-hub-v4'), /mirror conflict/);
+});
+
+test('journal recovery stops when an old content3 writer changes either mirror after interruption', () => {
+  const storage = memoryStorage();
+  const c5 = createLambdaC5Storage(storage, currentReader, old.S);
+  c5.setItem('lambda-lab-hub-v4', encodedFull());
+  const v3Before = storage.getItem('lambda-lab-hub-v3');
+  const v2Before = storage.getItem('lambda-lab-v2');
+  const set = storage.setItem;
+  storage.setItem = (key, value) => {
+    if (key === 'lambda-lab-hub-v3') throw Error('injected interruption');
+    return set(key, value);
+  };
+  assert.throws(() => c5.setItem('lambda-lab-hub-v4', encodedFull({ draft: 'λz.z' })), /injected interruption/);
+  storage.setItem = set;
+  const oldAdapter = createLambdaStorage(storage, old.S, () => false);
+  const legacy = old.S.decode(oldAdapter.getItem('lambda-lab-hub-v3'));
+  legacy.draft = 'λq.q';
+  oldAdapter.setItem('lambda-lab-hub-v3', old.S.encode(legacy));
+  const editedV3 = storage.getItem('lambda-lab-hub-v3');
+  const editedV2 = storage.getItem('lambda-lab-v2');
+  assert.notEqual(editedV3, v3Before);
+  assert.notEqual(editedV2, v2Before);
+  assert.throws(() => c5.getItem('lambda-lab-hub-v4'), /recovery conflict/);
+  assert.equal(storage.getItem('lambda-lab-hub-v3'), editedV3);
+  assert.equal(storage.getItem('lambda-lab-v2'), editedV2);
+  assert.notEqual(storage.getItem('lambda-lab-hub-journal-v4'), null);
+});
+
+test('C5 refuses to overwrite preexisting legacy data and rejects keys outside its Lambda allowlist', () => {
+  const legacyState = old.S.encode(validOldState(3));
+  const storage = memoryStorage({
+    'lambda-lab-hub-v3': legacyState,
+    'lambda-lab-v2': old.S.encode(validOldState(2)),
+    'lambda-lab-hub-mirror-ready-v3': JSON.stringify({ auto: true, checkpoint: false })
+  });
+  const before = new Map(storage.map);
+  const adapter = createLambdaC5Storage(storage, currentReader, old.S);
+  assert.throws(() => adapter.setItem('lambda-lab-hub-v4', encodedFull()), /mirror conflict/);
+  assert.deepEqual(storage.map, before);
+  assert.throws(() => adapter.getItem('another-game-key'), /allowlist/);
+  assert.throws(() => adapter.setItem('another-game-key', 'bad'), /allowlist/);
+  assert.throws(() => adapter.removeItem('another-game-key'), /allowlist/);
+  assert.deepEqual(storage.map, before);
 });
 
 test('content3 never receives new view fields and a level within its range remains selected', () => {
@@ -112,6 +165,15 @@ test('content3 never receives new view fields and a level within its range remai
   assert.equal(JSON.stringify(v3.completed), JSON.stringify([1, 3]));
   assert.equal(Object.hasOwn(v3.view, 'numberEncoding'), false);
   assert.equal(Object.hasOwn(v3.view, 'decimalPlaces'), false);
+});
+
+test('a free-mode selection outside the issued range is also projected to a safe legacy level', () => {
+  const storage = memoryStorage();
+  const free = fullSnapshot({ completed: [], mode: 'free', level: 29 });
+  createLambdaC5Storage(storage, currentReader, old.S).setItem('lambda-lab-hub-v4', current.S.encode(free));
+  const v3 = old.S.decode(storage.getItem('lambda-lab-hub-v3'));
+  assert.equal(v3.mode, 'free');
+  assert.equal(v3.level, 0);
 });
 
 test('checkpoint full state and compatibility mirrors are projected independently', () => {
