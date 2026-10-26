@@ -152,6 +152,13 @@ test('an interrupted C5 journal is never auto-replayed and can be resolved only 
   const inspected = inspectLambdaC5Storage(s, current.S, old.S);
   assert.equal(inspected.current.status, 'conflict');
   assert.ok(inspected.current.metadata.includes('c5-journal'));
+  const originalValues = new Map(s.map);
+  const set = s.setItem;
+  s.setItem = (key, value) => { if (key === 'lambda-lab-hub-c5-conflict-archive-v1') throw Error('archive quota'); set(key, value); };
+  assert.throws(() => resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'v3', inspection: inspected }), /archive quota/);
+  s.setItem = set;
+  assert.equal(s.getItem('lambda-lab-hub-journal-v4'), journalRaw);
+  for (const [key, value] of originalValues) assert.equal(s.getItem(key), value);
   resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'v3', inspection: inspected });
   const archived = JSON.parse(s.getItem('lambda-lab-hub-c5-conflict-archive-v1')).entries[0].snapshot;
   assert.equal(archived['lambda-lab-hub-journal-v4'], journalRaw);

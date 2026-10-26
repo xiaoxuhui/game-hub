@@ -219,13 +219,24 @@ export function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, 
   const snapshot = inspection.snapshot;
   const archived = archiveSnapshot(snapshot[KEYS.conflictArchive], snapshot);
   const archiveText = JSON.stringify(archived);
+  let expectedSnapshot = snapshot;
+  const changes = [];
+  if (snapshot[KEYS.journal] !== null) {
+    // The new transaction journal uses the same key. Preserve the interrupted
+    // one in a verified archive before replacing it, even if the archive write
+    // later fails for quota reasons.
+    if (JSON.stringify(captureLambdaC5Snapshot(storage)) !== JSON.stringify(snapshot)) throw Error('C5 storage changed since conflict inspection');
+    storage.setItem(KEYS.conflictArchive, archiveText);
+    if (storage.getItem(KEYS.conflictArchive) !== archiveText) throw Error('C5 conflict archive write mismatch; preserve original journal');
+    expectedSnapshot = { ...snapshot, [KEYS.conflictArchive]: archiveText };
+  } else changes.push([KEYS.conflictArchive, archiveText]);
   const ready = parseReady(snapshot[KEYS.ready]);
   const flags = ready.valid ? ready.value : { auto: false, checkpoint: false };
   const currentKind = kind === 'current';
   const key4 = currentKind ? KEYS.current4 : KEYS.checkpoint4;
   const key3 = currentKind ? KEYS.current3 : KEYS.checkpoint3;
   const key2 = currentKind ? KEYS.current2 : KEYS.checkpoint2;
-  const changes = [[KEYS.conflictArchive, archiveText], [KEYS.oldJournal, null]];
+  changes.push([KEYS.oldJournal, null]);
   if (currentKind) {
     const fullText = fullForChoice(group, choice);
     const projection = lambdaC5Projection(fullText, CurrentS, OldS);
@@ -242,7 +253,7 @@ export function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, 
     changes.push([key4, fullText], [key3, projection.v3], [key2, projection.v2], [KEYS.ready, JSON.stringify(flags)], [KEYS.checkpointTombstone, null]);
   }
   const c5 = createLambdaC5Storage(storage, CurrentS, OldS, { eventTarget: null });
-  c5.commit(changes, snapshot);
+  c5.commit(changes, expectedSnapshot);
   return { status: choice === 'clear' ? 'cleared' : 'resolved', choice, inspection };
 }
 
