@@ -312,17 +312,12 @@ class MainActivity : ComponentActivity() {
         val metadata=local.active ?: local.ready ?: remote
         return Game(id,metadata?.displayName ?: id,metadata?.version ?: "",metadata?.sourceRevision ?: "",metadata?.entry ?: "index.html")
     }
-    private fun dynamicIcon(kind:String?)=when(kind){
-        "puzzle"->R.drawable.game_dynamic_puzzle
-        "logic"->R.drawable.game_dynamic_logic
-        "simulation"->R.drawable.game_dynamic_simulation
-        else->R.drawable.game_dynamic_generic
-    }
+    private fun dynamicIcon(id:String?,kind:String?)=GameIconResolver.resolve(id,kind)
     private fun renderDynamicLobby(state:UpdateSnapshot) {
         val entries=state.localDynamicResources.entries.filter {it.value.selection.active!="builtin" || it.value.selection.ready!=null}
             .sortedBy {it.key}.map {(id,local)->
                 val remote=state.dynamicCatalogGames.singleOrNull {it.id==id}
-                dynamicGame(id,local,remote) to dynamicIcon((local.active ?: local.ready ?: remote)?.iconKind)
+                dynamicGame(id,local,remote) to dynamicIcon(id,(local.active ?: local.ready ?: remote)?.iconKind)
             }
         if(entries!=dynamicLobbyKey){
             dynamicLobbyKey.forEach {(game,_)->gameVersionLabels.remove(game.id);gameCards.remove(game.id)}
@@ -500,7 +495,7 @@ class MainActivity : ComponentActivity() {
             val metadata=local?.active ?: local?.ready ?: remote
             val name=metadata?.displayName ?: id
             val title=LinearLayout(this).apply {orientation=LinearLayout.HORIZONTAL;gravity=Gravity.CENTER_VERTICAL;setPadding(0,dp(16),0,0)}
-            title.addView(ImageView(this).apply {setImageResource(dynamicIcon(metadata?.iconKind));contentDescription=null},LinearLayout.LayoutParams(dp(36),dp(36)))
+            title.addView(ImageView(this).apply {setImageResource(dynamicIcon(id,metadata?.iconKind));contentDescription=null},LinearLayout.LayoutParams(dp(36),dp(36)))
             title.addView(label(name,17f,Color.WHITE,true).apply {setPadding(dp(8),0,0,0)},LinearLayout.LayoutParams(0,-2,1f));column.addView(title)
             description(when {
                 local?.active!=null->"已安装 v${local.active.version}"+(if(local.selection.pinned) " · 固定版本" else "")

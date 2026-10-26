@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
+import android.graphics.drawable.BitmapDrawable
 import android.view.KeyEvent
 import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
@@ -56,6 +58,16 @@ class DynamicLobbyDeviceTest {
         target.outputStream().use {assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG,100,it))};bitmap.recycle()
         println("Native UI screenshot: ${target.absolutePath}")
     }
+    private fun assertCardIcon(activity:MainActivity,id:String,resource:Int){
+        @Suppress("UNCHECKED_CAST")
+        val cards=MainActivity::class.java.getDeclaredField("gameCards").apply {isAccessible=true}.get(activity) as Map<String,View>
+        val card=cards.getValue(id) as android.widget.LinearLayout
+        val image=card.getChildAt(0) as android.widget.ImageView
+        val actual=(image.drawable as BitmapDrawable).bitmap
+        val expected=BitmapFactory.decodeResource(activity.resources,resource)
+        assertTrue("Rendered card icon for $id must match its mapped resource",actual.sameAs(expected))
+        expected.recycle()
+    }
     private fun js(scenario:ActivityScenario<MainActivity>,script:String):String {
         val latch=CountDownLatch(1);var result=""
         scenario.onActivity {activity->
@@ -96,6 +108,7 @@ class DynamicLobbyDeviceTest {
         screenshot("n4-ui-four-home")
         click("游戏目录",false);click("安装$name")
         await("manual installation"){!owner.snapshot().busy && h.dynamic.installed("memory-demo")}
+        scenario.onActivity {assertCardIcon(it,"memory-demo",R.drawable.game_icon_memory_demo)}
         click("关闭");click(name)
         page(scenario)
         val backup=js(scenario,"localStorage.getItem('memory-demo-state-v1')")
@@ -119,6 +132,42 @@ class DynamicLobbyDeviceTest {
             if(backup=="null")js(scenario,"localStorage.removeItem('memory-demo-state-v1')")
             else js(scenario,"localStorage.setItem('memory-demo-state-v1', $backup)")
         }
+    }}
+    @Test fun renderedDynamicCardsUseDedicatedIconsAndKeepCategoryFallbacks(){withUi {h,owner,scenario->
+        await("catalog query"){!owner.snapshot().busy && owner.snapshot().dynamicCheckedAt!=null}
+        val specifications=listOf(
+            "abelian-sandpile" to ("Abelian Sandpile" to "puzzle"),
+            "lambda-diagram-game" to ("Lambda Diagram Game" to "puzzle"),
+            "mini-scratch" to ("Mini Scratch" to "logic"),
+            "logic-circuit" to ("Logic Circuit" to "puzzle"),
+            "traffic-planner" to ("Traffic Planner" to "logic"),
+            "memory-demo" to ("Memory Demo" to "simulation"),
+            "red-green-puzzle" to ("Red Green Puzzle" to "logic"),
+            "hex-cell-lab" to ("Hex Cell Lab" to "puzzle"),
+            "langtons-ant" to ("Langton's Ant" to "logic"),
+            "turbowarp-neural-network" to ("TurboWarp Neural Network" to "simulation"),
+            "turbowarp-logic-lab" to ("TurboWarp Logic Lab" to "unknown")
+        )
+        val sample=h.current.first.games.single()
+        val remotes=specifications.map {(id,metadata)->sample.copy(id=id,displayName=metadata.first,iconKind=metadata.second)}
+        val locals=remotes.associate {game->game.id to LocalResourceInfo(ResourceSelection(active=game.identity,highestCode=1),game,null,null,null,null,true)}
+        val snapshot=owner.snapshot().copy(dynamicCatalogGames=remotes,localDynamicResources=locals,dynamicResources=emptyList())
+        UpdateCoordinator::class.java.getDeclaredField("state").apply {isAccessible=true}.set(owner,snapshot)
+        scenario.onActivity {MainActivity::class.java.getDeclaredMethod("renderUpdates",UpdateSnapshot::class.java).apply {isAccessible=true}.invoke(it,snapshot)}
+        val expected=mapOf(
+            "abelian-sandpile" to R.drawable.game_icon_abelian_sandpile,
+            "lambda-diagram-game" to R.drawable.game_icon_lambda_diagram_game,
+            "mini-scratch" to R.drawable.game_icon_mini_scratch,
+            "logic-circuit" to R.drawable.game_icon_logic_circuit,
+            "traffic-planner" to R.drawable.game_icon_traffic_planner,
+            "memory-demo" to R.drawable.game_icon_memory_demo,
+            "red-green-puzzle" to R.drawable.game_icon_red_green_puzzle,
+            "hex-cell-lab" to R.drawable.game_dynamic_puzzle,
+            "langtons-ant" to R.drawable.game_dynamic_logic,
+            "turbowarp-neural-network" to R.drawable.game_dynamic_simulation,
+            "turbowarp-logic-lab" to R.drawable.game_dynamic_generic
+        )
+        scenario.onActivity {activity->expected.forEach {(id,resource)->assertCardIcon(activity,id,resource)}}
     }}
     @Test fun largeFontLandscapeDirectoryAndInstalledCardsRemainScrollable(){withUi {h,owner,scenario->
         await("query"){!owner.snapshot().busy && owner.snapshot().dynamicCheckedAt!=null}
