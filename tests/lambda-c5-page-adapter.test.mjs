@@ -82,6 +82,25 @@ test('stale conflict button does not choose an unpreviewed candidate and refresh
   assert.equal(storage.getItem('lambda-lab-hub-c5-conflict-archive-v1'), null);
 });
 
+test('conflict archive quota failure keeps the raw snapshot export available', async () => {
+  const storage = pendingConflictStorage(), before = Object.fromEntries(storage.map), page = pageAdapter(storage), dialog = page.dialog();
+  const set = storage.setItem;
+  storage.setItem = (key, value) => { if (key === 'lambda-lab-hub-c5-conflict-archive-v1') { const error = new Error('quota'); error.name = 'QuotaExceededError'; throw error; } return set(key, value); };
+  const candidate = dialog.querySelector('#lambda-c5-options').children.find(button => button.textContent.startsWith('新版完整存档'));
+  await candidate.fire('click');
+  assert.match(dialog.querySelector('#lambda-c5-status').textContent, /quota/);
+  const exportButton = dialog.querySelector('#lambda-c5-options').children.find(button => button.textContent === '导出当前全部原始存档');
+  assert.ok(exportButton);
+  await exportButton.fire('click');
+  const payload = JSON.parse(page.downloads[0][1]);
+  assert.equal(payload.reason, 'conflict-review');
+  assert.equal(payload.storage['lambda-lab-hub-v4'], before['lambda-lab-hub-v4']);
+  assert.equal(payload.storage['lambda-lab-hub-v3'], before['lambda-lab-hub-v3']);
+  assert.equal(payload.storage['lambda-lab-v2'], before['lambda-lab-v2']);
+  assert.equal(payload.storage['lambda-lab-hub-journal-v4'], before['lambda-lab-hub-journal-v4']);
+  assert.equal(storage.getItem('lambda-lab-hub-c5-conflict-archive-v1'), null);
+});
+
 test('Storage.clear event opens export UI with the previous and cleared snapshots', async () => {
   const storage = memoryStorage(), page = pageAdapter(storage);
   page.adapter.setItem(page.autoKey, fullText());

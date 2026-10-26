@@ -85,6 +85,10 @@ export function lambdaC5BrowserAdapterSource() {
       }
       if(group.tombstone)button('保留“已清除”的检查点',()=>resolveChoice(pending,'clear',inspection),{danger:true});
       if(group.candidates.length===0)button('归档后清空损坏存档',()=>resolveChoice(pending,'clear',inspection),{danger:true});
+      button('导出当前全部原始存档',()=>{
+        const result=safeExport('conflict-review',inspection.snapshot);
+        dialogStatus.textContent=result===true?'已请求下载当前预览对应的全部原始存档。':'导出失败：'+String(result);
+      });
       button('取消并保留全部原始数据',()=>{dialogStatus.textContent='已取消；所有存档原文均未改动。关闭此页后可稍后再选择。'});
     }
     function resolveChoice(kind,choice,inspection){
