@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.UpstreamReleaseClientTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:23" hostname="LAPTOP-JC51L3U6" time="0.023">
+  <properties/>
+  <testcase name="sourceHintsRejectUnpublishedForeignAndMalformedMetadata" classname="com.xiaoxuhui.gamehub.UpstreamReleaseClientTest" time="0.004"/>
+  <testcase name="duplicateKeysTrailingJsonAndResponseBudgetFailClosed" classname="com.xiaoxuhui.gamehub.UpstreamReleaseClientTest" time="0.01"/>
+  <testcase name="fixedSixSourcesHaveDistinctIdentitiesAndExcludeHubExamples" classname="com.xiaoxuhui.gamehub.UpstreamReleaseClientTest" time="0.002"/>
+  <testcase name="onlyFixedLatestMetadataIsQueriedAndSource404IsUnknown" classname="com.xiaoxuhui.gamehub.UpstreamReleaseClientTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

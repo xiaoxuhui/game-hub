@@ -1,0 +1,10 @@
+{
+  "instrumentation": "PASS (1 test)",
+  "scriptExitCode": 0,
+  "fixtureVersion": "0.4.4",
+  "fixtureVersionCode": 8,
+  "dataMarkerPreserved": true,
+  "sourceCommit": "5caae1d703af99b14a3823c87804492be99db070",
+  "upgradeInstall": "PASS",
+  "installedVersion": "0.4.3"
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.UpdatePolicyTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:23" hostname="LAPTOP-JC51L3U6" time="0.032">
+  <properties/>
+  <testcase name="rejectsMissingOrUntrustedMetadataBeforeDownload" classname="com.xiaoxuhui.gamehub.UpdatePolicyTest" time="0.015"/>
+  <testcase name="allowsOnlyHttpsGithubAssetRedirectHosts" classname="com.xiaoxuhui.gamehub.UpdatePolicyTest" time="0.001"/>
+  <testcase name="validatesEqualAndOlderPublicationBeforeCallingItCurrent" classname="com.xiaoxuhui.gamehub.UpdatePolicyTest" time="0.002"/>
+  <testcase name="rejectsWrongDigestPackageVersionAndSignerBeforeInstall" classname="com.xiaoxuhui.gamehub.UpdatePolicyTest" time="0.013"/>
+  <testcase name="acceptsOnlyNewerOfficialApkAndUsesAssetIdUrl" classname="com.xiaoxuhui.gamehub.UpdatePolicyTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,24 @@
+{
+  "nodeTests": {
+    "failed": 0,
+    "passed": 233,
+    "total": 233
+  },
+  "androidUnitTests": {
+    "total": 97.0,
+    "failures": 0.0
+  },
+  "sourceCommit": "5caae1d703af99b14a3823c87804492be99db070",
+  "dynamicLobbyInstrumentation": {
+    "errors": 0,
+    "failures": 0,
+    "tests": 1
+  },
+  "upgradeSmoke": {
+    "dataMarkerPreserved": true,
+    "scriptExitCode": 0,
+    "testPassed": true,
+    "fixtureVersionCode": 8,
+    "fixtureVersion": "0.4.4"
+  }
+}

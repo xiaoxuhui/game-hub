@@ -1,0 +1,131 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        2c72c79 com.xiaoxuhui.gamehub/.MainActivity filter cf0fdbe
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      androidx.profileinstaller.action.SAVE_PROFILE:
+        ee01e1f com.xiaoxuhui.gamehub/androidx.profileinstaller.ProfileInstallReceiver filter 6bb37ca
+          Action: "androidx.profileinstaller.action.SAVE_PROFILE"
+      androidx.profileinstaller.action.INSTALL_PROFILE:
+        ee01e1f com.xiaoxuhui.gamehub/androidx.profileinstaller.ProfileInstallReceiver filter 994756c
+          Action: "androidx.profileinstaller.action.INSTALL_PROFILE"
+      androidx.profileinstaller.action.SKIP_FILE:
+        ee01e1f com.xiaoxuhui.gamehub/androidx.profileinstaller.ProfileInstallReceiver filter d851735
+          Action: "androidx.profileinstaller.action.SKIP_FILE"
+      androidx.profileinstaller.action.BENCHMARK_OPERATION:
+        ee01e1f com.xiaoxuhui.gamehub/androidx.profileinstaller.ProfileInstallReceiver filter 8f27d3b
+          Action: "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+
+Domain verification status:
+
+Permissions:
+  Permission [com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION] (9f50dfe):
+    sourcePackage=com.xiaoxuhui.gamehub
+    uid=10151 gids=[] type=0 prot=signature
+    perm=PermissionInfo{80e895f com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION}
+    flags=0x0
+
+Registered ContentProviders:
+  com.xiaoxuhui.gamehub/androidx.startup.InitializationProvider:
+    Provider{a859fac com.xiaoxuhui.gamehub/androidx.startup.InitializationProvider}
+  com.xiaoxuhui.gamehub/androidx.core.content.FileProvider:
+    Provider{c939475 com.xiaoxuhui.gamehub/androidx.core.content.FileProvider}
+
+ContentProvider Authorities:
+  [com.xiaoxuhui.gamehub.androidx-startup]:
+    Provider{a859fac com.xiaoxuhui.gamehub/androidx.startup.InitializationProvider}
+      applicationInfo=ApplicationInfo{9900c0a com.xiaoxuhui.gamehub}
+  [com.xiaoxuhui.gamehub.updates]:
+    Provider{c939475 com.xiaoxuhui.gamehub/androidx.core.content.FileProvider}
+      applicationInfo=ApplicationInfo{fbc5c7b com.xiaoxuhui.gamehub}
+
+Key Set Manager:
+  [com.xiaoxuhui.gamehub]
+      Signing KeySets: 24
+
+Packages:
+  Package [com.xiaoxuhui.gamehub] (9830a98):
+    appId=10151
+    pkg=Package{39602f1 com.xiaoxuhui.gamehub}
+    codePath=/data/app/~~JxC_hW8OW_WpVo1knm5TFg==/com.xiaoxuhui.gamehub-R7aTsVcpkUc1ZUEgKu5-4g==
+    resourcePath=/data/app/~~JxC_hW8OW_WpVo1knm5TFg==/com.xiaoxuhui.gamehub-R7aTsVcpkUc1ZUEgKu5-4g==
+    legacyNativeLibraryDir=/data/app/~~JxC_hW8OW_WpVo1knm5TFg==/com.xiaoxuhui.gamehub-R7aTsVcpkUc1ZUEgKu5-4g==/lib
+    extractNativeLibs=false
+    primaryCpuAbi=null
+    secondaryCpuAbi=null
+    cpuAbiOverride=null
+    versionCode=8 minSdk=24 targetSdk=34
+    minExtensionVersions=[]
+    versionName=0.4.4
+    usesNonSdkApi=false
+    splits=[base]
+    apkSigningVersion=2
+    flags=[ DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    dataDir=/data/user/0/com.xiaoxuhui.gamehub
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    timeStamp=2026-10-26 17:01:08
+    lastUpdateTime=2026-10-26 17:01:08
+    installerPackageName=null
+    installerPackageUid=-1
+    initiatingPackageName=com.android.shell
+    originatingPackageName=null
+    packageSource=1
+    appMetadataFilePath=null
+    signatures=PackageSignatures{32aded6 version:2, signatures:[e860a46c], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    privatePkgFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    apexModuleName=null
+    declared permissions:
+      com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: prot=signature
+    requested permissions:
+      android.permission.INTERNET
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.REQUEST_INSTALL_PACKAGES
+      com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+    install permissions:
+      com.xiaoxuhui.gamehub.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.REQUEST_INSTALL_PACKAGES: granted=false
+    User 0: ceDataInode=319607 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      installReason=0
+      firstInstallTime=2026-10-26 17:00:51
+      uninstallReason=0
+      overlay paths:
+        /data/resource-cache/com.android.systemui-neutral-FfMb.frro
+        /data/resource-cache/com.android.systemui-accent-3Z3b.frro
+        /data/resource-cache/com.android.systemui-dynamic-YMtv.frro
+      gids=[3003]
+      runtime permissions:
+
+Queries:
+  system apps queryable: false
+  queries via forceQueryable:
+  queries via package name:
+    com.xiaoxuhui.gamehub:
+      com.xiaoxuhui.gamehub.test
+    com.xiaoxuhui.gamehub.test:
+      com.xiaoxuhui.gamehub
+  queries via component:
+    com.android.settings.intelligence:
+      com.xiaoxuhui.gamehub
+  queryable via interaction:
+    User 0:
+  queryable via uses-library:
+
+Dexopt state:
+  [com.xiaoxuhui.gamehub]
+    path: /data/app/~~JxC_hW8OW_WpVo1knm5TFg==/com.xiaoxuhui.gamehub-R7aTsVcpkUc1ZUEgKu5-4g==/base.apk
+      x86_64: [status=run-from-apk] [reason=unknown] [primary-abi]
+        [location is error]
+
+Compiler stats:
+  [com.xiaoxuhui.gamehub]
+    (No recorded stats)

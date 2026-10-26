@@ -1,18 +1,22 @@
 [
   {
     "game": "conway",
-    "opened": true
+    "opened": true,
+    "returnedToLobby": true
   },
   {
     "game": "eml",
-    "opened": true
+    "opened": true,
+    "returnedToLobby": true
   },
   {
     "game": "light",
-    "opened": true
+    "opened": true,
+    "returnedToLobby": true
   },
   {
     "game": "turing",
-    "opened": true
+    "opened": true,
+    "returnedToLobby": true
   }
 ]

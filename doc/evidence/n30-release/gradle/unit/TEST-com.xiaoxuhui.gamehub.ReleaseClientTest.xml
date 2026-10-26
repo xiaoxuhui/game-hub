@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.ReleaseClientTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:16" hostname="LAPTOP-JC51L3U6" time="0.022">
+  <properties/>
+  <testcase name="parsesNewReleaseAndRejectsRedirectOrOversizedResponse" classname="com.xiaoxuhui.gamehub.ReleaseClientTest" time="0.02"/>
+  <testcase name="mapsPrivateRepositoryAndRateLimitWithoutParsingResponseBody" classname="com.xiaoxuhui.gamehub.ReleaseClientTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

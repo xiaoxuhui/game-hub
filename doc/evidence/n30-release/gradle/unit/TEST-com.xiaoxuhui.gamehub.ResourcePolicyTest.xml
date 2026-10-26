@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.ResourcePolicyTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:21" hostname="LAPTOP-JC51L3U6" time="2.374">
+  <properties/>
+  <testcase name="pendingOfferRejectsExpiryAndChangedAssetBeforeDownloadSlotOrNetwork" classname="com.xiaoxuhui.gamehub.ResourcePolicyTest" time="0.005"/>
+  <testcase name="pathsBudgetsAndTimestampAreStrict" classname="com.xiaoxuhui.gamehub.ResourcePolicyTest" time="0.004"/>
+  <testcase name="strictJsonRejectsDuplicatesInvalidUtf8AndCoercion" classname="com.xiaoxuhui.gamehub.ResourcePolicyTest" time="0.003"/>
+  <testcase name="catalogFreshnessBlocksExpiryAndClockAnomalyWithoutChangingInstalledProofPolicy" classname="com.xiaoxuhui.gamehub.ResourcePolicyTest" time="0.001"/>
+  <testcase name="fourGamesRequireSourceIdentityContractAndUniqueFiles" classname="com.xiaoxuhui.gamehub.ResourcePolicyTest" time="0.004"/>
+  <testcase name="signatureVerifiesRawBytesRejectsTamperAndUnknownKey" classname="com.xiaoxuhui.gamehub.ResourcePolicyTest" time="2.356"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

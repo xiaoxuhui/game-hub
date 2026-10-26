@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.UiRequestAcceptanceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:23" hostname="LAPTOP-JC51L3U6" time="0.066">
+  <properties/>
+  <testcase name="timedOutQueuedRequestNeverRunsLater" classname="com.xiaoxuhui.gamehub.UiRequestAcceptanceTest" time="0.02"/>
+  <testcase name="timeoutDuringClaimedActionCannotReturnFalseBeforeRealReceipt" classname="com.xiaoxuhui.gamehub.UiRequestAcceptanceTest" time="0.045"/>
+  <testcase name="mainThreadRejectionAndAcceptanceAreReturnedExactly" classname="com.xiaoxuhui.gamehub.UiRequestAcceptanceTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

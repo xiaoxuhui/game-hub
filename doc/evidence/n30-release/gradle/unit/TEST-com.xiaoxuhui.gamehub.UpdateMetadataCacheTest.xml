@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.UpdateMetadataCacheTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:23" hostname="LAPTOP-JC51L3U6" time="0.016">
+  <properties/>
+  <testcase name="malformedFutureAndForgedApkMetadataAreRejected" classname="com.xiaoxuhui.gamehub.UpdateMetadataCacheTest" time="0.002"/>
+  <testcase name="malformedResourceReferenceIsRejectedInsteadOfLosingItsTimeSilently" classname="com.xiaoxuhui.gamehub.UpdateMetadataCacheTest" time="0.002"/>
+  <testcase name="resourceTimeBelongsToExactSignedCatalogNotANewerOrDifferentDirectory" classname="com.xiaoxuhui.gamehub.UpdateMetadataCacheTest" time="0.001"/>
+  <testcase name="recreatedReminderKeepsOriginalTimeAndSuppressesAlreadyInstalledApk" classname="com.xiaoxuhui.gamehub.UpdateMetadataCacheTest" time="0.009"/>
+  <testcase name="failedAtomicReplacementKeepsThePreviousReminder" classname="com.xiaoxuhui.gamehub.UpdateMetadataCacheTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

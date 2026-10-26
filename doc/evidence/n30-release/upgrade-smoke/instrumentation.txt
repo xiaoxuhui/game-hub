@@ -1,0 +1,8 @@
+
+com.xiaoxuhui.gamehub.UpdateFixtureTest:.
+
+Time: 0.118
+
+OK (1 test)
+
+

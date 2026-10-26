@@ -1,0 +1,34 @@
+{
+  "observedAt": "2026-10-27",
+  "repositories": [
+    {
+      "originalWorktree": "clean",
+      "originalHead": "a531a560b3ecce070be80fb6470cbc916971bce4",
+      "pinnedBundleCommit": "87027a69ff93cb517c262a5010c342b7ac32b7d6",
+      "pinnedObjectPresent": true,
+      "id": "conway"
+    },
+    {
+      "originalWorktree": "clean",
+      "originalHead": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+      "pinnedBundleCommit": "2616c9e9b081762b01599cc79da919d20340d0a2",
+      "pinnedObjectPresent": true,
+      "id": "eml"
+    },
+    {
+      "originalWorktree": "clean",
+      "originalHead": "6adff61adfddae5c2ee38f41b18934570dce3423",
+      "pinnedBundleCommit": "890b4661288af7bbd348fb56f8c69cfb4bc12587",
+      "pinnedObjectPresent": true,
+      "id": "light"
+    },
+    {
+      "originalWorktree": "clean",
+      "originalHead": "6747cdff4c7f75efc81df711ed73fb0887ad164b",
+      "pinnedBundleCommit": "5b9f19d37d04b2216ce63456a3b11a8e3624a4c5",
+      "pinnedObjectPresent": true,
+      "id": "turing"
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.GameResourceStoreTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:58:57" hostname="LAPTOP-JC51L3U6" time="18.633">
+  <properties/>
+  <testcase name="damagedGlobalStateCannotBeClearedBySingleGameRestoreAndTrustedRecoveryRejectsReplay" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.332"/>
+  <testcase name="sameArchiveCannotRenewChangedVersionOrSourceAndSuccessfulRetryClearsItsDiagnostic" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.362"/>
+  <testcase name="expiredInstalledProofStaysPlayableButExpiredReadyNeverActivates" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.852"/>
+  <testcase name="sessionCloseDoesNotWaitForBackgroundFullProofVerification" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.77"/>
+  <testcase name="renewedSignedCatalogRefreshesCompleteReadyProofWithoutDownloadingOrActivating" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.855"/>
+  <testcase name="retainedIdentityCannotAcquireChangedMetadataOnReinstall" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.294"/>
+  <testcase name="failedActiveIsBlockedBeforePersistenceAndRemainsQuarantinedAfterRestartUntilExplicitRetry" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.988"/>
+  <testcase name="stateCommitFailureLeavesOldPointerAndStagingCannotActivateAfterRestart" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.862"/>
+  <testcase name="sameArchiveNewFreshCatalogReplacesExpiredProofAndActivates" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.283"/>
+  <testcase name="rememberedDirectoryRequiresBothTrustedWatermarksAndNeverRenewsExpiry" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.824"/>
+  <testcase name="spaceFailureAndInstalledFileCorruptionNeverSelectPartialResource" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.434"/>
+  <testcase name="replayCodeConflictTamperAndCancellationPreserveActive" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="1.13"/>
+  <testcase name="localDescriptionDistinguishesBuiltinReadyActiveCorruptAndRestoredWithoutRemotePromotion" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.743"/>
+  <testcase name="missingSelectionWithExistingResourcesRequiresExplicitPinnedRecovery" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="1.921"/>
+  <testcase name="unsignedOrAlteredCatalogCannotChangeWatermark" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.302"/>
+  <testcase name="brokenReadyOrMissingProofKeepsBuiltinPlayableAndQuarantinesCandidate" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="4.146"/>
+  <testcase name="zipSpecialAttributesAndNativeReadBudgetsAreRejectedBeforeWriting" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.993"/>
+  <testcase name="missingOrDamagedHighestHistoryNeverFallsBackToAnOlderWatermark" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="1.879"/>
+  <testcase name="completeInstallActivatesOnlyWithoutSessionAndPinnedRestoreSurvivesRestart" classname="com.xiaoxuhui.gamehub.GameResourceStoreTest" time="0.658"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
