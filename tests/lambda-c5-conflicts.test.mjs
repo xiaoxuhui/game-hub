@@ -271,6 +271,35 @@ test('an unfinished checkpoint deletion journal still offers explicit keep-clear
   assert.equal(archive.entries[0].snapshot['lambda-lab-hub-journal-v3'], journal);
 });
 
+test('an unfinished checkpoint deletion journal can explicitly restore the full checkpoint', () => {
+  const s = storage();
+  const c5 = createLambdaC5Storage(s, current.S, old.S);
+  c5.setItem('lambda-lab-hub-v4', fullText());
+  const cp = fullText('λq.q');
+  c5.setItem('lambda-lab-hub-checkpoint-v4', cp);
+  const oldCheckpoint = s.getItem('lambda-lab-hub-checkpoint-v3');
+  const oldCheckpoint2 = s.getItem('lambda-lab-checkpoint-v2');
+  const oldReady = s.getItem('lambda-lab-hub-mirror-ready-v3');
+  const journal = JSON.stringify({ schemaVersion: 1, before: [], after: [
+    ['lambda-lab-hub-checkpoint-v3', oldCheckpoint], ['lambda-lab-checkpoint-v2', oldCheckpoint2],
+    ['lambda-lab-hub-mirror-ready-v3', JSON.stringify({ auto: true, checkpoint: false })]
+  ] });
+  s.setItem('lambda-lab-hub-journal-v3', journal);
+  s.removeItem('lambda-lab-hub-checkpoint-v3');
+  s.removeItem('lambda-lab-checkpoint-v2');
+  s.setItem('lambda-lab-hub-mirror-ready-v3', JSON.stringify({ auto: true, checkpoint: false }));
+
+  const inspected = inspectLambdaC5Storage(s, current.S, old.S);
+  assert.equal(inspected.checkpoint.status, 'conflict');
+  assert.equal(inspected.checkpoint.tombstone, true);
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'checkpoint', choice: 'v4', inspection: inspected });
+  assert.equal(s.getItem('lambda-lab-hub-checkpoint-v4'), cp);
+  assert.equal(JSON.parse(s.getItem('lambda-lab-hub-mirror-ready-v3')).checkpoint, true);
+  assert.equal(inspectLambdaC5Storage(s, current.S, old.S).checkpoint.status, 'healthy');
+  const archive = JSON.parse(s.getItem('lambda-lab-hub-c5-conflict-archive-v1'));
+  assert.equal(archive.entries[0].snapshot['lambda-lab-hub-journal-v3'], journal);
+});
+
 test('restoring the full tombstoned checkpoint is explicit and recreates only validated compatibility mirrors', () => {
   const s = storage();
   const c5 = createLambdaC5Storage(s, current.S, old.S);
