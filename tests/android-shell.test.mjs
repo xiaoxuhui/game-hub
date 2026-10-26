@@ -17,6 +17,19 @@ test('Android application identity and minimum API stay independent of source AP
   assert.doesNotMatch(gradle, /storeFile\s*=\s*file\("debug\.keystore"\)/);
 });
 
+test('APK upgrade smoke fixture stays one version above the app release', () => {
+  const gradle = text('android/app/build.gradle.kts');
+  const workflow = text('.github/workflows/android-update-upgrade-smoke.yml');
+  const instrumentation = text('android/app/src/androidTest/java/com/xiaoxuhui/gamehub/UpdateFixtureTest.kt');
+  const script = text('scripts/update_upgrade_smoke.sh');
+  assert.match(gradle, /versionCode\s*=\s*7\b/);
+  assert.match(gradle, /versionName\s*=\s*"0\.4\.3"/);
+  assert.match(workflow, /versionCode = 8/);
+  assert.match(workflow, /versionName = "0\.4\.4"/);
+  assert.match(instrumentation, /ReleaseApk\("0\.4\.4"/);
+  assert.match(script, /grep 'versionCode=8'/);
+});
+
 test('Manifest has one launcher and only the planned update permission', () => {
   const manifest = text('android/app/src/main/AndroidManifest.xml');
   assert.equal((manifest.match(/android\.intent\.category\.LAUNCHER/g) ?? []).length, 1);
