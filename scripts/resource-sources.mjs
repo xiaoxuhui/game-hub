@@ -8,16 +8,19 @@ import {CONWAY_INTEGRATION,CONWAY_REVISION} from './conway-compatibility.mjs';
 import {integrateConwayResource} from './conway-resource-integration.mjs';
 import {EML_REVISION,EML_INTEGRATION} from './eml-legacy-reader.mjs';
 import {prepareEMLResource,finalizeEMLResource} from './eml-resource-integration.mjs';
+import {TURING_REVISION,TURING_INTEGRATION} from './turing-legacy-reader.mjs';
+import {prepareTuringUI,finalizeTuringResource} from './turing-resource-integration.mjs';
 
 export function resourceIntegrationOptions(sources, independent = true) {
   for (const source of sources) {
-    const reviewed=(source.id==='conway'&&source.revision===CONWAY_REVISION&&source.resourceIntegration===CONWAY_INTEGRATION)||(source.id==='eml'&&source.revision===EML_REVISION&&source.resourceIntegration===EML_INTEGRATION);
+    const reviewed=(source.id==='conway'&&source.revision===CONWAY_REVISION&&source.resourceIntegration===CONWAY_INTEGRATION)||(source.id==='eml'&&source.revision===EML_REVISION&&source.resourceIntegration===EML_INTEGRATION)||(source.id==='turing'&&source.revision===TURING_REVISION&&source.resourceIntegration===TURING_INTEGRATION);
     if (source.resourceIntegration !== undefined && (!independent || !reviewed)) throw new Error('Unreviewed resource integration source');
     if (independent && source.id === 'conway' && source.revision === CONWAY_REVISION && source.resourceIntegration !== CONWAY_INTEGRATION) throw new Error('Conway compatibility integration required');
     if (independent && source.id === 'eml' && source.revision === EML_REVISION && source.resourceIntegration !== EML_INTEGRATION) throw new Error('EML compatibility integration required');
+    if (independent && source.id === 'turing' && source.revision === TURING_REVISION && source.resourceIntegration !== TURING_INTEGRATION) throw new Error('Turing compatibility integration required');
   }
   if (!sources.some(source => source.resourceIntegration !== undefined)) return {};
-  return {beforeBuild(source,directory){if(source.resourceIntegration===EML_INTEGRATION)prepareEMLResource(source,directory);},afterCopy(source, directory) { if (source.resourceIntegration === CONWAY_INTEGRATION) integrateConwayResource(source, directory); if(source.resourceIntegration===EML_INTEGRATION)finalizeEMLResource(source,directory); }};
+  return {beforeBuild(source,directory){if(source.resourceIntegration===EML_INTEGRATION)prepareEMLResource(source,directory);if(source.resourceIntegration===TURING_INTEGRATION)prepareTuringUI(source,directory);},afterCopy(source, directory) { if (source.resourceIntegration === CONWAY_INTEGRATION) integrateConwayResource(source, directory); if(source.resourceIntegration===EML_INTEGRATION)finalizeEMLResource(source,directory);if(source.resourceIntegration===TURING_INTEGRATION)finalizeTuringResource(source,directory); }};
 }
 
 export function resourceInputs(root, independent = false) {
