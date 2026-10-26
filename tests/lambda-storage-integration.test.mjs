@@ -57,8 +57,9 @@ test('content4 adapter embeds the frozen old reader, full C5 runtime and accessi
  assert.equal(proof.inputSha256,sha256(input));assert.equal(proof.outputSha256,sha256(output));
  assert.throws(()=>integrateLambdaC5Html(Buffer.from('unreviewed')),/exact reviewed/);
 });
-function engine(html){const ctx={TextEncoder};const scripts=[...html.matchAll(/<script>\s*([\s\S]*?)<\/script>/g)].map(m=>m[1]);for(const i of [0,4,5])runInNewContext(scripts[i],ctx);return {C:ctx.LambdaCore,S:ctx.LambdaSnapshot};}
-const latest=engine(readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.html',import.meta.url),'utf8'));
+function engine(html){const ctx={TextEncoder,TextDecoder};const scripts=[...html.matchAll(/<script>\s*([\s\S]*?)<\/script>/g)].map(m=>m[1]);for(const i of [0,4,5])runInNewContext(scripts[i],ctx);return {C:ctx.LambdaCore,S:ctx.LambdaSnapshot};}
+const c3Fixture=JSON.parse(readFileSync(new URL('./fixtures/lambda-content3-reader.json',import.meta.url),'utf8'));
+const latest=(()=>{const ctx={TextEncoder,TextDecoder};for(const source of c3Fixture.scripts)runInNewContext(source,ctx);return {C:ctx.LambdaCore,S:ctx.LambdaSnapshot};})();
 const historical=engine(execFileSync('git',['show','64c8932af9a0b5cc886db25910b3923a16aa0677:examples/lambda-diagram-game/lambda-lab.html'],{maxBuffer:2000000}).toString());
 function fixture(){const {C,S}=latest;const full={version:3,draft:'(λa.a) u ((λb.b) v)',functions:[{name:'ID',term:C.parse('λx.x'),source:'λx.x'}],completed:[],mode:'free',level:0,session:{original:C.parse('(λa.a) u ((λb.b) v)'),steps:1,paths:[['arg']],dirty:false,halt:''},view:{speed:600,strategy:'applicative',direction:'right',scale:1,autoFit:true,historyOpen:false,helpOpen:false,hintOpen:false},selection:{start:0,end:0},error:''};return S.encode(full);}
 test('new full v3 persists while fixed old reader reads latest v2 base without losing extensions',()=>{

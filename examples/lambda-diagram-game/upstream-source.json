@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "lambda-diagram-game",
   "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
-  "revision": "a5eab9f5c14f33d328f39858b6680e43c41ffa25",
+  "revision": "2ce0fa371e583bb9b57e74ace1f5cd2a7b14bd2c",
   "version": "0.3.3",
   "buildKind": "inline-html",
   "entryPage": "lambda-lab.html",
@@ -14,28 +14,28 @@
     },
     {
       "path": "index.html",
-      "bytes": 12263,
-      "sha256": "0add80298d7fb8ba248a69346d66e96b726f08b165934e5cdbaa9e3ed5ec8e93"
+      "bytes": 13445,
+      "sha256": "e46e57e5bb7fdf8b2263b07f19461a5dc9afaafbc23e011e0c7cd506a9d0fe98"
     },
     {
       "path": "package.json",
-      "bytes": 1048,
-      "sha256": "4637c5d131eba2d79aa610a22b22eac9715af6d64d947b6c635a98eca37c1a10"
+      "bytes": 1191,
+      "sha256": "5551d394b5788f10581fcfb500e62a032497bb122ee611182ea66005d8c995d1"
     },
     {
       "path": "scripts/build.mjs",
-      "bytes": 869,
-      "sha256": "ab03cb4c4045b66ceb9c1e7f7153feefb4a0c57c61ccd0652c6601f5bed57dff"
+      "bytes": 905,
+      "sha256": "291a4c9d0bcd382405c08145cf5433c90c1657f26f8602ca1734596e7cdffd23"
     },
     {
       "path": "src/app.js",
-      "bytes": 19103,
-      "sha256": "99d8d5216e02e89abf4d72f81ab602f38b379fb0eaa3a101745aa4dd75dae549"
+      "bytes": 24140,
+      "sha256": "71fdda07127c343ffcfe50a9e73659cbdbd375d88c7f606ca627904d4992e5b3"
     },
     {
       "path": "src/core.js",
-      "bytes": 13770,
-      "sha256": "518b12ac17717f3169778a58a5698edac6dbe64bafd35cae848f698d4f9c0d09"
+      "bytes": 14192,
+      "sha256": "0fe289cfcdc3dbd63d435425c34e65839aa73a1036e286fc3ea6eeb9a74a001c"
     },
     {
       "path": "src/diagram-view.js",
@@ -54,23 +54,23 @@
     },
     {
       "path": "src/library.js",
-      "bytes": 3688,
-      "sha256": "b6cd659beb3c38090d0dbe49785b9920dcb1adb6e5a3c194c0780bc3a039c08b"
+      "bytes": 4008,
+      "sha256": "ca8e66a3d5559a71552a2c4d140a4e0267f999fa4ccfda6b8084ef401acbe5b7"
     },
     {
       "path": "src/presets.js",
-      "bytes": 2556,
-      "sha256": "ea2c1a592436a75a89ab6ddcaac52934800dea5deb6e0e8dd77b55d8c78b7ebc"
+      "bytes": 20876,
+      "sha256": "2effa65d1a69d408ad58d4a75deaa8f2e78fbfa49227de40b0c0707ab3cd38bb"
     },
     {
       "path": "src/snapshot.js",
-      "bytes": 7228,
-      "sha256": "6c3451e3be6646be2206759e3521107f68f282b69babe3e2afea46cc2423cde8"
+      "bytes": 7719,
+      "sha256": "9e0d17c1d029aae87f0549860dea9043e4c1d655edc50c76ee997b3126e774ff"
     },
     {
       "path": "src/style.css",
-      "bytes": 22765,
-      "sha256": "55596da6570ab82ce3559c5f8d324de19b2954b0d58813948e8454c259323eb8"
+      "bytes": 23860,
+      "sha256": "042ee88af1833e76ffd4b82089bb77f6d45e44135c6d86c9fdbd3b4eaabb9544"
     },
     {
       "path": "src/viewport.js",
@@ -79,8 +79,8 @@
     },
     {
       "path": "src/workspace-tools.js",
-      "bytes": 9988,
-      "sha256": "ab0b3cadf511dd3268cbc08b2952ebbb79d9435c9bcb16e8cdff2dd12371164e"
+      "bytes": 10166,
+      "sha256": "5fbd2330c709a3ed54abcb7defc803755939cb6dd0f5c72da4d8327327ef6b51"
     }
   ],
   "outputs": [
@@ -91,20 +91,24 @@
     },
     {
       "path": "lambda-lab.html",
-      "bytes": 113053,
-      "sha256": "ac739314e6e9ec46aa1acb515ad20b1d7e889d1c22adab1eed777860c14b51f7"
+      "bytes": 209803,
+      "sha256": "02b4e53879bf9ede397042300ed0757de0fdef1baca1306e41bec944e7a92dd2"
     }
   ],
   "trackedArtifact": {
     "path": "dist/lambda-lab.html",
-    "bytes": 106649,
-    "sha256": "df7b695f9f01f955eff78f0a64a4be99b3c0a9ca4030fd05dd6aa67df5698066",
+    "bytes": 146732,
+    "sha256": "41b74ad08422447cc79b4db4628036d75efbe9c6379c8f890a4b018654952937",
     "matchesRebuild": true
   },
   "adaptation": {
-    "id": "lambda-storage-isolation-v1",
-    "inputSha256": "df7b695f9f01f955eff78f0a64a4be99b3c0a9ca4030fd05dd6aa67df5698066",
-    "outputSha256": "ac739314e6e9ec46aa1acb515ad20b1d7e889d1c22adab1eed777860c14b51f7",
-    "adapterSha256": "036f7424420dd80fc6e9555c72b09321150da98235b6ab2d32fa91664c31cf24"
+    "id": "lambda-content4-storage-c5-v1",
+    "inputSha256": "41b74ad08422447cc79b4db4628036d75efbe9c6379c8f890a4b018654952937",
+    "outputSha256": "02b4e53879bf9ede397042300ed0757de0fdef1baca1306e41bec944e7a92dd2",
+    "adapterSha256": "5cf9cd8b5c1ac9245fdc7cd3b1abce35300c5f59d4850deb42ae09dbbf67f046",
+    "integration": "lambda-content4-storage-c5-v1",
+    "browserAdapterSha256": "8af85ef2dfa4e6b881090be8114b1a691d5e86e98063b388592ca3bae0caed34",
+    "storageAdapterSha256": "2c3334a142957bf29e441238b476e939ca2cb84c83e0f76154b0ba40c9467595",
+    "legacyReaderFixtureSha256": "f31d9324bc34860b4a868d3b6c6fd8008ddad3a48f6284b9261ed218fbcf37cd"
   }
 }

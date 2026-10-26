@@ -36,6 +36,9 @@
 @media(max-width:1100px){.save-info{width:100%}.save-bar{gap:10px}.function-card{padding:20px}}
 @media(max-width:800px){.editor-column{gap:16px}.function-card{order:1}.save-info{width:auto}.save-actions{margin-left:auto}.save-bar{padding:13px 17px}.function-list{max-height:250px}}
 @media(max-width:480px){.save-bar{padding:13px;margin-bottom:18px}.save-info{width:100%}.save-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:7px}.save-actions .button{min-width:0;padding:8px 7px;font-size:10px}.function-card{padding:19px 20px}.function-actions .button{font-size:11px;padding:8px 11px}.function-keys button{min-width:31px;height:32px}.function-item button{font-size:10px;padding:5px 8px}}
+.example-row select{min-width:0;max-width:100%}.example-info{font-size:11px;line-height:1.8;color:#5b7664;background:#f2f6ed;border:1px solid #e1e8d9;border-radius:6px;padding:10px 12px;margin:12px 0 0;overflow-wrap:anywhere}
+.number-options{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 10px;align-items:center;margin:12px 0;font-size:10px;color:#647b69}.number-options select,.number-options input{min-width:0;width:100%;border:1px solid #dce2d6;border-radius:5px;padding:6px;background:#f9faf6;color:#43604a}.run-controls{flex-wrap:wrap}
+.stage-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stage-row label{display:flex;align-items:center;gap:10px;min-width:0;max-width:100%;font-size:12px;color:#5c8253}.stage-row select{min-width:0;max-width:100%;border:1px solid #d8e2d6;border-radius:6px;background:#f6f7f1;color:#365f43;padding:9px;font:inherit}.stage-row>span{font-size:11px;color:#6c8063}.level-list button{min-height:36px}.stage-row select:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
 
 </style>
 </head>
@@ -53,11 +56,12 @@
       <div><h2>三个积木，就能计算</h2><p><code>x</code> 是变量；<code>λx.x</code> 是函数；<code>f x</code> 把 x 交给 f。<code>(λx.x) y → y</code> 是一次 β 归约。</p></div>
       <div><h2>怎么写、怎么看</h2><p>用快捷栏插入 λ；也可用 <code>\</code>。<code>λx y.x</code> 等同 <code>λx.λy.x</code>。变量之间用空格：<code>xy</code> 是一个名字。λ 的作用域延伸到右侧，作为参数时需加括号。</p><p>同色竖线连接绑定横线；应用横线连接子式最左变量。粉色标记下一步归约，自由变量以虚线显示。可选择正规序（外层优先）或应用序（内部优先），都包含函数内部归约。<a href="https://tromp.github.io/cl/diagrams.html" target="_blank" rel="noopener">John Tromp 原始说明 ↗</a></p></div>
     </section>
-    <nav class="mode-row" aria-label="游戏模式"><div class="mode-tabs"><button id="mode-free" class="mode-tab active" aria-pressed="true">自由实验</button><button id="mode-challenge" class="mode-tab" aria-pressed="false">闯关模式 <span>5</span></button></div><span id="progress-text" class="progress-label">探索 · 输入 · 归约</span></nav>
+    <nav class="mode-row" aria-label="游戏模式"><div class="mode-tabs"><button id="mode-free" class="mode-tab active" aria-pressed="true">自由实验</button><button id="mode-challenge" class="mode-tab" aria-pressed="false">闯关模式 <span id="challenge-count">30</span></button></div><span id="progress-text" class="progress-label">探索 · 输入 · 归约</span></nav>
     <section class="save-bar" aria-label="状态与进度存档"><div class="save-info"><strong>状态与进度</strong><span id="storage-status" role="status">自动保存准备中</span><small>包含函数库、归约轨迹与关卡进度</small></div><div class="save-actions"><button id="save-state" class="button primary">保存当前状态</button><button id="restore-state" class="button" disabled>恢复已保存状态</button><button id="export-state" class="button">导出存档 ↓</button><button id="import-state" class="button">导入存档 ↑</button><button id="clear-all" type="button" class="button danger" aria-describedby="clear-note">导出存档并清空</button><input id="import-file" type="file" accept=".json,application/json" hidden></div><p id="clear-note" class="clear-note">清空会删除表达式、函数库、运行记录、关卡进度及保存点，并自动导出备份。</p><p id="save-feedback" class="save-feedback" role="status" hidden></p></section>
     <section id="challenge-panel" class="challenge-panel" hidden>
+      <div class="stage-row"><label for="stage-select">选择阶段 <select id="stage-select" aria-label="选择挑战阶段"></select></label><span id="stage-progress" role="status"></span></div>
       <div class="level-list" id="level-list" aria-label="选择关卡"></div>
-      <div class="challenge-body"><div><p id="level-topic" class="eyebrow"></p><h2 id="level-title"></h2><p id="level-description"></p></div><div class="challenge-target"><span>目标正规形</span><strong id="target-label"></strong><code id="target-expression"></code></div></div>
+      <div class="challenge-body"><div><p id="level-topic" class="eyebrow"></p><h2 id="level-title"></h2><p id="level-description"></p></div><div class="challenge-target"><span id="target-kind">目标正规形</span><strong id="target-label"></strong><code id="target-expression"></code></div></div>
       <div class="challenge-footer"><button id="hint-toggle" class="text-button" aria-expanded="false">显示提示</button><p id="hint" hidden></p><button id="check-answer" class="button primary">验证答案 <span>↗</span></button><button id="next-level" class="button" hidden>下一关 →</button></div>
       <p id="challenge-feedback" class="challenge-feedback" role="status"></p>
     </section>
@@ -66,16 +70,18 @@
         <section class="card editor-card">
           <div class="section-heading"><div><span class="section-number">01</span><h2>写下表达式</h2></div><span class="mini-label">INPUT</span></div>
           <label class="sr-only" for="expression">Lambda 表达式</label>
+          <div class="number-options"><label for="number-encoding">数字编码</label><select id="number-encoding"><option value="decimal" selected>列表小数（默认）</option><option value="church">丘奇自然数（兼容）</option></select><label for="decimal-places">除法小数位</label><input id="decimal-places" type="number" min="0" step="1" value="6" inputmode="numeric"></div><p id="number-note" class="syntax-note">默认支持负数和小数。ADD / SUB / MUL / DIV 做列表小数四则运算；除不尽按所选位数截断并标≈。</p>
           <div class="editor-wrap"><textarea id="expression" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="syntax-note error-message">(λx.x) (λy.y)</textarea><div class="editor-bottom"><span>λ / \ 均可输入</span><span id="char-count">12 / 1500</span></div></div>
           <p class="toolbar-caption">快捷输入 <span>插入到光标位置</span></p>
           <div id="symbol-toolbar" class="symbol-toolbar" role="group" aria-label="Lambda 符号快捷栏">
             <button data-insert="λ" class="lambda-key" aria-label="插入 λ">λ</button>
           </div>
-          <p id="syntax-note" class="syntax-note">数字自动表示丘奇数，例如 <code>3</code>。应用用空格分开，例如 <code>f x</code>；函数参数用括号包住。</p>
+          <p id="syntax-note" class="syntax-note">例如 <code>DEC_ADD 0.1 0.2</code>、<code>DEC_SUB 1 2</code>。可用简名 ADD / SUB / MUL / DIV；同名自定义函数优先。旧丘奇示例会选择兼容编码。</p>
           <div id="error-message" class="error-message" role="alert" hidden></div>
           <button id="convert" class="button primary convert-button">转换成图示 <span>→</span></button>
           <p class="key-hint">Ctrl / ⌘ + Enter 快速转换</p>
-          <div class="example-row"><label for="examples">试试示例</label><select id="examples"><option value="">选择一个表达式…</option></select></div>
+          <div class="example-row"><label for="examples">试试示例</label><select id="examples" aria-describedby="example-info"><option value="">选择一个表达式…</option></select></div>
+          <p id="example-info" class="example-info" role="status" hidden></p>
         </section>
         <section class="card function-card">
           <div class="section-heading"><div><span class="section-number">ƒ</span><h2>自定义函数</h2></div><span id="function-count" class="mini-label">0 个函数</span></div>
@@ -97,7 +103,7 @@
           <div class="execution-top"><div class="section-heading"><div><span class="section-number">03</span><h2>运行与归约</h2></div></div><div class="speed-label"><label for="speed">速度</label><select id="speed"><option value="1200">慢速</option><option value="600" selected>正常</option><option value="180">快速</option><option value="10">极速</option><option value="custom">自定义</option></select><label class="sr-only" for="speed-ms">每步间隔，毫秒</label><input id="speed-ms" type="number" min="1" max="60000" step="1" value="600" inputmode="numeric" title="每步间隔 1–60000 毫秒，数字越小运行越快" aria-describedby="speed-error"><span>ms/步</span></div></div>
           <div class="strategy-control"><label for="reduction-order">归约顺序</label><select id="reduction-order"><option value="normal">正规序（外层优先）</option><option value="applicative">应用序（内部优先）</option></select><label for="reduction-direction">归约方向</label><select id="reduction-direction"><option value="left">从左到右</option><option value="right">从右到左</option></select><small id="strategy-hint">先替换最左侧外层项，再处理内部。</small></div>
           <p id="speed-error" class="error-message" role="alert" hidden></p>
-          <div class="run-controls"><button id="run" class="button run-button"><span>▶</span> <span id="run-label">运行</span></button><button id="step" class="button">单步 →</button><button id="back" class="button">← 回退</button><button id="reset" class="button reset-button">↺ 重置</button><span class="step-counter"><b id="step-count">0</b> 步</span></div>
+          <div class="run-controls"><button id="run" class="button run-button"><span>▶</span> <span id="run-label">运行</span></button><button id="fast-run" class="button" title="批量执行，保留全部步骤与完整图示">快速运行</button><button id="step" class="button">单步 →</button><button id="back" class="button">← 回退</button><button id="reset" class="button reset-button">↺ 重置</button><span class="step-counter"><b id="step-count">0</b> 步</span></div>
           <p id="run-status" class="run-status" role="status" aria-live="polite">准备好了。点击单步，观察一次函数替换。</p>
           <div class="current-term"><div><span>当前表达式</span><span id="decoded" class="decoded"></span></div><code id="current-expression"></code></div>
           <div id="next-explanation" class="next-explanation"></div>
@@ -109,6 +115,857 @@
   </main>
   <div id="toast" class="toast" role="status" hidden></div>
   <script>
+(function (root) {
+  'use strict';
+  const LIMITS = Object.freeze({ chars: 1500, nodes: Infinity, depth: Infinity, steps: Infinity, nameChars:Infinity });
+  const V = name => Object.freeze({ type: 'var', name });
+  const L = (param, body) => Object.freeze({ type: 'abs', param, body });
+  const A = (fn, arg) => Object.freeze({ type: 'app', fn, arg });
+  const facts=new WeakMap(),formatted=new WeakMap(),freeSets=new WeakMap(),occurrences=new WeakMap();
+
+  class LambdaError extends Error {
+    constructor(message, position = null) { super(message); this.name = 'LambdaError'; this.position = position; }
+  }
+  function analyze(term) {
+    if(facts.has(term))return facts.get(term);
+    const local=new WeakMap(),get=t=>facts.get(t)||local.get(t),stack=[[term,false]];
+    while(stack.length){
+      const [t,done]=stack.pop();if(get(t))continue;
+      if(!done&&t.type!=='var'){stack.push([t,true]);if(t.type==='abs')stack.push([t.body,false]);else stack.push([t.arg,false],[t.fn,false]);continue;}
+      let f;
+      if(t.type==='var')f={nodes:1,depth:1,vars:1,abstractions:0,applications:0,redex:false,stable:Object.isFrozen(t)};
+      else if(t.type==='abs'){const b=get(t.body);f={nodes:1+b.nodes,depth:1+b.depth,vars:b.vars,abstractions:1+b.abstractions,applications:b.applications,redex:b.redex,stable:Object.isFrozen(t)&&b.stable};}
+      else{const a=get(t.fn),b=get(t.arg);f={nodes:1+a.nodes+b.nodes,depth:1+Math.max(a.depth,b.depth),vars:a.vars+b.vars,abstractions:a.abstractions+b.abstractions,applications:1+a.applications+b.applications,redex:t.fn.type==='abs'||a.redex||b.redex,stable:Object.isFrozen(t)&&a.stable&&b.stable};}
+      if(f.stable)facts.set(t,f);else local.set(t,f);
+    }
+    return get(term);
+  }
+  function inspect(term) {
+    const {nodes,depth,vars,abstractions,applications}=analyze(term);
+    return {nodes,depth,vars,abstractions,applications};
+  }
+  function tokenize(source, maxChars = LIMITS.chars, decimal = false) {
+    if (source.length > maxChars) throw new LambdaError(`输入最多 ${maxChars} 个字符。`, maxChars);
+    const out = [];
+    for (let i = 0; i < source.length;) {
+      if (/\s/.test(source[i])) { i++; continue; }
+      const start = i, c = source[i];
+      if ('λ\\.()'.includes(c)) { out.push({ kind: c === '\\' ? 'λ' : c, pos: i++ }); continue; }
+      if(!decimal && c==='-' && /[0-9]/.test(source[i+1]||'')) throw new LambdaError('丘奇数只支持非负整数，不能输入负数。',i);
+      const numeric=(decimal?/^-?[0-9]+(?:\.[0-9]+)?/:/^[0-9]+/).exec(source.slice(i));
+      if(numeric) {
+        if(!decimal && source[i+numeric[0].length]==='.') throw new LambdaError('丘奇数只支持非负整数，不能输入小数。',i);
+        const value=decimal?numeric[0]:Number(numeric[0]);
+        if(!decimal && !Number.isSafeInteger(value)) throw new LambdaError('数字超出可精确表示的整数范围。',i);
+        out.push({kind:'number',value:decimal?numeric[0]:value,pos:i});i+=numeric[0].length;continue;
+      }
+      const m = /^[a-zA-Z][a-zA-Z0-9_']*/.exec(source.slice(i));
+      if (m) { out.push({ kind: 'name', value: m[0], pos: start }); i += m[0].length; continue; }
+      throw new LambdaError(`无法识别「${c}」，变量请用英文字母开头。`, i);
+    }
+    out.push({ kind: 'end', pos: source.length }); return out;
+  }
+  function parse(source, maxChars = LIMITS.chars, numberFactory = null) {
+    const tokens = tokenize(source, maxChars,!!numberFactory); let at = 0, nesting = 0;
+    const peek = () => tokens[at];
+    const fail = message => { throw new LambdaError(message, peek().pos); };
+    function expr() {
+      ++nesting;
+      let result;
+      if (peek().kind === 'λ') {
+        at++; const params = [];
+        while (peek().kind === 'name') params.push(tokens[at++].value);
+        if (!params.length) fail('λ 后面需要一个变量，例如 λx.x。');
+        if (peek().kind !== '.') fail('变量后面需要一个点「.」。');
+        at++; result = expr();
+        for (let i = params.length - 1; i >= 0; i--) result = L(params[i], result);
+      } else {
+        result = atom();
+        while (peek().kind === 'name' || peek().kind === 'number' || peek().kind === '(') result = A(result, atom());
+        if (peek().kind === 'λ') fail('作为参数的 λ 表达式需要括号，例如 f (λx.x)。');
+      }
+      nesting--; return result;
+    }
+    function atom() {
+      if (peek().kind === 'name') return V(tokens[at++].value);
+      if (peek().kind === 'number') {
+        const n=tokens[at++].value;if(numberFactory)return numberFactory(n);let body=V('x');
+        for(let i=0;i<n;i++)body=A(V('f'),body);
+        return L('f',L('x',body));
+      }
+      if (peek().kind === '(') {
+        at++; const t = expr();
+        if (peek().kind !== ')') fail('缺少右括号「)」。');
+        at++; return t;
+      }
+      fail(peek().kind === 'end' ? '这里需要一个表达式。' : '这里需要变量或括号内的表达式。');
+    }
+    if (peek().kind === 'end') fail('先写一个 Lambda 表达式，或选一个示例。');
+    const t = expr();
+    if (peek().kind !== 'end') fail('多余的符号或右括号。');
+    inspect(t); return t;
+  }
+  function format(t, context = 0) {
+    let text=formatted.get(t);
+    if(text===undefined){
+      const parts=[],stack=[[t,0]];
+      while(stack.length){const entry=stack.pop();if(typeof entry==='string'){parts.push(entry);continue;}
+        const [node,ctx]=entry,brackets=node.type==='abs'?ctx>0:node.type==='app'&&ctx>1;
+        if(brackets){parts.push('(');stack.push(')');}
+        if(node.type==='var')parts.push(node.name);
+        else if(node.type==='abs'){parts.push(`λ${node.param}.`);stack.push([node.body,0]);}
+        else stack.push([node.arg,2],' ',[node.fn,1]);
+      }
+      text=parts.join('');if(analyze(t).stable)formatted.set(t,text);
+    }
+    return (t.type==='abs'&&context>0)||(t.type==='app'&&context>1)?`(${text})`:text;
+  }
+  function freeVars(t, bound = new Set(), out = new Set()) {
+    let found=freeSets.get(t);
+    if(!found){found=new Set();const bindings=new Map(),stack=[[t,false]];
+      while(stack.length){const [node,exit]=stack.pop();
+        if(exit){const count=bindings.get(node.param)-1;if(count)bindings.set(node.param,count);else bindings.delete(node.param);continue;}
+        if(node.type==='var'){if(!bindings.has(node.name))found.add(node.name);}
+        else if(node.type==='abs'){bindings.set(node.param,(bindings.get(node.param)||0)+1);stack.push([node,true],[node.body,false]);}
+        else stack.push([node.arg,false],[node.fn,false]);
+      }
+      if(analyze(t).stable)freeSets.set(t,found);
+    }
+    for(const name of found)if(!bound.has(name))out.add(name);
+    return out;
+  }
+  function allNames(t, out = new Set()) {
+    const visited=new WeakSet(),stack=[t];while(stack.length){const node=stack.pop();if(visited.has(node))continue;visited.add(node);
+      if(node.type==='var')out.add(node.name);else if(node.type==='abs'){out.add(node.param);stack.push(node.body);}else stack.push(node.arg,node.fn);
+    }
+    return out;
+  }
+  function hasFree(t,name) {
+    const local=new WeakMap(),read=node=>occurrences.get(node)?.get(name)??local.get(node),stack=[[t,false]];
+    while(stack.length){const [node,done]=stack.pop();if(read(node)!==undefined)continue;
+      let value;
+      if(node.type==='var')value=node.name===name;
+      else if(node.type==='abs'&&node.param===name)value=false;
+      else if(!done){stack.push([node,true]);if(node.type==='abs')stack.push([node.body,false]);else stack.push([node.arg,false],[node.fn,false]);continue;}
+      else value=node.type==='abs'?read(node.body):read(node.fn)||read(node.arg);
+      if(analyze(node).stable){let names=occurrences.get(node);if(!names){names=new Map();occurrences.set(node,names);}names.set(name,value);}else local.set(node,value);
+    }
+    return read(t);
+  }
+  function renameBound(t, from, to) {
+    return rewrite(t,from,V(to),false);
+  }
+  function rewrite(t,name,argument,avoidCapture) {
+    if(!hasFree(t,name))return t;
+    const argFree=avoidCapture?freeVars(argument):new Set(),results=new WeakMap(),stack=[{node:t}],original=t;let used;
+    while(stack.length){const entry=stack.pop(),node=entry.node;if(results.has(node))continue;
+      if(!entry.done){
+        if(!hasFree(node,name)){results.set(node,node);continue;}
+        if(node.type==='var'){results.set(node,argument);continue;}
+        if(node.type==='app'){stack.push({node,done:true},{node:node.arg},{node:node.fn});continue;}
+        let param=node.param,body=node.body;
+        if(argFree.has(param)){
+          if(!used){used=allNames(original,allNames(argument));used.add(name);}
+          let i=1;while(used.has(`${param}${i}`))i++;
+          const fresh=`${param}${i}`;used.add(fresh);body=renameBound(body,param,fresh);param=fresh;
+        }
+        stack.push({node,done:true,param,body},{node:body});
+      }else if(node.type==='app'){
+        const fn=results.get(node.fn),arg=results.get(node.arg);results.set(node,fn===node.fn&&arg===node.arg?node:A(fn,arg));
+      }else{const body=results.get(entry.body);results.set(node,entry.param===node.param&&body===node.body?node:L(entry.param,body));}
+    }
+    return results.get(t);
+  }
+  function substitute(t, name, argument) {
+    const result=rewrite(t,name,argument,true);inspect(result);return result;
+  }
+  function alphaKey(t, env = []) {
+    if (t.type === 'var') {
+      const i = env.lastIndexOf(t.name);
+      return i < 0 ? ['free', t.name] : ['bound', env.length - 1 - i];
+    }
+    if (t.type === 'abs') return ['abs', alphaKey(t.body, [...env, t.param])];
+    return ['app', alphaKey(t.fn, env), alphaKey(t.arg, env)];
+  }
+  const key = t => JSON.stringify(alphaKey(t));
+  function equal(a,b) {
+    if(a===b)return true;
+    const left=new Map(),right=new Map(),stack=[{a,b}],push=(map,name,id)=>{const list=map.get(name)||[];list.push(id);map.set(name,list);};let id=0;
+    while(stack.length){const entry=stack.pop(),x=entry.a,y=entry.b;
+      if(entry.exit){left.get(x.param).pop();right.get(y.param).pop();continue;}
+      if(x.type!==y.type)return false;
+      if(x.type==='var'){const l=left.get(x.name)?.at(-1),r=right.get(y.name)?.at(-1);if(l!==undefined||r!==undefined){if(l!==r)return false;}else if(x.name!==y.name)return false;}
+      else if(x.type==='abs'){push(left,x.param,++id);push(right,y.param,id);stack.push({a:x,b:y,exit:true},{a:x.body,b:y.body});}
+      else stack.push({a:x.arg,b:y.arg},{a:x.fn,b:y.fn});
+    }
+    return true;
+  }
+  const STRATEGIES=Object.freeze(['normal','applicative']);
+  const DIRECTIONS=Object.freeze(['left','right']);
+  function findRedex(t, path = [], strategy='normal', direction='left') {
+    if(!STRATEGIES.includes(strategy))throw new LambdaError('归约顺序不合法。');
+    if(!DIRECTIONS.includes(direction))throw new LambdaError('归约方向不合法。');
+    const first=direction==='right'?'arg':'fn',second=direction==='right'?'fn':'arg';
+    const route=[...path];
+    while(true){
+      if(strategy==='normal'&&t.type==='app'&&t.fn.type==='abs')return {term:t,path:route};
+      if(!analyze(t).redex)return null;
+      if(t.type==='abs'){route.push('body');t=t.body;}
+      else if(analyze(t[first]).redex){route.push(first);t=t[first];}
+      else if(analyze(t[second]).redex){route.push(second);t=t[second];}
+      else return {term:t,path:route};
+    }
+  }
+  function replaceAt(t, path, replacement, i = 0) {
+    const parents=[];for(;i<path.length;i++){const part=path[i];parents.push([t,part]);t=t[part];}
+    for(let j=parents.length-1;j>=0;j--){const [parent,part]=parents[j];replacement=part==='body'?L(parent.param,replacement):part==='fn'?A(replacement,parent.arg):A(parent.fn,replacement);}
+    return replacement;
+  }
+  function stepAt(t, path) {
+    if(!Array.isArray(path))return null;
+    let selected=t;
+    for(const part of path){
+      if(!selected||!((part==='body'&&selected.type==='abs')||((part==='fn'||part==='arg')&&selected.type==='app')))return null;
+      selected=selected[part];
+    }
+    if(!selected||selected.type!=='app'||selected.fn.type!=='abs')return null;
+    const { fn, arg } = selected;
+    const replacement = substitute(fn.body, fn.param, arg);
+    const result = replaceAt(t, path, replacement); inspect(result);
+    return { term: result, path: path.slice(), before: selected, replacement, param: fn.param, argument: arg };
+  }
+  function step(t,strategy='normal',direction='left') {
+    const redex=findRedex(t,[],strategy,direction);return redex?stepAt(t,redex.path):null;
+  }
+  function normalize(t, max = LIMITS.steps,strategy='normal',direction='left') {
+    if(!STRATEGIES.includes(strategy))throw new LambdaError('归约顺序不合法。');
+    if(!DIRECTIONS.includes(direction))throw new LambdaError('归约方向不合法。');
+    const seen = new Set([key(t)]); let steps = 0;
+    while (steps < max) {
+      const s = step(t,strategy,direction); if (!s) return { term: t, steps, status: 'normal' };
+      t = s.term; steps++; const k = key(t);
+      if (seen.has(k)) return { term: t, steps, status: 'cycle' };
+      seen.add(k);
+    }
+    return { term: t, steps, status: findRedex(t,[],strategy,direction) ? 'limit' : 'normal' };
+  }
+  function churchNumber(t) {
+    if (t.type !== 'abs' || t.body.type !== 'abs' || t.param === t.body.param) return null;
+    const f = t.param, x = t.body.param; let body = t.body.body, n = 0;
+    while (body.type === 'app' && body.fn.type === 'var' && body.fn.name === f) { n++; body = body.arg; }
+    return body.type === 'var' && body.name === x ? n : null;
+  }
+  function parseInput(source,maxChars=LIMITS.chars){if(!root.LambdaDecimal)throw new LambdaError('列表小数模块尚未加载。');return parse(source,maxChars,root.LambdaDecimal.encodeLiteral);}
+  const API = { LIMITS, STRATEGIES, DIRECTIONS, LambdaError, V, L, A, parse, parseInput, format, inspect, freeVars, substitute, alphaKey, key, equal, findRedex, step, stepAt, normalize, churchNumber };
+  root.LambdaCore = API;
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script><script>
+(function(root){
+ 'use strict';
+ const C=root.LambdaCore||require('./core.js');
+ // Decimal arithmetic is performed by these Lambda programs on decimal digits.
+ const definitions=[
+  ['t','λx y.x'],['f','λx y.y'],['i','λx.x'],['not','λp.p f t'],['and','λp q.p q f'],['or','λp q.p t q'],['xor','λp q.p (not q) q'],
+  ['pair','λa b k.k a b'],['fst','λp.p t'],['snd','λp.p f'],['nil','λc n.n'],['cons','λh r c n.c h r'],['head','λa.a (λh r.h) 0'],['tail','λa.a (λh r.r) nil'],['empty','λa.a (λh r.f) t'],
+  ['add','λm n g x.m g (n g x)'],['mul','λm n g.m (n g)'],['succ','λn g x.g (n g x)'],['pred','λn g x.n (λa b.b (a g)) (λu.x) (λu.u)'],['sub','λm n.n pred m'],['zero','λn.n (λx.f) t'],['lt','λa b.not (zero (sub b a))'],['eq','λa b.and (zero (sub a b)) (zero (sub b a))'],
+  ['y','λg.(λx.g (x x)) (λx.g (x x))'],
+  ['trim','y (λr a.a (λh xs.(λys.and (zero h) (empty ys) nil (cons h ys)) (r xs)) nil)'],
+  ['reverse','λa.(y (λr xs acc.xs (λh rest.r rest (cons h acc)) acc)) a nil'],
+  ['pad','λa n.n (cons 0) a'],
+  ['cmp','y (λr a b.a (λh xs.b (λz zs.(λv.zero v (lt h z 1 (lt z h 2 0)) v) (r xs zs)) 2) (b (λz zs.1) 0))'],
+  ['plus','y (λr a b carry.and (empty a) (empty b) (zero carry nil (cons carry nil)) ((λv.lt v 10 (cons v (r (tail a) (tail b) 0)) (cons (sub v 10) (r (tail a) (tail b) 1))) (add (add (head a) (head b)) carry)))'],
+  ['minus','y (λr a b carry.a (λh xs.(λv.lt h v (cons (sub (add h 10) v) (r xs (tail b) 1)) (cons (sub h v) (r xs (tail b) 0))) (add (head b) carry)) nil)'],
+  ['table','cons 0 (cons 1 (cons 2 (cons 3 (cons 4 (cons 5 (cons 6 (cons 7 (cons 8 (cons 9 nil)))))))))'],
+  ['forceDigit','λn k.n tail table (λh r.k h) (k 0)'],
+  ['forceList','y (λr xs k.xs (λh rest.forceDigit h (λv.r rest (λzs.k (cons v zs)))) (k nil))'],
+  ['split','y (λr n.lt n 10 (pair 0 n) (r (sub n 10) (λq rem.pair (succ q) rem)))'],
+  ['timesdigit','y (λr a b carry.a (λh xs.split (add (mul h b) carry) (λq rem.cons rem (r xs b q))) (zero carry nil (cons carry nil)))'],
+  ['times','y (λr a b.b (λh xs.plus (timesdigit a h 0) (cons 0 (r a xs)) 0) nil)'],
+  ['divstep','y (λr a b.eq (cmp a b) 1 (pair 0 a) (forceList (trim (minus a b 0)) (λnext.r next b (λq rem.pair (succ q) rem))))'],
+  ['longdiv','y (λr xs b q rem.xs (λh rest.divstep (trim (cons h rem)) b (λdigit remainder.forceDigit digit (λd.forceList remainder (λrr.r rest b (cons d q) rr)))) (pair (trim q) rem))'],
+  ['sign','λv.v (λtag s d p e.s)'],['digits','λv.v (λtag s d p e.d)'],['scale','λv.v (λtag s d p e.p)'],['approx','λv.v (λtag s d p e.e)'],
+  ['make','λs ds p e.(λd.λk.k i (and s (not (empty d))) d p e) (trim ds)'],
+  ['align','λa b k.(λp.k (pad (digits a) (sub p (scale a))) (pad (digits b) (sub p (scale b))) p) (lt (scale a) (scale b) (scale b) (scale a))'],
+  ['negate','λa.make (not (sign a)) (digits a) (scale a) (approx a)'],
+  ['dadd','λa b.align a b (λx z p.(λe.xor (sign a) (sign b) (eq (cmp x z) 1 (make (sign b) (minus z x 0) p e) (make (sign a) (minus x z 0) p e)) (make (sign a) (plus x z 0) p e)) (or (approx a) (approx b)))'],
+  ['dsub','λa b.dadd a (negate b)'],
+  ['dmul','λa b.make (xor (sign a) (sign b)) (times (digits a) (digits b)) (add (scale a) (scale b)) (or (approx a) (approx b))'],
+  ['error','λk.k (λa b c.a) 0'],
+  ['ddiv','λprecision a b.empty (digits b) error (align a b (λx z p.longdiv (reverse (pad x precision)) z nil nil (λq rem.make (xor (sign a) (sign b)) q precision (or (or (approx a) (approx b)) (not (empty rem))))))']
+ ].map(([name,source])=>({name,source,free:C.freeVars(C.parse(source,Infinity))}));
+ const cache=new Map();
+ function program(operation,precision=6){
+  if(!['ADD','SUB','MUL','DIV'].includes(operation))throw new C.LambdaError('未知小数运算。');
+  if(!Number.isSafeInteger(precision)||precision<0)throw new C.LambdaError('除法小数位数需为非负整数。');
+  const key=operation+precision;if(cache.has(key))return cache.get(key);
+  let body=operation==='DIV'?`ddiv ${precision}`:`d${operation.toLowerCase()}`;
+  const needed=new Set(C.freeVars(C.parse(body,Infinity)));
+  for(let j=definitions.length-1;j>=0;j--){const d=definitions[j];if(!needed.has(d.name))continue;body=`(λ${d.name}.${body}) (${d.source})`;needed.delete(d.name);for(const name of d.free)needed.add(name);}
+  if(needed.size)throw new Error('Unbound decimal program: '+[...needed]);
+  const term=C.parse(body,Infinity);cache.set(key,term);return term;
+ }
+ const digitTerms=Array.from({length:10},(_,n)=>C.parse(String(n))),nil=C.parse('λc n.n'),identity=C.parse('λx.x'),truth=C.parse('λx y.x'),falsity=C.parse('λx y.y');
+ function encodeLiteral(text){
+  const match=/^(-?)(\d+)(?:\.(\d+))?$/.exec(String(text));if(!match)throw new C.LambdaError('请填写整数或小数，例如 -12.375。');
+  let fraction=(match[3]||'').replace(/0+$/,''),raw=(match[2]+fraction).replace(/^0+/,'');
+  let list=nil;for(const digit of raw)list=C.L('c',C.L('n',C.A(C.A(C.V('c'),digitTerms[Number(digit)]),list)));
+  const sign=raw&&match[1]?truth:falsity,scale=C.parse(String(fraction.length));
+  return C.L('k',[identity,sign,list,scale,falsity].reduce((a,b)=>C.A(a,b),C.V('k')));
+ }
+ const isVar=(t,name)=>t?.type==='var'&&t.name===name;
+ function nat(t){const n=C.churchNumber(t);return n!==null?n:t?.type==='abs'&&t.body.type==='abs'&&C.equal(t,digitTerms[0])?0:null;}
+ function read(term){
+  if(term?.type!=='abs')return null;const args=[];let body=term.body;
+  while(body.type==='app'){args.unshift(body.arg);body=body.fn;}
+  if(!isVar(body,term.param))return null;
+  if(args.length===2&&C.equal(args[0],C.parse('λa b c.a'))&&nat(args[1])===0)return {error:'除数不能为0'};
+  if(args.length!==5||!C.equal(args[0],identity))return null;
+  const negative=C.equal(args[1],truth),positive=C.equal(args[1],falsity),approximate=C.equal(args[4],truth),exact=C.equal(args[4],falsity),places=nat(args[3]);
+  if((!negative&&!positive)||(!approximate&&!exact)||places===null)return null;
+  const digits=[];let list=args[2];
+  while(true){
+   if(list.type!=='abs'||list.body.type!=='abs'||list.param===list.body.param)return null;
+   const c=list.param,n=list.body.param,b=list.body.body;if(isVar(b,n))break;
+   if(b.type!=='app'||b.fn.type!=='app'||!isVar(b.fn.fn,c))return null;
+   const digit=nat(b.fn.arg);if(digit===null||digit>9)return null;digits.push(digit);list=b.arg;
+  }
+  return {negative,digits,places,approximate};
+ }
+ function format(value){
+  if(!value)return null;if(value.error)return value.error;
+  let digits=[...value.digits].reverse().join('')||'0';digits=digits.padStart(value.places+1,'0');
+  let text=value.places?digits.slice(0,-value.places)+'.'+digits.slice(-value.places):digits;
+  text=text.replace(/^0+(?=\d)/,'').replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'');
+  return (value.approximate?'≈ ':'')+(value.negative&&!/^0(?:\.0*)?$/.test(text)?'-':'')+text;
+ }
+ function expand(term,precision=6){
+  for(const name of C.freeVars(term)){const match=/^(?:DEC_)?(ADD|SUB|MUL|DIV)$/.exec(name);if(match)term=C.substitute(term,name,program(match[1],precision));}return term;
+ }
+ const API={encodeLiteral,read,format,program,expand};root.LambdaDecimal=API;if(typeof module!=='undefined'&&module.exports)module.exports=API;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function (root) {
+  'use strict';
+  const COLORS = ['#64d8bd', '#eabe75', '#9fa6ff', '#f38fac', '#79bcf2', '#c2dd87'];
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&apos;' }[c]));
+  const lineTitle=l=>l.kind==='abstraction'?`λ${l.name}：绑定横线`:l.kind==='variable'?`${l.name}：${l.free?'自由变量':`连接绑定 λ${l.name}`}`:l.kind==='application'?'函数应用：连接左右子项最左变量':'延伸到外层应用';
+  function layout(term, redexPath = null) {
+    const lines = [], labels = [], binders = [], leaves = []; let leaf = 0;
+    const env=new Map(),origin={parent:null,part:null,length:0,matches:true};let tree;
+    const child=(parent,part,reducible=false)=>({parent,part,reducible,length:parent.length+1,matches:redexPath!==null&&parent.matches&&redexPath[parent.length]===part});
+    function pathOf(route){const path=Array(route.length);for(let i=path.length-1;i>=0;i--){path[i]=route.part;route=route.parent;}return path;}
+    function withPath(line,route){
+      Object.defineProperty(line,'path',{enumerable:true,configurable:true,get(){
+        const path=pathOf(route);
+        Object.defineProperty(line,'path',{value:path,enumerable:true});return path;
+      }});return line;
+    }
+    const stack=[{t:term,top:64,route:origin}];
+    while(stack.length){
+      const entry=stack.pop(),{t,top,route}=entry;
+      if(entry.stage==='abs'){
+        env.get(t.param).pop();const binder=entry.binder;
+        const active=redexPath&&route.part==='fn'&&route.parent.length===redexPath.length&&route.parent.matches;
+        const line={kind:'abstraction',x1:tree.left-15,x2:tree.right+15,y1:top,y2:top,color:binder.color,binder:binder.id,name:t.param,active};
+        if(route.part==='fn'&&route.reducible)Object.defineProperty(line,'redexPath',{get(){return pathOf(route.parent);}});
+        lines.push(line);continue;
+      }
+      if(entry.stage==='left'){
+        stack.push({...entry,stage:'right',left:tree},{t:t.arg,top,route:child(route,'arg')});continue;
+      }
+      if(entry.stage==='right'){
+        const left=entry.left,right=tree,bottom=Math.max(left.bottom,right.bottom)+32;
+        lines.push({kind:'extension',x1:left.left,x2:left.left,y1:left.bottom,y2:bottom,color:leaves[left.start].color});
+        lines.push({kind:'extension',x1:right.left,x2:right.left,y1:right.bottom,y2:bottom,color:leaves[right.start].color});
+        lines.push(withPath({kind:'application',x1:left.left,x2:right.left,y1:bottom,y2:bottom,color:'#d5dff1',active:redexPath!==null&&route.matches&&route.length===redexPath.length},route));
+        tree={left:left.left,right:right.right,bottom,start:entry.start,end:leaf};continue;
+      }
+      const start=leaf;
+      if(t.type==='var'){
+        const x = leaf++ * 40 + 50, end = top + 32;
+        const binder=env.get(t.name)?.at(-1);
+        const line = withPath({ kind:'variable', x1:x, x2:x, y1:binder ? binder.y : 30, y2:end,
+          color:binder ? binder.color : '#aeb9ce', free:!binder, name:t.name, binder:binder ? binder.id : null },route);
+        lines.push(line); leaves.push(line);
+        if (!binder) labels.push({ x, y:19, text:t.name, free:true });
+        tree={left:x,right:x,bottom:end,start,end:leaf};continue;
+      }else if(t.type==='abs'){
+        const binder = { id:binders.length, name:t.param, y:top, color:COLORS[binders.length % COLORS.length] };
+        binders.push(binder);
+        const scope=env.get(t.param)||[];scope.push(binder);env.set(t.param,scope);
+        stack.push({...entry,stage:'abs',binder},{t:t.body,top:top+32,route:child(route,'body')});
+      }else stack.push({...entry,stage:'left',start},{t:t.fn,top,route:child(route,'fn',t.fn.type==='abs')});
+    }
+    return { lines, labels, binders, leaves, width:Math.max(140, leaf*40+60), height:tree.bottom+48 };
+  }
+  function svg(term, redexPath = null, options = {}) {
+    const model = layout(term, redexPath), { width, height } = model;
+    const backgrounds = options.export ? `<rect width="100%" height="100%" fill="#131c2d"/>` : '';
+    const shapes = model.lines.map(l => `<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${l.active ? '#ff91b7' : l.color}" stroke-width="${l.active ? 5 : 3}" stroke-linecap="square" ${l.free ? 'stroke-dasharray="5 5"' : ''} data-kind="${l.kind}" ${l.active ? 'data-active="true"' : ''}><title>${esc(l.kind==='abstraction' ? `λ${l.name}：绑定横线` : l.kind==='variable' ? `${l.name}：${l.free?'自由变量':`连接绑定 λ${l.name}`}` : l.kind==='application' ? '函数应用：连接左右子项最左变量' : '延伸到外层应用')}</title></line>`).join('');
+    const labels = model.labels.map(l=>`<text x="${l.x}" y="${l.y}" text-anchor="middle" fill="#bac5d8" font-size="10" font-family="monospace"><title>${esc(l.text)}</title>${esc(l.text)}</text>`).join('');
+    return { model, markup:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="John Tromp Lambda 图示"><title>John Tromp Lambda 图示</title>${backgrounds}${shapes}${labels}</svg>` };
+  }
+  const API = { layout, svg, COLORS, lineTitle };
+  root.LambdaDiagram = API;
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script><script>
+(function(root){
+  'use strict';
+  const NS='http://www.w3.org/2000/svg',D=root.LambdaDiagram;
+  function init(mount){
+    let svg=null,model=null,hitLayer=null,enabled=true;const lines=[],labels=[],hits=[];
+    const element=name=>document.createElementNS(NS,name);
+    const hitShape=line=>`M ${line.x1} ${line.y1-3} H ${line.x2} V ${line.y1+3} H ${line.x1} Z`;
+    function attribute(node,name,value,previous){if(value!==previous){if(value===null)node.removeAttribute(name);else node.setAttribute(name,String(value));}}
+    function render(next){
+      if(!svg){svg=element('svg');svg.setAttribute('xmlns',NS);svg.setAttribute('role','group');svg.setAttribute('aria-label','John Tromp Lambda 图示，可点击顶部横条归约');
+        const title=element('title');title.textContent='John Tromp Lambda 图示';hitLayer=element('g');svg.append(title,hitLayer);mount.replaceChildren(svg);}
+      attribute(svg,'viewBox',`0 0 ${next.width} ${next.height}`,model?`0 0 ${model.width} ${model.height}`:undefined);
+      const newLines=document.createDocumentFragment();
+      for(let i=0;i<next.lines.length;i++){
+        const line=next.lines[i],old=model?.lines[i];let node=lines[i];
+        if(!node){node=element('line');node.append(element('title'));node.setAttribute('stroke-linecap','square');lines.push(node);newLines.append(node);}
+        for(const key of ['x1','x2','y1','y2'])attribute(node,key,line[key],old?.[key]);
+        attribute(node,'stroke',line.active?'#ff91b7':line.color,old?(old.active?'#ff91b7':old.color):undefined);
+        attribute(node,'stroke-width',line.active?5:3,old?(old.active?5:3):undefined);
+        attribute(node,'stroke-dasharray',line.free?'5 5':null,old?(old.free?'5 5':null):undefined);
+        attribute(node,'data-kind',line.kind,old?.kind);attribute(node,'data-active',line.active?'true':null,old?(old.active?'true':null):undefined);
+        const title=D.lineTitle(line);if(!old||title!==D.lineTitle(old))node.firstElementChild.textContent=title;
+      }
+      while(lines.length>next.lines.length)lines.pop().remove();
+      svg.insertBefore(newLines,labels[0]||null);
+      const newLabels=document.createDocumentFragment();
+      for(let i=0;i<next.labels.length;i++){
+        const label=next.labels[i],old=model?.labels[i];let node=labels[i];
+        if(!node){node=element('text');node.setAttribute('text-anchor','middle');node.setAttribute('fill','#bac5d8');node.setAttribute('font-size','10');node.setAttribute('font-family','monospace');
+          node.append(element('title'),document.createTextNode(''));labels.push(node);newLabels.append(node);}
+        attribute(node,'x',label.x,old?.x);attribute(node,'y',label.y,old?.y);
+        if(!old||label.text!==old.text){node.firstElementChild.textContent=label.text;node.lastChild.nodeValue=label.text;}
+      }
+      while(labels.length>next.labels.length)labels.pop().remove();svg.append(newLabels);model=next;
+      const newHits=document.createDocumentFragment();let hitCount=0;
+      for(const line of next.lines){
+        if(!Object.prototype.hasOwnProperty.call(line,'redexPath'))continue;
+        let hit=hits[hitCount++];
+        if(!hit){hit=element('path');hit.setAttribute('data-redex-hit','true');hit.setAttribute('role','button');hit.setAttribute('stroke','transparent');hit.setAttribute('stroke-width','18');hit.setAttribute('vector-effect','non-scaling-stroke');hit.setAttribute('fill','transparent');hit.append(element('title'));hits.push(hit);newHits.append(hit);}
+        const old=hit.reductionLine;
+        attribute(hit,'d',hitShape(line),old?hitShape(old):undefined);
+        if(!old||old.name!==line.name){const label=`点击 λ${line.name} 顶部横条，归约这一项`;hit.setAttribute('aria-label',label);hit.firstElementChild.textContent=label;}
+        hit.reductionLine=line;hit.setAttribute('tabindex',enabled?'0':'-1');hit.setAttribute('aria-disabled',String(!enabled));hit.style.pointerEvents=enabled?'all':'none';
+      }
+      while(hits.length>hitCount)hits.pop().remove();hitLayer.append(newHits);svg.append(hitLayer);
+    }
+    function setEnabled(value){if(enabled===value)return;enabled=value;for(const hit of hits){hit.setAttribute('tabindex',enabled?'0':'-1');hit.setAttribute('aria-disabled',String(!enabled));hit.style.pointerEvents=enabled?'all':'none';}}
+    function selection(target){const hit=target.closest?.('[data-redex-hit]');return enabled&&hit&&mount.contains(hit)?{path:hit.reductionLine.redexPath}:null;}
+    function clear(){mount.replaceChildren();svg=null;hitLayer=null;model=null;lines.length=0;labels.length=0;hits.length=0;}
+    return {render,clear,setEnabled,selection};
+  }
+  root.LambdaDiagramView={init};
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root){
+ 'use strict';
+ const C=root.LambdaCore||require('./core.js');
+ // These are Lambda programs, not JavaScript differentiation/integration.
+ // Lists are descending powers; each coefficient is a Church pair (numerator,denominator).
+ const definitions=[
+  ['t','λx y.x'],['f','λx y.y'],['pair','λa b k.k a b'],['nil','λc n.n'],['cons','λh r c n.c h (r c n)'],
+  ['add','λm n g x.m g (n g x)'],['mul','λm n g.m (n g)'],['succ','λn g x.g (n g x)'],
+  ['pred','λn g x.n (λa b.b (a g)) (λu.x) (λu.u)'],['sub','λm n.n pred m'],['zero','λn.n (λx.f) t'],
+  ['rmul','λa n.zero n (pair 0 1) (pair (mul (a t) n) (a f))'],['rdiv','λa n.pair (a t) (mul (a f) n)'],
+  ['radd','λa b.zero (a t) b (zero (b t) a (pair (add (mul (a t) (b f)) (mul (b t) (a f))) (mul (a f) (b f))))'],
+  ['rsub','λa b.zero (b t) a (pair (sub (mul (a t) (b f)) (mul (b t) (a f))) (mul (a f) (b f)))'],
+  ['diff','λp.(p (λa s.(λi r.pair (succ i) (zero i r (cons (rmul a i) r))) (s t) (s f)) (pair 0 nil)) f'],
+  ['integ','λp.(p (λa s.(λi r.pair (succ i) (cons (rdiv a (succ i)) r)) (s t) (s f)) (pair 0 (cons (pair 0 1) nil))) f'],
+  ['fold','λg z p.p (λa h s.h (g s a)) (λs.s) z'],
+  ['evalpoly','λp x.fold (λr a.radd (rmul r x) a) (pair 0 1) p']
+ ].map(([name,source])=>({name,source,free:C.freeVars(C.parse(source))}));
+ function compile(body){
+  const needed=new Set(C.freeVars(C.parse(body,Infinity)));
+  for(let i=definitions.length-1;i>=0;i--){const d=definitions[i];if(!needed.has(d.name))continue;
+   body=`(λ${d.name}.${body}) (${d.source})`;needed.delete(d.name);for(const name of d.free)needed.add(name);
+  }
+  if(needed.size)throw new Error('Unbound polynomial program: '+[...needed].join(','));
+  return body;
+ }
+ function polynomial(coefficients){
+  if(!Array.isArray(coefficients)||!coefficients.length)throw new Error('多项式系数不能为空。');
+  let body='n';
+  for(const raw of coefficients){const [a,b]=Array.isArray(raw)?raw:[raw,1];
+   if(!Number.isSafeInteger(a)||a<0||!Number.isSafeInteger(b)||b<1)throw new Error('系数必须为非负自然数或正分母有理数。');
+   body=`c (λk.k ${a} ${b}) (${body})`;
+  }
+  return `λc n.${body}`;
+ }
+ const differentiate=coefficients=>compile(`diff (${polynomial(coefficients)})`);
+ const integrate=coefficients=>compile(`integ (${polynomial(coefficients)})`);
+ const derivativeAt=coefficients=>compile(`λx.evalpoly (diff (${polynomial(coefficients)})) x`);
+ const integralFunction=coefficients=>compile(`λa b.(λp.rsub (evalpoly p b) (evalpoly p a)) (integ (${polynomial(coefficients)}))`);
+ function definite(coefficients,a,b){
+  if(!Number.isSafeInteger(a)||!Number.isSafeInteger(b)||a<0||b<a)throw new Error('端点需为自然数且下限不大于上限。');
+  return `(${integralFunction(coefficients)}) ${a} ${b}`;
+ }
+ const variable=(term,name)=>term?.type==='var'&&term.name===name;
+ function natural(term){
+  const value=C.churchNumber(term);if(value!==null)return value;
+  return term?.type==='abs'&&term.body.type==='abs'&&C.equal(term,C.parse('0'))?0:null;
+ }
+ function readRational(term){
+  if(term?.type!=='abs')return null;const body=term.body;
+  if(body.type!=='app'||body.fn.type!=='app'||!variable(body.fn.fn,term.param))return null;
+  const n=natural(body.fn.arg),d=natural(body.arg);return n===null||d===null||d===0?null:[n,d];
+ }
+ function readPolynomial(term){
+  if(term?.type!=='abs'||term.body.type!=='abs'||term.param===term.body.param)return null;
+  const c=term.param,n=term.body.param,coefficients=[];let body=term.body.body;
+  while(!variable(body,n)){
+   if(body?.type!=='app'||body.fn.type!=='app'||!variable(body.fn.fn,c))return null;
+   const value=readRational(body.fn.arg);if(!value)return null;coefficients.push(value);body=body.arg;
+  }
+  return coefficients;
+ }
+ function formatRational(value){
+  if(!value)return null;let [n,d]=value.map(BigInt),a=n,b=d;while(b){const r=a%b;a=b;b=r;}n/=a;d/=a;
+  return d===1n?String(n):`${n}/${d}`;
+ }
+ function formatPolynomial(coefficients){
+  if(!coefficients)return null;const terms=[];
+  for(let i=0;i<coefficients.length;i++){
+   const value=formatRational(coefficients[i]),degree=coefficients.length-1-i;if(value==='0')continue;
+   const exponent=degree===0?'':degree===1?'x':degree===2?'x²':degree===3?'x³':`x^${degree}`;
+   terms.push((degree&&value==='1'?'':value)+exponent);
+  }
+  return terms.join(' + ')||'0';
+ }
+ const API={polynomial,differentiate,integrate,derivativeAt,integralFunction,definite,readRational,readPolynomial,formatRational,formatPolynomial};
+ root.LambdaPolynomial=API;if(typeof module!=='undefined'&&module.exports)module.exports=API;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const M=root.LambdaPolynomial||require('./polynomial.js');
+  const I='λx.x', TRUE='λx.λy.x', FALSE='λx.λy.y';
+  const TWO='λf.λx.f (f x)', THREE='λf.λx.f (f (f x))', FIVE='λf.λx.f (f (f (f (f x))))';
+  const ADD='λm.λn.λf.λx.m f (n f x)', SUCC='λn.λf.λx.f (n f x)';
+  const MULT='λm n f.m (n f)', POW='λb e.e b';
+  const PRED='λn f x.n (λg h.h (g f)) (λu.x) (λu.u)';
+  const SUB=`λm n.n (${PRED}) m`, ZERO=`λn.n (λx.(${FALSE})) (${TRUE})`;
+  const PAIR='λa b k.k a b', Y='λf.(λx.f (x x)) (λx.f (x x))';
+  const FACTORIAL=`λn.(n (λp.(${PAIR}) ((${SUCC}) (p (${TRUE}))) ((${MULT}) ((${SUCC}) (p (${TRUE}))) (p (${FALSE})))) ((${PAIR}) 0 1)) (${FALSE})`;
+  const RECURSIVE_FACTORIAL=`(${Y}) (λr n.(${ZERO}) n 1 ((${MULT}) n (r ((${PRED}) n))))`;
+  const CHOOSE=`(${Y}) (λr n k.(${ZERO}) k 1 ((${ZERO}) n 0 ((${ADD}) (r ((${PRED}) n) ((${PRED}) k)) (r ((${PRED}) n) k))))`;
+  const FIBONACCI=`(${Y}) (λr n.(${ZERO}) n 0 ((${ZERO}) ((${PRED}) n) 1 ((${ADD}) (r ((${PRED}) n)) (r ((${PRED}) ((${PRED}) n))))))`;
+  const PERMUTATIONS=`λn k.(k (λp.(${PAIR}) ((${PRED}) (p (${TRUE}))) ((${MULT}) (p (${TRUE})) (p (${FALSE})))) ((${PAIR}) n 1)) (${FALSE})`;
+  const sumPowers=power=>`λn.(n (λp.(λi.(${PAIR}) i ((${ADD}) (p (${FALSE})) ((${POW}) i ${power}))) ((${SUCC}) (p (${TRUE})))) ((${PAIR}) 0 0)) (${FALSE})`;
+  const GEOMETRIC_SUM=`λb n.(n (λp.(${PAIR}) ((${MULT}) b (p (${TRUE}))) ((${ADD}) (p (${FALSE})) (p (${TRUE})))) ((${PAIR}) 1 0)) (${FALSE})`;
+  const BINOMIAL=`λa b n.((${SUCC}) n (λp.(λk.(${PAIR}) ((${SUCC}) k) ((${ADD}) (p (${FALSE})) ((${MULT}) ((${CHOOSE}) n k) ((${MULT}) ((${POW}) a ((${SUB}) n k)) ((${POW}) b k))))) (p (${TRUE}))) ((${PAIR}) 0 0)) (${FALSE})`;
+  const POLYNOMIAL=`λx.(${ADD}) ((${MULT}) ((${ADD}) ((${MULT}) 2 x) 3) x) 1`;
+  const DERIVATIVE=M.derivativeAt([0,3,1]),INTEGRAL=M.integralFunction([0,2]);
+  const recursiveHint='使用显式 Y 不动点组合子。建议选择「正规序」「从左到右」运行，先判断终止条件；其他顺序可能无法终止。';
+  const examples = [
+    { name:'恒等函数 I', term:I },
+    { name:'TRUE · 选择第一个', term:TRUE },
+    { name:'FALSE / 数字 0', term:FALSE },
+    { name:'Church 数字 2', term:TWO },
+    { name:'S K K → I', term:`(λx y z.(x z) (y z)) (${TRUE}) (${TRUE})` },
+    { name:'加法 · 2 + 3', term:`(${ADD}) (${TWO}) (${THREE})` },
+    { name:'Ω · 无限循环', term:'(λx.x x) (λx.x x)' },
+    { name:'防止变量捕获', term:'(λx.λy.x) y' },
+    { name:'组合子 B · 连续加一 → 5', category:'组合子', term:`(λf g x.f (g x)) (${SUCC}) (${SUCC}) 3`, expected:'5', description:'B 把两个函数串起来：先执行 g，再执行 f。把两个加一组合起来，3 变成 5。' },
+    { name:'组合子 C · 交换参数 → 3', category:'组合子', term:`(λf x y.f y x) (${TRUE}) 2 3`, expected:'3', description:'C 交换函数的两个参数。TRUE 原本选择第一个，交换 2 和 3 后返回 3。' },
+    { name:'组合子 W · 复制参数 → 9', category:'组合子', term:`(λf x.f x x) (${MULT}) 3`, expected:'9', description:'W 把一个参数交给函数两次。把乘法和 3 交给它，得到 3 × 3 = 9。' },
+    { name:'乘法 · 2 × 3 → 6', category:'算术与判断', term:`(${MULT}) 2 3`, expected:'6', description:'把重复 3 次的函数再重复 2 次，结果是 Church 数 6。' },
+    { name:'乘方 · 2⁴ → 16', category:'算术与判断', term:`(${POW}) 2 4`, expected:'16', description:'Church 数也能当函数使用：指数 4 作用在底数 2 上，归约得到 16。' },
+    { name:'前驱 · 3 − 1 → 2', category:'算术与判断', term:`(${PRED}) 3`, expected:'2', description:'前驱函数去掉一次函数作用；0 的前驱仍然是 0。' },
+    { name:'减法 · 5 − 2 → 3', category:'算术与判断', term:`(${SUB}) 5 2`, expected:'3', description:'对 5 连续取两次前驱，得到 3。这是自然数减法，小于 0 时停在 0。' },
+    { name:'零判断 · 0 = 0 → TRUE', category:'算术与判断', term:`(${ZERO}) 0`, expected:TRUE, description:'把数字变成布尔选择器：输入 0 返回 TRUE，其他自然数返回 FALSE。' },
+    { name:'比较 · 2 ≤ 3 → TRUE', category:'算术与判断', term:`(λm n.(${ZERO}) ((${SUB}) m n)) 2 3`, expected:TRUE, description:'自然数减法 2 − 3 截断为 0，因此零判断为真，表示 2 ≤ 3。' },
+    { name:'有序对 · 读取 (3, 5) 的第二项 → 5', category:'数据结构', term:`(${PAIR}) 3 5 (${FALSE})`, expected:'5', description:'有序对也是函数：保存两个值，再用 TRUE 或 FALSE 选择第一项或第二项。这里取出 5。' },
+    { name:'阶乘 · 迭代计算 3! → 6', category:'阶乘与递归', term:`(${FACTORIAL}) 3`, expected:'6', description:'用 Church 数重复更新「当前数字、累计乘积」有序对，计算 1 × 2 × 3 = 6；不需要递归。' },
+    { name:'阶乘 · Y 递归计算 3! → 6', category:'阶乘与递归', term:`(${RECURSIVE_FACTORIAL}) 3`, expected:'6', description:`递归规则：0! = 1，n! = n × (n − 1)!。${recursiveHint}` },
+    { name:'组合数 · C(4, 2) → 6', category:'高等数学', term:`(${CHOOSE}) 4 2`, expected:'6', description:`从 4 个不同元素中选 2 个，不计顺序，共 6 种。使用帕斯卡递推 C(n,k) = C(n−1,k−1) + C(n−1,k)。${recursiveHint}` },
+    { name:'斐波那契 · F(5) → 5', category:'阶乘与递归', term:`(${FIBONACCI}) 5`, expected:'5', description:`F(0) = 0，F(1) = 1，后续每项是前两项之和。${recursiveHint}` },
+    { name:'排列数 · A(4, 2) → 12', category:'高等数学', term:`(${PERMUTATIONS}) 4 2`, expected:'12', description:'从 4 个不同元素中依次选 2 个，顺序不同算不同排列。下降连乘 4 × 3 = 12；选 0 个的结果为 1。' },
+    { name:'自然数求和 · 1 + … + 5 → 15', category:'高等数学', term:`(${sumPowers(1)}) 5`, expected:'15', description:'用有序对记录当前下标与累计和，迭代计算 Σ i（i 从 1 到 5），得到 15。输入 0 表示空和，结果为 0。' },
+    { name:'平方和 · 1² + 2² + 3² → 14', category:'高等数学', term:`(${sumPowers(2)}) 3`, expected:'14', description:'逐项求平方再相加：1 + 4 + 9 = 14。表达式中的最后一个 3 是求和上界，可以改成其他自然数。' },
+    { name:'立方和 · 1³ + 2³ + 3³ → 36', category:'高等数学', term:`(${sumPowers(3)}) 3`, expected:'36', description:'逐项求立方再相加：1 + 8 + 27 = 36，也等于 (1 + 2 + 3)²。每次幂运算与求和都经过 β 归约。' },
+    { name:'等比求和 · 1 + 2 + 4 + 8 → 15', category:'高等数学', term:`(${GEOMETRIC_SUM}) 2 4`, expected:'15', description:'参数 2 是公比，4 是项数。从首项 1 开始，一边乘公比一边累加，得到 15；项数为 0 时结果为 0。' },
+    { name:'二项式系数和 · C(3,0) + … + C(3,3) → 8', category:'高等数学', term:`(${BINOMIAL}) 1 1 3`, expected:'8', description:`把二项式展开中的 a、b 都设为 1，实际计算第 3 行系数和 1 + 3 + 3 + 1 = 8。${recursiveHint}` },
+    { name:'二项式展开 · (1 + 2)³ → 27', category:'高等数学', term:`(${BINOMIAL}) 1 2 3`, expected:'27', description:`逐项计算 Σ C(n,k) a^(n−k) b^k。这里 a=1、b=2、n=3，四项为 1、6、12、8，总和 27。${recursiveHint}` },
+    { name:'多项式 · 2x² + 3x + 1，x=2 → 15', category:'高等数学', term:`(${POLYNOMIAL}) 2`, expected:'15', description:'使用 Horner 形式 (2x + 3)x + 1 计算多项式。把 x=2 代入，得到 (4 + 3) × 2 + 1 = 15。' },
+    { name:'符号求导并求值 · (x² + 3x)′，x=2 → 7', category:'高等数学', term:`(${DERIVATIVE}) 2`, expected:'7', expectedType:'rational', description:'原多项式 x² + 3x 按次数降序以系数 [1,3,0] 编码。Lambda程序先遍历原系数生成导函数 2x + 3，再代入 x=2；结果是有理数 7。可选「生成导函数」单独观察符号转换。' },
+    { name:'定积分 · ∫₀³ 2x dx → 9', category:'高等数学', term:`(${INTEGRAL}) 0 3`, expected:'9', expectedType:'rational', description:'输入的是原多项式 2x（降序系数 [2,0]）。Lambda程序先按次数生成原函数系数，再分别代入上下限并相减，得到 9；没有预先把 x² 当成输入。系数限非负有理数，端点限自然数 a≤b。' },
+    { name:'生成导函数 · x² + 3x → 2x + 3', category:'高等数学', term:M.differentiate([0,3,1]), expected:'2x + 3', expectedType:'polynomial', description:'原式：x² + 3x。输入列表按次数降序存储 [1,3,0]，每项是有理数。Lambda程序按次数乘系数、去掉原常数项，实际生成新多项式；运行后结果区显示导函数 2x + 3。' },
+    { name:'生成原函数 · 2x → x²（C=0）', category:'高等数学', term:M.integrate([0,2]), expected:'x²', expectedType:'polynomial', description:'原式：2x。输入列表只含原系数 [2,0]；Lambda程序按次数+1除系数，并追加积分常数0，实际生成原函数。这里取 C=0；同一算法输入 x 会生成 1/2x²，不是预置答案。' },
+    { name:'列表小数加法 · 0.1 + 0.2 → 0.3', category:'列表小数四则', encoding:'decimal',term:'DEC_ADD 0.1 0.2',expected:'0.3',expectedType:'decimal',description:'默认数值编码：符号、十进制数字列表、小数位置。逐位对齐、进位得到精确0.3，不使用浮点数预算答案；可用快速运行保留全部步骤。' },
+    { name:'列表小数减法 · 1 − 2 → −1', category:'列表小数四则', encoding:'decimal',term:'DEC_SUB 1 2',expected:'-1',expectedType:'decimal',description:'默认整数也采用列表编码。先比较绝对值，再逐位借位并确定符号，结果为负数−1。' },
+    { name:'列表小数乘法 · 0.2 × 0.3 → 0.06', category:'列表小数四则', encoding:'decimal',term:'DEC_MUL 0.2 0.3',expected:'0.06',expectedType:'decimal',description:'逐位竖式相乘，小数位数相加，结果为精确0.06。' },
+    { name:'列表小数除法 · 1 ÷ 8 → 0.125', category:'列表小数四则', encoding:'decimal',term:'DEC_DIV 1 8',expected:'0.125',expectedType:'decimal',description:'用十进制长除法生成小数数字。精度至少3位时结果精确为0.125；精度不足会标≈。选择快速运行可保留全部归约步骤。' }
+  ];
+  const levels = [
+    { id:1, name:'原样返回', topic:'恒等函数', description:'让恒等函数接收一个函数，看看它如何把输入原样返回。', start:'(λx.x) (λy.y)', target:I, targetLabel:'I · 恒等函数', hint:'λx.x 会把参数直接返回。点击「单步」，观察 x 被整个参数替换。' },
+    { id:2, name:'选择第一个', topic:'布尔值', description:'两个函数交给 TRUE；归约后应只留下第一个。', start:`(${TRUE}) (${I}) (${TRUE})`, target:I, targetLabel:'I · 恒等函数', hint:'λx.λy.x 接收两个参数，只保留第一个。第二个参数可以是任意式。' },
+    { id:3, name:'翻转真假', topic:'函数组合', description:'将 TRUE 交给 NOT，把选择第一个变成选择第二个。', start:`(λb.b (${FALSE}) (${TRUE})) (${TRUE})`, target:FALSE, targetLabel:'FALSE · 选择第二个', hint:'布尔值本身是一个选择器。NOT 把 FALSE 放在第一位，把 TRUE 放在第二位。' },
+    { id:4, name:'再走一步', topic:'Church 数', description:'将 2 交给后继函数，让 f 在 x 上连续作用 3 次。', start:`(${SUCC}) (${TWO})`, target:THREE, targetLabel:'Church 数字 3', hint:'数字 n 表示重复 n 次。「加一」会在 n 次作用之外，再套上一层 f。' },
+    { id:5, name:'让函数相加', topic:'Church 加法', description:'不用数字运算，只靠函数，把 2 + 3 归约成 5。', start:`(${ADD}) (${TWO}) (${THREE})`, target:FIVE, targetLabel:'Church 数字 5', hint:'m f (n f x)：先把 f 作用 n 次，再继续作用 m 次。运行到正规形后验证答案。' },
+    { id:6, name:'组合出恒等', topic:'S K K', description:'只用 S 与 K 两个组合子，组合出恒等函数 I。', start:`(λx y z.(x z) (y z)) (${TRUE}) (${TRUE})`, target:I, targetLabel:'I · 恒等函数', hint:'S K K z = K z (K z) = z。即使外层已经是 λ，也要继续归约函数体。' },
+    { id:7, name:'交换参数', topic:'组合子 C', description:'交换 TRUE 的两个输入，从 2 和 3 中选出原来的第二项。', start:`(λf x y.f y x) (${TRUE}) 2 3`, target:'3', targetLabel:'Church 数字 3', hint:'先代入 f=TRUE，再交换两个参数；最终 TRUE 收到的是 3、2。' },
+    { id:8, name:'连续加一', topic:'组合子 B', description:'把两个加一函数串起来，让 1 变成 3。', start:`(λf g x.f (g x)) (${SUCC}) (${SUCC}) 1`, target:'3', targetLabel:'Church 数字 3', hint:'B f g x = f (g x)。先计算里面的加一，再计算外面的加一。' },
+    { id:9, name:'深入函数内部', topic:'λ 内部归约', description:'外层没有参数可接收，函数体里面仍然可以继续归约。', start:'λz.(λx.x) z', target:I, targetLabel:'I · 恒等函数', hint:'点击 λz 内部那一处应用。得到 λz.z，与 λx.x 只是变量名不同。' },
+    { id:10, name:'保护自由变量', topic:'避免变量捕获', description:'把自由变量 y 传入一个含有 λy 的函数，保留它的自由身份。', start:'(λx.λy.x) y', target:'λz.y', targetLabel:'返回自由变量 y', hint:'先把内部绑定的 y 改名，再替换 x。结果可以是 λy1.y；不能变成 λy.y。' },
+    { id:11, name:'两者都为真', topic:'布尔 AND', description:'计算 TRUE 与 FALSE 的逻辑与，结果应为 FALSE。', start:`(λp q.p q p) (${TRUE}) (${FALSE})`, target:FALSE, targetLabel:'FALSE · 假', hint:'p 为真时选择 q；p 为假时保留 p。这里只有一个输入为真。' },
+    { id:12, name:'有一个为真', topic:'布尔 OR', description:'计算 FALSE 与 TRUE 的逻辑或，结果应为 TRUE。', start:`(λp q.p p q) (${FALSE}) (${TRUE})`, target:TRUE, targetLabel:'TRUE · 真', hint:'p 为假时选择 q。因此 FALSE OR TRUE 会返回 TRUE。' },
+    { id:13, name:'把假变真', topic:'布尔 NOT', description:'对 FALSE 取反，得到选择第一个参数的函数。', start:`(λb.b (${FALSE}) (${TRUE})) (${FALSE})`, target:TRUE, targetLabel:'TRUE · 真', hint:'FALSE 会从两个候选项中选择第二个，这里第二个是 TRUE。' },
+    { id:14, name:'取出第一项', topic:'有序对', description:'将 2 和 5 保存在函数里，再取出第一项。', start:`(${PAIR}) 2 5 (${TRUE})`, target:'2', targetLabel:'Church 数字 2', hint:'有序对把两个值交给选择器。TRUE 选择第一项。' },
+    { id:15, name:'取出第二项', topic:'有序对', description:'使用另一个选择器，从同一个有序对中取出 5。', start:`(${PAIR}) 2 5 (${FALSE})`, target:'5', targetLabel:'Church 数字 5', hint:'FALSE 选择第二项。观察有序对如何展开为一次函数调用。' },
+    { id:16, name:'重复中的重复', topic:'Church 乘法', description:'将重复 3 次的操作再重复 2 次，计算 2 × 3。', start:`(${MULT}) 2 3`, target:'6', targetLabel:'Church 数字 6', hint:'乘法 λm n f.m (n f) 把 n 次操作看成一个整体，再重复 m 次。' },
+    { id:17, name:'让数字作用于数字', topic:'Church 乘方', description:'让指数 3 作用在底数 2 上，计算 2³。', start:`(${POW}) 2 3`, target:'8', targetLabel:'Church 数字 8', hint:'Church 乘方可以写成 λb e.e b。归约函数体直到再无可归约项。' },
+    { id:18, name:'向后一步', topic:'Church 前驱', description:'从数字 3 中去掉一次函数作用，得到 2。', start:`(${PRED}) 3`, target:'2', targetLabel:'Church 数字 2', hint:'前驱借助中间状态，让最终的函数作用少执行一次。' },
+    { id:19, name:'连续后退', topic:'Church 减法', description:'对 5 连续取两次前驱，计算自然数减法 5 − 2。', start:`(${SUB}) 5 2`, target:'3', targetLabel:'Church 数字 3', hint:'把前驱函数重复 2 次。此阶段使用 Church 自然数，下阶段再进入负数与小数。' },
+    { id:20, name:'辨认零', topic:'零判断', description:'判断 Church 数字 0 是否为零，生成布尔值 TRUE。', start:`(${ZERO}) 0`, target:TRUE, targetLabel:'TRUE · 真', hint:'零不会执行传入的操作，所以零判断保留初始的 TRUE。' },
+    { id:21, name:'精确的小数加法', topic:'列表小数', encoding:'decimal', description:'用逐位进位计算 0.1 + 0.2，得到精确 0.3。建议点击「快速运行」。', start:'DEC_ADD 0.1 0.2', target:'0.3', targetType:'decimal', targetLabel:'精确小数 0.3', hint:'小数点位置先对齐，再对数字列表逐位相加。快速运行仍保留全部归约步骤。' },
+    { id:22, name:'跨过零', topic:'带符号减法', encoding:'decimal', description:'计算 1 − 2，让结果从自然数走到负数。', start:'DEC_SUB 1 2', target:'-1', targetType:'decimal', targetLabel:'精确小数 −1', hint:'比较两个绝对值，按较大值减较小值，然后确定负号。' },
+    { id:23, name:'小数点往哪里走', topic:'列表乘法', encoding:'decimal', description:'计算 0.2 × 0.3，观察数字乘积与小数位数共同决定结果。', start:'DEC_MUL 0.2 0.3', target:'0.06', targetType:'decimal', targetLabel:'精确小数 0.06', hint:'2 × 3 = 6；两个输入各有一位小数，所以结果共有两位小数。' },
+    { id:24, name:'除到刚刚好', topic:'十进制长除法', encoding:'decimal', decimalPlaces:3, description:'计算 1 ÷ 8。本关预置3位小数，运行后必须得到精确结果。建议快速运行。', start:'DEC_DIV 1 8', target:'0.125', targetType:'decimal', targetLabel:'精确小数 0.125', hint:'长除法逐位生成 1、2、5，余数归零。若自行调低精度，近似结果不能通关。' },
+    { id:25, name:'正负相遇', topic:'带符号加法', encoding:'decimal', description:'计算 −1.2 + 0.5，保留正确符号和小数位置。', start:'DEC_ADD -1.2 0.5', target:'-0.7', targetType:'decimal', targetLabel:'精确小数 −0.7', hint:'符号不同的加法等价于绝对值相减；较大的绝对值来自负数。' },
+    { id:26, name:'从三个里选两个', topic:'组合数', strategy:'normal', direction:'left', description:'用帕斯卡递推计算 C(3,2)，不计选择顺序。本关预设从左到右正规序。', start:`(${CHOOSE}) 3 2`, target:'3', targetLabel:'Church 数字 3', hint:`C(n,0)=1，C(0,k)=0，其余拆成两个较小的组合数。${recursiveHint}` },
+    { id:27, name:'三个数的连乘', topic:'迭代阶乘', description:'用有序对保存当前数字与累积乘积，真正算出 3!。', start:`(${FACTORIAL}) 3`, target:'6', targetLabel:'Church 数字 6', hint:'从 (0,1) 开始，连续更新三次：(1,1)、(2,2)、(3,6)，最后取出乘积。' },
+    { id:28, name:'生成导函数', topic:'符号求导', description:'输入原多项式 x² + 3x 的系数，归约生成导函数，而不是只代入某个点。', start:M.differentiate([0,3,1]), target:'2x + 3', targetType:'polynomial', targetLabel:'导函数 2x + 3', hint:'遍历降序系数 [1,3,0]，按原次数乘系数并去掉常数项，生成新的系数列表。' },
+    { id:29, name:'生成原函数', topic:'符号积分', description:'从原多项式 x 的系数开始，归约生成原函数，积分常数取 0。', start:M.integrate([0,1]), target:'1/2x²', targetType:'polynomial', targetLabel:'原函数 ½x²（C=0）', hint:'按次数加一除系数，并追加积分常数 0。系数 1 除以 2 后保存为有理数。' },
+    { id:30, name:'最后一关：曲线下面积', topic:'定积分', description:'从原多项式 2x 出发，先生成原函数，再计算从 0 到 3 的定积分。', start:M.definite([0,2],0,3), target:'9', targetType:'rational', targetLabel:'有理数 9', hint:'先对原系数 [2,0] 积分得到 x²，再计算上限值减下限值：9 − 0。所有转换都经过 β 归约。' }
+  ];
+  const stages=['入门五关','函数与绑定','逻辑与数据','自然数进阶','列表小数','高等数学'].map((name,index)=>({id:index+1,name,levelIds:levels.slice(index*5,index*5+5).map(l=>l.id)}));
+  const API={ examples, levels, stages, I, TRUE, FALSE, advanced:{factorial:FACTORIAL,recursiveFactorial:RECURSIVE_FACTORIAL,choose:CHOOSE,permutations:PERMUTATIONS,sumPowers,geometricSum:GEOMETRIC_SUM,binomial:BINOMIAL,polynomial:POLYNOMIAL,derivative:DERIVATIVE,integral:INTEGRAL} };
+  root.LambdaPresets=API;
+  if(typeof module !== 'undefined' && module.exports) module.exports=API;
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script><script>
+(function(root){
+  'use strict';
+  const C=root.LambdaCore||require('./core.js'),D=root.LambdaDecimal||require('./decimal.js'),M=root.LambdaPolynomial||require('./polynomial.js');
+  function compile(level){
+    return level.encoding==='decimal'?D.expand(C.parseInput(level.start),level.decimalPlaces??6):C.parse(level.start);
+  }
+  function matches(level,term){
+    if(!term||C.findRedex(term))return false;
+    if(level.targetType==='decimal'){
+      const value=D.read(term);
+      return !!value&&!value.error&&!value.approximate&&D.format(value)===level.target;
+    }
+    if(level.targetType==='polynomial'){
+      const value=M.readPolynomial(term);return value!==null&&M.formatPolynomial(value)===level.target;
+    }
+    if(level.targetType==='rational'){
+      const value=M.readRational(term);return value!==null&&M.formatRational(value)===level.target;
+    }
+    return C.equal(term,C.parse(level.target));
+  }
+  const API={compile,matches};root.LambdaChallenges=API;
+  if(typeof module!=='undefined'&&module.exports)module.exports=API;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const C=root.LambdaCore || require('./core.js');
+  const LIMITS={count:Infinity,nodes:Infinity,nameChars:Infinity};
+  const validName=name=>typeof name==='string'&&/^[A-Za-z][A-Za-z0-9_']{0,31}$/.test(name);
+  function names(t,out=new Set()) {
+    if(t.type==='var')out.add(t.name);
+    else if(t.type==='abs'){out.add(t.param);names(t.body,out);}
+    else{names(t.fn,out);names(t.arg,out);}return out;
+  }
+  function validate(functions) {
+    if(!Array.isArray(functions))throw new C.LambdaError('函数库格式不合法。');
+    const seen=new Set();let nodes=0,nameChars=0;
+    for(const fn of functions) {
+      if(fn.source!==undefined&&typeof fn.source!=='string')throw new C.LambdaError('函数原始定义需为文本。');
+      if(!validName(fn.name))throw new C.LambdaError('函数名需以英文字母开头，最多 32 字符，可含数字、下划线和单引号。');
+      if(seen.has(fn.name))throw new C.LambdaError(`函数「${fn.name}」已存在，请换一个名字。`);
+      seen.add(fn.name);nodes+=C.inspect(fn.term).nodes;
+      const stack=[fn.term];while(stack.length){const t=stack.pop();if(t.type==='var')nameChars+=t.name.length;else if(t.type==='abs'){nameChars+=t.param.length;stack.push(t.body);}else stack.push(t.fn,t.arg);}
+    }
+    return functions;
+  }
+  function expand(term,functions) {
+    const registry=new Map(functions.map(f=>[f.name,f.term])),free=C.freeVars(term);
+    const used=names(term);for(const f of functions)names(f.term,used);
+    const replacements=[];let next=0,result=term;
+    for(const name of free) {
+      if(!registry.has(name))continue;
+      let placeholder;do{placeholder=`lambdaMacro${++next}`;}while(used.has(placeholder));used.add(placeholder);
+      result=C.substitute(result,name,C.V(placeholder));replacements.push([placeholder,registry.get(name)]);
+    }
+    for(const [placeholder,definition] of replacements)result=C.substitute(result,placeholder,definition);
+    C.inspect(result);return result;
+  }
+  function add(functions,name,source,maxChars=C.LIMITS.chars,numberEncoding='church',precision=6) {
+    name=name.trim();
+    if(!validName(name))throw new C.LambdaError('函数名需以英文字母开头，最多 32 字符，可含数字、下划线和单引号。');
+    if(functions.some(f=>f.name===name))throw new C.LambdaError(`函数「${name}」已存在，请换一个名字。`);
+    const parsed=numberEncoding==='decimal'?C.parseInput(source,maxChars):C.parse(source,maxChars);
+    if(C.freeVars(parsed).has(name))throw new C.LambdaError('定义不能直接引用自身。递归请使用显式不动点组合子。');
+    const expanded=expand(parsed,functions),term=numberEncoding==='decimal'?root.LambdaDecimal.expand(expanded,precision):expanded;
+    const result=[...functions,{name,source,term}];validate(result);return result;
+  }
+  const remove=(functions,name)=>functions.filter(f=>f.name!==name);
+  function update(functions,originalName,name,source,numberEncoding='church',precision=6) {
+    const original=functions.find(fn=>fn.name===originalName);
+    if(!original)throw new C.LambdaError('要编辑的函数已不存在。');
+    const others=remove(functions,originalName);
+    let replacement;
+    if(typeof original.source==='string'&&source===original.source){
+      name=name.trim();replacement={name,source,term:original.term};validate([...others,replacement]);
+      const parser=root.LambdaDecimal?C.parseInput:C.parse;
+      if(C.freeVars(parser(source,Infinity)).has(name))throw new C.LambdaError('定义不能直接引用自身。递归请使用显式不动点组合子。');
+    }else replacement=add(others,name,source,Infinity,numberEncoding,precision).at(-1);
+    return functions.map(fn=>fn.name===originalName?replacement:fn);
+  }
+  const API={LIMITS,validName,validate,expand,add,update,remove};root.LambdaLibrary=API;
+  if(typeof module!=='undefined'&&module.exports)module.exports=API;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const C=root.LambdaCore||require('./core.js'),L=root.LambdaLibrary||require('./library.js'),P=root.LambdaPresets||require('./presets.js');
+  const LEVEL_IDS=new Set(P.levels.map(l=>l.id));
+  const MAX_BYTES=2*1024*1024;
+  const fail=message=>{throw new C.LambdaError(`存档无效：${message}`);};
+  const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+  function ast(raw) {
+    let count=0;
+    function walk(t,depth) {
+      ++count;
+      if(!object(t))fail('表达式结构不完整。');
+      const name=n=>{if(typeof n!=='string'||n.length>C.LIMITS.nameChars||!/^[A-Za-z][A-Za-z0-9_']*$/.test(n))fail('变量名不合法。');return n;};
+      if(t.type==='var')return C.V(name(t.name));
+      if(t.type==='abs')return C.L(name(t.param),walk(t.body,depth+1));
+      if(t.type==='app')return C.A(walk(t.fn,depth+1),walk(t.arg,depth+1));
+      fail('未知表达式类型。');
+    }
+    const term=walk(raw,1);C.inspect(term);return term;
+  }
+  function validate(raw) {
+    if(!object(raw)||![2,3].includes(raw.version))fail('不支持这个存档版本。');
+    if(typeof raw.draft!=='string'||raw.draft.length>10000)fail('草稿过长或缺失。');
+    if(!Array.isArray(raw.functions))fail('函数库不合法。');
+    const functions=raw.functions.map(f=>{
+      if(!object(f))fail('函数定义不完整。');
+      if(f.source!==undefined&&typeof f.source!=='string')fail('函数原始定义需为文本。');
+      return {name:f.name,term:ast(f.term),...(f.source===undefined?{}:{source:f.source})};
+    });L.validate(functions);
+    if(!Array.isArray(raw.completed)||raw.completed.length>P.levels.length||raw.completed.some(i=>!LEVEL_IDS.has(i)))fail('通关进度不合法。');
+    if(raw.mode!=='free'&&raw.mode!=='challenge')fail('游戏模式不合法。');
+    if(!Number.isInteger(raw.level)||raw.level<0||raw.level>=P.levels.length)fail('关卡编号不合法。');
+    const s=raw.session;if(!object(s)||!Number.isSafeInteger(s.steps)||s.steps<0||typeof s.dirty!=='boolean')fail('归约状态不合法。');
+    const original=s.original===null?null:ast(s.original);if(!original&&s.steps!==0)fail('没有起始表达式，无法恢复归约。');
+    let paths;
+    if(s.paths!==undefined){
+      if(!Array.isArray(s.paths)||s.paths.length!==s.steps)fail('归约路径数量与步数不一致。');
+      paths=s.paths.map(path=>{
+        if(path===null)return null;
+        if(!Array.isArray(path)||path.some(part=>!['body','fn','arg'].includes(part)))fail('归约路径不合法。');
+        return path.slice();
+      });
+    }
+    if(typeof s.halt!=='string'||s.halt.length>500)fail('暂停信息不合法。');
+    const v=raw.view;if(!object(v)||!Number.isInteger(v.speed)||v.speed<1||v.speed>60000||!Number.isFinite(v.scale)||v.scale<.02||v.scale>16)fail('视图设置不合法。');
+    const strategy=v.strategy===undefined?'normal':v.strategy;if(!C.STRATEGIES.includes(strategy))fail('归约顺序不合法。');
+    const direction=v.direction===undefined?'left':v.direction;if(!C.DIRECTIONS.includes(direction))fail('归约方向不合法。');
+    const numberEncoding=v.numberEncoding===undefined?'decimal':v.numberEncoding;if(!['church','decimal'].includes(numberEncoding))fail('数字编码不合法。');
+    const decimalPlaces=v.decimalPlaces===undefined?6:v.decimalPlaces;if(!Number.isSafeInteger(decimalPlaces)||decimalPlaces<0)fail('小数位数不合法。');
+    const panX=v.panX??0,panY=v.panY??0;
+    if(!Number.isFinite(panX)||!Number.isFinite(panY)||panX<0||panY<0||panX>5000000||panY>5000000)fail('图示位置不合法。');
+    for(const field of ['autoFit','historyOpen','helpOpen','hintOpen'])if(typeof v[field]!=='boolean')fail('视图开关不合法。');
+    const selection=raw.selection;if(!object(selection)||!Number.isInteger(selection.start)||!Number.isInteger(selection.end)||selection.start<0||selection.start>selection.end||selection.end>raw.draft.length)fail('光标位置不合法。');
+    if(typeof raw.error!=='string'||raw.error.length>2000)fail('错误信息不合法。');
+    const functionDraft=raw.functionDraft??{name:'',source:''};
+    if(!object(functionDraft)||typeof functionDraft.name!=='string'||functionDraft.name.length>32||typeof functionDraft.source!=='string')fail('函数编辑草稿不合法。');
+    const editing=functionDraft.editing??null;
+    if(editing!==null&&(!L.validName(editing)||!functions.some(fn=>fn.name===editing)))fail('正在编辑的函数不存在或不合法。');
+    return {version:paths===undefined?raw.version:3,savedAt:typeof raw.savedAt==='string'&&Number.isFinite(Date.parse(raw.savedAt))?raw.savedAt:new Date().toISOString(),draft:raw.draft,
+      functions,completed:[...new Set(raw.completed)],mode:raw.mode,level:raw.level,
+      session:{original,steps:s.steps,dirty:s.dirty,halt:s.halt,...(paths===undefined?{}:{paths})},view:{speed:v.speed,strategy,direction,numberEncoding,decimalPlaces,scale:v.scale,autoFit:v.autoFit,panX,panY,historyOpen:v.historyOpen,helpOpen:v.helpOpen,hintOpen:v.hintOpen},
+      selection:{start:selection.start,end:selection.end},error:raw.error,functionDraft:{name:functionDraft.name,source:functionDraft.source,...(editing===null?{}:{editing})}};
+  }
+  function replay(s) {
+    const history=s.session.original?[{term:s.session.original,change:null}]:[];let term=s.session.original;
+    for(let i=0;i<s.session.steps;i++){
+      const path=s.session.paths?.[i];const result=path==null?C.step(term):C.stepAt(term,path);
+      if(!result)fail(path==null?'步数超过实际可归约次数。':'归约路径未指向可归约项。');term=result.term;history.push({term,change:result});
+    }
+    return {...s,term,history,hasSession:true};
+  }
+  function encode(raw) {
+    const text=JSON.stringify(validate(raw));
+    if(new TextEncoder().encode(text).length>MAX_BYTES)fail('文件超过 2 MiB 上限。');return text;
+  }
+  function encodeBackup(raw,checkpointText) {
+    const backup={...JSON.parse(encode(raw)),checkpoint:checkpointText===null?null:JSON.parse(encode(JSON.parse(checkpointText)))};
+    const text=JSON.stringify(backup);
+    if(new TextEncoder().encode(text).length>MAX_BYTES)fail('文件超过 2 MiB 上限。');
+    return text;
+  }
+  function decode(text) {
+    if(typeof text!=='string'||text.length>MAX_BYTES||new TextEncoder().encode(text).length>MAX_BYTES)fail('文件超过 2 MiB 上限。');
+    let raw;try{raw=JSON.parse(text);}catch{fail('不是有效的 JSON 文件。');}
+    if(object(raw)&&raw.version===1) {
+      const draft=typeof raw.draft==='string'&&raw.draft.length<=10000?raw.draft:'(λx.x) (λy.y)';
+      const migrated={version:2,savedAt:new Date().toISOString(),draft,functions:[],completed:Array.isArray(raw.completed)?[...new Set(raw.completed.filter(i=>Number.isInteger(i)&&i>0&&i<6))]:[],
+        mode:raw.mode==='challenge'?'challenge':'free',level:Number.isInteger(raw.level)&&raw.level>=0&&raw.level<5?raw.level:0,
+        session:{original:null,steps:0,dirty:true,halt:''},view:{numberEncoding:'church',speed:600,scale:1,autoFit:true,historyOpen:false,helpOpen:false,hintOpen:false},selection:{start:0,end:0},error:''};
+      return {...validate(migrated),history:[],term:null,hasSession:false};
+    }
+    const snapshot=replay(validate(raw));
+    if(Object.prototype.hasOwnProperty.call(raw,'checkpoint')) {
+      snapshot.checkpointText=raw.checkpoint===null?null:encode(replay(validate(raw.checkpoint)));
+    }
+    return snapshot;
+  }
+  const API={MAX_BYTES,ast,validate,encode,encodeBackup,decode};root.LambdaSnapshot=API;
+  if(typeof module!=='undefined'&&module.exports)module.exports=API;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root){
+  'use strict';
+  function save(name,content,mime) {
+    if(typeof root.LambdaAndroid?.saveFile==='function') {
+      root.LambdaAndroid.saveFile(name,content,mime);return;
+    }
+    const url=URL.createObjectURL(new Blob([content],{type:`${mime};charset=utf-8`}));
+    const anchor=document.createElement('a');anchor.href=url;anchor.download=name;anchor.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function saveBackup(name,content) {
+    if(typeof root.LambdaAndroid?.saveFile==='function') {
+      if(typeof root.LambdaAndroid.saveFileConfirmed!=='function')throw new Error('当前安卓版无法确认备份保存结果，请更新安卓版后再清空。');
+      if(root.LambdaAndroid.saveFileConfirmed(name,content,'application/json')!==true)throw new Error('存档保存失败，当前内容未清空。');
+      return 'saved';
+    }
+    save(name,content,'application/json');return 'requested';
+  }
+  root.LambdaDownload={save,saveBackup};
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+(function(root) {
+  'use strict';
+  const C=root.LambdaCore,L=root.LambdaLibrary,S=root.LambdaSnapshot;
+  const localStorage=(function(root){
+    'use strict';
+    const legacyRoot={};
+    (function(globalThis,window){
+
 (function (root) {
   'use strict';
   const LIMITS = Object.freeze({ chars: 1500, nodes: Infinity, depth: Infinity, steps: Infinity, nameChars:Infinity });
@@ -354,129 +1211,10 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
 })(typeof globalThis !== 'undefined' ? globalThis : window);
 
-</script><script>
-(function (root) {
-  'use strict';
-  const COLORS = ['#64d8bd', '#eabe75', '#9fa6ff', '#f38fac', '#79bcf2', '#c2dd87'];
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&apos;' }[c]));
-  const lineTitle=l=>l.kind==='abstraction'?`λ${l.name}：绑定横线`:l.kind==='variable'?`${l.name}：${l.free?'自由变量':`连接绑定 λ${l.name}`}`:l.kind==='application'?'函数应用：连接左右子项最左变量':'延伸到外层应用';
-  function layout(term, redexPath = null) {
-    const lines = [], labels = [], binders = [], leaves = []; let leaf = 0;
-    const env=new Map(),origin={parent:null,part:null,length:0,matches:true};let tree;
-    const child=(parent,part,reducible=false)=>({parent,part,reducible,length:parent.length+1,matches:redexPath!==null&&parent.matches&&redexPath[parent.length]===part});
-    function pathOf(route){const path=Array(route.length);for(let i=path.length-1;i>=0;i--){path[i]=route.part;route=route.parent;}return path;}
-    function withPath(line,route){
-      Object.defineProperty(line,'path',{enumerable:true,configurable:true,get(){
-        const path=pathOf(route);
-        Object.defineProperty(line,'path',{value:path,enumerable:true});return path;
-      }});return line;
-    }
-    const stack=[{t:term,top:64,route:origin}];
-    while(stack.length){
-      const entry=stack.pop(),{t,top,route}=entry;
-      if(entry.stage==='abs'){
-        env.get(t.param).pop();const binder=entry.binder;
-        const active=redexPath&&route.part==='fn'&&route.parent.length===redexPath.length&&route.parent.matches;
-        const line={kind:'abstraction',x1:tree.left-15,x2:tree.right+15,y1:top,y2:top,color:binder.color,binder:binder.id,name:t.param,active};
-        if(route.part==='fn'&&route.reducible)Object.defineProperty(line,'redexPath',{get(){return pathOf(route.parent);}});
-        lines.push(line);continue;
-      }
-      if(entry.stage==='left'){
-        stack.push({...entry,stage:'right',left:tree},{t:t.arg,top,route:child(route,'arg')});continue;
-      }
-      if(entry.stage==='right'){
-        const left=entry.left,right=tree,bottom=Math.max(left.bottom,right.bottom)+32;
-        lines.push({kind:'extension',x1:left.left,x2:left.left,y1:left.bottom,y2:bottom,color:leaves[left.start].color});
-        lines.push({kind:'extension',x1:right.left,x2:right.left,y1:right.bottom,y2:bottom,color:leaves[right.start].color});
-        lines.push(withPath({kind:'application',x1:left.left,x2:right.left,y1:bottom,y2:bottom,color:'#d5dff1',active:redexPath!==null&&route.matches&&route.length===redexPath.length},route));
-        tree={left:left.left,right:right.right,bottom,start:entry.start,end:leaf};continue;
-      }
-      const start=leaf;
-      if(t.type==='var'){
-        const x = leaf++ * 40 + 50, end = top + 32;
-        const binder=env.get(t.name)?.at(-1);
-        const line = withPath({ kind:'variable', x1:x, x2:x, y1:binder ? binder.y : 30, y2:end,
-          color:binder ? binder.color : '#aeb9ce', free:!binder, name:t.name, binder:binder ? binder.id : null },route);
-        lines.push(line); leaves.push(line);
-        if (!binder) labels.push({ x, y:19, text:t.name, free:true });
-        tree={left:x,right:x,bottom:end,start,end:leaf};continue;
-      }else if(t.type==='abs'){
-        const binder = { id:binders.length, name:t.param, y:top, color:COLORS[binders.length % COLORS.length] };
-        binders.push(binder);
-        const scope=env.get(t.param)||[];scope.push(binder);env.set(t.param,scope);
-        stack.push({...entry,stage:'abs',binder},{t:t.body,top:top+32,route:child(route,'body')});
-      }else stack.push({...entry,stage:'left',start},{t:t.fn,top,route:child(route,'fn',t.fn.type==='abs')});
-    }
-    return { lines, labels, binders, leaves, width:Math.max(140, leaf*40+60), height:tree.bottom+48 };
-  }
-  function svg(term, redexPath = null, options = {}) {
-    const model = layout(term, redexPath), { width, height } = model;
-    const backgrounds = options.export ? `<rect width="100%" height="100%" fill="#131c2d"/>` : '';
-    const shapes = model.lines.map(l => `<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${l.active ? '#ff91b7' : l.color}" stroke-width="${l.active ? 5 : 3}" stroke-linecap="square" ${l.free ? 'stroke-dasharray="5 5"' : ''} data-kind="${l.kind}" ${l.active ? 'data-active="true"' : ''}><title>${esc(l.kind==='abstraction' ? `λ${l.name}：绑定横线` : l.kind==='variable' ? `${l.name}：${l.free?'自由变量':`连接绑定 λ${l.name}`}` : l.kind==='application' ? '函数应用：连接左右子项最左变量' : '延伸到外层应用')}</title></line>`).join('');
-    const labels = model.labels.map(l=>`<text x="${l.x}" y="${l.y}" text-anchor="middle" fill="#bac5d8" font-size="10" font-family="monospace"><title>${esc(l.text)}</title>${esc(l.text)}</text>`).join('');
-    return { model, markup:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="John Tromp Lambda 图示"><title>John Tromp Lambda 图示</title>${backgrounds}${shapes}${labels}</svg>` };
-  }
-  const API = { layout, svg, COLORS, lineTitle };
-  root.LambdaDiagram = API;
-  if (typeof module !== 'undefined' && module.exports) module.exports = API;
-})(typeof globalThis !== 'undefined' ? globalThis : window);
 
-</script><script>
-(function(root){
-  'use strict';
-  const NS='http://www.w3.org/2000/svg',D=root.LambdaDiagram;
-  function init(mount){
-    let svg=null,model=null,hitLayer=null,enabled=true;const lines=[],labels=[],hits=[];
-    const element=name=>document.createElementNS(NS,name);
-    const hitShape=line=>`M ${line.x1} ${line.y1-3} H ${line.x2} V ${line.y1+3} H ${line.x1} Z`;
-    function attribute(node,name,value,previous){if(value!==previous){if(value===null)node.removeAttribute(name);else node.setAttribute(name,String(value));}}
-    function render(next){
-      if(!svg){svg=element('svg');svg.setAttribute('xmlns',NS);svg.setAttribute('role','group');svg.setAttribute('aria-label','John Tromp Lambda 图示，可点击顶部横条归约');
-        const title=element('title');title.textContent='John Tromp Lambda 图示';hitLayer=element('g');svg.append(title,hitLayer);mount.replaceChildren(svg);}
-      attribute(svg,'viewBox',`0 0 ${next.width} ${next.height}`,model?`0 0 ${model.width} ${model.height}`:undefined);
-      const newLines=document.createDocumentFragment();
-      for(let i=0;i<next.lines.length;i++){
-        const line=next.lines[i],old=model?.lines[i];let node=lines[i];
-        if(!node){node=element('line');node.append(element('title'));node.setAttribute('stroke-linecap','square');lines.push(node);newLines.append(node);}
-        for(const key of ['x1','x2','y1','y2'])attribute(node,key,line[key],old?.[key]);
-        attribute(node,'stroke',line.active?'#ff91b7':line.color,old?(old.active?'#ff91b7':old.color):undefined);
-        attribute(node,'stroke-width',line.active?5:3,old?(old.active?5:3):undefined);
-        attribute(node,'stroke-dasharray',line.free?'5 5':null,old?(old.free?'5 5':null):undefined);
-        attribute(node,'data-kind',line.kind,old?.kind);attribute(node,'data-active',line.active?'true':null,old?(old.active?'true':null):undefined);
-        const title=D.lineTitle(line);if(!old||title!==D.lineTitle(old))node.firstElementChild.textContent=title;
-      }
-      while(lines.length>next.lines.length)lines.pop().remove();
-      svg.insertBefore(newLines,labels[0]||null);
-      const newLabels=document.createDocumentFragment();
-      for(let i=0;i<next.labels.length;i++){
-        const label=next.labels[i],old=model?.labels[i];let node=labels[i];
-        if(!node){node=element('text');node.setAttribute('text-anchor','middle');node.setAttribute('fill','#bac5d8');node.setAttribute('font-size','10');node.setAttribute('font-family','monospace');
-          node.append(element('title'),document.createTextNode(''));labels.push(node);newLabels.append(node);}
-        attribute(node,'x',label.x,old?.x);attribute(node,'y',label.y,old?.y);
-        if(!old||label.text!==old.text){node.firstElementChild.textContent=label.text;node.lastChild.nodeValue=label.text;}
-      }
-      while(labels.length>next.labels.length)labels.pop().remove();svg.append(newLabels);model=next;
-      const newHits=document.createDocumentFragment();let hitCount=0;
-      for(const line of next.lines){
-        if(!Object.prototype.hasOwnProperty.call(line,'redexPath'))continue;
-        let hit=hits[hitCount++];
-        if(!hit){hit=element('path');hit.setAttribute('data-redex-hit','true');hit.setAttribute('role','button');hit.setAttribute('stroke','transparent');hit.setAttribute('stroke-width','18');hit.setAttribute('vector-effect','non-scaling-stroke');hit.setAttribute('fill','transparent');hit.append(element('title'));hits.push(hit);newHits.append(hit);}
-        const old=hit.reductionLine;
-        attribute(hit,'d',hitShape(line),old?hitShape(old):undefined);
-        if(!old||old.name!==line.name){const label=`点击 λ${line.name} 顶部横条，归约这一项`;hit.setAttribute('aria-label',label);hit.firstElementChild.textContent=label;}
-        hit.reductionLine=line;hit.setAttribute('tabindex',enabled?'0':'-1');hit.setAttribute('aria-disabled',String(!enabled));hit.style.pointerEvents=enabled?'all':'none';
-      }
-      while(hits.length>hitCount)hits.pop().remove();hitLayer.append(newHits);svg.append(hitLayer);
-    }
-    function setEnabled(value){if(enabled===value)return;enabled=value;for(const hit of hits){hit.setAttribute('tabindex',enabled?'0':'-1');hit.setAttribute('aria-disabled',String(!enabled));hit.style.pointerEvents=enabled?'all':'none';}}
-    function selection(target){const hit=target.closest?.('[data-redex-hit]');return enabled&&hit&&mount.contains(hit)?{path:hit.reductionLine.redexPath}:null;}
-    function clear(){mount.replaceChildren();svg=null;hitLayer=null;model=null;lines.length=0;labels.length=0;hits.length=0;}
-    return {render,clear,setEnabled,selection};
-  }
-  root.LambdaDiagramView={init};
-})(typeof globalThis!=='undefined'?globalThis:window);
+})(legacyRoot,legacyRoot);
+(function(globalThis,window){
 
-</script><script>
 (function(root) {
   'use strict';
   const I='λx.x', TRUE='λx.λy.x', FALSE='λx.λy.y';
@@ -504,7 +1242,10 @@
   if(typeof module !== 'undefined' && module.exports) module.exports=API;
 })(typeof globalThis !== 'undefined' ? globalThis : window);
 
-</script><script>
+
+})(legacyRoot,legacyRoot);
+(function(globalThis,window){
+
 (function(root) {
   'use strict';
   const C=root.LambdaCore || require('./core.js');
@@ -563,7 +1304,10 @@
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:window);
 
-</script><script>
+
+})(legacyRoot,legacyRoot);
+(function(globalThis,window){
+
 (function(root) {
   'use strict';
   const C=root.LambdaCore||require('./core.js'),L=root.LambdaLibrary||require('./library.js');
@@ -662,102 +1406,611 @@
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:window);
 
-</script><script>
-(function(root){
-  'use strict';
-  function save(name,content,mime) {
-    if(typeof root.LambdaAndroid?.saveFile==='function') {
-      root.LambdaAndroid.saveFile(name,content,mime);return;
-    }
-    const url=URL.createObjectURL(new Blob([content],{type:`${mime};charset=utf-8`}));
-    const anchor=document.createElement('a');anchor.href=url;anchor.download=name;anchor.click();
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
-  }
-  function saveBackup(name,content) {
-    if(typeof root.LambdaAndroid?.saveFile==='function') {
-      if(typeof root.LambdaAndroid.saveFileConfirmed!=='function')throw new Error('当前安卓版无法确认备份保存结果，请更新安卓版后再清空。');
-      if(root.LambdaAndroid.saveFileConfirmed(name,content,'application/json')!==true)throw new Error('存档保存失败，当前内容未清空。');
-      return 'saved';
-    }
-    save(name,content,'application/json');return 'requested';
-  }
-  root.LambdaDownload={save,saveBackup};
-})(typeof globalThis!=='undefined'?globalThis:window);
 
-</script><script>
-(function(root) {
-  'use strict';
-  const C=root.LambdaCore,L=root.LambdaLibrary,S=root.LambdaSnapshot;
-  const localStorage=(()=>{let adapter;const get=()=>adapter||(adapter=(function createLambdaStorage(storage,S,migrate){
-  const auto='lambda-lab-hub-v3',cp='lambda-lab-hub-checkpoint-v3',ready='lambda-lab-hub-mirror-ready-v3',journal='lambda-lab-hub-journal-v3',backup='lambda-lab-hub-upgrade-backup-v2';
-  const oldAuto='lambda-lab-v2',oldCp='lambda-lab-checkpoint-v2';
-  const archives={[auto]:'lambda-lab-hub-old-edit-archive-v3',[cp]:'lambda-lab-hub-old-checkpoint-archive-v3'};
-  const allowed=new Set([auto,cp,ready,backup,oldAuto,oldCp,...Object.values(archives)]);
-  const flags=()=>{const value=JSON.parse(storage.getItem(ready)||'{"auto":false,"checkpoint":false}');if(!value||typeof value.auto!=='boolean'||typeof value.checkpoint!=='boolean')throw Error('Invalid migration status');return value;};
-  const archive=(key,text)=>[archives[key],JSON.stringify([...(JSON.parse(storage.getItem(archives[key])||'[]')),text])];
-  function apply(changes){for(const [key,value] of changes){if(!allowed.has(key)||(value!==null&&typeof value!=='string'))throw Error('Invalid migration journal');if(value===null)storage.removeItem(key);else storage.setItem(key,value);}}
-  function recover(){const raw=storage.getItem(journal);if(raw!==null){const record=JSON.parse(raw);if(record.schemaVersion!==1||!Array.isArray(record.after))throw Error('Invalid migration journal');for(const [key,value] of record.after){if(!allowed.has(key)||(value!==null&&typeof value!=='string'))throw Error('Invalid migration journal');if([auto,cp,oldAuto,oldCp].includes(key)&&value!==null)S.decode(value);}apply(record.after);storage.removeItem(journal);}}
-  function transaction(changes){
-    recover();const before=changes.map(([key])=>[key,storage.getItem(key)]);
-    storage.setItem(journal,JSON.stringify({schemaVersion:1,before,after:changes}));
-    try{apply(changes);storage.removeItem(journal);}
-    catch(error){try{apply(before);storage.removeItem(journal);}catch{}throw error;}
+})(legacyRoot,legacyRoot);
+    const OldS=legacyRoot.LambdaSnapshot;
+    const C5=(()=>{const KEYS = Object.freeze({
+  current4: 'lambda-lab-hub-v4',
+  checkpoint4: 'lambda-lab-hub-checkpoint-v4',
+  current3: 'lambda-lab-hub-v3',
+  checkpoint3: 'lambda-lab-hub-checkpoint-v3',
+  current2: 'lambda-lab-v2',
+  checkpoint2: 'lambda-lab-checkpoint-v2',
+  ready: 'lambda-lab-hub-mirror-ready-v3',
+  journal: 'lambda-lab-hub-journal-v4',
+  legacy4: 'lambda-lab-hub-legacy-v4',
+  legacy3: 'lambda-lab-hub-legacy-v3',
+  legacy1: 'lambda-lab-v1',
+  oldJournal: 'lambda-lab-hub-journal-v3',
+  oldEditArchive: 'lambda-lab-hub-old-edit-archive-v3',
+  oldCheckpointArchive: 'lambda-lab-hub-old-checkpoint-archive-v3',
+  upgradeBackup: 'lambda-lab-hub-upgrade-backup-v2',
+  conflictArchive: 'lambda-lab-hub-c5-conflict-archive-v1',
+  checkpointTombstone: 'lambda-lab-hub-c5-checkpoint-tombstone-v1',
+  reviewState: 'lambda-lab-hub-c5-review-state-v1'
+});
+const ALLOWED = new Set(Object.values(KEYS));
+const LAMBDA_C5_STORAGE_KEYS = Object.freeze(Object.values(KEYS));
+
+function captureLambdaC5Snapshot(storage) {
+  return Object.fromEntries(LAMBDA_C5_STORAGE_KEYS.map(key => [key, storage.getItem(key)]));
+}
+
+function oldBase(text, OldS) {
+  const state = OldS.decode(text);
+  const copy = JSON.parse(OldS.encode(state));
+  copy.version = 2;
+  copy.session = { ...copy.session, original: state.term, steps: 0 };
+  delete copy.session.paths;
+  copy.functions = copy.functions.map(({ name, term }) => ({ name, term }));
+  copy.view.strategy = 'normal';
+  copy.view.direction = 'left';
+  return OldS.encode(copy);
+}
+
+function oldCanonical(text, OldS) {
+  const state = JSON.parse(OldS.encode(OldS.decode(text)));
+  delete state.savedAt;
+  state.functions = state.functions.map(({ name, term }) => ({ name, term }));
+  return JSON.stringify(state);
+}
+
+function lambdaC5Projection(text, CurrentS, OldS) {
+  const full = CurrentS.decode(text);
+  const projected = JSON.parse(CurrentS.encode(full));
+  projected.completed = projected.completed.filter(id => id <= 5);
+  if (projected.level > 4) {
+    projected.mode = 'free';
+    projected.level = 0;
   }
-  function ensureMigration(){
-    recover();if(storage.getItem(auto)!==null)return;
-    const pending=new Map(),staged={getItem:key=>pending.has(key)?pending.get(key):storage.getItem(key),setItem:(key,value)=>pending.set(key,value),removeItem:key=>pending.set(key,null)};
-    if(migrate(staged,S.decode)){
-      if(storage.getItem(backup)===null)pending.set(backup,JSON.stringify({auto:storage.getItem(oldAuto),checkpoint:storage.getItem(oldCp),legacy:storage.getItem('lambda-lab-v1')}));
-      transaction([...pending]);
+  delete projected.view.numberEncoding;
+  delete projected.view.decimalPlaces;
+  projected.lambdaHubC5 = {
+    schemaVersion: 1,
+    completedBeyondLegacy: full.completed.filter(id => id > 5),
+    numberEncoding: full.view.numberEncoding,
+    decimalPlaces: full.view.decimalPlaces
+  };
+  const v3 = JSON.stringify(projected);
+  OldS.decode(v3);
+  return { v3, v2: oldBase(v3, OldS) };
+}
+
+function decodeLegacy(text, CurrentS, OldS) {
+  const normalized = OldS.encode(OldS.decode(text));
+  const full = CurrentS.decode(normalized);
+  return { fullText: CurrentS.encode(full), summary: { mode: full.mode, level: full.level, completed: full.completed.length, draft: full.draft } };
+}
+
+function parseReady(raw) {
+  if (raw === null) return { value: { auto: false, checkpoint: false }, valid: true, present: false };
+  try {
+    const value = JSON.parse(raw);
+    if (!value || typeof value.auto !== 'boolean' || typeof value.checkpoint !== 'boolean') return { value: null, valid: false, present: true };
+    return { value, valid: true, present: true };
+  } catch { return { value: null, valid: false, present: true }; }
+}
+
+function metadataProblems(snapshot) {
+  const problems = [];
+  if (snapshot[KEYS.reviewState] !== null) {
+    try {
+      const state = JSON.parse(snapshot[KEYS.reviewState]);
+      if (!state || state.schemaVersion !== 1 || !state.pending || typeof state.pending.current !== 'boolean' || typeof state.pending.checkpoint !== 'boolean' ||
+        (state.oldJournal !== null && typeof state.oldJournal !== 'string')) problems.push('review-state-invalid');
+    } catch { problems.push('review-state-invalid'); }
+  }
+  const backup = snapshot[KEYS.upgradeBackup];
+  if (backup !== null) {
+    try {
+      const value = JSON.parse(backup);
+      if (!value || typeof value !== 'object' || Array.isArray(value) || !['auto', 'checkpoint', 'legacy'].every(k =>
+        k in value && (value[k] === null || typeof value[k] === 'string'))) problems.push('upgrade-backup-invalid');
+    } catch { problems.push('upgrade-backup-invalid'); }
+  }
+  for (const key of [KEYS.oldEditArchive, KEYS.oldCheckpointArchive]) {
+    if (snapshot[key] === null) continue;
+    try {
+      const value = JSON.parse(snapshot[key]);
+      if (!Array.isArray(value) || value.some(item => typeof item !== 'string')) problems.push(`${key}-invalid`);
+      else if (value.length) problems.push(`${key}-has-history`);
+    } catch { problems.push(`${key}-invalid`); }
+  }
+  const archived = snapshot[KEYS.conflictArchive];
+  if (archived !== null) {
+    try {
+      const value = JSON.parse(archived);
+      if (!value || value.schemaVersion !== 1 || !Array.isArray(value.entries) || value.entries.some(entry =>
+        !entry || typeof entry !== 'object' || !entry.snapshot || typeof entry.snapshot !== 'object' ||
+        LAMBDA_C5_STORAGE_KEYS.some(key => !(key in entry.snapshot) || (entry.snapshot[key] !== null && typeof entry.snapshot[key] !== 'string')))) problems.push('c5-archive-invalid');
+    } catch { problems.push('c5-archive-invalid'); }
+  }
+  return problems;
+}
+
+function journalAffected(raw) {
+  if (raw === null) return { current: false, checkpoint: false };
+  try {
+    const record = JSON.parse(raw);
+    if (record.schemaVersion !== 1 || !Array.isArray(record.after) || !record.after.length) throw Error('shape');
+    const groups = { current: false, checkpoint: false };
+    for (const entry of record.after) {
+      if (!Array.isArray(entry) || typeof entry[0] !== 'string') throw Error('entry');
+      const key = entry[0];
+      if ([KEYS.current4, KEYS.current3, KEYS.current2].includes(key)) groups.current = true;
+      else if ([KEYS.checkpoint4, KEYS.checkpoint3, KEYS.checkpoint2, KEYS.checkpointTombstone].includes(key)) groups.checkpoint = true;
+      else if ([KEYS.ready, KEYS.conflictArchive, KEYS.oldJournal, KEYS.journal, KEYS.reviewState].includes(key)) { /* metadata follows affected data */ }
+      else throw Error('unknown key');
+    }
+    if (!groups.current && !groups.checkpoint) return { current: true, checkpoint: true };
+    return groups;
+  } catch { return { current: true, checkpoint: true }; }
+}
+
+function candidateFromRaw(id, raw, CurrentS, OldS) {
+  if (raw === null) return null;
+  try {
+    const result = id === 'v4'
+      ? { fullText: raw, summary: (() => { const s = CurrentS.decode(raw); return { mode: s.mode, level: s.level, completed: s.completed.length, draft: s.draft }; })() }
+      : decodeLegacy(raw, CurrentS, OldS);
+    return { id, fullText: result.fullText, summary: result.summary };
+  } catch { return null; }
+}
+
+function inspectGroup(snapshot, kind, CurrentS, OldS, problems, journalPending) {
+  const current = kind === 'current';
+  const key4 = current ? KEYS.current4 : KEYS.checkpoint4;
+  const key3 = current ? KEYS.current3 : KEYS.checkpoint3;
+  const key2 = current ? KEYS.current2 : KEYS.checkpoint2;
+  const flag = current ? 'auto' : 'checkpoint';
+  const ready = parseReady(snapshot[KEYS.ready]);
+  const raw4 = snapshot[key4], raw3 = snapshot[key3], raw2 = snapshot[key2];
+  const candidates = [candidateFromRaw('v4', raw4, CurrentS, OldS), candidateFromRaw('v3', raw3, CurrentS, OldS), candidateFromRaw('v2', raw2, CurrentS, OldS)].filter(Boolean);
+  const invalidPresent = [raw4, raw3, raw2].some((raw, i) => raw !== null && ![candidateFromRaw('v4', raw4, CurrentS, OldS), candidateFromRaw('v3', raw3, CurrentS, OldS), candidateFromRaw('v2', raw2, CurrentS, OldS)][i]);
+  let metadata = [...problems];
+  if (!ready.valid) metadata.push('mirror-ready-invalid');
+  if (journalPending) metadata.push('pending-journal');
+  const oldArchive = snapshot[current ? KEYS.oldEditArchive : KEYS.oldCheckpointArchive];
+  const hasOldHistory = oldArchive !== null && (() => { try { return JSON.parse(oldArchive).length > 0; } catch { return false; } })();
+  if (hasOldHistory) metadata.push('old-adapter-history');
+  if (invalidPresent) metadata.push('invalid-candidate');
+  if (!current && snapshot[KEYS.checkpointTombstone] !== null) {
+    let validTombstone = false;
+    try { const value = JSON.parse(snapshot[KEYS.checkpointTombstone]); validTombstone = value?.schemaVersion === 1 && typeof value.source === 'string'; }
+    catch { /* invalid marker below */ }
+    if (!validTombstone || raw4 !== null || raw3 !== null || raw2 !== null || (ready.valid && ready.value.checkpoint)) metadata.push('checkpoint-tombstone-inconsistent');
+  }
+  const v4 = candidates.find(c => c.id === 'v4');
+  const v3 = candidates.find(c => c.id === 'v3');
+  const v2 = candidates.find(c => c.id === 'v2');
+  const readyValue = ready.value;
+  const raw3Present = raw3 !== null, raw2Present = raw2 !== null;
+  let relation = false;
+  if (v3 && v2) {
+    // Compare v2 against the actual old adapter base(v3) using its canonical rule.
+    try { relation = oldCanonical(raw2, OldS) === oldCanonical(oldBase(raw3, OldS), OldS); }
+    catch { relation = false; }
+  }
+  let healthy = false;
+  if (v4 && raw3Present && raw2Present && ready.valid && readyValue[flag] === true) {
+    try {
+      const expected = lambdaC5Projection(raw4, CurrentS, OldS);
+      healthy = oldCanonical(raw3, OldS) === oldCanonical(expected.v3, OldS) &&
+        oldCanonical(raw2, OldS) === oldCanonical(expected.v2, OldS);
+    } catch { healthy = false; }
+  }
+  const tombstone = !current && raw4 !== null && raw3 === null && raw2 === null && ready.valid && ready.present && readyValue.checkpoint === false;
+  const blockingMetadata = metadata.filter(item => item !== 'old-adapter-history');
+  let status = 'conflict';
+  let autoChoice = null;
+  if (problems.length === 0 && blockingMetadata.length === 0 && healthy) status = 'healthy';
+  else if (problems.length === 0 && blockingMetadata.length === 0 && tombstone && v4) status = 'tombstone';
+  else if (metadata.length === 0 && raw4 === null) {
+    const oldSourcesValid = (!raw3Present || !!v3) && (!raw2Present || !!v2);
+    const flagsMatch = ready.valid && (!ready.present ||
+      (readyValue[flag] ? raw3Present && raw2Present : !raw3Present && !raw2Present));
+    if (oldSourcesValid && flagsMatch && (v3 || v2) && (!raw3Present || !raw2Present || relation)) {
+      status = 'migrate';
+      autoChoice = v3 ? 'v3' : 'v2';
+    } else if (!raw3Present && !raw2Present && !readyValue?.[flag]) {
+      status = 'empty';
+    }
+  } else if (metadata.length === 0 && raw4 === null && !raw3Present && !raw2Present) status = 'empty';
+  if (status === 'conflict' && !metadata.length) metadata.push('mirror-divergence');
+  return { kind, status, autoChoice, candidates, metadata, tombstone };
+}
+
+function inspectLambdaC5Storage(storage, CurrentS, OldS) {
+  const snapshot = captureLambdaC5Snapshot(storage);
+  const problems = metadataProblems(snapshot);
+  const oldAffected = journalAffected(snapshot[KEYS.oldJournal]);
+  const c5Affected = journalAffected(snapshot[KEYS.journal]);
+  let reviewState = null;
+  let hasReviewState = false;
+  if (snapshot[KEYS.reviewState] !== null) {
+    try { reviewState = JSON.parse(snapshot[KEYS.reviewState]); hasReviewState = true; } catch { /* invalid review metadata is already a global problem */ }
+  }
+  const oldJournalChanged = hasReviewState && snapshot[KEYS.oldJournal] !== reviewState.oldJournal;
+  const currentPending = hasReviewState
+    ? reviewState.pending.current || oldJournalChanged || c5Affected.current
+    : oldAffected.current || c5Affected.current;
+  const checkpointPending = hasReviewState
+    ? reviewState.pending.checkpoint || oldJournalChanged || c5Affected.checkpoint
+    : oldAffected.checkpoint || c5Affected.checkpoint;
+  const current = inspectGroup(snapshot, 'current', CurrentS, OldS, problems, currentPending);
+  const checkpoint = inspectGroup(snapshot, 'checkpoint', CurrentS, OldS, problems, checkpointPending);
+  return { snapshot, current, checkpoint };
+}
+
+function archiveSnapshot(raw, snapshot) {
+  const archive = raw === null ? { schemaVersion: 1, entries: [] } : JSON.parse(raw);
+  if (!archive || archive.schemaVersion !== 1 || !Array.isArray(archive.entries)) throw Error('Invalid C5 conflict archive; preserve original data');
+  // The archive itself is appended in place, so nesting its previous raw bytes
+  // in every new snapshot would cause quadratic growth. Prior entries remain
+  // intact in this same archive; record their count and keep the snapshot slot null.
+  const sourceSnapshot = { ...snapshot, [KEYS.conflictArchive]: null };
+  if (!archive.entries.some(entry => JSON.stringify(entry.snapshot) === JSON.stringify(sourceSnapshot))) {
+    archive.entries.push({ snapshot: sourceSnapshot, priorConflictArchiveEntries: archive.entries.length });
+  }
+  return archive;
+}
+
+function fullForChoice(group, choice) {
+  const candidate = group.candidates.find(item => item.id === choice);
+  if (!candidate) throw Error('Selected Lambda save candidate is unavailable');
+  return candidate.fullText;
+}
+
+function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, inspection = null } = {}) {
+  if (!['current', 'checkpoint'].includes(kind)) throw Error('Invalid Lambda conflict kind');
+  inspection ??= inspectLambdaC5Storage(storage, CurrentS, OldS);
+  const group = inspection[kind];
+  if (!group) throw Error('Missing Lambda conflict inspection');
+  if (choice === 'cancel') return { status: 'cancelled', inspection };
+  if (group.status === 'healthy' || group.status === 'empty') return { status: group.status, inspection };
+  if (group.status === 'migrate' && choice === undefined) choice = group.autoChoice;
+  if (group.status === 'tombstone' && !['clear', 'v4'].includes(choice)) return { status: 'choice-required', inspection };
+  const explicitTombstoneChoice = kind === 'checkpoint' && group.tombstone && ['clear', 'v4'].includes(choice);
+  if (group.status === 'conflict' && !group.candidates.some(candidate => candidate.id === choice) &&
+    !(choice === 'clear' && group.candidates.length === 0) && !explicitTombstoneChoice) return { status: 'choice-required', inspection };
+  if (!['v4', 'v3', 'v2', 'clear'].includes(choice)) throw Error('Invalid Lambda conflict choice');
+  if (JSON.stringify(captureLambdaC5Snapshot(storage)) !== JSON.stringify(inspection.snapshot)) throw Error('C5 storage changed since conflict inspection');
+
+  const snapshot = inspection.snapshot;
+  const archived = archiveSnapshot(snapshot[KEYS.conflictArchive], snapshot);
+  const archiveText = JSON.stringify(archived);
+  let expectedSnapshot = snapshot;
+  const changes = [];
+  if (snapshot[KEYS.journal] !== null) {
+    // The new transaction journal uses the same key. Preserve the interrupted
+    // one in a verified archive before replacing it, even if the archive write
+    // later fails for quota reasons.
+    if (JSON.stringify(captureLambdaC5Snapshot(storage)) !== JSON.stringify(snapshot)) throw Error('C5 storage changed since conflict inspection');
+    storage.setItem(KEYS.conflictArchive, archiveText);
+    if (storage.getItem(KEYS.conflictArchive) !== archiveText) throw Error('C5 conflict archive write mismatch; preserve original journal');
+    expectedSnapshot = { ...snapshot, [KEYS.conflictArchive]: archiveText };
+  } else changes.push([KEYS.conflictArchive, archiveText]);
+  const ready = parseReady(snapshot[KEYS.ready]);
+  const flags = ready.valid ? ready.value : { auto: false, checkpoint: false };
+  const currentKind = kind === 'current';
+  const key4 = currentKind ? KEYS.current4 : KEYS.checkpoint4;
+  const key3 = currentKind ? KEYS.current3 : KEYS.checkpoint3;
+  const key2 = currentKind ? KEYS.current2 : KEYS.checkpoint2;
+  const oldAffected = journalAffected(snapshot[KEYS.oldJournal]);
+  const c5Affected = journalAffected(snapshot[KEYS.journal]);
+  let priorReview = null;
+  if (snapshot[KEYS.reviewState] !== null) {
+    priorReview = JSON.parse(snapshot[KEYS.reviewState]);
+  }
+  const oldJournalChanged = priorReview !== null && snapshot[KEYS.oldJournal] !== priorReview.oldJournal;
+  const pending = priorReview === null
+    ? { current: oldAffected.current || c5Affected.current, checkpoint: oldAffected.checkpoint || c5Affected.checkpoint }
+    : {
+        current: priorReview.pending.current || oldJournalChanged || c5Affected.current,
+        checkpoint: priorReview.pending.checkpoint || oldJournalChanged || c5Affected.checkpoint
+      };
+  pending[kind] = false;
+  const anyPending = pending.current || pending.checkpoint;
+  changes.push([KEYS.oldJournal, anyPending ? snapshot[KEYS.oldJournal] : null],
+    [KEYS.reviewState, anyPending ? JSON.stringify({ schemaVersion: 1, pending, oldJournal: snapshot[KEYS.oldJournal] }) : null]);
+  if (choice === 'clear' && currentKind) {
+    flags.auto = false;
+    changes.push([key4, null], [key3, null], [key2, null], [KEYS.ready, JSON.stringify(flags)]);
+  } else if (currentKind) {
+    const fullText = fullForChoice(group, choice);
+    const projection = lambdaC5Projection(fullText, CurrentS, OldS);
+    flags.auto = true;
+    changes.push([key4, fullText], [key3, projection.v3], [key2, projection.v2], [KEYS.ready, JSON.stringify(flags)]);
+  } else if (choice === 'clear') {
+    flags.checkpoint = false;
+    changes.push([key4, null], [key3, null], [key2, null], [KEYS.ready, JSON.stringify(flags)],
+      [KEYS.checkpointTombstone, JSON.stringify({ schemaVersion: 1, source: 'content3-clear', snapshot: true })]);
+  } else {
+    const fullText = fullForChoice(group, choice);
+    const projection = lambdaC5Projection(fullText, CurrentS, OldS);
+    flags.checkpoint = true;
+    changes.push([key4, fullText], [key3, projection.v3], [key2, projection.v2], [KEYS.ready, JSON.stringify(flags)], [KEYS.checkpointTombstone, null]);
+  }
+  const c5 = createLambdaC5Storage(storage, CurrentS, OldS, { eventTarget: null });
+  c5.commit(changes, expectedSnapshot);
+  return { status: choice === 'clear' ? 'cleared' : 'resolved', choice, inspection };
+}
+
+function createLambdaC5Storage(storage, CurrentS, OldS, { eventTarget = globalThis.window } = {}) {
+  const read = key => storage.getItem(key);
+  let invalidated = false;
+  let observed = null;
+  let priorSnapshot = null;
+  try { priorSnapshot = captureLambdaC5Snapshot(storage); } catch { /* Retain an unavailable baseline and fail-stop on the first event. */ }
+  function externalStorageChange(event = {}) {
+    if (event.key !== null && !LAMBDA_C5_STORAGE_KEYS.includes(event.key)) return;
+    invalidated = true;
+    let snapshot = null, snapshotError = null;
+    try { snapshot = captureLambdaC5Snapshot(storage); }
+    catch (error) { snapshotError = String(error?.message ?? error); }
+    observed = { event: { key: event.key ?? null, oldValue: event.oldValue ?? null, newValue: event.newValue ?? null }, previousSnapshot: priorSnapshot, snapshot, snapshotError };
+    if (snapshot !== null) priorSnapshot = snapshot;
+  }
+  const assertActive = () => { if (invalidated) throw Error('C5 session invalidated by an external storage change; export observed values before continuing'); };
+  const onStorage = event => externalStorageChange(event);
+  eventTarget?.addEventListener?.('storage', onStorage);
+  const flags = () => {
+    const raw = read(KEYS.ready);
+    const result = raw === null ? { auto: false, checkpoint: false } : JSON.parse(raw);
+    if (!result || typeof result.auto !== 'boolean' || typeof result.checkpoint !== 'boolean') throw Error('Invalid C5 mirror readiness');
+    return result;
+  };
+  function recover() {
+    const raw = read(KEYS.journal);
+    if (raw === null) return;
+    const record = JSON.parse(raw);
+    if (record.schemaVersion !== 1 || !Array.isArray(record.before) || !Array.isArray(record.after) ||
+      record.before.length !== record.after.length) throw Error('Invalid C5 journal');
+    const before = new Map();
+    const after = new Map();
+    for (const [entries, target] of [[record.before, before], [record.after, after]]) {
+      for (const entry of entries) {
+        if (!Array.isArray(entry) || entry.length !== 2 || !ALLOWED.has(entry[0]) || target.has(entry[0]) ||
+          (entry[1] !== null && typeof entry[1] !== 'string')) throw Error('Invalid C5 journal');
+        target.set(entry[0], entry[1]);
+      }
+    }
+    if ([...before.keys()].some(key => !after.has(key))) throw Error('Invalid C5 journal');
+    for (const entry of record.after) {
+      if ([KEYS.current4, KEYS.checkpoint4].includes(entry[0]) && entry[1] !== null) CurrentS.decode(entry[1]);
+      if ([KEYS.current3, KEYS.checkpoint3, KEYS.current2, KEYS.checkpoint2].includes(entry[0]) && entry[1] !== null) OldS.decode(entry[1]);
+    }
+    for (const key of before.keys()) {
+      const now = read(key);
+      if (now !== before.get(key) && now !== after.get(key)) throw Error('C5 recovery conflict: preserve observed storage values');
+    }
+    for (const [key, value] of record.after) {
+      if (value === null) storage.removeItem(key); else storage.setItem(key, value);
+      if (read(key) !== value) throw Error('C5 journal recovery readback mismatch');
+    }
+    storage.removeItem(KEYS.journal);
+    priorSnapshot = captureLambdaC5Snapshot(storage);
+  }
+  function sameSnapshot(expected) {
+    const actual = captureLambdaC5Snapshot(storage);
+    return JSON.stringify(actual) === JSON.stringify(expected);
+  }
+  function transaction(changes, expectedSnapshot = null, skipRecover = false) {
+    assertActive();
+    if (!skipRecover) recover();
+    if (expectedSnapshot && !sameSnapshot(expectedSnapshot)) throw Error('C5 storage changed since conflict inspection');
+    if (!Array.isArray(changes) || changes.some(entry => !Array.isArray(entry) || entry.length !== 2 || !ALLOWED.has(entry[0])) ||
+      new Set(changes.map(([key]) => key)).size !== changes.length) throw Error('Invalid C5 transaction');
+    const before = changes.map(([key]) => [key, read(key)]);
+    const record = JSON.stringify({ schemaVersion: 1, before, after: changes });
+    storage.setItem(KEYS.journal, record);
+    if (read(KEYS.journal) !== record) throw Error('C5 journal write mismatch');
+    try {
+      for (const [key, value] of changes) {
+        if (value === null) storage.removeItem(key); else storage.setItem(key, value);
+        if (read(key) !== value) throw Error('C5 storage readback mismatch');
+      }
+    } catch (error) {
+      // If the first write (usually the archive) failed and every data key is
+      // still byte-for-byte before, the journal itself can be safely removed.
+      if (before.every(([key, value]) => read(key) === value)) storage.removeItem(KEYS.journal);
+      throw error;
+    }
+    storage.removeItem(KEYS.journal);
+    priorSnapshot = captureLambdaC5Snapshot(storage);
+    if (expectedSnapshot) {
+      const final = { ...expectedSnapshot };
+      for (const [key, value] of changes) final[key] = value;
+      final[KEYS.journal] = null;
+      if (!sameSnapshot(final)) throw Error('C5 storage changed during conflict resolution');
     }
   }
-  function base(text){const s=S.decode(text);const copy=JSON.parse(S.encode(s));copy.version=2;copy.session={...copy.session,original:s.term,steps:0};delete copy.session.paths;copy.functions=copy.functions.map(({name,term})=>({name,term}));copy.view.strategy='normal';copy.view.direction='left';return S.encode(copy);}
-  function canonical(text){const s=JSON.parse(S.encode(S.decode(text)));delete s.savedAt;s.functions=s.functions.map(({name,term})=>({name,term}));return JSON.stringify(s);}
-  function merge(fullText,oldText){
-    const full=S.decode(fullText),old=S.decode(oldText),result=JSON.parse(S.encode(old));
-    result.view.strategy=full.view.strategy;result.view.direction=full.view.direction;
-    result.functions=result.functions.map(fn=>{const previous=full.functions.find(f=>f.name===fn.name&&JSON.stringify(f.term)===JSON.stringify(fn.term));return previous?.source===undefined?fn:{...fn,source:previous.source};});
-    if(JSON.stringify(old.session.original)===JSON.stringify(full.term)){
-      result.session={...full.session,steps:full.session.steps+old.session.steps,dirty:old.session.dirty,halt:old.session.halt};
-      if(full.session.paths)result.session.paths=[...full.session.paths,...Array(old.session.steps).fill(null)];
+  function verifyPrior(key) {
+    const current = key === KEYS.current4;
+    const v4Key = key;
+    const v3Key = current ? KEYS.current3 : KEYS.checkpoint3;
+    const v2Key = current ? KEYS.current2 : KEYS.checkpoint2;
+    const flag = current ? 'auto' : 'checkpoint';
+    const v4 = read(v4Key), v3 = read(v3Key), v2 = read(v2Key), ready = flags();
+    if (v4 === null && v3 === null && v2 === null && ready[flag] === false) return;
+    if (v4 === null || v3 === null || v2 === null || ready[flag] !== true) throw Error('C5 mirror conflict: explicit legacy resolver required');
+    CurrentS.decode(v4);
+    const expected = lambdaC5Projection(v4, CurrentS, OldS);
+    if (oldCanonical(v3, OldS) !== oldCanonical(expected.v3, OldS) ||
+      oldCanonical(v2, OldS) !== oldCanonical(expected.v2, OldS)) throw Error('C5 mirror conflict: explicit legacy resolver required');
+  }
+  function persist(key, text) {
+    assertActive();
+    const current = key === KEYS.current4;
+    recover();
+    verifyPrior(key);
+    CurrentS.decode(text);
+    const mirror = lambdaC5Projection(text, CurrentS, OldS);
+    const state = flags();
+    state[current ? 'auto' : 'checkpoint'] = true;
+    transaction([
+      [key, text],
+      [current ? KEYS.current3 : KEYS.checkpoint3, mirror.v3],
+      [current ? KEYS.current2 : KEYS.checkpoint2, mirror.v2],
+      [KEYS.ready, JSON.stringify(state)],
+      ...(!current ? [[KEYS.checkpointTombstone, null]] : [])
+    ]);
+  }
+  function getItem(key) {
+    assertActive();
+    recover();
+    if (!ALLOWED.has(key)) throw Error('C5 storage key is outside the Lambda allowlist');
+    if (key !== KEYS.current4 && key !== KEYS.checkpoint4) return read(key);
+    verifyPrior(key);
+    const text = read(key);
+    if (text !== null) { CurrentS.decode(text); return text; }
+    return null;
+  }
+  function setItem(key, text) {
+    assertActive();
+    if (key === KEYS.current4 || key === KEYS.checkpoint4) return persist(key, text);
+    if (key === KEYS.legacy4) { CurrentS.decode(text); return transaction([[key, text]]); }
+    throw Error('C5 storage key is read-only or outside the Lambda allowlist');
+  }
+  function removeItem(key) {
+    assertActive();
+    recover();
+    if (key === KEYS.current4 || key === KEYS.checkpoint4) {
+      verifyPrior(key);
+      const current = key === KEYS.current4;
+      const state = flags();
+      state[current ? 'auto' : 'checkpoint'] = false;
+      return transaction([
+        [key, null],
+        [current ? KEYS.current3 : KEYS.checkpoint3, null],
+        [current ? KEYS.current2 : KEYS.checkpoint2, null],
+        [KEYS.ready, JSON.stringify(state)],
+        ...(!current ? [[KEYS.checkpointTombstone, JSON.stringify({ schemaVersion: 1, source: 'content4-clear' })]] : [])
+      ]);
     }
-    return S.encode(result);
+    if (key === KEYS.legacy4) return transaction([[key, null]]);
+    throw Error('C5 storage key is read-only or outside the Lambda allowlist');
   }
-  function getItem(key){
-    ensureMigration();if(key!==auto&&key!==cp)return storage.getItem(key);
-    const text=storage.getItem(key),published=flags()[key===auto?'auto':'checkpoint'];if(text===null||!published)return text;
-    const old=storage.getItem(key===auto?oldAuto:oldCp);
-    if(old===null){if(key===cp){transaction([archive(key,text),[cp,null],[ready,JSON.stringify({...flags(),checkpoint:false})]]);return null;}return text;}
-    if(canonical(old)===canonical(base(text)))return text;
-    const next=merge(text,old);transaction([archive(key,text),[key,next],[key===auto?oldAuto:oldCp,base(next)]]);return next;
-  }
-  function setItem(key,text){
-    if(key!==auto&&key!==cp)return storage.setItem(key,text);
-    ensureMigration();const state=flags(),prior=storage.getItem(key),old=storage.getItem(key===auto?oldAuto:oldCp);
-    if(state[key===auto?'auto':'checkpoint']&&prior!==null&&old!==null&&canonical(old)!==canonical(base(prior)))throw Error('旧版进度发生变化，请重新打开游戏后继续。');
-    const changes=[[key,text],[key===auto?oldAuto:oldCp,base(text)]];
-    state[key===auto?'auto':'checkpoint']=true;
-    if(key===auto&&!state.checkpoint&&storage.getItem(cp)!==null){changes.push([oldCp,base(storage.getItem(cp))]);state.checkpoint=true;}
-    changes.push([ready,JSON.stringify(state)]);transaction(changes);
-  }
-  function removeItem(key){if(key===cp){transaction([[cp,null],[oldCp,null],[ready,JSON.stringify({...flags(),checkpoint:false})]]);}else storage.removeItem(key);}
-  return {getItem,setItem,removeItem};
-})(root.localStorage,S,function migrateLambdaStorage(storage,decode){
-  const auto='lambda-lab-hub-v3',checkpoint='lambda-lab-hub-checkpoint-v3';
-  if(storage.getItem(auto)!==null)return false;
-  const current=storage.getItem('lambda-lab-v2')||storage.getItem('lambda-lab-v1');
-  const saved=storage.getItem('lambda-lab-checkpoint-v2');
-  if(current===null&&saved===null)return false;
-  if(current!==null)decode(current);if(saved!==null)decode(saved);
-  const writes=[];
-  if(saved!==null&&storage.getItem(checkpoint)===null)writes.push([checkpoint,saved]);
-  if(current!==null)writes.push([auto,current]);
-  const before=writes.map(([key])=>[key,storage.getItem(key)]);
-  try{for(const [key,value] of writes)storage.setItem(key,value);}
-  catch(error){for(const [key,value] of before){try{if(value===null)storage.removeItem(key);else storage.setItem(key,value);}catch{}}throw error;}
-  return true;
-}));return {getItem:key=>get().getItem(key),setItem:(key,value)=>get().setItem(key,value),removeItem:key=>get().removeItem(key)};})();
-  const AUTO='lambda-lab-hub-v3',CHECKPOINT='lambda-lab-hub-checkpoint-v3',LEGACY='lambda-lab-hub-legacy-v3';
+  return {
+    getItem, setItem, removeItem,
+    commit: (changes, expectedSnapshot) => transaction(changes, expectedSnapshot, true),
+    invalidate: () => externalStorageChange({ key: null }),
+    exportObserved: () => observed === null ? null : JSON.stringify(observed),
+    dispose: () => eventTarget?.removeEventListener?.('storage', onStorage)
+  };
+}
+
+return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,createLambdaC5Storage,LAMBDA_C5_STORAGE_KEYS};})();
+    const unavailable={getItem(){return null;},setItem(){throw new Error('浏览器存储不可用');},removeItem(){throw new Error('浏览器存储不可用');}};
+    let backing;
+    try{backing=root.localStorage;}catch{backing=null;}
+    const raw=backing||unavailable;
+    const c5=C5.createLambdaC5Storage(raw,S,OldS,{eventTarget:backing?root:null});
+    const safeExport=(reason,snapshot)=>{
+      const payload=JSON.stringify({schemaVersion:1,game:'lambda-diagram-game',reason,exportedAt:new Date().toISOString(),storage:snapshot},null,2);
+      try{root.LambdaDownload.save('lambda-lab-storage-recovery.json',payload,'application/json');return true;}
+      catch(error){return String(error?.message||error);}
+    };
+    let dialog=null,dialogBody=null,dialogStatus=null,conflictBlocked=false;
+    function ensureDialog(){
+      if(dialog)return dialog;
+      dialog=document.createElement('dialog');dialog.id='lambda-c5-review';dialog.setAttribute('aria-labelledby','lambda-c5-title');
+      dialog.innerHTML='<form method="dialog" class="lambda-c5-card"><h2 id="lambda-c5-title"></h2><p id="lambda-c5-description"></p><div id="lambda-c5-options"></div><p id="lambda-c5-status" role="status" aria-live="polite"></p></form>';
+      const style=document.createElement('style');style.textContent='#lambda-c5-review{max-width:min(38rem,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);overflow:auto;border:1px solid #64748b;border-radius:1rem;padding:0;background:#fff;color:#172033;box-shadow:0 1rem 4rem #0006}#lambda-c5-review::backdrop{background:#101827b8}#lambda-c5-review .lambda-c5-card{padding:1.25rem;display:grid;gap:.75rem}#lambda-c5-review h2{margin:0;font-size:1.2rem}#lambda-c5-review p{margin:0;line-height:1.5}#lambda-c5-review #lambda-c5-options{display:grid;gap:.5rem}#lambda-c5-review button{min-height:2.75rem;padding:.55rem .8rem;border:1px solid #64748b;border-radius:.6rem;background:#f8fafc;color:inherit;text-align:left;font:inherit;cursor:pointer}#lambda-c5-review button:focus-visible{outline:3px solid #2563eb;outline-offset:2px}#lambda-c5-review [data-kind="danger"]{border-color:#b91c1c;color:#991b1b}';document.head.append(style);document.body.append(dialog);
+      dialogBody=dialog.querySelector('#lambda-c5-options');dialogStatus=dialog.querySelector('#lambda-c5-status');
+      dialog.addEventListener('cancel',event=>event.preventDefault());return dialog;
+    }
+    function show(title,description){
+      const node=ensureDialog();node.querySelector('#lambda-c5-title').textContent=title;
+      node.querySelector('#lambda-c5-description').textContent=description;dialogBody.replaceChildren();dialogStatus.textContent='';
+      if(!node.open){if(typeof node.showModal==='function')node.showModal();else node.setAttribute('open','');}
+      return node;
+    }
+    function button(label,action,{danger=false}={}){
+      const b=document.createElement('button');b.type='button';b.textContent=label;if(danger)b.dataset.kind='danger';
+      b.addEventListener('click',action);dialogBody.append(b);return b;
+    }
+    function needsReview(group){return group.status==='conflict'||group.status==='tombstone';}
+    function updateReview(notice=''){
+      const inspection=C5.inspectLambdaC5Storage(raw,S,OldS);
+      const pending=['current','checkpoint'].find(kind=>needsReview(inspection[kind]));
+      if(!pending){conflictBlocked=false;if(dialog?.open)dialog.close();root.location.reload();return;}
+      conflictBlocked=true;
+      const group=inspection[pending],name=pending==='current'?'当前存档':'检查点';
+      show('检测到Lambda存档冲突',name+'存在多个版本或未完成的写入记录。原始值会先归档；请选择要继续使用的版本。取消不会写入。');
+      dialogStatus.textContent=notice;
+      for(const candidate of group.candidates){
+        const s=candidate.summary||{};
+        const draft=String(s.draft||''),preview=draft.length>96?draft.slice(0,96)+'…':draft;
+        const label=(candidate.id==='v4'?'新版完整存档':candidate.id==='v3'?'旧版三代存档':'旧版二代存档')+
+          ' · 已完成 '+String(s.completed??'未知')+' · 模式 '+String(s.mode??'未知')+' · 关卡 '+String(s.level??'未知')+' · 表达式 '+preview;
+        button(label,()=>resolveChoice(pending,candidate.id,inspection));
+      }
+      if(group.tombstone)button('保留“已清除”的检查点',()=>resolveChoice(pending,'clear',inspection),{danger:true});
+      if(group.candidates.length===0)button('归档后清空损坏存档',()=>resolveChoice(pending,'clear',inspection),{danger:true});
+      button('导出当前全部原始存档',()=>{
+        const result=safeExport('conflict-review',inspection.snapshot);
+        dialogStatus.textContent=result===true?'已请求下载当前预览对应的全部原始存档。':'导出失败：'+String(result);
+      });
+      button('取消并保留全部原始数据',()=>{dialogStatus.textContent='已取消；所有存档原文均未改动。关闭此页后可稍后再选择。'});
+    }
+    function resolveChoice(kind,choice,inspection){
+      try{
+        C5.resolveLambdaC5Storage(raw,S,OldS,{kind,choice,inspection});
+        updateReview();
+      }catch(error){
+        if(/changed since conflict inspection/.test(String(error?.message||error)))updateReview('存档在预览后发生变化，尚未写入。请检查刷新的候选内容后重新选择。');
+        else dialogStatus.textContent='处理失败，原始存档仍保留：'+String(error?.message||error);
+      }
+    }
+    function startup(){
+      if(!backing)return;
+      let inspection=C5.inspectLambdaC5Storage(raw,S,OldS);
+      for(const kind of ['current','checkpoint']){
+        const group=inspection[kind];
+        if(group.status==='migrate'){
+          C5.resolveLambdaC5Storage(raw,S,OldS,{kind,choice:group.autoChoice,inspection});
+          inspection=C5.inspectLambdaC5Storage(raw,S,OldS);
+        }
+      }
+      if(!needsReview(inspection.current)&&!needsReview(inspection.checkpoint)&&inspection.current.status==='empty'){
+        const legacy=raw.getItem('lambda-lab-v1');
+        if(legacy!==null&&raw.getItem('lambda-lab-hub-legacy-v4')===null){S.decode(legacy);c5.setItem('lambda-lab-hub-legacy-v4',legacy);}
+      }
+      if(needsReview(inspection.current)||needsReview(inspection.checkpoint))updateReview();
+    }
+    try{startup();}catch(error){
+      conflictBlocked=true;
+      const snapshot=(()=>{try{return C5.captureLambdaC5Snapshot(raw);}catch{return null;}})();
+      const node=show('Lambda存档需要处理','自动恢复已停止，原始数据未清空。详细原因：'+String(error?.message||error));
+      button('导出全部原始存档',()=>{const result=safeExport('startup-error',snapshot);dialogStatus.textContent=result===true?'已请求下载原始数据导出文件。':'导出失败：'+String(result);});
+      button('关闭并保留原始数据',()=>{dialogStatus.textContent='页面已停在此处；原始存档保持不变。'});
+    }
+    root.addEventListener('storage',event=>{
+      if(!backing||(event.key!==null&&!C5.LAMBDA_C5_STORAGE_KEYS.includes(event.key)))return;
+      conflictBlocked=true;
+      const snapshot=c5.exportObserved();
+      const node=show('另一个页面修改了Lambda存档','为避免覆盖其他页面的进度，本页面已停止写入。请导出本页观察到的全部存档原文后重新打开游戏。');
+      button('导出观察到的全部存档',()=>{try{root.LambdaDownload.save('lambda-lab-storage-recovery.json',snapshot,'application/json');dialogStatus.textContent='已请求下载导出文件。';}catch(error){dialogStatus.textContent='导出失败：'+String(error?.message||error);}});
+      button('重新加载',()=>root.location.reload());
+    });
+    const mapped=new Map([['lambda-lab-v2','lambda-lab-hub-v4'],['lambda-lab-checkpoint-v2','lambda-lab-hub-checkpoint-v4'],['lambda-lab-v1','lambda-lab-hub-legacy-v4']]);
+    const assertUnblocked=()=>{if(conflictBlocked)throw new Error('Lambda存档冲突尚未处理；当前页面已停止读取和写入。');};
+    const adapter={getItem(key){assertUnblocked();return c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return c5.removeItem(mapped.get(key)||key);},setItem(key,value){
+      assertUnblocked();
+      try{return c5.setItem(mapped.get(key)||key,value);}catch(error){
+        if(error?.name==='QuotaExceededError'||/quota|storage full|配额/i.test(String(error?.message||''))){
+          const snapshot=C5.captureLambdaC5Snapshot(raw);show('设备存储空间不足','自动存档未能写入。现有存档保持原样；请先导出恢复文件，再清理设备空间。');
+          button('导出全部Lambda存档',()=>{const result=safeExport('quota',snapshot);dialogStatus.textContent=result===true?'已请求下载导出文件。':'导出失败：'+String(result);});
+          button('保留存档并关闭提示',()=>{dialogStatus.textContent='原存档未被本次写入覆盖。'});
+        }
+        throw error;
+      }
+    }};
+    root.LambdaC5Recovery={exportObserved:()=>c5.exportObserved()};
+    return adapter;
+  })(root);
+  const AUTO='lambda-lab-hub-v4',CHECKPOINT='lambda-lab-hub-checkpoint-v4',LEGACY='lambda-lab-hub-legacy-v4';
   const $=id=>document.getElementById(id);
   function init(api) {
     const cancel=document.createElement('button');cancel.id='function-cancel';cancel.type='button';cancel.className='button';cancel.textContent='取消编辑';cancel.hidden=true;
@@ -816,7 +2069,7 @@
     }
     $('function-form').addEventListener('submit',e=>{
       e.preventDefault();$('function-error').hidden=true;
-      try {const name=$('function-name').value.trim(),source=$('function-source').value;functions=editing===null?L.add(functions,name,source):L.update(functions,editing,name,source);renderLibrary();clearEditor();persist();api.toast(`已保存函数 ${name}`);}
+      try {const name=$('function-name').value.trim(),source=$('function-source').value,encoding=api.getNumberEncoding?.()||'decimal',precision=api.getDecimalPlaces?.()??6;functions=editing===null?L.add(functions,name,source,C.LIMITS.chars,encoding,precision):L.update(functions,editing,name,source,encoding,precision);renderLibrary();clearEditor();persist();api.toast(`已保存函数 ${name}`);}
       catch(error){$('function-error').textContent=error.message;$('function-error').hidden=false;}
     });
     $('function-cancel').addEventListener('click',()=>{clearEditor();persist();});
@@ -841,7 +2094,7 @@
       try {
         const backup=S.encodeBackup(captured(),checkpoint);
         const empty=S.decode(S.encode({version:2,draft:'',functions:[],functionDraft:{name:'',source:''},completed:[],mode:'free',level:0,
-          session:{original:null,steps:0,dirty:false,halt:''},view:{speed:600,scale:1,autoFit:true,panX:0,panY:0,historyOpen:false,helpOpen:false,hintOpen:false},
+          session:{original:null,steps:0,dirty:false,halt:''},view:{numberEncoding:'decimal',decimalPlaces:6,speed:600,scale:1,autoFit:true,panX:0,panY:0,historyOpen:false,helpOpen:false,hintOpen:false},
           selection:{start:0,end:0},error:''}));
         const previous=[AUTO,CHECKPOINT,LEGACY].map(key=>[key,localStorage.getItem(key)]);
         const result=root.LambdaDownload.saveBackup(`lambda-lab-backup-${new Date().toISOString().replace(/[:.]/g,'-')}.json`,backup);
@@ -950,7 +2203,7 @@
   const $=id=>document.getElementById(id);
   const input=$('expression');
   const state={ term:null, original:null, history:[], paths:null, dirty:false, running:false, timer:null,
-    mode:'free', level:0, completed:new Set(), halt:'', scale:1, autoFit:true, model:null, speed:600, strategy:'normal', direction:'left' };
+    mode:'free', level:0, completed:new Set(), halt:'', scale:1, autoFit:true, model:null, speed:600, strategy:'normal', direction:'left',numberEncoding:'decimal',decimalPlaces:6,fast:false };
   let toastTimer,workspace,viewer,historySource=null,renderedCount=0,diagramTerm=null,diagramRoute=null;
   const decodedTerms=new WeakMap(),TRUE=C.parse(P.TRUE),FALSE=C.parse(P.FALSE),IDENTITY=C.parse(P.I);
   const diagramView=window.LambdaDiagramView.init($('diagram-mount'));
@@ -958,13 +2211,15 @@
   function capture() {
     return {draft:input.value,completed:[...state.completed],mode:state.mode,level:state.level,
       session:{original:state.original,steps:Math.max(0,state.history.length-1),dirty:state.dirty,halt:state.halt,...(state.paths?{paths:state.paths}:{} )},
-      view:{speed:state.speed,strategy:state.strategy,direction:state.direction,scale:state.scale,autoFit:state.autoFit,panX:$('diagram-viewport').scrollLeft,panY:$('diagram-viewport').scrollTop,historyOpen:$('history-details').open,helpOpen:!$('help-panel').hidden,hintOpen:!$('hint').hidden},
+      view:{speed:state.speed,strategy:state.strategy,direction:state.direction,numberEncoding:state.numberEncoding,decimalPlaces:state.decimalPlaces,scale:state.scale,autoFit:state.autoFit,panX:$('diagram-viewport').scrollLeft,panY:$('diagram-viewport').scrollTop,historyOpen:$('history-details').open,helpOpen:!$('help-panel').hidden,hintOpen:!$('hint').hidden},
       selection:{start:input.selectionStart,end:input.selectionEnd},error:$('error-message').hidden?'':$('error-message').textContent};
   }
   function applySnapshot(s) {
+    $('example-info').hidden=true;
     stop();input.value=s.draft;state.completed=new Set(s.completed);state.mode=s.mode;state.level=s.level;
     state.original=s.session.original;state.term=s.term;state.history=s.history;state.paths=s.session.paths??null;state.dirty=s.session.dirty;state.halt=s.session.halt;
     state.scale=s.view.scale;state.autoFit=s.view.autoFit;state.speed=s.view.speed;state.strategy=s.view.strategy??'normal';state.direction=s.view.direction??'left';renderSpeed();
+    state.numberEncoding=s.view.numberEncoding??'decimal';state.decimalPlaces=s.view.decimalPlaces??6;
     $('history-details').open=s.view.historyOpen;$('help-panel').hidden=!s.view.helpOpen;$('help-toggle').setAttribute('aria-expanded',String(s.view.helpOpen));
     $('hint').hidden=!s.view.hintOpen;$('hint-toggle').textContent=s.view.hintOpen?'收起提示':'显示提示';$('hint-toggle').setAttribute('aria-expanded',String(s.view.hintOpen));
     $('challenge-feedback').textContent='';$('next-level').hidden=true;$('error-message').textContent=s.error;$('error-message').hidden=!s.error;
@@ -976,8 +2231,9 @@
     clearTimeout(toastTimer); $('toast').textContent=message; $('toast').hidden=false;
     toastTimer=setTimeout(()=>$('toast').hidden=true,2400);
   }
-  function stop() { clearTimeout(state.timer); state.timer=null; state.running=false; }
+  function stop() { clearTimeout(state.timer); state.timer=null; state.running=false;state.fast=false; }
   function changed() {
+    $('example-info').hidden=true;
     stop(); state.dirty=true; state.halt=''; $('error-message').hidden=true;
     $('challenge-feedback').textContent=''; $('next-level').hidden=true;
     $('char-count').textContent=`${input.value.length} / ${C.LIMITS.chars}`;
@@ -993,7 +2249,9 @@
     stop(); $('error-message').hidden=true; state.halt='';
     $('challenge-feedback').textContent=''; $('next-level').hidden=true;
     try {
-      const term=workspace?workspace.expand(C.parse(input.value)):C.parse(input.value);
+      if(state.numberEncoding==='decimal'&&!$('decimal-places').checkValidity())throw new C.LambdaError('除法小数位数需为非负整数。');
+      const parsed=state.numberEncoding==='decimal'?C.parseInput(input.value):C.parse(input.value),expanded=workspace?workspace.expand(parsed):parsed;
+      const term=state.numberEncoding==='decimal'?window.LambdaDecimal.expand(expanded,state.decimalPlaces):expanded;
       state.term=term; state.original=term; state.history=[{term,change:null}]; state.paths=null;state.dirty=false;
       state.autoFit=true; render(); save(); return true;
     } catch(e) {
@@ -1033,16 +2291,24 @@
   }
   function decode(t) {
     if(decodedTerms.has(t))return decodedTerms.get(t);
+    const decimal=window.LambdaDecimal.read(t);if(decimal){const text=decimal.error?`错误：${decimal.error}`:`小数 ${window.LambdaDecimal.format(decimal)}`;decodedTerms.set(t,text);return text;}
     const number=C.churchNumber(t);let text;
     if(C.equal(t,FALSE))text='FALSE / Church 数 0';
     else if(C.equal(t,TRUE))text='TRUE · 选择第一个';
     else if(number!==null)text=`Church 数 ${number}`;
     else if(C.equal(t,IDENTITY))text='I · 恒等函数';
-    else{const free=C.freeVars(t);text=free.size?`${free.size} 个自由变量`:'闭合表达式';}
+    else{
+      const M=window.LambdaPolynomial,rational=M.readRational(t),polynomial=rational?null:M.readPolynomial(t);
+      if(rational)text=`有理数 ${M.formatRational(rational)}`;
+      else if(polynomial?.length)text=`多项式：${M.formatPolynomial(polynomial)}`;
+      else{const free=C.freeVars(t);text=free.size?`${free.size} 个自由变量`:'闭合表达式';}
+    }
     decodedTerms.set(t,text);return text;
   }
   function code(text) { const el=document.createElement('code'); el.textContent=text; return el; }
   function render() {
+    $('number-encoding').value=state.numberEncoding;$('decimal-places').value=state.decimalPlaces;
+    $('number-note').textContent=state.numberEncoding==='decimal'?`列表小数：支持负数。ADD / SUB / MUL / DIV；除法截断至 ${state.decimalPlaces} 位，未除尽标≈。递归运算请用正规序、从左到右。`:'丘奇兼容模式：只接受自然数，保留旧示例与存档的编码；可切回列表小数。';
     const ready=state.term&&!state.dirty, redex=state.term?C.findRedex(state.term,[],state.strategy,state.direction):null;
     $('reduction-order').value=state.strategy;
     $('reduction-direction').value=state.direction;
@@ -1053,6 +2319,7 @@
     $('step-count').textContent=count; $('run-label').textContent=state.running?'暂停':'运行';
     $('run').firstElementChild.textContent=state.running?'Ⅱ':'▶';
     $('run').disabled=!ready;
+    $('fast-run').disabled=!ready;$('fast-run').textContent=state.running&&state.fast?'暂停快速运行':'快速运行';
     $('step').disabled=!ready||state.running;
     $('back').disabled=!ready||count===0||state.running;
     $('reset').disabled=!ready||state.running||count===0;
@@ -1086,23 +2353,26 @@
     renderDiagram(redex);
     save();
   }
-  function advance(path=null) {
+  function advance(path=null,display=true) {
     if(!state.term||state.dirty) return false;
     try {
-      const selected=Array.isArray(path),result=selected?C.stepAt(state.term,path):C.step(state.term,state.strategy,state.direction); if(!result){stop();render();return false;}
+      const selected=Array.isArray(path),result=selected?C.stepAt(state.term,path):C.step(state.term,state.strategy,state.direction); if(!result){stop();if(display)render();return false;}
       const recordPath=selected||state.strategy==='applicative'||state.direction==='right';
       if(recordPath&&!state.paths)state.paths=Array(state.history.length-1).fill(null);
       if(state.paths)state.paths.push(recordPath?result.path:null);
       state.term=result.term;state.history.push({term:result.term,change:result});state.halt='';
       // The preview is only a hint: confirm with an actual attempt before stopping.
       if(state.running&&!C.findRedex(state.term,[],state.strategy,state.direction)&&C.step(state.term,state.strategy,state.direction)===null)stop();
-      render(); return true;
-    } catch(e) {stop();state.halt=e.message;render();return false;}
+      if(display)render(); return true;
+    } catch(e) {stop();state.halt=e.message;if(display)render();return false;}
   }
   function captureTap(target){const selection=diagramView.selection(target);return !state.dirty&&selection?{...selection,term:state.term}:null;}
   function manualStep(selection){if(!selection||state.dirty||selection.term!==state.term)return;stop();advance(selection.path);}
   function schedule() {
-    state.timer=setTimeout(()=>{if(!state.running)return;const more=advance();if(more&&state.running)schedule();},state.speed);
+    state.timer=setTimeout(()=>{if(!state.running)return;
+      if(state.fast){const started=performance.now();do{if(!advance(null,false))break;}while(state.running&&performance.now()-started<8);render();if(state.running)schedule();}
+      else{const more=advance();if(more&&state.running)schedule();}
+    },state.fast?0:state.speed);
   }
   function renderSpeed() {
     $('speed').value=[1200,600,180,10].includes(state.speed)?String(state.speed):'custom';
@@ -1121,16 +2391,26 @@
   }
   function setSource(source) { input.value=source; changed(); convert(); }
   function renderLevels() {
+    const l=P.levels[state.level],stage=P.stages.find(s=>s.levelIds.includes(l.id));
+    const select=$('stage-select');select.replaceChildren();
+    for(const s of P.stages){
+      const option=document.createElement('option'),done=s.levelIds.filter(id=>state.completed.has(id)).length;
+      option.value=String(s.id);option.textContent=`第 ${s.id} 阶段 · ${s.name}（${done}/${s.levelIds.length}）`;select.append(option);
+    }
+    select.value=String(stage.id);
+    $('stage-progress').textContent=`本阶段 ${stage.levelIds.filter(id=>state.completed.has(id)).length} / ${stage.levelIds.length} 关`;
+    $('challenge-count').textContent=String(P.levels.length);
     const list=$('level-list');list.replaceChildren();
     P.levels.forEach((level,index)=>{
+      if(!stage.levelIds.includes(level.id))return;
       const b=document.createElement('button');b.textContent=`${level.id} ${level.name}`;
       b.className=(index===state.level?'active ':'')+(state.completed.has(level.id)?'completed':'');
       b.setAttribute('aria-pressed',String(index===state.level));b.addEventListener('click',()=>selectLevel(index));list.append(b);
     });
-    const l=P.levels[state.level];
     $('level-topic').textContent=`CHALLENGE ${String(l.id).padStart(2,'0')} / ${l.topic}`;
     $('level-title').textContent=l.name; $('level-description').textContent=l.description;
     $('target-label').textContent=l.targetLabel;$('target-expression').textContent=l.target;$('hint').textContent=l.hint;
+    $('target-kind').textContent=l.targetType?'目标结果（归约至正规形）':'目标正规形';
     $('progress-text').textContent=state.mode==='challenge'?`${state.completed.size} / ${P.levels.length} 关已完成`:'探索 · 输入 · 归约';
   }
   function renderMode() {
@@ -1140,6 +2420,10 @@
     renderLevels();
   }
   function selectLevel(index) {
+    const level=P.levels[index];state.numberEncoding=level.encoding??'church';
+    if(level.decimalPlaces!==undefined)state.decimalPlaces=level.decimalPlaces;
+    if(level.strategy)state.strategy=level.strategy;
+    if(level.direction)state.direction=level.direction;
     state.level=index;state.mode='challenge';$('hint').hidden=true;$('hint-toggle').textContent='显示提示';$('hint-toggle').setAttribute('aria-expanded','false');
     renderMode();setSource(P.levels[index].start);save();
   }
@@ -1149,10 +2433,12 @@
     if(state.running){feedback.textContent='正在运行，等归约完成后再验证。';return;}
     if(C.findRedex(state.term,[],state.strategy,state.direction)){feedback.textContent='还有可归约的部分。先运行到正规形，再验证答案。';return;}
     const l=P.levels[state.level];
-    if(!C.equal(state.term,C.parse(l.target))){feedback.textContent='这还不是目标结果。可以修改表达式，或显示提示再试一次。';return;}
+    if(!window.LambdaChallenges.matches(l,state.term)){feedback.textContent='这还不是目标结果。可以修改表达式，或显示提示再试一次。';return;}
     state.completed.add(l.id);save();renderLevels();
-    feedback.textContent=state.completed.size===P.levels.length?'五关全部完成！现在可以自由实验，组合你自己的函数。':`第 ${l.id} 关完成！结果与目标等价。`;
+    const stage=P.stages.find(s=>s.levelIds.includes(l.id)),stageDone=stage.levelIds.every(id=>state.completed.has(id));
+    feedback.textContent=state.completed.size===P.levels.length?`${P.levels.length} 关全部完成！现在可以自由实验，组合你自己的函数。`:`第 ${l.id} 关完成！${stageDone?`「${stage.name}」阶段全部完成。`:'结果与目标等价。'}`;
     $('next-level').hidden=state.level===P.levels.length-1;
+    $('next-level').textContent=l.id===stage.levelIds.at(-1)?'下一阶段 →':'下一关 →';
     toast(`✓ ${l.name} · 挑战完成`);
   }
   input.addEventListener('input',changed);
@@ -1161,9 +2447,23 @@
     b.addEventListener('mousedown',e=>e.preventDefault());
     b.addEventListener('click',()=>insert(b.dataset.insert));
   });
-  P.examples.forEach((e,i)=>{const option=document.createElement('option');option.value=i;option.textContent=e.name;$('examples').append(option);});
-  $('examples').addEventListener('change',()=>{const value=$('examples').value;if(value==='')return;setSource(P.examples[Number(value)].term);$('examples').value='';});
+  const exampleGroups=new Map();
+  P.examples.forEach((e,i)=>{
+    const category=e.category||'入门';
+    if(!exampleGroups.has(category)){const group=document.createElement('optgroup');group.label=category;exampleGroups.set(category,group);$('examples').append(group);}
+    const option=document.createElement('option');option.value=i;option.textContent=e.name;exampleGroups.get(category).append(option);
+  });
+  $('examples').addEventListener('change',()=>{
+    const value=$('examples').value;if(value==='')return;const example=P.examples[Number(value)];if(!example)return;
+    state.numberEncoding=example.encoding||'church';setSource(example.term);$('examples').value='';
+    const expected=example.expectedType==='decimal'?`小数 ${example.expected}`:example.expectedType==='polynomial'?`多项式：${example.expected}`:example.expectedType==='rational'?`有理数 ${example.expected}`:example.expected===undefined?'':decode(C.parse(example.expected));
+    $('example-info').textContent=example.description?`${example.description} 预期结果：${expected}。`:'';
+    $('example-info').hidden=!example.description;
+  });
   $('convert').addEventListener('click',convert);$('step').addEventListener('click',advance);$('run').addEventListener('click',run);
+  $('fast-run').addEventListener('click',()=>{if(state.running){stop();render();return;}if(!state.term||state.dirty)return;state.running=true;state.fast=true;state.halt='';render();schedule();});
+  $('number-encoding').addEventListener('change',()=>{state.numberEncoding=$('number-encoding').value;changed();});
+  $('decimal-places').addEventListener('input',()=>{const n=$('decimal-places').valueAsNumber;if(!Number.isSafeInteger(n)||n<0){$('decimal-places').setCustomValidity('请输入非负整数');return;}$('decimal-places').setCustomValidity('');state.decimalPlaces=n;if(state.numberEncoding==='decimal')changed();else save();});
   $('back').addEventListener('click',()=>{if(state.history.length>1){stop();state.history.pop();state.paths?.pop();state.term=state.history.at(-1).term;state.halt='';$('challenge-feedback').textContent='';$('next-level').hidden=true;render();}});
   $('reset').addEventListener('click',()=>{if(state.original){stop();state.term=state.original;state.history=[{term:state.original,change:null}];state.paths=null;state.halt='';$('challenge-feedback').textContent='';$('next-level').hidden=true;render();}});
   $('speed').addEventListener('change',()=>{if($('speed').value==='custom'){$('speed-ms').focus();$('speed-ms').select();}else setSpeed(Number($('speed').value));});
@@ -1186,6 +2486,10 @@
   });
   $('mode-free').addEventListener('click',()=>{stop();state.mode='free';renderMode();render();save();});
   $('mode-challenge').addEventListener('click',()=>selectLevel(state.level));
+  $('stage-select').addEventListener('change',()=>{
+    const stage=P.stages.find(s=>String(s.id)===$('stage-select').value);
+    selectLevel(P.levels.findIndex(l=>l.id===stage.levelIds[0]));
+  });
   $('hint-toggle').addEventListener('click',()=>{const show=$('hint').hidden;$('hint').hidden=!show;$('hint-toggle').textContent=show?'收起提示':'显示提示';$('hint-toggle').setAttribute('aria-expanded',String(show));save();});
   $('check-answer').addEventListener('click',checkAnswer);
   $('next-level').addEventListener('click',()=>selectLevel(Math.min(state.level+1,P.levels.length-1)));
@@ -1193,6 +2497,7 @@
   $('history-details').addEventListener('toggle',save);
   $('speed').addEventListener('change',save);
   workspace=window.LambdaWorkspace.init({capture,apply:applySnapshot,toast,
+    getNumberEncoding:()=>state.numberEncoding,getDecimalPlaces:()=>state.decimalPlaces,
     currentExpression:()=>state.term&&!state.dirty?C.format(state.term):input.value,
     insertFunction:name=>{const start=input.selectionStart,end=input.selectionEnd;
       const before=start&&/[A-Za-z0-9_']/.test(input.value[start-1])?' ':'';
