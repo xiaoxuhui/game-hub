@@ -164,10 +164,6 @@ class DynamicLobbyDeviceTest {
             resourceProtocol=2,bridgeProtocol=1,displayName=metadata.first,iconKind=metadata.second
         )}
         val locals=remotes.associate {game->game.id to LocalResourceInfo(ResourceSelection(active=game.identity,highestCode=1),game,null,null,null,null,true)}
-        scenario.onActivity {activity->
-            val snapshot=UpdateSnapshot(dynamicCatalogGames=remotes,localDynamicResources=locals)
-            MainActivity::class.java.getDeclaredMethod("renderUpdates",UpdateSnapshot::class.java).apply {isAccessible=true}.invoke(activity,snapshot)
-        }
         val expected=mapOf(
             "abelian-sandpile" to R.drawable.game_icon_abelian_sandpile,
             "lambda-diagram-game" to R.drawable.game_icon_lambda_diagram_game,
@@ -182,13 +178,17 @@ class DynamicLobbyDeviceTest {
             "turbowarp-logic-lab" to R.drawable.game_dynamic_generic
         )
         scenario.onActivity {activity->
+            val snapshot=UpdateSnapshot(dynamicCatalogGames=remotes,localDynamicResources=locals)
+            MainActivity::class.java.getDeclaredMethod("renderUpdates",UpdateSnapshot::class.java).apply {isAccessible=true}.invoke(activity,snapshot)
             expected.forEach {(id,resource)->assertCardIcon(activity,id,resource)}
             assertCardIcon(activity,"conway",R.drawable.game_conway,76)
             assertCardIcon(activity,"eml",R.drawable.game_eml,76)
             assertCardIcon(activity,"light",R.drawable.game_light,76)
             assertCardIcon(activity,"turing",R.drawable.game_turing,76)
+            @Suppress("UNCHECKED_CAST")
+            val cards=MainActivity::class.java.getDeclaredField("gameCards").apply {isAccessible=true}.get(activity) as Map<String,View>
+            assertTrue("Abelian card remains clickable",cards.getValue("abelian-sandpile").performClick())
         }
-        click("Abelian Sandpile")
         await("dynamic card open route reaches normal resource handling"){visible("返回大厅")}
         scenario.onActivity {activity->
             val field=MainActivity::class.java.getDeclaredField("currentGame").apply {isAccessible=true}
