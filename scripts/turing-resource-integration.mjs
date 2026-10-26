@@ -51,11 +51,18 @@ export function turingSourceProof(source){
  const adapted=adaptTuringTexts(fixtureSources());
  return{schemaVersion:1,integration:TURING_INTEGRATION,repository:source.repository,revision:TURING_REVISION,inputs:turingBuildInputs(),legacyReader:turingReaderProof(),reviewedOutputsSha256:TURING_REVIEWED_OUTPUTS_SHA,adaptedSources:sortedRecord(Object.fromEntries(Object.entries(adapted.sources).map(([path,bytes])=>[path,sha256(bytes)]))),runtimeFiles:sortedRecord(Object.fromEntries(Object.entries(adapted.runtimes).map(([path,bytes])=>[path,sha256(bytes)]))),adapters:sortedRecord(Object.fromEntries(TURING_ADAPTERS.map(path=>[path,sha256(readFileSync(new URL(path,import.meta.url)))])))};
 }
-export function validateTuringSourceProof(proof,source){
- if(!proof||typeof proof!=='object'||Array.isArray(proof)||JSON.stringify(Object.keys(proof).sort())!==JSON.stringify([...TURING_PROOF_FIELDS].sort()))throw Error('Turing source proof fields changed');
+export function validateTuringSourceProof(proof,source,expectedOutputs){
+ const hasOutputs=!!proof&&typeof proof==='object'&&!Array.isArray(proof)&&Object.hasOwn(proof,'outputs'),allowedFields=hasOutputs?[...TURING_PROOF_FIELDS,'outputs']:TURING_PROOF_FIELDS;
+ if(!proof||typeof proof!=='object'||Array.isArray(proof)||JSON.stringify(Object.keys(proof).sort())!==JSON.stringify([...allowedFields].sort()))throw Error('Turing source proof fields changed');
+ if(hasOutputs&&(!expectedOutputs||JSON.stringify(proof.outputs)!==JSON.stringify(expectedOutputs)))throw Error('Turing output proof changed');
  const expected=turingSourceProof(source);
  for(const field of TURING_PROOF_FIELDS)if(JSON.stringify(field==='adaptedSources'||field==='runtimeFiles'||field==='adapters'?sortedRecord(proof[field]):proof[field])!==JSON.stringify(expected[field]))throw Error('Turing source proof changed: '+field);
  return expected;
+}
+export function finalizeTuringSourceProof(proofPath,source,outputs){
+ const proof=JSON.parse(readFileSync(proofPath));validateTuringSourceProof(proof,source,outputs);
+ if(!Object.hasOwn(proof,'outputs')){proof.outputs=outputs;writeFileSync(proofPath,JSON.stringify(proof,null,2)+'\n');}
+ return proof;
 }
 export function prepareTuringUI(source,directory){
  if(source.id!=='turing'||source.repository!=='https://github.com/xiaoxuhui/turing-machine-simulator.git'||source.revision!==TURING_REVISION||source.resourceIntegration!==TURING_INTEGRATION)throw Error('Unreviewed Turing integration');
@@ -74,8 +81,8 @@ export function finalizeTuringResource(source,directory){
  if(source.id!=='turing'||source.repository!=='https://github.com/xiaoxuhui/turing-machine-simulator.git'||source.revision!==TURING_REVISION||source.resourceIntegration!==TURING_INTEGRATION)throw Error('Unreviewed Turing integration');
  const outputs=turingReviewedOutputs(),walk=(directory,prefix='')=>readdirSync(directory).sort().flatMap(name=>{const path=join(directory,name),stat=lstatSync(path);if(stat.isSymbolicLink())throw Error('Turing output link');if(stat.isDirectory())return walk(path,prefix+name+'/');if(!stat.isFile())throw Error('Turing special output');return[prefix+name];}),files=walk(directory).sort(),expected=[...outputs.map(item=>item.path),'LICENSE','hub-source-proof.json'].sort();if(JSON.stringify(files)!==JSON.stringify(expected))throw Error('Turing complete output file set differs');
  for(const output of outputs){const bytes=readFileSync(join(directory,output.path));if(bytes.length!==output.bytes||sha256(bytes)!==output.sha256)throw Error('Turing output differs from reviewed real UI: '+output.path);}
- const proof=JSON.parse(readFileSync(join(directory,'hub-source-proof.json')));validateTuringSourceProof(proof,source);
+ const proofPath=join(directory,'hub-source-proof.json'),finalizedOutputs=files.filter(path=>path!=='hub-source-proof.json').map(path=>{const bytes=readFileSync(join(directory,path));return{path,bytes:bytes.length,sha256:sha256(bytes)}}),proof=finalizeTuringSourceProof(proofPath,source,finalizedOutputs);
  const runtime=outputs.filter(item=>item.path.startsWith('hub/'));if(Object.keys(proof.runtimeFiles).sort().join()!==runtime.map(item=>item.path).sort().join())throw Error('Turing runtime identities changed');for(const item of runtime)if(proof.runtimeFiles[item.path]!==item.sha256)throw Error('Turing runtime proof changed');
  if(sha256(readFileSync(join(directory,'LICENSE')))!==turingBuildInputs().find(item=>item.path==='LICENSE').sha256)throw Error('Turing source license changed');
- proof.outputs=files.filter(path=>path!=='hub-source-proof.json').map(path=>{const bytes=readFileSync(join(directory,path));return{path,bytes:bytes.length,sha256:sha256(bytes)};});writeFileSync(join(directory,'hub-source-proof.json'),JSON.stringify(proof,null,2)+'\n');return proof;
+ return proof;
 }
