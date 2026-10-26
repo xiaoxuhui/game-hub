@@ -230,6 +230,50 @@
         "styles.css"
       ],
       "releaseNotes": "0.1.0：独立离线网页，触摸绘制/擦除/平移、本地自动存档，恢复时暂停。"
+    },
+    {
+      "id": "turbowarp-neural-network",
+      "displayName": "神经网络实验室",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/turbowarp-neural-network.git",
+      "revision": "63943ff21d51ba4ba56f1817fc970c0fab88cde0",
+      "directory": "web-dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "turbowarp-neural-network-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "MPL-2.0.txt",
+        "THIRD_PARTY_NOTICES.md",
+        "build-info.json",
+        "index.html",
+        "scaffolding-min.js.LICENSE.txt"
+      ],
+      "releaseNotes": "原有 TurboWarp 神经网络作品的离线网页封装；保留训练和预测积木，支持触摸及训练成果本地恢复。"
+    },
+    {
+      "id": "turbowarp-logic-lab",
+      "displayName": "逻辑小实验室",
+      "iconKind": "logic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/turbowarp-logic-lab.git",
+      "revision": "04089708095ed77b4fde2c3c023406a79a3d68b5",
+      "directory": "web-dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "turbowarp-logic-lab-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "MPL-2.0.txt",
+        "THIRD_PARTY_NOTICES.md",
+        "build-info.json",
+        "index.html",
+        "scaffolding-min.js.LICENSE.txt"
+      ],
+      "releaseNotes": "原有 TurboWarp 逻辑小实验室作品的离线网页封装；保留 NAND 电路和原生交互，支持触摸及电路本地恢复。"
     }
   ]
 }

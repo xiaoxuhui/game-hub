@@ -1,0 +1,16 @@
+[
+  {
+    "id": "turbowarp-neural-network",
+    "contentCode": 1,
+    "sourceRevision": "63943ff21d51ba4ba56f1817fc970c0fab88cde0",
+    "archiveBytes": 1881586,
+    "archiveSha256": "3a55b17ff933740fe2304e500984c7182b47e972ebe275196803d98342e9dbf7"
+  },
+  {
+    "id": "turbowarp-logic-lab",
+    "contentCode": 1,
+    "sourceRevision": "04089708095ed77b4fde2c3c023406a79a3d68b5",
+    "archiveBytes": 1909088,
+    "archiveSha256": "84371f9bcdc97ed6c657d4a7d39ebb26d463741976a9cf898f714cf311f28a60"
+  }
+]
