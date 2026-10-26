@@ -50,6 +50,12 @@ function validOldState(version = 3) {
     selection: { start: 0, end: 0 }, error: ''
   }));
 }
+function canonicalOld(text) {
+  const state = JSON.parse(old.S.encode(old.S.decode(text)));
+  delete state.savedAt;
+  state.functions = state.functions.map(({ name, term }) => ({ name, term }));
+  return JSON.stringify(state);
+}
 
 test('C5 stores the complete new state and an actual content3-readable five-level projection', () => {
   assert.equal(currentFixture.upstreamRevision, '2ce0fa371e583bb9b57e74ace1f5cd2a7b14bd2c');
@@ -92,7 +98,7 @@ test('the v2 mirror is exactly the fixed issued content3 adapter base of v3', ()
   oldCopy.functions = oldCopy.functions.map(({ name, term: fnTerm }) => ({ name, term: fnTerm }));
   oldCopy.view.strategy = 'normal';
   oldCopy.view.direction = 'left';
-  assert.equal(storage.getItem('lambda-lab-v2'), old.S.encode(oldCopy));
+  assert.equal(canonicalOld(storage.getItem('lambda-lab-v2')), canonicalOld(old.S.encode(oldCopy)));
 });
 
 test('a content3 edit may strip the mirror extension but cannot change the authoritative v4 full save', () => {

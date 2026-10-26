@@ -23,6 +23,13 @@ function oldBase(text, OldS) {
   return OldS.encode(copy);
 }
 
+function oldCanonical(text, OldS) {
+  const state = JSON.parse(OldS.encode(OldS.decode(text)));
+  delete state.savedAt;
+  state.functions = state.functions.map(({ name, term }) => ({ name, term }));
+  return JSON.stringify(state);
+}
+
 export function lambdaC5Projection(text, CurrentS, OldS) {
   const full = CurrentS.decode(text);
   const projected = JSON.parse(CurrentS.encode(full));
@@ -107,7 +114,8 @@ export function createLambdaC5Storage(storage, CurrentS, OldS) {
     if (v4 === null || v3 === null || v2 === null || ready[flag] !== true) throw Error('C5 mirror conflict: explicit legacy resolver required');
     CurrentS.decode(v4);
     const expected = lambdaC5Projection(v4, CurrentS, OldS);
-    if (v3 !== expected.v3 || v2 !== expected.v2) throw Error('C5 mirror conflict: explicit legacy resolver required');
+    if (oldCanonical(v3, OldS) !== oldCanonical(expected.v3, OldS) ||
+      oldCanonical(v2, OldS) !== oldCanonical(expected.v2, OldS)) throw Error('C5 mirror conflict: explicit legacy resolver required');
   }
   function persist(key, text) {
     const current = key === KEYS.current4;
