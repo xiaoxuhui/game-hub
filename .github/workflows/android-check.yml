@@ -94,7 +94,7 @@ jobs:
           APK=android/app/build/outputs/apk/debug/app-debug.apk
           python3 scripts/verify_apk.py "$APK" "$GITHUB_SHA"
           AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
-          "$AAPT" dump badging "$APK" | grep -E "^package: name='com\\.xiaoxuhui\\.gamehub' versionCode='6' versionName='0\\.4\\.2'([[:space:]]|$)"
+          "$AAPT" dump badging "$APK" | grep -E "^package: name='com\\.xiaoxuhui\\.gamehub' versionCode='7' versionName='0\\.4\\.3'([[:space:]]|$)"
           "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" | tee "$RUNNER_TEMP/apk-signature.txt"
 
       - uses: actions/upload-artifact@v5

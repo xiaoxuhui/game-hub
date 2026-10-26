@@ -44,14 +44,14 @@ jobs:
           from pathlib import Path
           path = Path('android/app/build.gradle.kts')
           text = path.read_text()
-          assert text.count('versionCode = 6') == 1
-          assert text.count('versionName = "0.4.2"') == 1
-          path.write_text(text.replace('versionCode = 6', 'versionCode = 7').replace('versionName = "0.4.2"', 'versionName = "0.4.3"'))
+          assert text.count('versionCode = 7') == 1
+          assert text.count('versionName = "0.4.3"') == 1
+          path.write_text(text.replace('versionCode = 7', 'versionCode = 8').replace('versionName = "0.4.3"', 'versionName = "0.4.4"'))
           PY
           cd android
           ./gradlew assembleDebug --no-daemon
           cp app/build/outputs/apk/debug/app-debug.apk ../emulator-fixtures/fixture.apk
-          "$ANDROID_HOME/build-tools/34.0.0/aapt" dump badging ../emulator-fixtures/fixture.apk | grep "versionCode='7' versionName='0.4.3'"
+          "$ANDROID_HOME/build-tools/34.0.0/aapt" dump badging ../emulator-fixtures/fixture.apk | grep "versionCode='8' versionName='0.4.4'"
       - name: Free build cache space for AVD
         run: |
           du -sh "$HOME/.gradle/caches" || true
