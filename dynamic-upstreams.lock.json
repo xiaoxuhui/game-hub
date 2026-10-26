@@ -12,11 +12,11 @@
     {
       "id": "lambda-diagram-game",
       "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
-      "revision": "a5eab9f5c14f33d328f39858b6680e43c41ffa25",
+      "revision": "2ce0fa371e583bb9b57e74ace1f5cd2a7b14bd2c",
       "version": "0.3.3",
       "kind": "inline-html",
       "entryPage": "lambda-lab.html",
-      "integration": "lambda-storage-isolation-v1"
+      "integration": "lambda-content4-storage-c5-v1"
     }
   ]
 }
