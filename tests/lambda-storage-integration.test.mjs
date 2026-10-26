@@ -42,13 +42,16 @@ test('HTML adapter requires exact markers and records both source and integrated
   assert.throws(()=>integrateLambdaHtml(Buffer.from('unknown')),/exact reviewed/);assert.throws(()=>integrateLambdaHtml(Buffer.concat([input,input])),/exact reviewed/);
 });
 test('content4 adapter embeds the frozen old reader, full C5 runtime and accessible recovery hooks',()=>{
- const source=readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.html',import.meta.url),'utf8');
- const input=Buffer.from(source.replace("const AUTO='lambda-lab-hub-v3',CHECKPOINT='lambda-lab-hub-checkpoint-v3',LEGACY='lambda-lab-hub-legacy-v3';","const AUTO='lambda-lab-v2',CHECKPOINT='lambda-lab-checkpoint-v2',LEGACY='lambda-lab-v1';"));
+ const input=execFileSync('git',['show','64c8932af9a0b5cc886db25910b3923a16aa0677:examples/lambda-diagram-game/lambda-lab.html'],{maxBuffer:2000000});
  const output=integrateLambdaC5Html(input),html=output.toString('utf8'),proof=lambdaC5IntegrationProof(input,output);
  assert.ok(html.includes("const AUTO='lambda-lab-hub-v4',CHECKPOINT='lambda-lab-hub-checkpoint-v4'"));
+ assert.ok(html.includes('const localStorage=(function(root){'));
  assert.ok(html.includes("const OldS=legacyRoot.LambdaSnapshot"));assert.ok(html.includes('function inspectLambdaC5Storage'));
  assert.ok(html.includes('保留“已清除”的检查点'));assert.ok(html.includes('导出观察到的全部存档'));
- assert.ok(html.includes('存储空间不足'));assert.ok(proof.storageAdapterSha256);assert.ok(proof.legacyReaderFixtureSha256);
+ assert.ok(html.includes('存储空间不足'));assert.ok(html.includes('存档冲突尚未处理'));
+ assert.ok(html.includes("event.key!==null&&!C5.LAMBDA_C5_STORAGE_KEYS.includes(event.key)"));
+ assert.ok(html.includes('resolveChoice(pending,candidate.id,inspection)'));
+ assert.ok(proof.storageAdapterSha256);assert.ok(proof.legacyReaderFixtureSha256);
  const embedded=[...html.matchAll(/<script>\s*([\s\S]*?)<\/script>/g)].map(match=>match[1]).find(script=>script.includes('const legacyRoot={}'));
  assert.ok(embedded);assert.doesNotThrow(()=>new Script(embedded));
  assert.equal(proof.inputSha256,sha256(input));assert.equal(proof.outputSha256,sha256(output));

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { createLambdaStorage } from '../scripts/lambda-storage-integration.mjs';
-import { createLambdaC5Storage, inspectLambdaC5Storage, resolveLambdaC5Storage } from '../scripts/lambda-storage-c5.mjs';
+import { captureLambdaC5Snapshot, createLambdaC5Storage, inspectLambdaC5Storage, resolveLambdaC5Storage } from '../scripts/lambda-storage-c5.mjs';
 
 const oldFixture = JSON.parse(readFileSync(new URL('./fixtures/lambda-content3-reader.json', import.meta.url), 'utf8'));
 const currentFixture = JSON.parse(readFileSync(new URL('./fixtures/lambda-content4-reader.json', import.meta.url), 'utf8'));
@@ -399,12 +399,15 @@ test('an observed same-origin storage event invalidates the session and exports 
   const c5 = createLambdaC5Storage(s, current.S, old.S, { eventTarget });
   const text = fullText();
   c5.setItem('lambda-lab-hub-v4', text);
+  const beforeExternalChange = captureLambdaC5Snapshot(s);
   const oldValue = s.getItem('lambda-lab-v2');
   const newValue = oldState('λexternal.y', 2);
   s.setItem('lambda-lab-v2', newValue);
   for (const listener of listeners) listener({ key: 'lambda-lab-v2', oldValue, newValue });
   const observed = JSON.parse(c5.exportObserved());
   assert.equal(observed.event.key, 'lambda-lab-v2');
+  assert.equal(observed.previousSnapshot['lambda-lab-hub-v4'], beforeExternalChange['lambda-lab-hub-v4']);
+  assert.equal(observed.previousSnapshot['lambda-lab-v2'], oldValue);
   assert.equal(observed.snapshot['lambda-lab-hub-v4'], text);
   assert.equal(observed.snapshot['lambda-lab-v2'], newValue);
   assert.throws(() => c5.getItem('lambda-lab-hub-v4'), /invalidated by an external storage change/);
@@ -412,6 +415,21 @@ test('an observed same-origin storage event invalidates the session and exports 
   assert.equal(s.getItem('lambda-lab-v4'), null);
   c5.dispose();
   assert.equal(listeners.size, 0);
+});
+
+test('Storage.clear event exports the last complete snapshot and the cleared snapshot', () => {
+  const s = storage(), listeners = new Set();
+  const eventTarget = { addEventListener: (type, fn) => { if (type === 'storage') listeners.add(fn); }, removeEventListener: () => {} };
+  const c5 = createLambdaC5Storage(s, current.S, old.S, { eventTarget });
+  c5.setItem('lambda-lab-hub-v4', fullText());
+  const before = captureLambdaC5Snapshot(s);
+  s.map.clear();
+  for (const listener of listeners) listener({ key: null, oldValue: null, newValue: null });
+  const exported = JSON.parse(c5.exportObserved());
+  assert.equal(exported.event.key, null);
+  assert.equal(exported.previousSnapshot['lambda-lab-hub-v4'], before['lambda-lab-hub-v4']);
+  assert.equal(exported.snapshot['lambda-lab-hub-v4'], null);
+  assert.throws(() => c5.setItem('lambda-lab-hub-v4', fullText('λx.x')), /invalidated by an external storage change/);
 });
 
 test('archive quota failure leaves every source key unchanged and removes only its empty transaction journal', () => {

@@ -32,7 +32,7 @@ export function lambdaC5IntegrationProof() {
 }
 
 export function lambdaC5BrowserAdapterSource() {
-  return `(function(root){
+  return `const localStorage=(function(root){
     'use strict';
     const legacyRoot={};
     ${oldReaderSource()}
@@ -48,7 +48,7 @@ export function lambdaC5BrowserAdapterSource() {
       try{root.LambdaDownload.save('lambda-lab-storage-recovery.json',payload,'application/json');return true;}
       catch(error){return String(error?.message||error);}
     };
-    let dialog=null,dialogBody=null,dialogStatus=null;
+    let dialog=null,dialogBody=null,dialogStatus=null,conflictBlocked=false;
     function ensureDialog(){
       if(dialog)return dialog;
       dialog=document.createElement('dialog');dialog.id='lambda-c5-review';dialog.setAttribute('aria-labelledby','lambda-c5-title');
@@ -68,28 +68,33 @@ export function lambdaC5BrowserAdapterSource() {
       b.addEventListener('click',action);dialogBody.append(b);return b;
     }
     function needsReview(group){return group.status==='conflict'||group.status==='tombstone';}
-    function updateReview(){
+    function updateReview(notice=''){
       const inspection=C5.inspectLambdaC5Storage(raw,S,OldS);
       const pending=['current','checkpoint'].find(kind=>needsReview(inspection[kind]));
-      if(!pending){if(dialog?.open)dialog.close();root.location.reload();return;}
+      if(!pending){conflictBlocked=false;if(dialog?.open)dialog.close();root.location.reload();return;}
+      conflictBlocked=true;
       const group=inspection[pending],name=pending==='current'?'当前存档':'检查点';
       show('检测到Lambda存档冲突',name+'存在多个版本或未完成的写入记录。原始值会先归档；请选择要继续使用的版本。取消不会写入。');
+      dialogStatus.textContent=notice;
       for(const candidate of group.candidates){
         const s=candidate.summary||{};
+        const draft=String(s.draft||''),preview=draft.length>96?draft.slice(0,96)+'…':draft;
         const label=(candidate.id==='v4'?'新版完整存档':candidate.id==='v3'?'旧版三代存档':'旧版二代存档')+
-          ' · 已完成 '+String(s.completed??'未知')+' · 模式 '+String(s.mode??'未知')+' · 关卡 '+String(s.level??'未知');
-        button(label,()=>resolveChoice(pending,candidate.id));
+          ' · 已完成 '+String(s.completed??'未知')+' · 模式 '+String(s.mode??'未知')+' · 关卡 '+String(s.level??'未知')+' · 表达式 '+preview;
+        button(label,()=>resolveChoice(pending,candidate.id,inspection));
       }
-      if(group.tombstone)button('保留“已清除”的检查点',()=>resolveChoice(pending,'clear'),{danger:true});
-      if(group.candidates.length===0)button('归档后清空损坏存档',()=>resolveChoice(pending,'clear'),{danger:true});
+      if(group.tombstone)button('保留“已清除”的检查点',()=>resolveChoice(pending,'clear',inspection),{danger:true});
+      if(group.candidates.length===0)button('归档后清空损坏存档',()=>resolveChoice(pending,'clear',inspection),{danger:true});
       button('取消并保留全部原始数据',()=>{dialogStatus.textContent='已取消；所有存档原文均未改动。关闭此页后可稍后再选择。'});
     }
-    function resolveChoice(kind,choice){
+    function resolveChoice(kind,choice,inspection){
       try{
-        const inspection=C5.inspectLambdaC5Storage(raw,S,OldS);
         C5.resolveLambdaC5Storage(raw,S,OldS,{kind,choice,inspection});
         updateReview();
-      }catch(error){dialogStatus.textContent='处理失败，原始存档仍保留：'+String(error?.message||error);}
+      }catch(error){
+        if(/changed since conflict inspection/.test(String(error?.message||error)))updateReview('存档在预览后发生变化，尚未写入。请检查刷新的候选内容后重新选择。');
+        else dialogStatus.textContent='处理失败，原始存档仍保留：'+String(error?.message||error);
+      }
     }
     function startup(){
       if(!backing)return;
@@ -108,20 +113,24 @@ export function lambdaC5BrowserAdapterSource() {
       if(needsReview(inspection.current)||needsReview(inspection.checkpoint))updateReview();
     }
     try{startup();}catch(error){
+      conflictBlocked=true;
       const snapshot=(()=>{try{return C5.captureLambdaC5Snapshot(raw);}catch{return null;}})();
       const node=show('Lambda存档需要处理','自动恢复已停止，原始数据未清空。详细原因：'+String(error?.message||error));
       button('导出全部原始存档',()=>{const result=safeExport('startup-error',snapshot);dialogStatus.textContent=result===true?'已请求下载原始数据导出文件。':'导出失败：'+String(result);});
       button('关闭并保留原始数据',()=>{dialogStatus.textContent='页面已停在此处；原始存档保持不变。'});
     }
     root.addEventListener('storage',event=>{
-      if(!backing||!C5.LAMBDA_C5_STORAGE_KEYS.includes(event.key))return;
+      if(!backing||(event.key!==null&&!C5.LAMBDA_C5_STORAGE_KEYS.includes(event.key)))return;
+      conflictBlocked=true;
       const snapshot=c5.exportObserved();
       const node=show('另一个页面修改了Lambda存档','为避免覆盖其他页面的进度，本页面已停止写入。请导出本页观察到的全部存档原文后重新打开游戏。');
       button('导出观察到的全部存档',()=>{try{root.LambdaDownload.save('lambda-lab-storage-recovery.json',snapshot,'application/json');dialogStatus.textContent='已请求下载导出文件。';}catch(error){dialogStatus.textContent='导出失败：'+String(error?.message||error);}});
       button('重新加载',()=>root.location.reload());
     });
     const mapped=new Map([['lambda-lab-v2','lambda-lab-hub-v4'],['lambda-lab-checkpoint-v2','lambda-lab-hub-checkpoint-v4'],['lambda-lab-v1','lambda-lab-hub-legacy-v4']]);
-    const adapter={getItem:key=>c5.getItem(mapped.get(key)||key),removeItem:key=>c5.removeItem(mapped.get(key)||key),setItem(key,value){
+    const assertUnblocked=()=>{if(conflictBlocked)throw new Error('Lambda存档冲突尚未处理；当前页面已停止读取和写入。');};
+    const adapter={getItem(key){assertUnblocked();return c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return c5.removeItem(mapped.get(key)||key);},setItem(key,value){
+      assertUnblocked();
       try{return c5.setItem(mapped.get(key)||key,value);}catch(error){
         if(error?.name==='QuotaExceededError'||/quota|storage full|配额/i.test(String(error?.message||''))){
           const snapshot=C5.captureLambdaC5Snapshot(raw);show('设备存储空间不足','自动存档未能写入。现有存档保持原样；请先导出恢复文件，再清理设备空间。');

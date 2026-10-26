@@ -68,7 +68,7 @@ export function lambdaC5Projection(text, CurrentS, OldS) {
 function decodeLegacy(text, CurrentS, OldS) {
   const normalized = OldS.encode(OldS.decode(text));
   const full = CurrentS.decode(normalized);
-  return { fullText: CurrentS.encode(full), summary: { mode: full.mode, level: full.level, completed: full.completed.length } };
+  return { fullText: CurrentS.encode(full), summary: { mode: full.mode, level: full.level, completed: full.completed.length, draft: full.draft } };
 }
 
 function parseReady(raw) {
@@ -140,7 +140,7 @@ function candidateFromRaw(id, raw, CurrentS, OldS) {
   if (raw === null) return null;
   try {
     const result = id === 'v4'
-      ? { fullText: raw, summary: (() => { const s = CurrentS.decode(raw); return { mode: s.mode, level: s.level, completed: s.completed.length }; })() }
+      ? { fullText: raw, summary: (() => { const s = CurrentS.decode(raw); return { mode: s.mode, level: s.level, completed: s.completed.length, draft: s.draft }; })() }
       : decodeLegacy(raw, CurrentS, OldS);
     return { id, fullText: result.fullText, summary: result.summary };
   } catch { return null; }
@@ -329,13 +329,16 @@ export function createLambdaC5Storage(storage, CurrentS, OldS, { eventTarget = g
   const read = key => storage.getItem(key);
   let invalidated = false;
   let observed = null;
+  let priorSnapshot = null;
+  try { priorSnapshot = captureLambdaC5Snapshot(storage); } catch { /* Retain an unavailable baseline and fail-stop on the first event. */ }
   function externalStorageChange(event = {}) {
     if (event.key !== null && !LAMBDA_C5_STORAGE_KEYS.includes(event.key)) return;
     invalidated = true;
     let snapshot = null, snapshotError = null;
     try { snapshot = captureLambdaC5Snapshot(storage); }
     catch (error) { snapshotError = String(error?.message ?? error); }
-    observed = { event: { key: event.key ?? null, oldValue: event.oldValue ?? null, newValue: event.newValue ?? null }, snapshot, snapshotError };
+    observed = { event: { key: event.key ?? null, oldValue: event.oldValue ?? null, newValue: event.newValue ?? null }, previousSnapshot: priorSnapshot, snapshot, snapshotError };
+    if (snapshot !== null) priorSnapshot = snapshot;
   }
   const assertActive = () => { if (invalidated) throw Error('C5 session invalidated by an external storage change; export observed values before continuing'); };
   const onStorage = event => externalStorageChange(event);
@@ -375,6 +378,7 @@ export function createLambdaC5Storage(storage, CurrentS, OldS, { eventTarget = g
       if (read(key) !== value) throw Error('C5 journal recovery readback mismatch');
     }
     storage.removeItem(KEYS.journal);
+    priorSnapshot = captureLambdaC5Snapshot(storage);
   }
   function sameSnapshot(expected) {
     const actual = captureLambdaC5Snapshot(storage);
@@ -402,6 +406,7 @@ export function createLambdaC5Storage(storage, CurrentS, OldS, { eventTarget = g
       throw error;
     }
     storage.removeItem(KEYS.journal);
+    priorSnapshot = captureLambdaC5Snapshot(storage);
     if (expectedSnapshot) {
       const final = { ...expectedSnapshot };
       for (const [key, value] of changes) final[key] = value;
