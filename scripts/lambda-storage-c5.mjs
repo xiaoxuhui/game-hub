@@ -232,10 +232,15 @@ export function inspectLambdaC5Storage(storage, CurrentS, OldS) {
 }
 
 function archiveSnapshot(raw, snapshot) {
-  if (raw === null) return { schemaVersion: 1, entries: [{ snapshot }] };
-  const archive = JSON.parse(raw);
+  const archive = raw === null ? { schemaVersion: 1, entries: [] } : JSON.parse(raw);
   if (!archive || archive.schemaVersion !== 1 || !Array.isArray(archive.entries)) throw Error('Invalid C5 conflict archive; preserve original data');
-  if (!archive.entries.some(entry => JSON.stringify(entry.snapshot) === JSON.stringify(snapshot))) archive.entries.push({ snapshot });
+  // The archive itself is appended in place, so nesting its previous raw bytes
+  // in every new snapshot would cause quadratic growth. Prior entries remain
+  // intact in this same archive; record their count and keep the snapshot slot null.
+  const sourceSnapshot = { ...snapshot, [KEYS.conflictArchive]: null };
+  if (!archive.entries.some(entry => JSON.stringify(entry.snapshot) === JSON.stringify(sourceSnapshot))) {
+    archive.entries.push({ snapshot: sourceSnapshot, priorConflictArchiveEntries: archive.entries.length });
+  }
   return archive;
 }
 
@@ -254,7 +259,9 @@ export function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, 
   if (group.status === 'healthy' || group.status === 'empty') return { status: group.status, inspection };
   if (group.status === 'migrate' && choice === undefined) choice = group.autoChoice;
   if (group.status === 'tombstone' && !['clear', 'v4'].includes(choice)) return { status: 'choice-required', inspection };
-  if (group.status === 'conflict' && !group.candidates.some(candidate => candidate.id === choice) && !(choice === 'clear' && group.candidates.length === 0)) return { status: 'choice-required', inspection };
+  const explicitTombstoneChoice = kind === 'checkpoint' && group.tombstone && ['clear', 'v4'].includes(choice);
+  if (group.status === 'conflict' && !group.candidates.some(candidate => candidate.id === choice) &&
+    !(choice === 'clear' && group.candidates.length === 0) && !explicitTombstoneChoice) return { status: 'choice-required', inspection };
   if (!['v4', 'v3', 'v2', 'clear'].includes(choice)) throw Error('Invalid Lambda conflict choice');
   if (JSON.stringify(captureLambdaC5Snapshot(storage)) !== JSON.stringify(inspection.snapshot)) throw Error('C5 storage changed since conflict inspection');
 

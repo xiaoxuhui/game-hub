@@ -113,6 +113,31 @@ test('explicit v2 choice archives exact source bytes before creating the new ful
   assert.equal(inspectLambdaC5Storage(s, current.S, old.S).current.status, 'healthy');
 });
 
+test('repeated conflict archives retain prior entries without recursively copying the archive into itself', () => {
+  const s = content3Pair();
+  s.setItem('lambda-lab-v2', oldState('λsecond.second', 2));
+  let inspected = inspectLambdaC5Storage(s, current.S, old.S);
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'v2', inspection: inspected });
+  const firstRaw = s.getItem('lambda-lab-hub-c5-conflict-archive-v1');
+  const first = JSON.parse(firstRaw);
+  assert.equal(first.entries.length, 1);
+  assert.equal(first.entries[0].snapshot['lambda-lab-hub-c5-conflict-archive-v1'], null);
+  assert.equal(first.entries[0].priorConflictArchiveEntries, 0);
+
+  const oldAdapter = createLambdaStorage(s, old.S, () => false);
+  const legacy = old.S.decode(oldAdapter.getItem('lambda-lab-hub-v3'));
+  legacy.draft = 'λthird.third'; legacy.session.original = old.C.parse('λthird.third');
+  oldAdapter.setItem('lambda-lab-hub-v3', old.S.encode(legacy));
+  inspected = inspectLambdaC5Storage(s, current.S, old.S);
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'v4', inspection: inspected });
+  const finalRaw = s.getItem('lambda-lab-hub-c5-conflict-archive-v1');
+  const final = JSON.parse(finalRaw);
+  assert.equal(final.entries.length, 2);
+  assert.equal(final.entries[1].snapshot['lambda-lab-hub-c5-conflict-archive-v1'], null);
+  assert.equal(final.entries[1].priorConflictArchiveEntries, 1);
+  assert.ok(Buffer.byteLength(finalRaw) < Buffer.byteLength(firstRaw) * 4);
+});
+
 test('a real content3 writer that updates both legacy mirrors conflicts with the newer full save', () => {
   const s = storage();
   createLambdaC5Storage(s, current.S, old.S).setItem('lambda-lab-hub-v4', fullText());
@@ -217,6 +242,33 @@ test('the old checkpoint double-delete plus ready=false is a tombstone with expl
   assert.equal(s.getItem('lambda-lab-hub-checkpoint-v4'), null);
   assert.notEqual(s.getItem('lambda-lab-hub-c5-checkpoint-tombstone-v1'), null);
   assert.equal(inspectLambdaC5Storage(s, current.S, old.S).checkpoint.status, 'empty');
+});
+
+test('an unfinished checkpoint deletion journal still offers explicit keep-cleared or restore-full choices', () => {
+  const s = storage();
+  const c5 = createLambdaC5Storage(s, current.S, old.S);
+  c5.setItem('lambda-lab-hub-v4', fullText());
+  c5.setItem('lambda-lab-hub-checkpoint-v4', fullText('λq.q'));
+  const oldCheckpoint = s.getItem('lambda-lab-hub-checkpoint-v3');
+  const oldCheckpoint2 = s.getItem('lambda-lab-checkpoint-v2');
+  const oldReady = s.getItem('lambda-lab-hub-mirror-ready-v3');
+  const afterReady = JSON.stringify({ auto: true, checkpoint: false });
+  const journal = JSON.stringify({ schemaVersion: 1, before: [], after: [
+    ['lambda-lab-hub-checkpoint-v3', oldCheckpoint], ['lambda-lab-checkpoint-v2', oldCheckpoint2], ['lambda-lab-hub-mirror-ready-v3', oldReady]
+  ] });
+  s.setItem('lambda-lab-hub-journal-v3', journal);
+  s.removeItem('lambda-lab-hub-checkpoint-v3');
+  s.removeItem('lambda-lab-checkpoint-v2');
+  s.setItem('lambda-lab-hub-mirror-ready-v3', afterReady);
+  const inspected = inspectLambdaC5Storage(s, current.S, old.S);
+  assert.equal(inspected.checkpoint.status, 'conflict');
+  assert.equal(inspected.checkpoint.tombstone, true);
+  assert.ok(inspected.checkpoint.candidates.some(candidate => candidate.id === 'v4'));
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'checkpoint', choice: 'clear', inspection: inspected });
+  assert.equal(s.getItem('lambda-lab-hub-checkpoint-v4'), null);
+  assert.equal(inspectLambdaC5Storage(s, current.S, old.S).checkpoint.status, 'empty');
+  const archive = JSON.parse(s.getItem('lambda-lab-hub-c5-conflict-archive-v1'));
+  assert.equal(archive.entries[0].snapshot['lambda-lab-hub-journal-v3'], journal);
 });
 
 test('restoring the full tombstoned checkpoint is explicit and recreates only validated compatibility mirrors', () => {
