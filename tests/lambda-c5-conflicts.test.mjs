@@ -75,6 +75,12 @@ test('v2-only legacy state migrates automatically, but an explicit ready-with-mi
     'lambda-lab-hub-mirror-ready-v3': JSON.stringify({ auto: true, checkpoint: false })
   });
   assert.equal(inspectLambdaC5Storage(mismatch, current.S, old.S).current.status, 'conflict');
+
+  const explicitlyNotReady = content3Pair();
+  explicitlyNotReady.setItem('lambda-lab-hub-mirror-ready-v3', JSON.stringify({ auto: false, checkpoint: false }));
+  const state = inspectLambdaC5Storage(explicitlyNotReady, current.S, old.S);
+  assert.equal(state.current.status, 'conflict');
+  assert.ok(state.current.metadata.includes('mirror-divergence'));
 });
 
 test('divergent v3 and v2 are candidates and cancel changes no storage byte', () => {
@@ -132,7 +138,7 @@ test('a content3 journal or nonempty edit archive forces explicit review and is 
   s.setItem('lambda-lab-hub-old-edit-archive-v3', JSON.stringify([oldState('λy.y')]));
   const inspected = inspectLambdaC5Storage(s, current.S, old.S);
   assert.equal(inspected.current.status, 'conflict');
-  assert.ok(inspected.current.metadata.includes('content3-journal'));
+  assert.ok(inspected.current.metadata.includes('pending-journal'));
   assert.ok(inspected.current.metadata.includes('old-adapter-history'));
   resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'v3', inspection: inspected });
   const saved = JSON.parse(s.getItem('lambda-lab-hub-c5-conflict-archive-v1')).entries[0].snapshot;
@@ -151,7 +157,7 @@ test('an interrupted C5 journal is never auto-replayed and can be resolved only 
   const journalRaw = s.getItem('lambda-lab-hub-journal-v4');
   const inspected = inspectLambdaC5Storage(s, current.S, old.S);
   assert.equal(inspected.current.status, 'conflict');
-  assert.ok(inspected.current.metadata.includes('c5-journal'));
+  assert.ok(inspected.current.metadata.includes('pending-journal'));
   const originalValues = new Map(s.map);
   const set = s.setItem;
   s.setItem = (key, value) => { if (key === 'lambda-lab-hub-c5-conflict-archive-v1') throw Error('archive quota'); set(key, value); };
@@ -164,6 +170,35 @@ test('an interrupted C5 journal is never auto-replayed and can be resolved only 
   assert.equal(archived['lambda-lab-hub-journal-v4'], journalRaw);
   assert.equal(s.getItem('lambda-lab-hub-journal-v4'), null);
   assert.equal(inspectLambdaC5Storage(s, current.S, old.S).current.status, 'healthy');
+});
+
+test('a journal touching both groups stays pending after only the current save is resolved', () => {
+  const s = storage();
+  const c5 = createLambdaC5Storage(s, current.S, old.S);
+  const auto = fullText();
+  const checkpoint = fullText('λq.q');
+  c5.setItem('lambda-lab-hub-v4', auto);
+  c5.setItem('lambda-lab-hub-checkpoint-v4', checkpoint);
+  const journal = JSON.stringify({
+    schemaVersion: 1,
+    before: [['lambda-lab-hub-v3', s.getItem('lambda-lab-hub-v3')], ['lambda-lab-hub-checkpoint-v3', s.getItem('lambda-lab-hub-checkpoint-v3')]],
+    after: [['lambda-lab-hub-v3', s.getItem('lambda-lab-hub-v3')], ['lambda-lab-hub-checkpoint-v3', null]]
+  });
+  s.setItem('lambda-lab-hub-journal-v3', journal);
+  let inspected = inspectLambdaC5Storage(s, current.S, old.S);
+  assert.equal(inspected.current.status, 'conflict');
+  assert.equal(inspected.checkpoint.status, 'conflict');
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'v4', inspection: inspected });
+  inspected = inspectLambdaC5Storage(s, current.S, old.S);
+  assert.equal(inspected.current.status, 'healthy');
+  assert.equal(inspected.checkpoint.status, 'conflict');
+  assert.ok(inspected.checkpoint.metadata.includes('pending-journal'));
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'checkpoint', choice: 'v4', inspection: inspected });
+  assert.equal(inspectLambdaC5Storage(s, current.S, old.S).checkpoint.status, 'healthy');
+  assert.equal(s.getItem('lambda-lab-hub-journal-v3'), null);
+  assert.equal(s.getItem('lambda-lab-hub-c5-review-state-v1'), null);
+  const archived = JSON.parse(s.getItem('lambda-lab-hub-c5-conflict-archive-v1'));
+  assert.ok(archived.entries.some(entry => entry.snapshot['lambda-lab-hub-journal-v3'] === journal));
 });
 
 test('the old checkpoint double-delete plus ready=false is a tombstone with explicit clear or restore choices', () => {
@@ -197,6 +232,66 @@ test('restoring the full tombstoned checkpoint is explicit and recreates only va
   assert.equal(old.S.decode(s.getItem('lambda-lab-hub-checkpoint-v3')).level, 0);
   assert.equal(JSON.parse(s.getItem('lambda-lab-hub-mirror-ready-v3')).checkpoint, true);
   assert.equal(inspectLambdaC5Storage(s, current.S, old.S).checkpoint.status, 'healthy');
+});
+
+test('a stale checkpoint tombstone contradicting a healthy v4/v3/v2 set still requires explicit review', () => {
+  const s = storage();
+  const c5 = createLambdaC5Storage(s, current.S, old.S);
+  c5.setItem('lambda-lab-hub-v4', fullText());
+  c5.setItem('lambda-lab-hub-checkpoint-v4', fullText('λq.q'));
+  s.setItem('lambda-lab-hub-c5-checkpoint-tombstone-v1', JSON.stringify({ schemaVersion: 1, source: 'content3-clear' }));
+  const checkpoint = inspectLambdaC5Storage(s, current.S, old.S).checkpoint;
+  assert.equal(checkpoint.status, 'conflict');
+  assert.ok(checkpoint.metadata.includes('checkpoint-tombstone-inconsistent'));
+  assert.deepEqual(checkpoint.candidates.map(candidate => candidate.id), ['v4', 'v3', 'v2']);
+});
+
+test('when a corrupt legacy group has no valid candidate, explicit archive-and-clear is required', () => {
+  const s = storage({
+    'lambda-lab-hub-v3': 'broken v3',
+    'lambda-lab-v2': 'broken v2',
+    'lambda-lab-hub-mirror-ready-v3': JSON.stringify({ auto: true, checkpoint: false })
+  });
+  const inspected = inspectLambdaC5Storage(s, current.S, old.S);
+  assert.equal(inspected.current.status, 'conflict');
+  assert.equal(inspected.current.candidates.length, 0);
+  const before = new Map(s.map);
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'cancel', inspection: inspected });
+  assert.deepEqual(s.map, before);
+  assert.equal(resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'clear', inspection: inspected }).status, 'cleared');
+  assert.equal(inspectLambdaC5Storage(s, current.S, old.S).current.status, 'empty');
+  const archived = JSON.parse(s.getItem('lambda-lab-hub-c5-conflict-archive-v1'));
+  assert.equal(archived.entries[0].snapshot['lambda-lab-hub-v3'], 'broken v3');
+  assert.equal(archived.entries[0].snapshot['lambda-lab-v2'], 'broken v2');
+});
+
+test('a journal with no valid candidate in either group requires explicit archive-and-clear for each affected group', () => {
+  const s = storage({
+    'lambda-lab-hub-v3': 'broken current',
+    'lambda-lab-v2': 'broken current v2',
+    'lambda-lab-hub-checkpoint-v3': 'broken checkpoint',
+    'lambda-lab-checkpoint-v2': 'broken checkpoint v2',
+    'lambda-lab-hub-mirror-ready-v3': 'broken readiness'
+  });
+  const journal = JSON.stringify({ schemaVersion: 1, before: [], after: [['lambda-lab-hub-v3', 'broken current'], ['lambda-lab-hub-checkpoint-v3', null]] });
+  s.setItem('lambda-lab-hub-journal-v3', journal);
+  const inspection = inspectLambdaC5Storage(s, current.S, old.S);
+  assert.equal(inspection.current.status, 'conflict');
+  assert.equal(inspection.checkpoint.status, 'conflict');
+  const before = new Map(s.map);
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'cancel', inspection });
+  assert.deepEqual(s.map, before);
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'current', choice: 'clear', inspection });
+  let currentInspection = inspectLambdaC5Storage(s, current.S, old.S);
+  assert.equal(currentInspection.current.status, 'empty');
+  assert.equal(currentInspection.checkpoint.status, 'conflict');
+  resolveLambdaC5Storage(s, current.S, old.S, { kind: 'checkpoint', choice: 'clear', inspection: currentInspection });
+  const archive = JSON.parse(s.getItem('lambda-lab-hub-c5-conflict-archive-v1'));
+  assert.equal(archive.entries[0].snapshot['lambda-lab-hub-journal-v3'], journal);
+  assert.equal(archive.entries[0].snapshot['lambda-lab-hub-v3'], 'broken current');
+  assert.equal(archive.entries[0].snapshot['lambda-lab-hub-checkpoint-v3'], 'broken checkpoint');
+  assert.equal(inspectLambdaC5Storage(s, current.S, old.S).checkpoint.status, 'empty');
+  assert.equal(s.getItem('lambda-lab-hub-journal-v3'), null);
 });
 
 test('a stale inspection cannot resolve after another writer changes storage', () => {

@@ -15,7 +15,8 @@ const KEYS = Object.freeze({
   oldCheckpointArchive: 'lambda-lab-hub-old-checkpoint-archive-v3',
   upgradeBackup: 'lambda-lab-hub-upgrade-backup-v2',
   conflictArchive: 'lambda-lab-hub-c5-conflict-archive-v1',
-  checkpointTombstone: 'lambda-lab-hub-c5-checkpoint-tombstone-v1'
+  checkpointTombstone: 'lambda-lab-hub-c5-checkpoint-tombstone-v1',
+  reviewState: 'lambda-lab-hub-c5-review-state-v1'
 });
 const ALLOWED = new Set(Object.values(KEYS));
 export const LAMBDA_C5_STORAGE_KEYS = Object.freeze(Object.values(KEYS));
@@ -81,8 +82,13 @@ function parseReady(raw) {
 
 function metadataProblems(snapshot) {
   const problems = [];
-  if (snapshot[KEYS.journal] !== null) problems.push('c5-journal');
-  if (snapshot[KEYS.oldJournal] !== null) problems.push('content3-journal');
+  if (snapshot[KEYS.reviewState] !== null) {
+    try {
+      const state = JSON.parse(snapshot[KEYS.reviewState]);
+      if (!state || state.schemaVersion !== 1 || !state.pending || typeof state.pending.current !== 'boolean' || typeof state.pending.checkpoint !== 'boolean' ||
+        (state.oldJournal !== null && typeof state.oldJournal !== 'string')) problems.push('review-state-invalid');
+    } catch { problems.push('review-state-invalid'); }
+  }
   const backup = snapshot[KEYS.upgradeBackup];
   if (backup !== null) {
     try {
@@ -111,6 +117,25 @@ function metadataProblems(snapshot) {
   return problems;
 }
 
+function journalAffected(raw) {
+  if (raw === null) return { current: false, checkpoint: false };
+  try {
+    const record = JSON.parse(raw);
+    if (record.schemaVersion !== 1 || !Array.isArray(record.after) || !record.after.length) throw Error('shape');
+    const groups = { current: false, checkpoint: false };
+    for (const entry of record.after) {
+      if (!Array.isArray(entry) || typeof entry[0] !== 'string') throw Error('entry');
+      const key = entry[0];
+      if ([KEYS.current4, KEYS.current3, KEYS.current2].includes(key)) groups.current = true;
+      else if ([KEYS.checkpoint4, KEYS.checkpoint3, KEYS.checkpoint2, KEYS.checkpointTombstone].includes(key)) groups.checkpoint = true;
+      else if ([KEYS.ready, KEYS.conflictArchive, KEYS.oldJournal, KEYS.journal, KEYS.reviewState].includes(key)) { /* metadata follows affected data */ }
+      else throw Error('unknown key');
+    }
+    if (!groups.current && !groups.checkpoint) return { current: true, checkpoint: true };
+    return groups;
+  } catch { return { current: true, checkpoint: true }; }
+}
+
 function candidateFromRaw(id, raw, CurrentS, OldS) {
   if (raw === null) return null;
   try {
@@ -121,7 +146,7 @@ function candidateFromRaw(id, raw, CurrentS, OldS) {
   } catch { return null; }
 }
 
-function inspectGroup(snapshot, kind, CurrentS, OldS, problems) {
+function inspectGroup(snapshot, kind, CurrentS, OldS, problems, journalPending) {
   const current = kind === 'current';
   const key4 = current ? KEYS.current4 : KEYS.checkpoint4;
   const key3 = current ? KEYS.current3 : KEYS.checkpoint3;
@@ -133,6 +158,7 @@ function inspectGroup(snapshot, kind, CurrentS, OldS, problems) {
   const invalidPresent = [raw4, raw3, raw2].some((raw, i) => raw !== null && ![candidateFromRaw('v4', raw4, CurrentS, OldS), candidateFromRaw('v3', raw3, CurrentS, OldS), candidateFromRaw('v2', raw2, CurrentS, OldS)][i]);
   let metadata = [...problems];
   if (!ready.valid) metadata.push('mirror-ready-invalid');
+  if (journalPending) metadata.push('pending-journal');
   const oldArchive = snapshot[current ? KEYS.oldEditArchive : KEYS.oldCheckpointArchive];
   const hasOldHistory = oldArchive !== null && (() => { try { return JSON.parse(oldArchive).length > 0; } catch { return false; } })();
   if (hasOldHistory) metadata.push('old-adapter-history');
@@ -163,13 +189,15 @@ function inspectGroup(snapshot, kind, CurrentS, OldS, problems) {
     } catch { healthy = false; }
   }
   const tombstone = !current && raw4 !== null && raw3 === null && raw2 === null && ready.valid && ready.present && readyValue.checkpoint === false;
+  const blockingMetadata = metadata.filter(item => item !== 'old-adapter-history');
   let status = 'conflict';
   let autoChoice = null;
-  if (problems.length === 0 && healthy) status = 'healthy';
-  else if (problems.length === 0 && tombstone && v4) status = 'tombstone';
+  if (problems.length === 0 && blockingMetadata.length === 0 && healthy) status = 'healthy';
+  else if (problems.length === 0 && blockingMetadata.length === 0 && tombstone && v4) status = 'tombstone';
   else if (metadata.length === 0 && raw4 === null) {
     const oldSourcesValid = (!raw3Present || !!v3) && (!raw2Present || !!v2);
-    const flagsMatch = ready.valid && !(readyValue[flag] && (!raw3Present || !raw2Present));
+    const flagsMatch = ready.valid && (!ready.present ||
+      (readyValue[flag] ? raw3Present && raw2Present : !raw3Present && !raw2Present));
     if (oldSourcesValid && flagsMatch && (v3 || v2) && (!raw3Present || !raw2Present || relation)) {
       status = 'migrate';
       autoChoice = v3 ? 'v3' : 'v2';
@@ -184,8 +212,22 @@ function inspectGroup(snapshot, kind, CurrentS, OldS, problems) {
 export function inspectLambdaC5Storage(storage, CurrentS, OldS) {
   const snapshot = captureLambdaC5Snapshot(storage);
   const problems = metadataProblems(snapshot);
-  const current = inspectGroup(snapshot, 'current', CurrentS, OldS, problems);
-  const checkpoint = inspectGroup(snapshot, 'checkpoint', CurrentS, OldS, problems);
+  const oldAffected = journalAffected(snapshot[KEYS.oldJournal]);
+  const c5Affected = journalAffected(snapshot[KEYS.journal]);
+  let reviewState = null;
+  let hasReviewState = false;
+  if (snapshot[KEYS.reviewState] !== null) {
+    try { reviewState = JSON.parse(snapshot[KEYS.reviewState]); hasReviewState = true; } catch { /* invalid review metadata is already a global problem */ }
+  }
+  const oldJournalChanged = hasReviewState && snapshot[KEYS.oldJournal] !== reviewState.oldJournal;
+  const currentPending = hasReviewState
+    ? reviewState.pending.current || oldJournalChanged || c5Affected.current
+    : oldAffected.current || c5Affected.current;
+  const checkpointPending = hasReviewState
+    ? reviewState.pending.checkpoint || oldJournalChanged || c5Affected.checkpoint
+    : oldAffected.checkpoint || c5Affected.checkpoint;
+  const current = inspectGroup(snapshot, 'current', CurrentS, OldS, problems, currentPending);
+  const checkpoint = inspectGroup(snapshot, 'checkpoint', CurrentS, OldS, problems, checkpointPending);
   return { snapshot, current, checkpoint };
 }
 
@@ -212,7 +254,7 @@ export function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, 
   if (group.status === 'healthy' || group.status === 'empty') return { status: group.status, inspection };
   if (group.status === 'migrate' && choice === undefined) choice = group.autoChoice;
   if (group.status === 'tombstone' && !['clear', 'v4'].includes(choice)) return { status: 'choice-required', inspection };
-  if (group.status === 'conflict' && !group.candidates.some(candidate => candidate.id === choice)) return { status: 'choice-required', inspection };
+  if (group.status === 'conflict' && !group.candidates.some(candidate => candidate.id === choice) && !(choice === 'clear' && group.candidates.length === 0)) return { status: 'choice-required', inspection };
   if (!['v4', 'v3', 'v2', 'clear'].includes(choice)) throw Error('Invalid Lambda conflict choice');
   if (JSON.stringify(captureLambdaC5Snapshot(storage)) !== JSON.stringify(inspection.snapshot)) throw Error('C5 storage changed since conflict inspection');
 
@@ -236,8 +278,27 @@ export function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, 
   const key4 = currentKind ? KEYS.current4 : KEYS.checkpoint4;
   const key3 = currentKind ? KEYS.current3 : KEYS.checkpoint3;
   const key2 = currentKind ? KEYS.current2 : KEYS.checkpoint2;
-  changes.push([KEYS.oldJournal, null]);
-  if (currentKind) {
+  const oldAffected = journalAffected(snapshot[KEYS.oldJournal]);
+  const c5Affected = journalAffected(snapshot[KEYS.journal]);
+  let priorReview = null;
+  if (snapshot[KEYS.reviewState] !== null) {
+    priorReview = JSON.parse(snapshot[KEYS.reviewState]);
+  }
+  const oldJournalChanged = priorReview !== null && snapshot[KEYS.oldJournal] !== priorReview.oldJournal;
+  const pending = priorReview === null
+    ? { current: oldAffected.current || c5Affected.current, checkpoint: oldAffected.checkpoint || c5Affected.checkpoint }
+    : {
+        current: priorReview.pending.current || oldJournalChanged || c5Affected.current,
+        checkpoint: priorReview.pending.checkpoint || oldJournalChanged || c5Affected.checkpoint
+      };
+  pending[kind] = false;
+  const anyPending = pending.current || pending.checkpoint;
+  changes.push([KEYS.oldJournal, anyPending ? snapshot[KEYS.oldJournal] : null],
+    [KEYS.reviewState, anyPending ? JSON.stringify({ schemaVersion: 1, pending, oldJournal: snapshot[KEYS.oldJournal] }) : null]);
+  if (choice === 'clear' && currentKind) {
+    flags.auto = false;
+    changes.push([key4, null], [key3, null], [key2, null], [KEYS.ready, JSON.stringify(flags)]);
+  } else if (currentKind) {
     const fullText = fullForChoice(group, choice);
     const projection = lambdaC5Projection(fullText, CurrentS, OldS);
     flags.auto = true;
