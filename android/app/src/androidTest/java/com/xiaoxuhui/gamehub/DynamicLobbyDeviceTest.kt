@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.view.KeyEvent
 import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
@@ -63,9 +63,17 @@ class DynamicLobbyDeviceTest {
         val cards=MainActivity::class.java.getDeclaredField("gameCards").apply {isAccessible=true}.get(activity) as Map<String,View>
         val card=cards.getValue(id) as android.widget.LinearLayout
         val image=card.getChildAt(0) as android.widget.ImageView
-        val actual=(image.drawable as BitmapDrawable).bitmap
-        val expected=BitmapFactory.decodeResource(activity.resources,resource)
+        val size=(56*activity.resources.displayMetrics.density+0.5f).toInt()
+        fun render(drawable:Drawable):Bitmap {
+            val bitmap=Bitmap.createBitmap(size,size,Bitmap.Config.ARGB_8888)
+            drawable.setBounds(0,0,size,size)
+            drawable.draw(Canvas(bitmap))
+            return bitmap
+        }
+        val actual=render(image.drawable)
+        val expected=render(activity.getDrawable(resource) ?: throw AssertionError("Missing mapped drawable $resource"))
         assertTrue("Rendered card icon for $id must match its mapped resource",actual.sameAs(expected))
+        actual.recycle()
         expected.recycle()
     }
     private fun js(scenario:ActivityScenario<MainActivity>,script:String):String {
