@@ -165,10 +165,7 @@ class DynamicLobbyDeviceTest {
         )}
         val locals=remotes.associate {game->game.id to LocalResourceInfo(ResourceSelection(active=game.identity,highestCode=1),game,null,null,null,null,true)}
         scenario.onActivity {activity->
-            val owner=MainActivity::class.java.getDeclaredField("updates").apply {isAccessible=true}.get(activity) as UpdateCoordinator
-            owner.presence(false,false,false)
-            val snapshot=owner.snapshot().copy(dynamicCatalogGames=remotes,localDynamicResources=locals,dynamicResources=emptyList())
-            UpdateCoordinator::class.java.getDeclaredField("state").apply {isAccessible=true}.set(owner,snapshot)
+            val snapshot=UpdateSnapshot(dynamicCatalogGames=remotes,localDynamicResources=locals)
             MainActivity::class.java.getDeclaredMethod("renderUpdates",UpdateSnapshot::class.java).apply {isAccessible=true}.invoke(activity,snapshot)
         }
         val expected=mapOf(
