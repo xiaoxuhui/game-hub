@@ -4,8 +4,10 @@ import {join,resolve,dirname,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {sha256,strictJson,safePath,LIMITS} from './resource-protocol.mjs';
 import {inspectResources} from './resource-bundle.mjs';
-import {integrateLambdaHtml,integrationProof,LAMBDA_INTEGRATION} from './lambda-storage-integration.mjs';
+import {integrateLambdaHtml,integrationProof,LAMBDA_INTEGRATION,integrateLambdaC5Html,lambdaC5IntegrationProof} from './lambda-storage-integration.mjs';
+import {LAMBDA_C5_INTEGRATION} from './lambda-storage-c5-integration.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
+const LEGACY_LAMBDA_ADAPTER_SHA256='036f7424420dd80fc6e9555c72b09321150da98235b6ab2d32fa91664c31cf24';
 const staticFiles=['index.html','src/styles.css','src/project-config.js','src/domain/sandpile.js','src/domain/challenge.js','src/domain/lesson.js','src/domain/levels.js','src/storage/persistence.js','src/controller.js','src/renderer.js','src/teaching.js','src/app.js','LICENSE'];
 const lambdaInputs=['index.html','src/style.css',...['core','diagram','diagram-view','presets','library','snapshot','download','workspace-tools','viewport','app'].map(n=>`src/${n}.js`),'LICENSE'];
 const git=(directory,args,bytes=false)=>execFileSync('git',args,{cwd:directory,maxBuffer:LIMITS.file+1,encoding:bytes?undefined:'utf8',env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_TERMINAL_PROMPT:'0'}});
@@ -22,7 +24,13 @@ export function validateProof(proof,source,inputs,outputs){
   if(source.kind==='inline-html'){
     const outputSha=outputs.find(o=>o.path===source.entryPage)?.sha256;
     const adapted=source.integration!==undefined;
-    if(adapted&&(source.integration!==LAMBDA_INTEGRATION||source.id!=='lambda-diagram-game'||!proof.adaptation||proof.adaptation.id!==LAMBDA_INTEGRATION||proof.adaptation.outputSha256!==outputSha||proof.adaptation.adapterSha256!==integrationProof(Buffer.alloc(0),Buffer.alloc(0)).adapterSha256))throw new Error('Reviewed Lambda adaptation proof differs');
+    if(adapted&&source.id!=='lambda-diagram-game')throw new Error('Reviewed Lambda adaptation identity differs');
+    if(adapted&&source.integration===LAMBDA_INTEGRATION){
+      if(!proof.adaptation||proof.adaptation.id!==LAMBDA_INTEGRATION||proof.adaptation.outputSha256!==outputSha||proof.adaptation.adapterSha256!==LEGACY_LAMBDA_ADAPTER_SHA256)throw new Error('Reviewed historical Lambda adaptation proof differs');
+    }else if(adapted&&source.integration===LAMBDA_C5_INTEGRATION){
+      const expected=lambdaC5IntegrationProof(Buffer.alloc(0),Buffer.alloc(0));
+      if(!proof.adaptation||JSON.stringify({...proof.adaptation,inputSha256:'',outputSha256:''})!==JSON.stringify({...expected,inputSha256:'',outputSha256:''})||proof.adaptation.outputSha256!==outputSha)throw new Error('Reviewed Lambda C5 adaptation proof differs');
+    }else if(adapted)throw new Error('Unsupported Lambda adaptation');
     if(!proof.trackedArtifact||proof.trackedArtifact.matchesRebuild!==true||proof.trackedArtifact.sha256!==(adapted?proof.adaptation.inputSha256:outputSha))throw new Error('Frozen tracked artifact differs from rebuild; explicit reviewed difference needed');
     if(!adapted&&proof.adaptation!==undefined)throw new Error('Unexpected adaptation');
   }
@@ -58,8 +66,10 @@ export function stageUpstreams(output){
       const entry=entries.find(e=>e.path===source.entryPage);
       trackedArtifact={path:'dist/lambda-lab.html',bytes:original.length,sha256:sha256(original),matchesRebuild:original.equals(entry.data)};
       if(source.integration!==undefined){
-        if(source.integration!==LAMBDA_INTEGRATION||source.id!=='lambda-diagram-game')throw new Error('Unsupported upstream adaptation');
-        const integrated=integrateLambdaHtml(entry.data);adaptation=integrationProof(entry.data,integrated);entry.data=integrated;
+        if(source.id!=='lambda-diagram-game')throw new Error('Unsupported upstream adaptation');
+        if(source.integration===LAMBDA_INTEGRATION){const integrated=integrateLambdaHtml(entry.data);adaptation=integrationProof(entry.data,integrated);entry.data=integrated;}
+        else if(source.integration===LAMBDA_C5_INTEGRATION){const integrated=integrateLambdaC5Html(entry.data);adaptation=lambdaC5IntegrationProof(entry.data,integrated);entry.data=integrated;}
+        else throw new Error('Unsupported upstream adaptation');
       }
     }
     const outputs=entries.map(e=>({path:e.path,bytes:e.data.length,sha256:sha256(e.data)})).sort((a,b)=>a.path<b.path?-1:1);

@@ -1,9 +1,10 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {migrateLambdaStorage,createLambdaStorage,integrateLambdaHtml,integrationProof} from '../scripts/lambda-storage-integration.mjs';
+import {migrateLambdaStorage,createLambdaStorage,integrateLambdaHtml,integrationProof,integrateLambdaC5Html,lambdaC5IntegrationProof} from '../scripts/lambda-storage-integration.mjs';
 import {readFileSync} from 'node:fs';
-import {runInNewContext} from 'node:vm';
+import {runInNewContext,Script} from 'node:vm';
 import {execFileSync} from 'node:child_process';
+import {sha256} from '../scripts/resource-protocol.mjs';
 const old='lambda-lab-v2',cp='lambda-lab-checkpoint-v2',fresh='lambda-lab-hub-v3',newCp='lambda-lab-hub-checkpoint-v3';
 function store(entries={}){const map=new Map(Object.entries(entries));return {map,getItem:key=>map.get(key)??null,setItem:(key,value)=>map.set(key,value),removeItem:key=>map.delete(key)};}
 const decode=text=>{const x=JSON.parse(text);if(![1,2,3].includes(x.version))throw Error('invalid');return x;};
@@ -39,6 +40,19 @@ test('HTML adapter requires exact markers and records both source and integrated
   const output=integrateLambdaHtml(input);assert.match(output.toString(),/lambda-lab-hub-v3/);assert.match(output.toString(),/migrateLambdaStorage/);
   const p=integrationProof(input,output);assert.notEqual(p.inputSha256,p.outputSha256);assert.equal(p.adapterSha256.length,64);
   assert.throws(()=>integrateLambdaHtml(Buffer.from('unknown')),/exact reviewed/);assert.throws(()=>integrateLambdaHtml(Buffer.concat([input,input])),/exact reviewed/);
+});
+test('content4 adapter embeds the frozen old reader, full C5 runtime and accessible recovery hooks',()=>{
+ const source=readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.html',import.meta.url),'utf8');
+ const input=Buffer.from(source.replace("const AUTO='lambda-lab-hub-v3',CHECKPOINT='lambda-lab-hub-checkpoint-v3',LEGACY='lambda-lab-hub-legacy-v3';","const AUTO='lambda-lab-v2',CHECKPOINT='lambda-lab-checkpoint-v2',LEGACY='lambda-lab-v1';"));
+ const output=integrateLambdaC5Html(input),html=output.toString('utf8'),proof=lambdaC5IntegrationProof(input,output);
+ assert.ok(html.includes("const AUTO='lambda-lab-hub-v4',CHECKPOINT='lambda-lab-hub-checkpoint-v4'"));
+ assert.ok(html.includes("const OldS=legacyRoot.LambdaSnapshot"));assert.ok(html.includes('function inspectLambdaC5Storage'));
+ assert.ok(html.includes('保留“已清除”的检查点'));assert.ok(html.includes('导出观察到的全部存档'));
+ assert.ok(html.includes('存储空间不足'));assert.ok(proof.storageAdapterSha256);assert.ok(proof.legacyReaderFixtureSha256);
+ const embedded=[...html.matchAll(/<script>\s*([\s\S]*?)<\/script>/g)].map(match=>match[1]).find(script=>script.includes('const legacyRoot={}'));
+ assert.ok(embedded);assert.doesNotThrow(()=>new Script(embedded));
+ assert.equal(proof.inputSha256,sha256(input));assert.equal(proof.outputSha256,sha256(output));
+ assert.throws(()=>integrateLambdaC5Html(Buffer.from('unreviewed')),/exact reviewed/);
 });
 function engine(html){const ctx={TextEncoder};const scripts=[...html.matchAll(/<script>\s*([\s\S]*?)<\/script>/g)].map(m=>m[1]);for(const i of [0,4,5])runInNewContext(scripts[i],ctx);return {C:ctx.LambdaCore,S:ctx.LambdaSnapshot};}
 const latest=engine(readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.html',import.meta.url),'utf8'));
