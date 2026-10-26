@@ -21,6 +21,7 @@
 - Node 全量：233/233 通过，原始输出见 `node-final-bc3d5af.log`。
 - Android JVM：18 个 XML 测试套件，共 97/97 通过，原始输出和 XML 见 `gradle-final-bc3d5af/`。
 - Android 34 模拟器：动态卡片专属图标与分类回退 instrumentation 1/1 通过；原始输出与 XML 见 `instrumentation-final-bc3d5af.log`、`gradle-final-bc3d5af/dynamic-lobby-device-test.xml`。
+- Gradle、仪器测试及 Node 的未改动原始构建输出也压缩保存于 `original-build-logs-bc3d5af.zip`；可读文本副本清理了 Gradle 自身输出的行尾空格。
 - 7 张 APK 图标在解码后与源 PNG 像素完全一致；`verify_apk.py` 核实 APK 含 4 个固定源、40 个资源并绑定上述源码 SHA。
 - 四款既有固定游戏打开及返回大厅通过，证据见 `emulator-smoke/`；升级烟测、既有存档标记保留证据见 `upgrade-smoke/`。
 - 四个原游戏仓库的工作树保持 clean，SHA 与 `original-repository-readonly-state.json` 相同。游戏资源包、资源锁和签名资源目录均未修改。
