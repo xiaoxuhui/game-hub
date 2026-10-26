@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.DynamicGamePolicyTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:58:48" hostname="LAPTOP-JC51L3U6" time="0.664">
+  <properties/>
+  <testcase name="futureCapabilitiesAreVisibleButCannotInstallAndV1RemainsFixed" classname="com.xiaoxuhui.gamehub.DynamicGamePolicyTest" time="0.025"/>
+  <testcase name="signatureFreshnessAndExpiredInstalledProofAreDistinct" classname="com.xiaoxuhui.gamehub.DynamicGamePolicyTest" time="0.626"/>
+  <testcase name="rejectsDuplicatesReservedIdsPathsAndCoercion" classname="com.xiaoxuhui.gamehub.DynamicGamePolicyTest" time="0.012"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

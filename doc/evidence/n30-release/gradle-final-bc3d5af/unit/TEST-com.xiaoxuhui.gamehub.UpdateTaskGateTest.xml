@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.UpdateTaskGateTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:23" hostname="LAPTOP-JC51L3U6" time="0.01">
+  <properties/>
+  <testcase name="externalResultPendingRevokesDownloadUntilCallbackReleasesGate" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.002"/>
+  <testcase name="dynamicAndBuiltinBackoffAreIndependentButAllTasksShareOneBusySlot" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.002"/>
+  <testcase name="rateLimitPersistsPerChannelAndManualActionsCannotBypassIt" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.002"/>
+  <testcase name="automaticDynamicDownloadsRevokeOnSettingsAndRepairWaitsForTheirCleanup" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.0"/>
+  <testcase name="coldCheckCoalescesAndRotationShortReturnDoNotRecheckButThirtyMinutesDoes" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.0"/>
+  <testcase name="cancellationKeepsMutexUntilCleanupAndStaleWorkerCannotReleaseNewTask" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.001"/>
+  <testcase name="gameBackgroundAndNetworkTransitionsCancelWithoutAutomaticResume" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.002"/>
+  <testcase name="failureRepairsWaitForCleanupBlockNewTasksAndCompleteEvenInBackgroundOffline" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.001"/>
+  <testcase name="offlineLocalChangeSharesMutexIgnoresNetworkAndHonorsForegroundHallCancellation" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.0"/>
+  <testcase name="mobileNeedsExplicitConfirmationOrOptInAndApkNeverAutomaticallyDownloads" classname="com.xiaoxuhui.gamehub.UpdateTaskGateTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

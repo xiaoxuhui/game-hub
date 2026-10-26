@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:59:16" hostname="LAPTOP-JC51L3U6" time="5.091">
+  <properties/>
+  <testcase name="paginatedAssetsAreCompleteAndNextLinkCannotLeaveRepository" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="0.815"/>
+  <testcase name="cancellationWhileResponseCodeWaitsCannotReturnCached304" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="0.003"/>
+  <testcase name="actualByteBudget304WithoutCacheAndRateLimitAreExplicitFailures" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="0.001"/>
+  <testcase name="resourceDownloadChecksActualHashSizeCancellationAndCleansPartial" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="0.593"/>
+  <testcase name="signedCatalogBindsCompleteReleaseAssetsAndRevalidatesCachedMetadata" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="0.98"/>
+  <testcase name="dynamicCatalogHasFixedSeparateChannelAndCannotBeParsedByDefaultV1Client" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="0.843"/>
+  <testcase name="incompleteWrongDuplicateOrTamperedAssetMembershipFails" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="1.329"/>
+  <testcase name="retiredDynamicAssetsMustRemainBoundButCannotReserveDownload" classname="com.xiaoxuhui.gamehub.ResourceCatalogClientTest" time="0.527"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.xiaoxuhui.gamehub.DownloadPayloadTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-26T15:58:48" hostname="LAPTOP-JC51L3U6" time="0.006">
+  <properties/>
+  <testcase name="hashesExactBytesAndRejectsOversizedPayload" classname="com.xiaoxuhui.gamehub.DownloadPayloadTest" time="0.005"/>
+  <testcase name="cancelledTransferNeverReturnsAValidatedResult" classname="com.xiaoxuhui.gamehub.DownloadPayloadTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
