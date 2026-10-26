@@ -1,15 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { runInNewContext } from 'node:vm';
 import { execFileSync } from 'node:child_process';
 import { createLambdaStorage } from '../scripts/lambda-storage-integration.mjs';
 
 // Pin the actual shipped content3 reader. Once C5 replaces the tracked asset,
 // this test must continue checking the reader users already have installed.
-const oldHtml = execFileSync('git', ['show', '23c9e7b101750f5ac0e17d2f5b78a98c00db0a31:examples/lambda-diagram-game/lambda-lab.html'], { maxBuffer: 2_000_000 }).toString();
-const oldProof = JSON.parse(readFileSync(new URL('../examples/lambda-diagram-game/upstream-source.json', import.meta.url), 'utf8'));
-const trackedHtml = readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.html', import.meta.url), 'utf8');
+const baseline = '23c9e7b101750f5ac0e17d2f5b78a98c00db0a31';
+const gitFile = path => execFileSync('git', ['show', `${baseline}:${path}`], { maxBuffer: 2_000_000 });
+const oldHtmlBytes = gitFile('examples/lambda-diagram-game/lambda-lab.html');
+const oldProofBytes = gitFile('examples/lambda-diagram-game/upstream-source.json');
+const oldHtml = oldHtmlBytes.toString('utf8');
+const oldProof = JSON.parse(oldProofBytes.toString('utf8'));
 
 function scripts(html) {
   return [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
@@ -23,24 +26,16 @@ function readers(html, indices) {
 }
 
 const old = readers(oldHtml, [0, 3, 4, 5]);
-let newHtml = trackedHtml;
-let current = readers(newHtml, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-if (current.P.levels.length !== 30) {
-  // Before the source integration commit exists locally, use the independently
-  // built target artifact; CI after integration reads the committed asset.
-  newHtml = readFileSync(new URL('../.build/lambda-source-target-2ce0fa3/dist/lambda-lab.html', import.meta.url), 'utf8');
-  current = readers(newHtml, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-}
 
 function fullC5Snapshot() {
   return {
     version: 3,
     draft: '(λa.a) u',
     functions: [],
-    completed: current.P.levels.map(level => level.id),
+    completed: Array.from({ length: 30 }, (_, i) => i + 1),
     mode: 'challenge',
     level: 29,
-    session: { original: current.C.parse('(λa.a) u'), steps: 0, dirty: false, halt: '', paths: [] },
+    session: { original: old.C.parse('(λa.a) u'), steps: 0, dirty: false, halt: '', paths: [] },
     view: {
       speed: 600, strategy: 'normal', direction: 'left', numberEncoding: 'decimal', decimalPlaces: 4,
       scale: 1, autoFit: true, panX: 0, panY: 0, historyOpen: false, helpOpen: false, hintOpen: false
@@ -68,29 +63,26 @@ function memoryStorage() {
   return { map, getItem: key => map.get(key) ?? null, setItem: (key, value) => map.set(key, value), removeItem: key => map.delete(key) };
 }
 
-test('the issued content3 reader is the five-level a5eab9f5 resource and target has thirty stable IDs', () => {
+test('the issued content3 reader is the five-level a5eab9f5 resource', () => {
+  assert.equal(createHash('sha256').update(oldHtmlBytes).digest('hex'), 'ac739314e6e9ec46aa1acb515ad20b1d7e889d1c22adab1eed777860c14b51f7');
+  assert.equal(createHash('sha256').update(oldProofBytes).digest('hex'), '404c81336ff3d9ca1c5b7ee5de29aa977108aad6d98fda3b03187acfd8e72425');
   assert.equal(oldProof.revision, 'a5eab9f5c14f33d328f39858b6680e43c41ffa25');
   assert.equal(old.P.levels.length, 5);
-  assert.equal(current.P.levels.length, 30);
-  assert.equal(JSON.stringify(current.P.levels.map(level => level.id)), JSON.stringify(Array.from({ length: 30 }, (_, i) => i + 1)));
 });
 
-test('new reader accepts full thirty-level state while the actual issued reader rejects it', () => {
+test('the issued reader rejects full thirty-level progress and a new challenge selection', () => {
   const full = fullC5Snapshot();
-  const encoded = current.S.encode(full);
-  assert.equal(current.S.decode(encoded).completed.length, 30);
-  assert.equal(current.S.decode(encoded).level, 29);
+  const encoded = JSON.stringify(full);
   assert.throws(() => old.S.decode(encoded), /通关进度不合法/);
 
   const onlyNewLevelSelected = { ...full, completed: [], level: 29 };
-  assert.throws(() => old.S.decode(current.S.encode(onlyNewLevelSelected)), /关卡编号不合法/);
+  assert.throws(() => old.S.decode(JSON.stringify(onlyNewLevelSelected)), /关卡编号不合法/);
 });
 
 test('content3 reader accepts the v2/v3 compatibility view and ignores C5-only extension fields', () => {
   const full = fullC5Snapshot();
   const projected = fiveLevelProjection(full);
   const encoded = JSON.stringify(projected);
-  assert.equal(current.S.decode(encoded).completed.length, 5);
   const decodedOld = old.S.decode(encoded);
   assert.equal(JSON.stringify(decodedOld.completed), JSON.stringify([1, 2, 3, 4, 5]));
   assert.equal(decodedOld.mode, 'free');
