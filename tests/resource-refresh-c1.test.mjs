@@ -1,11 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {execFileSync} from 'node:child_process';
 import {sha256} from '../scripts/resource-protocol.mjs';
-test('C1 advances only logic and traffic while preserving prior sources after hex and Ant admissions',()=>{
+test('C1 and Lambda refreshes preserve other sources after later admissions',()=>{
  const before=JSON.parse(execFileSync('git',['show','cd413ba63eadc0d61502272ffd0425db197f8279:dynamic-sources.lock.json'],{cwd:new URL('../',import.meta.url)})).sources,current=JSON.parse(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources;
  const previousIds=new Set(before.map(g=>g.id)),previousCurrent=current.filter(g=>previousIds.has(g.id));
  assert.deepEqual(previousCurrent.map(g=>g.id),before.map(g=>g.id));
- assert.deepEqual(current.filter(g=>!previousIds.has(g.id)).map(g=>g.id),['hex-cell-lab','langtons-ant']);
- const changed=previousCurrent.filter(g=>JSON.stringify(g)!==JSON.stringify(before.find(o=>o.id===g.id))).map(g=>g.id);assert.deepEqual(changed,['logic-circuit','traffic-planner']);
+ assert.deepEqual(current.filter(g=>!previousIds.has(g.id)).map(g=>g.id),['turbowarp-neural-network','turbowarp-logic-lab']);
+ const changed=previousCurrent.filter(g=>JSON.stringify(g)!==JSON.stringify(before.find(o=>o.id===g.id))).map(g=>g.id);assert.deepEqual(changed,['lambda-diagram-game','logic-circuit','traffic-planner']);
  const logic=current.find(g=>g.id==='logic-circuit'),traffic=current.find(g=>g.id==='traffic-planner');assert.equal(logic.revision,'690f4b606aa280560e8540fc513755527e07387e');assert.equal(logic.contentCode,28);assert.equal(traffic.revision,'86f8fb77de41c9ddef37fbd998c44d01c0623727');assert.equal(traffic.contentCode,2);assert.ok(traffic.files.includes('src/reversing.js'));for(const game of [logic,traffic])assert.equal(game.storageContract,game.id+'-dynamic-v1');
 });
 test('traffic browser import fixture is the fixed published 800ae reader export',()=>{const data=readFileSync(new URL('./fixtures/traffic-layout-800ae.json',import.meta.url)),proof=JSON.parse(readFileSync(new URL('./fixtures/traffic-layout-800ae.source.json',import.meta.url)));assert.equal(proof.repository,'https://github.com/xiaoxuhui/traffic-planner.git');assert.equal(proof.revision,'800ae8c9b2d55e9d50bdc0dfaf59f2a7ea16e3a1');assert.equal(sha256(data),proof.fixtureSha256);assert.equal(sha256(data),'cdaf298808b83a8b6223c351126c519b89663a0ba66fda659baab36c87ad0656');const layout=JSON.parse(data);assert.equal(layout.version,1);assert.ok(layout.roads.length>50);assert.ok(layout.sources.length>0);});
