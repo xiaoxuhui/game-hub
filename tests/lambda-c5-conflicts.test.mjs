@@ -253,8 +253,10 @@ test('an unfinished checkpoint deletion journal still offers explicit keep-clear
   const oldCheckpoint2 = s.getItem('lambda-lab-checkpoint-v2');
   const oldReady = s.getItem('lambda-lab-hub-mirror-ready-v3');
   const afterReady = JSON.stringify({ auto: true, checkpoint: false });
-  const journal = JSON.stringify({ schemaVersion: 1, before: [], after: [
+  const journal = JSON.stringify({ schemaVersion: 1, before: [
     ['lambda-lab-hub-checkpoint-v3', oldCheckpoint], ['lambda-lab-checkpoint-v2', oldCheckpoint2], ['lambda-lab-hub-mirror-ready-v3', oldReady]
+  ], after: [
+    ['lambda-lab-hub-checkpoint-v3', null], ['lambda-lab-checkpoint-v2', null], ['lambda-lab-hub-mirror-ready-v3', afterReady]
   ] });
   s.setItem('lambda-lab-hub-journal-v3', journal);
   s.removeItem('lambda-lab-hub-checkpoint-v3');
@@ -280,14 +282,17 @@ test('an unfinished checkpoint deletion journal can explicitly restore the full 
   const oldCheckpoint = s.getItem('lambda-lab-hub-checkpoint-v3');
   const oldCheckpoint2 = s.getItem('lambda-lab-checkpoint-v2');
   const oldReady = s.getItem('lambda-lab-hub-mirror-ready-v3');
-  const journal = JSON.stringify({ schemaVersion: 1, before: [], after: [
+  const afterReady = JSON.stringify({ auto: true, checkpoint: false });
+  const journal = JSON.stringify({ schemaVersion: 1, before: [
     ['lambda-lab-hub-checkpoint-v3', oldCheckpoint], ['lambda-lab-checkpoint-v2', oldCheckpoint2],
-    ['lambda-lab-hub-mirror-ready-v3', JSON.stringify({ auto: true, checkpoint: false })]
+    ['lambda-lab-hub-mirror-ready-v3', oldReady]
+  ], after: [
+    ['lambda-lab-hub-checkpoint-v3', null], ['lambda-lab-checkpoint-v2', null], ['lambda-lab-hub-mirror-ready-v3', afterReady]
   ] });
   s.setItem('lambda-lab-hub-journal-v3', journal);
   s.removeItem('lambda-lab-hub-checkpoint-v3');
   s.removeItem('lambda-lab-checkpoint-v2');
-  s.setItem('lambda-lab-hub-mirror-ready-v3', JSON.stringify({ auto: true, checkpoint: false }));
+  s.setItem('lambda-lab-hub-mirror-ready-v3', afterReady);
 
   const inspected = inspectLambdaC5Storage(s, current.S, old.S);
   assert.equal(inspected.checkpoint.status, 'conflict');
