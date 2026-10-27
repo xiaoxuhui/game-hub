@@ -58,7 +58,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "02177cb8c8b9f347395dee935af7333e8248dc12",
+      "revision": "2dbdcbc43c895efe1ccc993515b6997720bbae1d",
       "directory": "examples/lambda-diagram-game",
       "version": "0.3.3",
       "contentCode": 5,
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "0.3.3同版修复：打开时不再自动载入本地旧存档，改为新会话；本机存档原文保留，可由用户显式点“恢复已保存状态”或“导入存档”恢复。启动渲染期间不写入存储，避免默认页面覆盖旧档。存档格式及其他游戏资源不变。"
+      "releaseNotes": "0.3.3同版修复：打开时显示新会话，不自动载入本地旧存档。无操作退出及连续重开不会覆盖原档；旧档可显式点“恢复已保存状态”或“导入存档”恢复。用户编辑后继续自动保存。存档格式及其他游戏资源不变。"
     },
     {
       "id": "red-green-puzzle",
