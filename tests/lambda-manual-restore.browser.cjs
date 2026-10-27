@@ -35,6 +35,9 @@ const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Typ
       assert.equal(await page.locator('#expression').inputValue(), initial, 'startup must show the fresh page, not silently apply an old save');
       assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'startup must preserve the previous save');
       assert.equal(await page.locator('#restore-state').isEnabled(), true, 'manual local restore must be available');
+      await page.locator('#import-file').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{"version":999}') });
+      await page.waitForTimeout(100);
+      assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'a rejected import must not enable autosave or replace the old save');
       await page.reload();
       await page.waitForTimeout(100);
       assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'leaving an untouched fresh session must not overwrite the previous save');
@@ -55,6 +58,20 @@ const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Typ
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'layout must fit the viewport');
       console.log(`PASS ${++checks} ${width}px: Import button loads selected JSON save without overflow`);
       await context.close();
+
+      const levelContext = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: true });
+      const levelPage = await levelContext.newPage();
+      levelPage.on('pageerror', error => errors.push(error.message));
+      await levelPage.goto(`http://127.0.0.1:${server.address().port}/lambda-lab.html`);
+      await levelPage.locator('#level-list button').nth(1).click();
+      const selectedLevel = await levelPage.locator('#level-title').textContent();
+      await levelPage.waitForFunction(() => Boolean(localStorage.getItem('lambda-lab-hub-v4')));
+      await levelPage.reload();
+      assert.equal(await levelPage.locator('#restore-state').isEnabled(), true, 'a selected level must be available as a manual save after reopen');
+      await levelPage.locator('#restore-state').click();
+      assert.equal(await levelPage.locator('#level-title').textContent(), selectedLevel, 'dynamic level buttons must enable autosave after a user selection');
+      console.log(`PASS ${++checks} ${width}px: dynamic level selection autosaves and can be manually restored`);
+      await levelContext.close();
     }
     assert.deepEqual(errors, []);
     console.log(`Lambda manual restore browser checks: ${checks} passed, 0 failed; page errors 0.`);

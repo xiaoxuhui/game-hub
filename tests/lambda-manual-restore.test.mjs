@@ -23,8 +23,11 @@ test('startup prepares a manual restore candidate without applying or replacing 
 test('startup rendering is excluded from autosave and later explicit restore/import apply snapshots', () => {
   assert.match(html, /function persist\(explicit=false\) \{\s*if\(explicit===true\)autosaveReady=true;\s*clearTimeout\(saveTimer\);if\(restoring\|\|\(!autosaveReady&&explicit!==true\)\)return;/);
   assert.match(html, /function queueSave\(\)\{if\(autosaveReady&&!restoring\)/);
-  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);\s*document\.addEventListener\('input',event=>\{if\(event\.isTrusted\)workspace\.enableAutosave\(\);\}/);
-  assert.match(html, /document\.addEventListener\('click',event=>\{if\(event\.isTrusted&&event\.target\.closest\(/);
+  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);\s*const userAutosaveEvent=event=>event\.isTrusted&&!\(event\.target instanceof HTMLInputElement&&event\.target\.type==='file'\);\s*document\.addEventListener\('input',event=>\{if\(userAutosaveEvent\(event\)\)workspace\.enableAutosave\(\);\}/);
+  assert.match(html, /const userAutosaveEvent=event=>event\.isTrusted&&!\(event\.target instanceof HTMLInputElement&&event\.target\.type==='file'\)/);
+  assert.match(html, /document\.addEventListener\('change',event=>\{if\(userAutosaveEvent\(event\)\)workspace\.enableAutosave\(\);\}/);
+  assert.match(html, /document\.addEventListener\('click',event=>\{if\(event\.isTrusted&&event\.target\.closest\([^)]*#level-list button/);
+  assert.match(html, /document\.addEventListener\('toggle',event=>\{if\(event\.isTrusted&&event\.target\.id==='history-details'\)/);
   assert.doesNotMatch(html, /convert\(\);workspace\.enableAutosave\(\)/);
   assert.match(html, /window\.addEventListener\('pagehide',persist\)/);
   assert.match(html, /\$\('restore-state'\)\.addEventListener\('click',\(\)=>\{\s*if\(!checkpoint\)return;\s*try\{const snapshot=S\.decode\(checkpoint\);apply\(snapshot\);persist\(true\);/);
