@@ -27,7 +27,7 @@ const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Typ
       await page.locator('#step').click();
       const savedResult = await page.locator('#current-expression').textContent();
       await page.locator('#save-state').click();
-      await page.locator('#hint-toggle').click();
+      await page.locator('#help-toggle').click();
       await page.waitForTimeout(250);
       assert.ok(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), 'save should create a local snapshot');
 
