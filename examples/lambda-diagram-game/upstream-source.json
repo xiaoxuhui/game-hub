@@ -91,8 +91,8 @@
     },
     {
       "path": "lambda-lab.html",
-      "bytes": 210409,
-      "sha256": "b23332fc8a1d407aad51540ecf2ed6db349e6a1cd597c0e90ec82de30e82e59c"
+      "bytes": 210463,
+      "sha256": "4189b4a26ace5802bac2a8a84136a202d7d5f29655ea4ae1b1b09d184a6534a1"
     }
   ],
   "trackedArtifact": {
@@ -104,7 +104,7 @@
   "adaptation": {
     "id": "lambda-content4-storage-c5-manual-restore-v1",
     "inputSha256": "02b4e53879bf9ede397042300ed0757de0fdef1baca1306e41bec944e7a92dd2",
-    "outputSha256": "b23332fc8a1d407aad51540ecf2ed6db349e6a1cd597c0e90ec82de30e82e59c",
+    "outputSha256": "4189b4a26ace5802bac2a8a84136a202d7d5f29655ea4ae1b1b09d184a6534a1",
     "adapterSha256": "00328f53d367a30757a2cb93718a3f3b36981b42b739527b85e85f781bdd8602",
     "integration": "lambda-content4-storage-c5-manual-restore-v1",
     "browserAdapterSha256": "8af85ef2dfa4e6b881090be8114b1a691d5e86e98063b388592ca3bae0caed34",
