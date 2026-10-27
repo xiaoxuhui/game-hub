@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "1ad91a97e5e1f1f98ca2a39b6d8355f61a3b25cb",
+      "revision": "54180fe859232e69b45b49168318715d211a5e95",
       "directory": "examples/lambda-diagram-game",
-      "version": "0.3.3",
-      "contentCode": 5,
+      "version": "0.3.4",
+      "contentCode": 6,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "0.3.3同版修复：打开时显示新会话，不自动载入本地旧存档。无操作退出及连续重开不会覆盖原档；旧档可显式点“恢复已保存状态”或“导入存档”恢复。用户编辑后继续自动保存。存档格式及其他游戏资源不变。"
+      "releaseNotes": "0.3.4修复：兼容0.3.3首次升级后自动存档已迁移、旧检查点仍保留的设备。原始自动存档与检查点先归档，再原子迁移到新存档；打开仍显示新会话，需手动点“恢复已保存状态”或“导入存档”。用户编辑后继续自动保存；存档格式和其他游戏资源不变。"
     },
     {
       "id": "red-green-puzzle",
