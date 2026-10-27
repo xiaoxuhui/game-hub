@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "ff17bc5306ad9c85f545db96ab74b15a090b98f2",
+      "revision": "02177cb",
       "directory": "examples/lambda-diagram-game",
       "version": "0.3.3",
-      "contentCode": 4,
+      "contentCode": 5,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "0.3.3同版资源更新（content4）：新增30关和离线完整存档；保留content3原文/归约轨迹，并保留旧版v2基础进度读写兼容。升级时检测v4/v3/v2、检查点与中断日志冲突，提供预览、选择、取消及原文导出；检测到并发/存储冲突时停止写入，不静默覆盖。固定上游2ce0fa3，MIT许可及适配前后SHA证明随包。"
+      "releaseNotes": "0.3.3同版修复：打开时不再自动载入本地旧存档，改为新会话；本机存档原文保留，可由用户显式点“恢复已保存状态”或“导入存档”恢复。启动渲染期间不写入存储，避免默认页面覆盖旧档。存档格式及其他游戏资源不变。"
     },
     {
       "id": "red-green-puzzle",
