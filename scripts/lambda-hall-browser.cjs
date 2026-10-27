@@ -19,7 +19,8 @@ const server=http.createServer((req,res)=>res.writeHead(200,{'Content-Type':'tex
   await check('old progress and checkpoint migrate while legacy bytes stay preserved',async()=>{
    await page.locator('#function-name').fill('ID');await page.locator('#function-source').fill('λx.x');await page.locator('#function-add').click();
    await source('(λx.x) ((λy.y) z)');await page.locator('#step').click();await page.locator('#save-state').click();
-   await page.goto(base+'/new');assert.equal(await current(),'(λy.y) z');assert.equal(await page.locator('#step-count').textContent(),'1');assert.equal(await page.locator('#function-count').textContent(),'1 个函数');
+   await page.goto(base+'/new');assert.equal(await current(),'');assert.equal(await page.locator('#step-count').textContent(),'0');assert.equal(await page.locator('#function-count').textContent(),'0 个函数');
+   await page.locator('#restore-state').click();assert.equal(await current(),'(λy.y) z');assert.equal(await page.locator('#step-count').textContent(),'1');assert.equal(await page.locator('#function-count').textContent(),'1 个函数');
    const data=await page.evaluate(({oldAuto,oldCp,auto,cp})=>({a:localStorage.getItem(oldAuto),c:localStorage.getItem(oldCp),n:localStorage.getItem(auto),nc:localStorage.getItem(cp),backup:localStorage.getItem('lambda-lab-hub-upgrade-backup-v2')}),{oldAuto,oldCp,auto,cp});
    const originals=JSON.parse(data.backup);assert.deepEqual(JSON.parse(data.n).session,JSON.parse(originals.auto).session);assert.equal(data.nc,originals.checkpoint);
    originalBackup=data.backup;await page.evaluate(()=>localStorage.setItem('other-game-sentinel','safe'));
@@ -28,7 +29,8 @@ const server=http.createServer((req,res)=>res.writeHead(200,{'Content-Type':'tex
   await check('full right/applicative/manual history and original function source survive reload',async()=>{
    await page.locator('#function-name').fill('RAW');await page.locator('#function-source').fill('ID 3');await page.locator('#function-add').click();
    await source('(λa.a) u ((λb.b) v)');await page.locator('#reduction-direction').selectOption('right');await page.locator('#reduction-order').selectOption('applicative');await page.locator('#step').click();assert.equal(await current(),'(λa.a) u v');
-   await page.locator('#save-state').click();await page.reload();assert.equal(await current(),'(λa.a) u v');assert.equal(await page.locator('#reduction-direction').inputValue(),'right');assert.equal(await page.locator('#reduction-order').inputValue(),'applicative');
+   await page.locator('#save-state').click();await page.reload();assert.equal(await current(),'');assert.equal(await page.locator('#step-count').textContent(),'0');
+   await page.locator('#restore-state').click();assert.equal(await current(),'(λa.a) u v');assert.equal(await page.locator('#reduction-direction').inputValue(),'right');assert.equal(await page.locator('#reduction-order').inputValue(),'applicative');
    await page.getByRole('button',{name:'编辑函数 RAW',exact:true}).click();assert.equal(await page.locator('#function-source').inputValue(),'ID 3');await page.locator('#function-cancel').click();
    newSave=await page.evaluate(key=>localStorage.getItem(key),auto);assert.equal(JSON.parse(newSave).version,3);assert.deepEqual(JSON.parse(newSave).session.paths,[['arg']]);
    assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-upgrade-backup-v2')),originalBackup);
