@@ -27,20 +27,22 @@ const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Typ
       await page.locator('#step').click();
       const savedResult = await page.locator('#current-expression').textContent();
       await page.locator('#save-state').click();
-      const stored = await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4'));
-      assert.ok(stored, 'save should create a local snapshot');
+      assert.ok(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), 'save should create a local snapshot');
 
       await page.reload();
       await page.waitForTimeout(250);
+      const stored = await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4'));
       assert.equal(await page.locator('#expression').inputValue(), initial, 'startup must show the fresh page, not silently apply an old save');
-      assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'startup must preserve the previous save');
+      assert.ok(stored, 'the prior session remains saved after the previous page closes');
       assert.equal(await page.locator('#restore-state').isEnabled(), true, 'manual local restore must be available');
       await page.locator('#import-file').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{"version":999}') });
       await page.waitForTimeout(100);
       assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'a rejected import must not enable autosave or replace the old save');
       await page.locator('#expression').press('ArrowLeft');
       await page.locator('#diagram-viewport').click({ position: { x: 5, y: 5 } });
-      assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'navigation keys and empty diagram taps must not enable autosave');
+      await page.locator('#convert').click();
+      await page.locator('#fit').click();
+      assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'navigation keys, empty diagram taps, and no-op convert/fit must not enable autosave');
       await page.reload();
       await page.waitForTimeout(100);
       assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'leaving an untouched fresh session must not overwrite the previous save');

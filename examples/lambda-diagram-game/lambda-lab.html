@@ -2210,7 +2210,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
   let toastTimer,workspace,viewer,historySource=null,renderedCount=0,diagramTerm=null,diagramRoute=null;
   const decodedTerms=new WeakMap(),TRUE=C.parse(P.TRUE),FALSE=C.parse(P.FALSE),IDENTITY=C.parse(P.I);
   const diagramView=window.LambdaDiagramView.init($('diagram-mount'));
-  let initializing=true;function save() { if(!initializing)workspace?.queueSave(); }
+  let initializing=true,lastAutosaveSnapshot='';function save() { if(initializing)return;const current=JSON.stringify(capture());if(current!==lastAutosaveSnapshot){lastAutosaveSnapshot=current;workspace?.queueSave();} }
   function capture() {
     return {draft:input.value,completed:[...state.completed],mode:state.mode,level:state.level,
       session:{original:state.original,steps:Math.max(0,state.history.length-1),dirty:state.dirty,halt:state.halt,...(state.paths?{paths:state.paths}:{} )},
@@ -2507,7 +2507,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       const after=end<input.value.length&&/[A-Za-z0-9_']/.test(input.value[end])?' ':'';
       insert(before+name+after);
     }});
-  workspace.prepareManualRestore();renderMode();convert();initializing=false;
+  workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;
 })();
 
 </script>

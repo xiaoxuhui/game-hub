@@ -23,8 +23,8 @@ test('startup prepares a manual restore candidate without applying or replacing 
 test('startup rendering is excluded from autosave and later explicit restore/import apply snapshots', () => {
   assert.match(html, /function persist\(explicit=false\) \{\s*if\(explicit===true\)autosaveReady=true;\s*clearTimeout\(saveTimer\);if\(restoring\|\|\(!autosaveReady&&explicit!==true\)\)return;/);
   assert.match(html, /function queueSave\(\)\{autosaveReady=true;if\(!restoring\)/);
-  assert.match(html, /let initializing=true;function save\(\) \{ if\(!initializing\)workspace\?\.queueSave\(\); \}/);
-  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);initializing=false;/);
+  assert.match(html, /let initializing=true,lastAutosaveSnapshot='';function save\(\) \{ if\(initializing\)return;const current=JSON\.stringify\(capture\(\)\);if\(current!==lastAutosaveSnapshot\)\{lastAutosaveSnapshot=current;workspace\?\.queueSave\(\);\} \}/);
+  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);lastAutosaveSnapshot=JSON\.stringify\(capture\(\)\);initializing=false;/);
   assert.doesNotMatch(html, /document\.addEventListener\('(input|change|click|pointerup|keydown)'/);
   assert.match(html, /function selectLevel\(index\)[\s\S]*?renderMode\(\);setSource\(P\.levels\[index\]\.start\);save\(\);/);
   assert.match(html, /function manualStep\(selection\)[\s\S]*?advance\(selection\.path\)/);

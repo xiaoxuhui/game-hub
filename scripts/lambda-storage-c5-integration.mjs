@@ -166,8 +166,8 @@ export function lambdaManualRestoreHtml(source) {
     ["clearTimeout(saveTimer);if(restoring)return;", "clearTimeout(saveTimer);if(restoring||(!autosaveReady&&explicit!==true))return;"],
     ["function queueSave(){if(!restoring){", "function queueSave(){autosaveReady=true;if(!restoring){"],
     ["return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};", "return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};"],
-    ["function save() { workspace?.queueSave(); }", "let initializing=true;function save() { if(!initializing)workspace?.queueSave(); }"],
-    ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();initializing=false;"]
+    ["function save() { workspace?.queueSave(); }", "let initializing=true,lastAutosaveSnapshot='';function save() { if(initializing)return;const current=JSON.stringify(capture());if(current!==lastAutosaveSnapshot){lastAutosaveSnapshot=current;workspace?.queueSave();} }"],
+    ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;"]
   ];
   let html=source;
   for(const [before,after] of replacements){if(html.split(before).length!==2)throw new Error('Lambda manual-restore integration requires exact reviewed markers');html=html.replace(before,after);}
