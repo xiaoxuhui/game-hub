@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { runInNewContext } from 'node:vm';
-import { createLambdaC5Storage } from '../scripts/lambda-storage-c5.mjs';
+import { createLambdaC5Storage, inspectLambdaC5Storage, lambdaC5Projection, resolveLambdaC5Storage } from '../scripts/lambda-storage-c5.mjs';
 import { createLambdaStorage } from '../scripts/lambda-storage-integration.mjs';
 
 const oldFixture = JSON.parse(readFileSync(new URL('./fixtures/lambda-content3-reader.json', import.meta.url), 'utf8'));
@@ -56,6 +56,38 @@ function canonicalOld(text) {
   state.functions = state.functions.map(({ name, term }) => ({ name, term }));
   return JSON.stringify(state);
 }
+
+test('a checkpoint left by the first C5 migration is migrated atomically and remains manually recoverable', () => {
+  const currentText = encodedFull();
+  const checkpointText = encodedFull({
+    draft: 'λy.y',
+    session: { original: current.C.parse('λy.y'), steps: 0, dirty: false, halt: '', paths: [] }
+  });
+  const currentProjection = lambdaC5Projection(currentText, currentReader, old.S);
+  const checkpointProjection = lambdaC5Projection(checkpointText, currentReader, old.S);
+  const storage = memoryStorage({
+    'lambda-lab-hub-v4': currentText,
+    'lambda-lab-hub-v3': currentProjection.v3,
+    'lambda-lab-v2': currentProjection.v2,
+    'lambda-lab-hub-checkpoint-v3': checkpointProjection.v3,
+    'lambda-lab-checkpoint-v2': checkpointProjection.v2,
+    'lambda-lab-hub-mirror-ready-v3': JSON.stringify({ auto: true, checkpoint: false })
+  });
+  const originalCheckpoint = storage.getItem('lambda-lab-checkpoint-v2');
+  let inspection = inspectLambdaC5Storage(storage, currentReader, old.S);
+  assert.equal(inspection.current.status, 'healthy');
+  assert.equal(inspection.checkpoint.status, 'migrate');
+  resolveLambdaC5Storage(storage, currentReader, old.S, {
+    kind: 'checkpoint', choice: inspection.checkpoint.autoChoice, inspection
+  });
+  inspection = inspectLambdaC5Storage(storage, currentReader, old.S);
+  assert.equal(inspection.current.status, 'healthy');
+  assert.equal(inspection.checkpoint.status, 'healthy');
+  assert.equal(JSON.parse(storage.getItem('lambda-lab-hub-mirror-ready-v3')).checkpoint, true);
+  const archived = JSON.parse(storage.getItem('lambda-lab-hub-c5-conflict-archive-v1'));
+  assert.ok(archived.entries.some(entry => entry.snapshot['lambda-lab-checkpoint-v2'] === originalCheckpoint));
+  assert.equal(current.S.decode(storage.getItem('lambda-lab-hub-checkpoint-v4')).draft, 'λy.y');
+});
 
 test('C5 stores the complete new state and an actual content3-readable five-level projection', () => {
   assert.equal(currentFixture.upstreamRevision, '2ce0fa371e583bb9b57e74ace1f5cd2a7b14bd2c');

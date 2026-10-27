@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { Script } from 'node:vm';
-import { lambdaManualRestoreHtml } from '../scripts/lambda-storage-c5-integration.mjs';
+import { lambdaManualRestoreHtml, refreshLambdaC5ModuleHtml } from '../scripts/lambda-storage-c5-integration.mjs';
 
 const html = readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.html', import.meta.url), 'utf8');
 
 test('startup prepares a manual restore candidate without applying or replacing the saved session', () => {
   const fixedInput = execFileSync('git', ['show', 'ff17bc5306ad9c85f545db96ab74b15a090b98f2:examples/lambda-diagram-game/lambda-lab.html'], { maxBuffer: 2_000_000 }).toString('utf8');
-  assert.equal(lambdaManualRestoreHtml(fixedInput), html, 'committed resource must be the reproducible adaptation of its fixed input');
+  assert.equal(refreshLambdaC5ModuleHtml(lambdaManualRestoreHtml(fixedInput)), html, 'committed resource must be the reproducible adaptation of its fixed input and reviewed C5 module');
   const start = html.indexOf('function prepareManualRestore()');
   const end = html.indexOf("\n    $('function-form').addEventListener", start);
   assert.ok(start >= 0 && end > start);

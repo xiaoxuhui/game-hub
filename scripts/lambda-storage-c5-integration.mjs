@@ -150,6 +150,18 @@ export function lambdaC5BrowserAdapterSource() {
   const AUTO='lambda-lab-hub-v4',CHECKPOINT='lambda-lab-hub-checkpoint-v4',LEGACY='lambda-lab-hub-legacy-v4';`;
 }
 
+export function refreshLambdaC5ModuleHtml(source) {
+  const marker = 'const C5=(()=>{';
+  const endMarker = 'return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,createLambdaC5Storage,LAMBDA_C5_STORAGE_KEYS};})();';
+  const start = source.indexOf(marker);
+  const end = source.indexOf(endMarker, start);
+  if (start < 0 || end < 0 || source.indexOf(marker, start + marker.length) >= 0 || source.indexOf(endMarker, end + endMarker.length) >= 0) {
+    throw new Error('Lambda C5 module refresh requires exact reviewed markers');
+  }
+  const replacement = `${marker}${c5ApiSource()}\n${endMarker}`;
+  return source.slice(0, start) + replacement + source.slice(end + endMarker.length);
+}
+
 export function lambdaC5AdapterEvidence() {
   return {
     integration: LAMBDA_C5_INTEGRATION,

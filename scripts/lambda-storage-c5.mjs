@@ -196,8 +196,10 @@ function inspectGroup(snapshot, kind, CurrentS, OldS, problems, journalPending) 
   else if (problems.length === 0 && blockingMetadata.length === 0 && tombstone && v4) status = 'tombstone';
   else if (metadata.length === 0 && raw4 === null) {
     const oldSourcesValid = (!raw3Present || !!v3) && (!raw2Present || !!v2);
+    const checkpointLeftByFirstUpgrade = !current && ready.valid && ready.present && !readyValue.checkpoint &&
+      raw4 === null && (v3 || v2) && snapshot[KEYS.checkpointTombstone] === null;
     const flagsMatch = ready.valid && (!ready.present ||
-      (readyValue[flag] ? raw3Present && raw2Present : !raw3Present && !raw2Present));
+      (readyValue[flag] ? raw3Present && raw2Present : !raw3Present && !raw2Present) || checkpointLeftByFirstUpgrade);
     if (oldSourcesValid && flagsMatch && (v3 || v2) && (!raw3Present || !raw2Present || relation)) {
       status = 'migrate';
       autoChoice = v3 ? 'v3' : 'v2';
@@ -280,7 +282,13 @@ export function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, 
     expectedSnapshot = { ...snapshot, [KEYS.conflictArchive]: archiveText };
   } else changes.push([KEYS.conflictArchive, archiveText]);
   const ready = parseReady(snapshot[KEYS.ready]);
-  const flags = ready.valid ? ready.value : { auto: false, checkpoint: false };
+  const hasRaw = keys => keys.some(key => snapshot[key] !== null);
+  // A pre-C5 save has independent current/checkpoint keys but no mirror-ready flags.
+  // Migrating one side first must not mark the other stored side as absent.
+  const flags = ready.valid && ready.present ? ready.value : {
+    auto: hasRaw([KEYS.current4, KEYS.current3, KEYS.current2]),
+    checkpoint: hasRaw([KEYS.checkpoint4, KEYS.checkpoint3, KEYS.checkpoint2])
+  };
   const currentKind = kind === 'current';
   const key4 = currentKind ? KEYS.current4 : KEYS.checkpoint4;
   const key3 = currentKind ? KEYS.current3 : KEYS.checkpoint3;
@@ -304,22 +312,40 @@ export function resolveLambdaC5Storage(storage, CurrentS, OldS, { kind, choice, 
     [KEYS.reviewState, anyPending ? JSON.stringify({ schemaVersion: 1, pending, oldJournal: snapshot[KEYS.oldJournal] }) : null]);
   if (choice === 'clear' && currentKind) {
     flags.auto = false;
-    changes.push([key4, null], [key3, null], [key2, null], [KEYS.ready, JSON.stringify(flags)]);
+    changes.push([key4, null], [key3, null], [key2, null]);
   } else if (currentKind) {
     const fullText = fullForChoice(group, choice);
     const projection = lambdaC5Projection(fullText, CurrentS, OldS);
     flags.auto = true;
-    changes.push([key4, fullText], [key3, projection.v3], [key2, projection.v2], [KEYS.ready, JSON.stringify(flags)]);
+    changes.push([key4, fullText], [key3, projection.v3], [key2, projection.v2]);
   } else if (choice === 'clear') {
     flags.checkpoint = false;
-    changes.push([key4, null], [key3, null], [key2, null], [KEYS.ready, JSON.stringify(flags)],
+    changes.push([key4, null], [key3, null], [key2, null],
       [KEYS.checkpointTombstone, JSON.stringify({ schemaVersion: 1, source: 'content3-clear', snapshot: true })]);
   } else {
     const fullText = fullForChoice(group, choice);
     const projection = lambdaC5Projection(fullText, CurrentS, OldS);
     flags.checkpoint = true;
-    changes.push([key4, fullText], [key3, projection.v3], [key2, projection.v2], [KEYS.ready, JSON.stringify(flags)], [KEYS.checkpointTombstone, null]);
+    changes.push([key4, fullText], [key3, projection.v3], [key2, projection.v2], [KEYS.checkpointTombstone, null]);
   }
+  // First-time upgrades have two independent v2 records and no mirror-ready
+  // metadata. Migrate both valid candidates atomically so the first record's
+  // ready flags cannot make the second legacy record look divergent.
+  const otherKind = currentKind ? 'checkpoint' : 'current';
+  const otherGroup = inspection[otherKind];
+  if (otherGroup?.status === 'migrate') {
+    const otherText = fullForChoice(otherGroup, otherGroup.autoChoice);
+    const otherProjection = lambdaC5Projection(otherText, CurrentS, OldS);
+    const otherCurrent = otherKind === 'current';
+    flags[otherCurrent ? 'auto' : 'checkpoint'] = true;
+    changes.push(
+      [otherCurrent ? KEYS.current4 : KEYS.checkpoint4, otherText],
+      [otherCurrent ? KEYS.current3 : KEYS.checkpoint3, otherProjection.v3],
+      [otherCurrent ? KEYS.current2 : KEYS.checkpoint2, otherProjection.v2],
+      ...(!otherCurrent ? [[KEYS.checkpointTombstone, null]] : [])
+    );
+  }
+  changes.push([KEYS.ready, JSON.stringify(flags)]);
   const c5 = createLambdaC5Storage(storage, CurrentS, OldS, { eventTarget: null });
   c5.commit(changes, expectedSnapshot);
   return { status: choice === 'clear' ? 'cleared' : 'resolved', choice, inspection };
