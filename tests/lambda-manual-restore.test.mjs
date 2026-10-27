@@ -22,15 +22,13 @@ test('startup prepares a manual restore candidate without applying or replacing 
 
 test('startup rendering is excluded from autosave and later explicit restore/import apply snapshots', () => {
   assert.match(html, /function persist\(explicit=false\) \{\s*if\(explicit===true\)autosaveReady=true;\s*clearTimeout\(saveTimer\);if\(restoring\|\|\(!autosaveReady&&explicit!==true\)\)return;/);
-  assert.match(html, /function queueSave\(\)\{if\(autosaveReady&&!restoring\)/);
-  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);\s*const userAutosaveEvent=event=>event\.isTrusted&&!\(event\.target instanceof HTMLInputElement&&event\.target\.type==='file'\);\s*document\.addEventListener\('input',event=>\{if\(userAutosaveEvent\(event\)\)workspace\.enableAutosave\(\);\}/);
-  assert.match(html, /const userAutosaveEvent=event=>event\.isTrusted&&!\(event\.target instanceof HTMLInputElement&&event\.target\.type==='file'\)/);
-  assert.match(html, /document\.addEventListener\('change',event=>\{if\(userAutosaveEvent\(event\)\)workspace\.enableAutosave\(\);\}/);
-  assert.match(html, /document\.addEventListener\('click',event=>\{if\(event\.isTrusted&&event\.target\.closest\([^)]*#level-list button/);
-  assert.match(html, /document\.addEventListener\('toggle',event=>\{if\(event\.isTrusted&&event\.target\.id==='history-details'\)/);
-  assert.match(html, /Math\.hypot\(event\.clientX-start\.x,event\.clientY-start\.y\)>10\|\|captureTap\(event\.target\)/);
-  assert.match(html, /\(event\.ctrlKey\|\|event\.metaKey\)&&event\.key==='Enter'\|\|event\.target\.closest\('#diagram-mount'\)&&\['Enter',' '\]\.includes\(event\.key\)&&captureTap\(event\.target\)/);
-  assert.doesNotMatch(html, /convert\(\);workspace\.enableAutosave\(\)/);
+  assert.match(html, /function queueSave\(\)\{autosaveReady=true;if\(!restoring\)/);
+  assert.match(html, /let initializing=true;function save\(\) \{ if\(!initializing\)workspace\?\.queueSave\(\); \}/);
+  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);initializing=false;/);
+  assert.doesNotMatch(html, /document\.addEventListener\('(input|change|click|pointerup|keydown)'/);
+  assert.match(html, /function selectLevel\(index\)[\s\S]*?renderMode\(\);setSource\(P\.levels\[index\]\.start\);save\(\);/);
+  assert.match(html, /function manualStep\(selection\)[\s\S]*?advance\(selection\.path\)/);
+  assert.match(html, /renderDiagram\(redex\);\s*save\(\);/);
   assert.match(html, /window\.addEventListener\('pagehide',persist\)/);
   assert.match(html, /\$\('restore-state'\)\.addEventListener\('click',\(\)=>\{\s*if\(!checkpoint\)return;\s*try\{const snapshot=S\.decode\(checkpoint\);apply\(snapshot\);persist\(true\);/);
   assert.match(html, /\$\('import-state'\)\.addEventListener\('click',\(\)=>\$\('import-file'\)\.click\(\)\)/);

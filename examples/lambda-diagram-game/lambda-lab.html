@@ -2034,7 +2034,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       clearTimeout(saveTimer);if(restoring||(!autosaveReady&&explicit!==true))return;
       try{localStorage.setItem(AUTO,S.encode(captured()));storageStatus(true);}catch{storageStatus(false);}
     }
-    function queueSave(){if(autosaveReady&&!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
+    function queueSave(){autosaveReady=true;if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
     function renderLibrary() {
       $('function-count').textContent=`${functions.length} 个函数`;const list=$('function-list');list.replaceChildren();
       if(!functions.length){const p=document.createElement('p');p.className='function-empty';p.textContent='还没有自定义函数，先保存一个试试。';list.append(p);}
@@ -2123,7 +2123,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       catch(e){feedback(`导入失败：${e.message}。当前现场未改变。`,true);}
     });
     window.addEventListener('pagehide',persist);
-    return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore,enableAutosave:()=>{autosaveReady=true;}};
+    return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};
   }
   root.LambdaWorkspace={init};
 })(typeof globalThis!=='undefined'?globalThis:window);
@@ -2210,7 +2210,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
   let toastTimer,workspace,viewer,historySource=null,renderedCount=0,diagramTerm=null,diagramRoute=null;
   const decodedTerms=new WeakMap(),TRUE=C.parse(P.TRUE),FALSE=C.parse(P.FALSE),IDENTITY=C.parse(P.I);
   const diagramView=window.LambdaDiagramView.init($('diagram-mount'));
-  function save() { workspace?.queueSave(); }
+  let initializing=true;function save() { if(!initializing)workspace?.queueSave(); }
   function capture() {
     return {draft:input.value,completed:[...state.completed],mode:state.mode,level:state.level,
       session:{original:state.original,steps:Math.max(0,state.history.length-1),dirty:state.dirty,halt:state.halt,...(state.paths?{paths:state.paths}:{} )},
@@ -2507,18 +2507,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       const after=end<input.value.length&&/[A-Za-z0-9_']/.test(input.value[end])?' ':'';
       insert(before+name+after);
     }});
-  workspace.prepareManualRestore();renderMode();convert();
-  const userAutosaveEvent=event=>event.isTrusted&&!(event.target instanceof HTMLInputElement&&event.target.type==='file');
-  document.addEventListener('input',event=>{if(userAutosaveEvent(event))workspace.enableAutosave();},true);
-  document.addEventListener('change',event=>{if(userAutosaveEvent(event))workspace.enableAutosave();},true);
-  document.addEventListener('click',event=>{if(event.isTrusted&&event.target.closest('#convert,#step,#run,#fast-run,#back,#reset,#mode-free,#mode-challenge,#check-answer,#next-level,#stage-select,#level-list button,#hint-toggle,#help-toggle,#zoom-in,#zoom-out,#actual-size,#fit,#function-use-current,.function-list button,[data-insert],[data-function-insert]'))workspace.enableAutosave();},true);
-  document.addEventListener('toggle',event=>{if(event.isTrusted&&event.target.id==='history-details')workspace.enableAutosave();},true);
-  document.addEventListener('wheel',event=>{if(event.isTrusted&&event.deltaY&&event.target.closest('#diagram-viewport'))workspace.enableAutosave();},true);
-  const pendingAutosavePointers=new Map();
-  document.addEventListener('pointerdown',event=>{if(event.isTrusted&&event.target.closest('#diagram-viewport'))pendingAutosavePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});},true);
-  document.addEventListener('pointerup',event=>{const start=pendingAutosavePointers.get(event.pointerId);pendingAutosavePointers.delete(event.pointerId);if(event.isTrusted&&start&&(Math.hypot(event.clientX-start.x,event.clientY-start.y)>10||captureTap(event.target)))workspace.enableAutosave();},true);
-  document.addEventListener('pointercancel',event=>pendingAutosavePointers.delete(event.pointerId),true);
-  document.addEventListener('keydown',event=>{if(!event.isTrusted)return;if(event.target.matches('#expression')&&(event.ctrlKey||event.metaKey)&&event.key==='Enter'||event.target.closest('#diagram-mount')&&['Enter',' '].includes(event.key)&&captureTap(event.target))workspace.enableAutosave();},true);
+  workspace.prepareManualRestore();renderMode();convert();initializing=false;
 })();
 
 </script>
