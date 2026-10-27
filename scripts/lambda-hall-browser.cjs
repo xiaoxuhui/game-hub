@@ -38,7 +38,8 @@ const server=http.createServer((req,res)=>res.writeHead(200,{'Content-Type':'tex
   await check('old reader reads latest base and old steps merge into full history without dropping extensions',async()=>{
    await page.goto(base+'/old');assert.equal(await current(),'(λa.a) u v');assert.equal(await page.locator('#function-count').textContent(),'2 个函数');assert.ok(await page.locator('#save-feedback').isHidden());
    await page.locator('#step').click();assert.equal(await current(),'u v');await page.locator('#save-state').click();
-   await page.goto(base+'/new');assert.equal(await current(),'u v');assert.equal(await page.locator('#step-count').textContent(),'2');assert.equal(await page.locator('#reduction-direction').inputValue(),'right');
+   await page.goto(base+'/new');assert.equal(await current(),'(λx.x) (λy.y)');assert.equal(await page.locator('#step-count').textContent(),'0');
+   await page.locator('#restore-state').click();assert.equal(await current(),'u v');assert.equal(await page.locator('#step-count').textContent(),'2');assert.equal(await page.locator('#reduction-direction').inputValue(),'right');
    await page.getByRole('button',{name:'编辑函数 RAW',exact:true}).click();assert.equal(await page.locator('#function-source').inputValue(),'ID 3');await page.locator('#function-cancel').click();
    await page.locator('#restore-state').click();assert.equal(await current(),'u v');assert.equal(await page.locator('#step-count').textContent(),'2');
    await page.locator('#back').click();assert.equal(await current(),'(λa.a) u v');await page.locator('#back').click();assert.equal(await current(),'(λa.a) u ((λb.b) v)');await page.locator('[data-redex-hit][aria-label^="点击 λa "]').click();assert.equal(await current(),'u ((λb.b) v)');
