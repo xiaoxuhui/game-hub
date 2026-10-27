@@ -28,6 +28,8 @@ test('startup rendering is excluded from autosave and later explicit restore/imp
   assert.match(html, /document\.addEventListener\('change',event=>\{if\(userAutosaveEvent\(event\)\)workspace\.enableAutosave\(\);\}/);
   assert.match(html, /document\.addEventListener\('click',event=>\{if\(event\.isTrusted&&event\.target\.closest\([^)]*#level-list button/);
   assert.match(html, /document\.addEventListener\('toggle',event=>\{if\(event\.isTrusted&&event\.target\.id==='history-details'\)/);
+  assert.match(html, /Math\.hypot\(event\.clientX-start\.x,event\.clientY-start\.y\)>10\|\|captureTap\(event\.target\)/);
+  assert.match(html, /\(event\.ctrlKey\|\|event\.metaKey\)&&event\.key==='Enter'\|\|event\.target\.closest\('#diagram-mount'\)&&\['Enter',' '\]\.includes\(event\.key\)&&captureTap\(event\.target\)/);
   assert.doesNotMatch(html, /convert\(\);workspace\.enableAutosave\(\)/);
   assert.match(html, /window\.addEventListener\('pagehide',persist\)/);
   assert.match(html, /\$\('restore-state'\)\.addEventListener\('click',\(\)=>\{\s*if\(!checkpoint\)return;\s*try\{const snapshot=S\.decode\(checkpoint\);apply\(snapshot\);persist\(true\);/);

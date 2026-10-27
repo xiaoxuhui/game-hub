@@ -2513,8 +2513,12 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
   document.addEventListener('change',event=>{if(userAutosaveEvent(event))workspace.enableAutosave();},true);
   document.addEventListener('click',event=>{if(event.isTrusted&&event.target.closest('#convert,#step,#run,#fast-run,#back,#reset,#mode-free,#mode-challenge,#check-answer,#next-level,#stage-select,#level-list button,#hint-toggle,#help-toggle,#zoom-in,#zoom-out,#actual-size,#fit,#function-use-current,.function-list button,[data-insert],[data-function-insert]'))workspace.enableAutosave();},true);
   document.addEventListener('toggle',event=>{if(event.isTrusted&&event.target.id==='history-details')workspace.enableAutosave();},true);
-  document.addEventListener('pointerup',event=>{if(event.isTrusted&&event.target.closest('#diagram-viewport'))workspace.enableAutosave();},true);
-  document.addEventListener('keydown',event=>{if(event.isTrusted&&event.target.closest('#expression,#diagram-mount'))workspace.enableAutosave();},true);
+  document.addEventListener('wheel',event=>{if(event.isTrusted&&event.deltaY&&event.target.closest('#diagram-viewport'))workspace.enableAutosave();},true);
+  const pendingAutosavePointers=new Map();
+  document.addEventListener('pointerdown',event=>{if(event.isTrusted&&event.target.closest('#diagram-viewport'))pendingAutosavePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});},true);
+  document.addEventListener('pointerup',event=>{const start=pendingAutosavePointers.get(event.pointerId);pendingAutosavePointers.delete(event.pointerId);if(event.isTrusted&&start&&(Math.hypot(event.clientX-start.x,event.clientY-start.y)>10||captureTap(event.target)))workspace.enableAutosave();},true);
+  document.addEventListener('pointercancel',event=>pendingAutosavePointers.delete(event.pointerId),true);
+  document.addEventListener('keydown',event=>{if(!event.isTrusted)return;if(event.target.matches('#expression')&&(event.ctrlKey||event.metaKey)&&event.key==='Enter'||event.target.closest('#diagram-mount')&&['Enter',' '].includes(event.key)&&captureTap(event.target))workspace.enableAutosave();},true);
 })();
 
 </script>

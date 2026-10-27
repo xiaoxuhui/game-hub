@@ -38,6 +38,9 @@ const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Typ
       await page.locator('#import-file').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{"version":999}') });
       await page.waitForTimeout(100);
       assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'a rejected import must not enable autosave or replace the old save');
+      await page.locator('#expression').press('ArrowLeft');
+      await page.locator('#diagram-viewport').click({ position: { x: 5, y: 5 } });
+      assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'navigation keys and empty diagram taps must not enable autosave');
       await page.reload();
       await page.waitForTimeout(100);
       assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'leaving an untouched fresh session must not overwrite the previous save');
