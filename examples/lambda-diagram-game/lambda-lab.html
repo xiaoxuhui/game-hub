@@ -2030,10 +2030,11 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       $('storage-status').textContent=ok?'当前状态已自动保存':'自动保存不可用，请导出存档备份';$('storage-status').classList.toggle('storage-error',!ok);
     }
     function persist(explicit=false) {
+      if(explicit===true)autosaveReady=true;
       clearTimeout(saveTimer);if(restoring||(!autosaveReady&&explicit!==true))return;
       try{localStorage.setItem(AUTO,S.encode(captured()));storageStatus(true);}catch{storageStatus(false);}
     }
-    function queueSave(){autosaveReady=true;if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
+    function queueSave(){if(autosaveReady&&!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
     function renderLibrary() {
       $('function-count').textContent=`${functions.length} 个函数`;const list=$('function-list');list.replaceChildren();
       if(!functions.length){const p=document.createElement('p');p.className='function-empty';p.textContent='还没有自定义函数，先保存一个试试。';list.append(p);}
@@ -2122,7 +2123,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       catch(e){feedback(`导入失败：${e.message}。当前现场未改变。`,true);}
     });
     window.addEventListener('pagehide',persist);
-    return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};
+    return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore,enableAutosave:()=>{autosaveReady=true;}};
   }
   root.LambdaWorkspace={init};
 })(typeof globalThis!=='undefined'?globalThis:window);
@@ -2507,6 +2508,9 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       insert(before+name+after);
     }});
   workspace.prepareManualRestore();renderMode();convert();
+  document.addEventListener('input',event=>{if(event.isTrusted)workspace.enableAutosave();},true);
+  document.addEventListener('change',event=>{if(event.isTrusted)workspace.enableAutosave();},true);
+  document.addEventListener('click',event=>{if(event.isTrusted&&event.target.closest('#convert,#step,#run,#fast-run,#back,#reset,#mode-free,#mode-challenge,#check-answer,#next-level,#stage-select,#fit,[data-insert],[data-function-insert]'))workspace.enableAutosave();},true);
 })();
 
 </script>

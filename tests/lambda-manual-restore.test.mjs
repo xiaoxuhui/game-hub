@@ -21,10 +21,11 @@ test('startup prepares a manual restore candidate without applying or replacing 
 });
 
 test('startup rendering is excluded from autosave and later explicit restore/import apply snapshots', () => {
-  assert.match(html, /function persist\(explicit=false\) \{\s*clearTimeout\(saveTimer\);if\(restoring\|\|\(!autosaveReady&&explicit!==true\)\)return;/);
-  assert.match(html, /function queueSave\(\)\{autosaveReady=true;if\(!restoring\)/);
-  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);/);
-  assert.doesNotMatch(html, /workspace\.enableAutosave\(\)/);
+  assert.match(html, /function persist\(explicit=false\) \{\s*if\(explicit===true\)autosaveReady=true;\s*clearTimeout\(saveTimer\);if\(restoring\|\|\(!autosaveReady&&explicit!==true\)\)return;/);
+  assert.match(html, /function queueSave\(\)\{if\(autosaveReady&&!restoring\)/);
+  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);\s*document\.addEventListener\('input',event=>\{if\(event\.isTrusted\)workspace\.enableAutosave\(\);\}/);
+  assert.match(html, /document\.addEventListener\('click',event=>\{if\(event\.isTrusted&&event\.target\.closest\(/);
+  assert.doesNotMatch(html, /convert\(\);workspace\.enableAutosave\(\)/);
   assert.match(html, /window\.addEventListener\('pagehide',persist\)/);
   assert.match(html, /\$\('restore-state'\)\.addEventListener\('click',\(\)=>\{\s*if\(!checkpoint\)return;\s*try\{const snapshot=S\.decode\(checkpoint\);apply\(snapshot\);persist\(true\);/);
   assert.match(html, /\$\('import-state'\)\.addEventListener\('click',\(\)=>\$\('import-file'\)\.click\(\)\)/);

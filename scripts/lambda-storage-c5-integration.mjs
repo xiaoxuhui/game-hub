@@ -162,10 +162,11 @@ export function lambdaManualRestoreHtml(source) {
   const replacements = [
     ["let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null;", "let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,autosaveReady=false;"],
     ["function persist() {", "function persist(explicit=false) {"],
+    ["function persist(explicit=false) {\n      clearTimeout(saveTimer);", "function persist(explicit=false) {\n      if(explicit===true)autosaveReady=true;\n      clearTimeout(saveTimer);"],
     ["clearTimeout(saveTimer);if(restoring)return;", "clearTimeout(saveTimer);if(restoring||(!autosaveReady&&explicit!==true))return;"],
-    ["function queueSave(){if(!restoring){", "function queueSave(){autosaveReady=true;if(!restoring){"],
-    ["return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};", "return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};"],
-    ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();"]
+    ["function queueSave(){if(!restoring){", "function queueSave(){if(autosaveReady&&!restoring){"],
+    ["return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};", "return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore,enableAutosave:()=>{autosaveReady=true;}};"],
+    ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();\n  document.addEventListener('input',event=>{if(event.isTrusted)workspace.enableAutosave();},true);\n  document.addEventListener('change',event=>{if(event.isTrusted)workspace.enableAutosave();},true);\n  document.addEventListener('click',event=>{if(event.isTrusted&&event.target.closest('#convert,#step,#run,#fast-run,#back,#reset,#mode-free,#mode-challenge,#check-answer,#next-level,#stage-select,#fit,[data-insert],[data-function-insert]'))workspace.enableAutosave();},true);"]
   ];
   let html=source;
   for(const [before,after] of replacements){if(html.split(before).length!==2)throw new Error('Lambda manual-restore integration requires exact reviewed markers');html=html.replace(before,after);}
