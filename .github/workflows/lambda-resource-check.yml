@@ -8,6 +8,7 @@ on:
       - 'scripts/lambda-hall-browser.cjs'
       - 'scripts/stage-upstreams.mjs'
       - 'dynamic-upstreams.lock.json'
+      - 'dynamic-sources.lock.json'
       - 'tests/lambda-storage-integration.test.mjs'
       - 'tests/lambda-manual-restore.*'
       - '.github/workflows/lambda-resource-check.yml'

@@ -70,6 +70,7 @@ const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Typ
       const levelPage = await levelContext.newPage();
       levelPage.on('pageerror', error => errors.push(error.message));
       await levelPage.goto(`http://127.0.0.1:${server.address().port}/lambda-lab.html`);
+      await levelPage.locator('#mode-challenge').click();
       await levelPage.locator('#level-list button').nth(1).click();
       const selectedLevel = await levelPage.locator('#level-title').textContent();
       await levelPage.waitForFunction(() => Boolean(localStorage.getItem('lambda-lab-hub-v4')));
