@@ -29,7 +29,8 @@ test('startup rendering is excluded from autosave and later explicit restore/imp
   assert.match(html, /function selectLevel\(index\)[\s\S]*?renderMode\(\);setSource\(P\.levels\[index\]\.start\);save\(\);/);
   assert.match(html, /function manualStep\(selection\)[\s\S]*?advance\(selection\.path\)/);
   assert.match(html, /renderDiagram\(redex\);\s*save\(\);/);
-  assert.match(html, /window\.addEventListener\('pagehide',persist\)/);
+  assert.match(html, /window\.addEventListener\('pagehide',\(\)=>\{if\(saveTimer\)\{clearTimeout\(saveTimer\);persist\(\);\}\}\)/);
+  assert.doesNotMatch(html, /window\.addEventListener\('pagehide',persist\)/);
   assert.match(html, /\$\('restore-state'\)\.addEventListener\('click',\(\)=>\{\s*if\(!checkpoint\)return;\s*try\{const snapshot=S\.decode\(checkpoint\);apply\(snapshot\);persist\(true\);/);
   assert.match(html, /\$\('import-state'\)\.addEventListener\('click',\(\)=>\$\('import-file'\)\.click\(\)\)/);
   assert.match(html, /apply\(snapshot\);persist\(true\);feedback\('存档已导入/);

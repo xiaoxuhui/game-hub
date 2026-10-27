@@ -165,6 +165,7 @@ export function lambdaManualRestoreHtml(source) {
     ["function persist(explicit=false) {\n      clearTimeout(saveTimer);", "function persist(explicit=false) {\n      if(explicit===true)autosaveReady=true;\n      clearTimeout(saveTimer);"],
     ["clearTimeout(saveTimer);if(restoring)return;", "clearTimeout(saveTimer);if(restoring||(!autosaveReady&&explicit!==true))return;"],
     ["function queueSave(){if(!restoring){", "function queueSave(){autosaveReady=true;if(!restoring){"],
+    ["window.addEventListener('pagehide',persist);", "window.addEventListener('pagehide',()=>{if(saveTimer){clearTimeout(saveTimer);persist();}});"] ,
     ["return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};", "return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};"],
     ["function save() { workspace?.queueSave(); }", "let initializing=true,lastAutosaveSnapshot='';function save() { if(initializing)return;const current=JSON.stringify(capture());if(current!==lastAutosaveSnapshot){lastAutosaveSnapshot=current;workspace?.queueSave();} }"],
     ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;"]

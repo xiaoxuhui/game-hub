@@ -2122,7 +2122,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
         apply(snapshot);persist(true);feedback('存档已导入，函数库、计算状态和进度均已恢复。');api.toast('存档导入成功');}
       catch(e){feedback(`导入失败：${e.message}。当前现场未改变。`,true);}
     });
-    window.addEventListener('pagehide',persist);
+    window.addEventListener('pagehide',()=>{if(saveTimer){clearTimeout(saveTimer);persist();}});
     return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};
   }
   root.LambdaWorkspace={init};
