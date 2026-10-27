@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {sha256} from './resource-protocol.mjs';
-import {lambdaC5BrowserAdapterSource,lambdaC5AdapterEvidence,LAMBDA_C5_INTEGRATION} from './lambda-storage-c5-integration.mjs';
+import {lambdaC5BrowserAdapterSource,lambdaC5AdapterEvidence,lambdaManualRestoreHtml,LAMBDA_C5_INTEGRATION} from './lambda-storage-c5-integration.mjs';
 
 export const LAMBDA_INTEGRATION='lambda-storage-isolation-v1';
 export function migrateLambdaStorage(storage,decode){
@@ -87,7 +87,7 @@ export function integrateLambdaC5Html(bytes){
   let html=bytes.toString('utf8');
   for(const marker of [declaration,load])if(html.split(marker).length!==2)throw new Error('Lambda C5 integration requires exact reviewed workspace markers');
   html=html.replace(declaration,lambdaC5BrowserAdapterSource());
-  return Buffer.from(html);
+  return Buffer.from(lambdaManualRestoreHtml(html));
 }
 export function integrationProof(input,output){
   return {id:LAMBDA_INTEGRATION,inputSha256:sha256(input),outputSha256:sha256(output),adapterSha256:sha256(readFileSync(new URL(import.meta.url)))};

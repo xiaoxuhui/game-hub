@@ -2015,7 +2015,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
   function init(api) {
     const cancel=document.createElement('button');cancel.id='function-cancel';cancel.type='button';cancel.className='button';cancel.textContent='取消编辑';cancel.hidden=true;
     $('function-add').before(cancel);
-    let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null;
+    let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,autosaveReady=false;
     const feedback=(message,error=false)=>{$('save-feedback').hidden=false;$('save-feedback').textContent=message;$('save-feedback').classList.toggle('error',error);};
     function captured() {return {...api.capture(),version:2,savedAt:new Date().toISOString(),functions,functionDraft:{name:$('function-name').value,source:$('function-source').value,...(editing===null?{}:{editing})}};}
     function renderEditMode() {
@@ -2030,10 +2030,10 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       $('storage-status').textContent=ok?'当前状态已自动保存':'自动保存不可用，请导出存档备份';$('storage-status').classList.toggle('storage-error',!ok);
     }
     function persist() {
-      clearTimeout(saveTimer);if(restoring)return;
+      clearTimeout(saveTimer);if(restoring||!autosaveReady)return;
       try{localStorage.setItem(AUTO,S.encode(captured()));storageStatus(true);}catch{storageStatus(false);}
     }
-    function queueSave(){if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
+    function queueSave(){if(autosaveReady&&!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
     function renderLibrary() {
       $('function-count').textContent=`${functions.length} 个函数`;const list=$('function-list');list.replaceChildren();
       if(!functions.length){const p=document.createElement('p');p.className='function-empty';p.textContent='还没有自定义函数，先保存一个试试。';list.append(p);}
@@ -2058,14 +2058,16 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       try {functions=snapshot.functions;renderLibrary();api.apply(snapshot);$('function-name').value=snapshot.functionDraft.name;$('function-source').value=snapshot.functionDraft.source;editing=snapshot.functionDraft.editing??null;renderEditMode();$('function-error').hidden=true;}
       finally{restoring=false;}
     }
-    function restoreInitial() {
-      let restored=false;
+    function prepareManualRestore() {
       try {
-        const text=localStorage.getItem(AUTO)||localStorage.getItem(LEGACY);
-        if(text){const snapshot=S.decode(text);apply(snapshot);restored=true;}
-      }catch(e){feedback(`自动存档未能恢复：${e.message}。可以重新导入备份。`,true);}
-      try{const text=localStorage.getItem(CHECKPOINT);if(text){S.decode(text);checkpoint=text;}}catch{/* Keep a corrupt checkpoint untouched. */}
-      $('restore-state').disabled=!checkpoint;renderLibrary();return restored;
+        // Keep the local session available, but never replace the fresh page on startup.
+        // The existing restore button is the explicit opt-in for the local save point/session.
+        const text=localStorage.getItem(CHECKPOINT)||localStorage.getItem(AUTO)||localStorage.getItem(LEGACY);
+        if(text){const snapshot=S.decode(text);checkpoint=S.encode(snapshot);}
+      }catch(e){feedback('本机存档无法读取：'+String(e?.message||e)+'。可通过“导入存档”载入备份。',true);}
+      $('restore-state').disabled=!checkpoint;
+      $('storage-status').textContent=checkpoint?'本机存档已保留，可手动恢复':'已打开新会话';
+      renderLibrary();
     }
     $('function-form').addEventListener('submit',e=>{
       e.preventDefault();$('function-error').hidden=true;
@@ -2120,7 +2122,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       catch(e){feedback(`导入失败：${e.message}。当前现场未改变。`,true);}
     });
     window.addEventListener('pagehide',persist);
-    return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};
+    return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore,enableAutosave:()=>{autosaveReady=true;}};
   }
   root.LambdaWorkspace={init};
 })(typeof globalThis!=='undefined'?globalThis:window);
@@ -2504,8 +2506,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       const after=end<input.value.length&&/[A-Za-z0-9_']/.test(input.value[end])?' ':'';
       insert(before+name+after);
     }});
-  if(!workspace.restoreInitial()){renderMode();convert();}
-  workspace.persist();
+  workspace.prepareManualRestore();renderMode();convert();workspace.enableAutosave();
 })();
 
 </script>

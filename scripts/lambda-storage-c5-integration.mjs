@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { sha256 } from './resource-protocol.mjs';
 
-export const LAMBDA_C5_INTEGRATION = 'lambda-content4-storage-c5-v1';
+export const LAMBDA_C5_INTEGRATION = 'lambda-content4-storage-c5-manual-restore-v1';
 const c5Module = readFileSync(new URL('./lambda-storage-c5.mjs', import.meta.url), 'utf8');
 const legacyFixtureBytes = readFileSync(new URL('../tests/fixtures/lambda-content3-reader.json', import.meta.url));
 const legacyFixture = JSON.parse(legacyFixtureBytes.toString('utf8'));
@@ -156,4 +156,34 @@ export function lambdaC5AdapterEvidence() {
     browserAdapterSha256: sha256(Buffer.from(lambdaC5BrowserAdapterSource())),
     ...lambdaC5IntegrationProof()
   };
+}
+
+export function lambdaManualRestoreHtml(source) {
+  const replacements = [
+    ["let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null;", "let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,autosaveReady=false;"],
+    ["clearTimeout(saveTimer);if(restoring)return;", "clearTimeout(saveTimer);if(restoring||!autosaveReady)return;"],
+    ["function queueSave(){if(!restoring){", "function queueSave(){if(autosaveReady&&!restoring){"],
+    ["return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};", "return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore,enableAutosave:()=>{autosaveReady=true;}};"],
+    ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();workspace.enableAutosave();"]
+  ];
+  let html=source;
+  for(const [before,after] of replacements){if(html.split(before).length!==2)throw new Error('Lambda manual-restore integration requires exact reviewed markers');html=html.replace(before,after);}
+  const start="    function restoreInitial() {",end="    $('function-form').addEventListener";
+  if(html.split(start).length!==2||html.split(end).length!==2)throw new Error('Lambda manual-restore handler markers');
+  const from=html.indexOf(start),to=html.indexOf(end,from);
+  if(to<=from)throw new Error('Lambda manual-restore handler boundary');
+  const handler=`    function prepareManualRestore() {
+      try {
+        // Keep the local session available, but never replace the fresh page on startup.
+        // The existing restore button is the explicit opt-in for the local save point/session.
+        const text=localStorage.getItem(CHECKPOINT)||localStorage.getItem(AUTO)||localStorage.getItem(LEGACY);
+        if(text){const snapshot=S.decode(text);checkpoint=S.encode(snapshot);}
+      }catch(e){feedback('本机存档无法读取：'+String(e?.message||e)+'。可通过“导入存档”载入备份。',true);}
+      $('restore-state').disabled=!checkpoint;
+      $('storage-status').textContent=checkpoint?'本机存档已保留，可手动恢复':'已打开新会话';
+      renderLibrary();
+    }
+`;
+  html=html.slice(0,from)+handler+html.slice(to);
+  return html;
 }

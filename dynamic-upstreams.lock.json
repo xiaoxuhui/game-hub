@@ -16,7 +16,7 @@
       "version": "0.3.3",
       "kind": "inline-html",
       "entryPage": "lambda-lab.html",
-      "integration": "lambda-content4-storage-c5-v1"
+      "integration": "lambda-content4-storage-c5-manual-restore-v1"
     }
   ]
 }
