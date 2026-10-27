@@ -161,10 +161,11 @@ export function lambdaC5AdapterEvidence() {
 export function lambdaManualRestoreHtml(source) {
   const replacements = [
     ["let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null;", "let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,autosaveReady=false;"],
-    ["clearTimeout(saveTimer);if(restoring)return;", "clearTimeout(saveTimer);if(restoring||!autosaveReady)return;"],
-    ["function queueSave(){if(!restoring){", "function queueSave(){if(autosaveReady&&!restoring){"],
-    ["return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};", "return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore,enableAutosave:()=>{autosaveReady=true;}};"],
-    ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();workspace.enableAutosave();"]
+    ["function persist() {", "function persist(explicit=false) {"],
+    ["clearTimeout(saveTimer);if(restoring)return;", "clearTimeout(saveTimer);if(restoring||(!autosaveReady&&explicit!==true))return;"],
+    ["function queueSave(){if(!restoring){", "function queueSave(){autosaveReady=true;if(!restoring){"],
+    ["return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};", "return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};"],
+    ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();"]
   ];
   let html=source;
   for(const [before,after] of replacements){if(html.split(before).length!==2)throw new Error('Lambda manual-restore integration requires exact reviewed markers');html=html.replace(before,after);}
@@ -185,5 +186,18 @@ export function lambdaManualRestoreHtml(source) {
     }
 `;
   html=html.slice(0,from)+handler+html.slice(to);
+  const explicitHandlers = [
+    ["$('save-state').addEventListener", "$('restore-state').addEventListener"],
+    ["$('restore-state').addEventListener", "$('export-state').addEventListener"],
+    ["$('clear-all').addEventListener", "$('import-state').addEventListener"],
+    ["$('import-file').addEventListener", "window.addEventListener('pagehide'"]
+  ];
+  for(const [start,end] of explicitHandlers){
+    const from=html.indexOf(start),to=html.indexOf(end,from+start.length);
+    if(from<0||to<=from)throw new Error('Lambda manual-restore explicit-action handler drift');
+    const section=html.slice(from,to);
+    if(!section.includes('persist();'))throw new Error('Lambda manual-restore explicit-action write missing');
+    html=html.slice(0,from)+section.replace(/persist\(\);/g,'persist(true);')+html.slice(to);
+  }
   return html;
 }

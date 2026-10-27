@@ -35,6 +35,10 @@ const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Typ
       assert.equal(await page.locator('#expression').inputValue(), initial, 'startup must show the fresh page, not silently apply an old save');
       assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'startup must preserve the previous save');
       assert.equal(await page.locator('#restore-state').isEnabled(), true, 'manual local restore must be available');
+      await page.reload();
+      await page.waitForTimeout(100);
+      assert.equal(await page.evaluate(() => localStorage.getItem('lambda-lab-hub-v4')), stored, 'leaving an untouched fresh session must not overwrite the previous save');
+      assert.equal(await page.locator('#restore-state').isEnabled(), true, 'the previous save must remain restorable after a second open');
       await page.locator('#restore-state').click();
       assert.equal(await page.locator('#current-expression').textContent(), savedResult, 'manual restore must recover the saved session');
       console.log(`PASS ${++checks} ${width}px: fresh startup, local save retained, manual restore works`);

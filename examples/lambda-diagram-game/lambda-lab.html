@@ -2029,11 +2029,11 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
     function storageStatus(ok) {
       $('storage-status').textContent=ok?'当前状态已自动保存':'自动保存不可用，请导出存档备份';$('storage-status').classList.toggle('storage-error',!ok);
     }
-    function persist() {
-      clearTimeout(saveTimer);if(restoring||!autosaveReady)return;
+    function persist(explicit=false) {
+      clearTimeout(saveTimer);if(restoring||(!autosaveReady&&explicit!==true))return;
       try{localStorage.setItem(AUTO,S.encode(captured()));storageStatus(true);}catch{storageStatus(false);}
     }
-    function queueSave(){if(autosaveReady&&!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
+    function queueSave(){autosaveReady=true;if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}
     function renderLibrary() {
       $('function-count').textContent=`${functions.length} 个函数`;const list=$('function-list');list.replaceChildren();
       if(!functions.length){const p=document.createElement('p');p.className='function-empty';p.textContent='还没有自定义函数，先保存一个试试。';list.append(p);}
@@ -2080,12 +2080,12 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
     $('function-name').addEventListener('input',queueSave);$('function-source').addEventListener('input',queueSave);
     document.querySelectorAll('[data-function-insert]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.addEventListener('click',()=>{const field=$('function-source');field.setRangeText(b.dataset.functionInsert,field.selectionStart,field.selectionEnd,'end');field.focus();queueSave();});});
     $('save-state').addEventListener('click',()=>{
-      try{const text=S.encode(captured());localStorage.setItem(CHECKPOINT,text);checkpoint=text;$('restore-state').disabled=false;persist();feedback('当前状态和关卡进度已保存。可随时恢复到这个位置。');api.toast('当前状态已保存');}
+      try{const text=S.encode(captured());localStorage.setItem(CHECKPOINT,text);checkpoint=text;$('restore-state').disabled=false;persist(true);feedback('当前状态和关卡进度已保存。可随时恢复到这个位置。');api.toast('当前状态已保存');}
       catch(e){feedback(`未能保存到浏览器：${e.message}。请使用「导出存档」备份当前状态。`,true);}
     });
     $('restore-state').addEventListener('click',()=>{
       if(!checkpoint)return;
-      try{const snapshot=S.decode(checkpoint);apply(snapshot);persist();feedback('已恢复保存时的状态。自动运行保持暂停，可单步或继续运行。');api.toast('已恢复当前状态');}
+      try{const snapshot=S.decode(checkpoint);apply(snapshot);persist(true);feedback('已恢复保存时的状态。自动运行保持暂停，可单步或继续运行。');api.toast('已恢复当前状态');}
       catch(e){feedback(e.message,true);}
     });
     $('export-state').addEventListener('click',()=>{
@@ -2105,7 +2105,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
           for(const [key,text] of previous){try{if(text===null)localStorage.removeItem(key);else localStorage.setItem(key,text);}catch{/* Storage itself may be unavailable; keep the live scene and exported backup. */}}
           throw error;
         }
-        clearTimeout(saveTimer);apply(empty);clearEditor();checkpoint=null;$('restore-state').disabled=true;persist();
+        clearTimeout(saveTimer);apply(empty);clearEditor();checkpoint=null;$('restore-state').disabled=true;persist(true);
         feedback(result==='saved'?'备份已保存，所有游戏内容已清空。可导入备份恢复。':'已发起备份下载，所有游戏内容已清空。请保留下载的 JSON 文件；浏览器无法确认最终保存结果。');
         api.toast('已导出备份并清空');
       }catch(e){feedback(`清空未完成：${e.message}。当前现场保留。`,true);}
@@ -2118,11 +2118,11 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
           if(snapshot.checkpointText===null)localStorage.removeItem(CHECKPOINT);else localStorage.setItem(CHECKPOINT,snapshot.checkpointText);
           checkpoint=snapshot.checkpointText;$('restore-state').disabled=checkpoint===null;
         }
-        apply(snapshot);persist();feedback('存档已导入，函数库、计算状态和进度均已恢复。');api.toast('存档导入成功');}
+        apply(snapshot);persist(true);feedback('存档已导入，函数库、计算状态和进度均已恢复。');api.toast('存档导入成功');}
       catch(e){feedback(`导入失败：${e.message}。当前现场未改变。`,true);}
     });
     window.addEventListener('pagehide',persist);
-    return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore,enableAutosave:()=>{autosaveReady=true;}};
+    return {expand:t=>L.expand(t,functions),persist,queueSave,prepareManualRestore};
   }
   root.LambdaWorkspace={init};
 })(typeof globalThis!=='undefined'?globalThis:window);
@@ -2506,7 +2506,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       const after=end<input.value.length&&/[A-Za-z0-9_']/.test(input.value[end])?' ':'';
       insert(before+name+after);
     }});
-  workspace.prepareManualRestore();renderMode();convert();workspace.enableAutosave();
+  workspace.prepareManualRestore();renderMode();convert();
 })();
 
 </script>

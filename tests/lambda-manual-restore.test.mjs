@@ -21,12 +21,14 @@ test('startup prepares a manual restore candidate without applying or replacing 
 });
 
 test('startup rendering is excluded from autosave and later explicit restore/import apply snapshots', () => {
-  assert.match(html, /function persist\(\) \{\s*clearTimeout\(saveTimer\);if\(restoring\|\|!autosaveReady\)return;/);
-  assert.match(html, /function queueSave\(\)\{if\(autosaveReady&&!restoring\)/);
-  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);workspace\.enableAutosave\(\);/);
-  assert.match(html, /\$\('restore-state'\)\.addEventListener\('click',\(\)=>\{\s*if\(!checkpoint\)return;\s*try\{const snapshot=S\.decode\(checkpoint\);apply\(snapshot\);persist\(\);/);
+  assert.match(html, /function persist\(explicit=false\) \{\s*clearTimeout\(saveTimer\);if\(restoring\|\|\(!autosaveReady&&explicit!==true\)\)return;/);
+  assert.match(html, /function queueSave\(\)\{autosaveReady=true;if\(!restoring\)/);
+  assert.match(html, /workspace\.prepareManualRestore\(\);renderMode\(\);convert\(\);/);
+  assert.doesNotMatch(html, /workspace\.enableAutosave\(\)/);
+  assert.match(html, /window\.addEventListener\('pagehide',persist\)/);
+  assert.match(html, /\$\('restore-state'\)\.addEventListener\('click',\(\)=>\{\s*if\(!checkpoint\)return;\s*try\{const snapshot=S\.decode\(checkpoint\);apply\(snapshot\);persist\(true\);/);
   assert.match(html, /\$\('import-state'\)\.addEventListener\('click',\(\)=>\$\('import-file'\)\.click\(\)\)/);
-  assert.match(html, /apply\(snapshot\);persist\(\);feedback\('存档已导入/);
+  assert.match(html, /apply\(snapshot\);persist\(true\);feedback\('存档已导入/);
 });
 
 test('all inline JavaScript in the Lambda page parses', () => {
