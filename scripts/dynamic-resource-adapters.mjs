@@ -21,7 +21,7 @@ function adaptLangtonsAnt(entries) {
     const exportButton=document.getElementById('hubExport'),importButton=document.getElementById('hubImport'),input=document.getElementById('hubImportFile'),status=document.getElementById('saveStatus');
     exportButton.addEventListener('click',()=>{try{const text=window.langtonsAntExport(),blob=new Blob([text],{type:'application/json'});if(blob.size>4*1024*1024)throw Error('存档超过4MiB');const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='langtons-ant-save-v1.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='已请求导出存档文件。';}catch(error){status.textContent='导出失败：'+error.message;}});
     importButton.addEventListener('click',()=>input.click());
-    input.addEventListener('change',async()=>{const file=input.files&&input.files[0];input.value='';if(!file)return;try{if(file.size>4*1024*1024)throw Error('存档超过4MiB');const candidate=window.AntStorage.decode(await file.text());if(!window.confirm('导入会替换当前画布和蚂蚁状态。继续吗？'))return;window.dispatchEvent(new CustomEvent('langtons-ant-import',{detail:candidate}));status.textContent='存档已导入，模拟保持暂停。';}catch(error){status.textContent='导入失败：'+error.message+'；当前画布保持不变。';}});
+    input.addEventListener('change',async()=>{const file=input.files&&input.files[0];input.value='';if(!file)return;try{if(file.size>4*1024*1024)throw Error('存档超过4MiB');const candidate=window.AntStorage.decode(await file.text());if(!window.confirm('导入会替换当前画布和蚂蚁状态。继续吗？'))return;window.dispatchEvent(new CustomEvent('langtons-ant-import',{detail:candidate}));}catch(error){status.textContent='导入失败：'+error.message+'；当前画布保持不变。';}});
   })();
   </script>`,
     'Langton script');

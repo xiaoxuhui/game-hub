@@ -21,7 +21,7 @@ test('Langton adapter adds explicit bounded JSON import/export without changing 
  const html=out.find(x=>x.path==='index.html').data.toString();
  const app=out.find(x=>x.path==='src/app.js').data.toString();
  for(const text of ['导出存档','导入存档','file.size>4*1024*1024','blob.size>4*1024*1024','AntStorage.decode','langtons-ant-import','confirm('])assert.ok(html.includes(text),text);
- assert.match(app,/window\.langtonsAntExport/);assert.match(app,/pause\(\);state=candidate\.state/);
+ assert.match(app,/window\.langtonsAntExport/);assert.match(app,/pause\(\);state=candidate\.state/);assert.doesNotMatch(html,/存档已导入，模拟保持暂停/);
 });
 
 test('TurboWarp adapter validates and backs up before apply, with bounded file size and rollback',()=>{
