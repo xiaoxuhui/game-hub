@@ -26,7 +26,7 @@ test('Langton adapter adds explicit bounded JSON import/export without changing 
 
 test('TurboWarp adapter validates and backs up before apply, with bounded file size and rollback',()=>{
  const out=adaptDynamicResource(turboSource,turbo),html=out.find(x=>x.path==='index.html').data.toString();
- for(const text of ['导出存档','导入存档','file.size>100000','blob.size>100000','codec.parse','recoveryKey','JSON.stringify(previous)','await apply(candidate)','await apply(previous)','现有本机存档保留'])assert.ok(html.includes(text),text);
+ for(const text of ['导出存档','导入存档','!idle()','codec.validate(data,config,template)','file.size>100000','blob.size>100000','codec.parse','recoveryKey','JSON.stringify(previous)','await apply(candidate)','await apply(previous)','现有本机存档保留'])assert.ok(html.includes(text),text);
 });
 
 test('adapters fail closed on source drift, unknown mappings, and changed locked file sets',()=>{
