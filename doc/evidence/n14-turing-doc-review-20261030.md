@@ -145,3 +145,8 @@
 - 可复现性：两次完整静态资源构建逐文件比较，六个候选工件完全一致。
 - 测试：`node --test tests/bundle.test.mjs` 6/6 通过。完整 `node --test` 共 243 项，242 通过；唯一失败为 `tests/resource-bundle.test.mjs` 创建负向测试用符号链接时被 Windows 环境拒绝（`EPERM`），非断言或功能回归。
 - 未完成事项：该记录确认资源候选已构建，并不表示已推送到 `main`、已发布到 GitHub Release 或已通过真机/浏览器验收；这些状态须以后续线上证据确认。
+
+### 归档记录复核
+
+- 审阅提交：`911e7f0`（`docs: archive Turing resource build review`）。
+- 独立复核结论：**CLOSED，无需批改**。审阅者核对了 Turing ZIP 大小、SHA-256、版本/contentCode/source SHA、Windows 符号链接测试失败原因，以及两项离线依赖校验限制；与归档内容一致。
