@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, lstatSync, copyFileSync, writeFileSync, renameSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, lstatSync, realpathSync, copyFileSync, writeFileSync, renameSync, cpSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -114,12 +114,43 @@ function sourceIdentity(source) {
   return { id: source.id, displayName: source.displayName, repository: source.repository, revision: source.revision, version: source.version, entryPage: source.entryPage, contentCode: 1, resourceProtocol: 1, storageContract: `${source.id}-baseline-v1` };
 }
 
+function offlineTuringVite(root, checkout) {
+  const modules = join(root, '.build', 'static-dependencies', 'turing-machine-simulator', 'node_modules');
+  if (!existsSync(modules)) return null;
+  if (realpathSync(modules) !== resolve(modules) || lstatSync(modules).isSymbolicLink()) throw new Error('Invalid offline Turing dependency cache');
+  const lock = readFileSync(join(checkout, 'pnpm-lock.yaml'), 'utf8');
+  const versions = Object.fromEntries(['typescript', 'vite', 'vitest'].map((name) => {
+    const match = lock.match(new RegExp(`^      ${name}:\\r?\\n        specifier: [^\\r\\n]+\\r?\\n        version: ([^\\r\\n]+)$`, 'm'));
+    if (!match) throw new Error(`Missing locked Turing dependency: ${name}`);
+    return [name, match[1]];
+  }));
+  for (const [name, version] of Object.entries(versions)) {
+    const metadata = JSON.parse(readFileSync(join(modules, name, 'package.json'), 'utf8'));
+    if (metadata.version !== version) throw new Error(`Offline Turing dependency mismatch: ${name}`);
+  }
+  const vite = join(modules, '.pnpm', `vite@${versions.vite}`, 'node_modules', 'vite', 'bin', 'vite.js');
+  if (!existsSync(vite)) throw new Error('Offline Turing Vite executable missing');
+  return vite;
+}
+
 function stageSource(source, staging, gamesDir, root = repoRoot, options = {}) {
   const checkout = join(staging, 'sources', source.id);
   const origin = sourceCloneUrl(source);
-  run('git', ['clone', '--quiet', '--no-local', '--no-checkout', origin, checkout], root);
-  run('git', ['config', 'core.autocrlf', 'false'], checkout);
-  run('git', ['checkout', '--quiet', '--detach', source.revision], checkout);
+  const cached = !process.env.GAME_HUB_LOCAL_SOURCES && join(root, '.build', 'static-sources', basename(source.repository, '.git'));
+  if (cached && existsSync(cached)) {
+    const cacheOrigin = gitOutput(['remote', 'get-url', 'origin'], cached), cacheRevision = gitOutput(['rev-parse', 'HEAD'], cached), cacheStatus = gitOutput(['status', '--porcelain=v1', '--untracked-files=all'], cached);
+    if (realpathSync(cached) !== resolve(cached) || lstatSync(cached).isSymbolicLink() || cacheOrigin !== source.repository || cacheRevision !== source.revision || cacheStatus) throw new Error(`Invalid pinned source cache: ${source.id} (${cacheOrigin !== source.repository ? 'origin' : cacheRevision !== source.revision ? 'revision' : cacheStatus ? 'dirty' : 'path'})`);
+    const sourceGit = join(cached, '.git');
+    if (!existsSync(sourceGit) || lstatSync(sourceGit).isSymbolicLink() || !lstatSync(sourceGit).isDirectory()) throw new Error(`Invalid source Git directory: ${source.id}`);
+    mkdirSync(checkout, { recursive: true });
+    cpSync(sourceGit, join(checkout, '.git'), { recursive: true, errorOnExist: true, force: false });
+    run('git', ['config', 'core.autocrlf', 'false'], checkout);
+    run('git', ['checkout', '--quiet', '--force', '--detach', source.revision], checkout);
+  } else {
+    run('git', ['clone', '--quiet', '--no-local', '--no-checkout', origin, checkout], root);
+    run('git', ['config', 'core.autocrlf', 'false'], checkout);
+    run('git', ['checkout', '--quiet', '--detach', source.revision], checkout);
+  }
   const actual = gitOutput(['rev-parse', 'HEAD'], checkout);
   if (actual !== source.revision) throw new Error(`Revision mismatch for ${source.id}: ${actual}`);
   const packageFile = JSON.parse(readFileSync(join(checkout, 'package.json'), 'utf8'));
@@ -127,9 +158,27 @@ function stageSource(source, staging, gamesDir, root = repoRoot, options = {}) {
   options.beforeBuild?.(source, checkout);
   if (source.buildKind === 'eml') run(process.execPath, ['scripts/build.mjs'], checkout);
   if (source.buildKind === 'turing') {
-    run('pnpm', ['install', '--frozen-lockfile'], checkout);
-    run('pnpm', ['run', 'typecheck'], checkout);
-    run('pnpm', ['run', 'build:android'], checkout);
+    const vite = offlineTuringVite(root, checkout);
+    if (vite) {
+      console.log(`Using lock-matched offline Turing tools; TypeScript typecheck not run`);
+      const modules = join(root, '.build', 'static-dependencies', 'turing-machine-simulator', 'node_modules');
+      cpSync(modules, join(checkout, 'node_modules'), { recursive: true, errorOnExist: true, force: false });
+      const flattenedModules = join(modules, '.pnpm', 'node_modules');
+      const checkoutModules = join(checkout, 'node_modules');
+      for (const dependency of readdirSync(flattenedModules, { withFileTypes: true })) {
+        if (dependency.name !== '.bin' && !existsSync(join(checkoutModules, dependency.name))) cpSync(join(flattenedModules, dependency.name), join(checkoutModules, dependency.name), { recursive: true, errorOnExist: true, force: false });
+      }
+      const vitePackage = join(modules, '.pnpm', `vite@${JSON.parse(readFileSync(join(modules, 'vite', 'package.json'), 'utf8')).version}`, 'node_modules');
+      const viteDependencies = join(checkout, 'node_modules', 'vite', 'node_modules');
+      for (const dependency of readdirSync(vitePackage, { withFileTypes: true })) {
+        if (dependency.name !== 'vite' && dependency.name !== '.bin') cpSync(join(vitePackage, dependency.name), join(viteDependencies, dependency.name), { recursive: true, errorOnExist: true, force: false });
+      }
+      run(process.execPath, [vite, 'build', '--base=./'], checkout);
+    } else {
+      run('pnpm', ['install', '--frozen-lockfile'], checkout);
+      run('pnpm', ['run', 'typecheck'], checkout);
+      run('pnpm', ['run', 'build:android'], checkout);
+    }
   }
   const gameDir = join(gamesDir, source.id);
   mkdirSync(gameDir, { recursive: true });

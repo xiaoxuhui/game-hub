@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readFileSync } from 'node:fs';
@@ -68,12 +68,18 @@ test('failed checkout or missing locked resource preserves the last complete bun
     assert.equal(result.status, 0, result.stderr);
     return result.stdout.trim();
   };
+  const runGit = (cwd, args) => {
+    const result = spawnSync('git', args, { cwd, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
   const priorEnv = process.env.GAME_HUB_LOCAL_SOURCES;
   delete process.env.GAME_HUB_LOCAL_SOURCES;
   try {
     git(['init', '-b', 'main']);
     git(['config', 'user.name', 'Test']);
     git(['config', 'user.email', 'test@example.invalid']);
+    git(['remote', 'add', 'origin', original]);
     writeFileSync(join(original, 'package.json'), '{"version":"1.0.0"}');
     writeFileSync(join(original, 'index.html'), '<h1>fixture</h1>');
     writeFileSync(join(original, 'LICENSE'), 'MIT License\nfixture\n');
@@ -84,7 +90,11 @@ test('failed checkout or missing locked resource preserves the last complete bun
     git(['add', '.']);
     git(['commit', '-m', 'fixture']);
     const sha = git(['rev-parse', 'HEAD']);
-    const source = { id: 'fixture', displayName: 'Fixture', repository: original, revision: sha, version: '1.0.0', buildKind: 'static', entryPage: 'index.html', files: ['index.html'] };
+    const source = { id: 'fixture', displayName: 'Fixture', repository: git(['remote','get-url','origin']), revision: sha, version: '1.0.0', buildKind: 'static', entryPage: 'index.html', files: ['index.html'] };
+    const cache = join(hub, '.build', 'static-sources', 'original');
+    mkdirSync(cache, {recursive:true});
+    cpSync(join(original,'.git'),join(cache,'.git'),{recursive:true});
+    runGit(cache, ['checkout','--quiet','--force','--detach',sha]);
     assemble([source], hub, output, 'a'.repeat(40));
     assert.equal(verifyBundle(output, [source], 'a'.repeat(40)).files.length, 5);
     assert.equal(readFileSync(join(output, 'games', 'fixture', 'LICENSE'), 'utf8'), 'MIT License\nfixture\n');
@@ -96,7 +106,7 @@ test('failed checkout or missing locked resource preserves the last complete bun
     assert.throws(() => verifyBundle(output, [source], 'a'.repeat(40)), /differ/);
     rmSync(join(output, 'games', 'fixture', 'unregistered.js'));
     const before = readFileSync(join(output, 'bundle-manifest.json'), 'utf8');
-    assert.throws(() => assemble([{ ...source, revision: 'f'.repeat(40) }], hub, output, 'a'.repeat(40)), /failed|moved/i);
+    assert.throws(() => assemble([{ ...source, revision: 'f'.repeat(40) }], hub, output, 'a'.repeat(40)), /cache|revision|failed|moved/i);
     assert.equal(readFileSync(join(output, 'bundle-manifest.json'), 'utf8'), before);
     assert.throws(() => assemble([{ ...source, files: ['missing.js'] }], hub, output, 'a'.repeat(40)), /Missing required resource/);
     assert.equal(readFileSync(join(output, 'bundle-manifest.json'), 'utf8'), before);
