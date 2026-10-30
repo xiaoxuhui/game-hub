@@ -1,11 +1,17 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {dynamicSources,packDynamic,verifyPackedDynamic} from '../scripts/dynamic-resources.mjs';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {dynamicSources,packDynamic,verifyPackedDynamic,ensureDynamicRevision} from '../scripts/dynamic-resources.mjs';
 import {attachAssets,validateReleaseSnapshot} from '../scripts/resource-catalog.mjs';
 import {assetName} from '../scripts/resource-protocol.mjs';
 const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
 const entries=source.files.map(path=>({path,data:readFileSync(new URL(`../examples/memory-demo/${path}`,import.meta.url))}));
+test('cached immutable Git revisions can be used without network access',()=>{
+  const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:new URL('../',import.meta.url),encoding:'utf8'}).trim();
+  assert.doesNotThrow(()=>ensureDynamicRevision(fileURLToPath(new URL('../',import.meta.url)),revision));
+});
 test('dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable',()=>{
   const first=packDynamic(source,entries),second=packDynamic(source,[...entries].reverse());assert.deepEqual(first,second);
   assert.equal(first.game.sourceRevision,'80898b3ba78ea51a62533c42362f00a4e37421f1');

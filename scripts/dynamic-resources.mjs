@@ -9,6 +9,10 @@ import { createZip, readStoredZip, inspectResources } from './resource-bundle.mj
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 function git(directory, args) { return execFileSync('git', args, {cwd:directory, encoding:'utf8', env:{...process.env,GIT_TERMINAL_PROMPT:'0',GIT_OPTIONAL_LOCKS:'0'}}).trim(); }
+export function ensureDynamicRevision(directory, revision) {
+  try { git(directory,['cat-file','-e',`${revision}^{commit}`]); }
+  catch { git(directory,['fetch','--quiet','origin',revision]); }
+}
 export function dynamicSources(bytes) {
   const lock=strictJson(bytes); if(lock.schemaVersion!==1 || !Array.isArray(lock.sources) || lock.sources.length>16) throw new Error('Dynamic source lock');
   const ids=new Set();
@@ -95,7 +99,7 @@ export function prepareDynamicResources(checkout=root) {
       const fresh=!existsSync(directory);
       if(fresh) execFileSync('git',['clone','--quiet','--no-local','--no-checkout',source.repository,directory],{cwd:checkout,stdio:'inherit',env:{...process.env,GIT_TERMINAL_PROMPT:'0'}});
       if(realpathSync(directory)!==resolve(directory) || git(directory,['remote','get-url','origin'])!==source.repository || !fresh && git(directory,['status','--porcelain=v1','--untracked-files=all'])) throw new Error('Dynamic checkout identity or dirty tree');
-      git(directory,['config','core.autocrlf','false']);git(directory,['fetch','--quiet','origin',source.revision]);git(directory,['checkout','--quiet','--detach',source.revision]);
+      git(directory,['config','core.autocrlf','false']);ensureDynamicRevision(directory,source.revision);git(directory,['checkout','--quiet','--detach',source.revision]);
       if(git(directory,['rev-parse','HEAD'])!==source.revision || git(directory,['status','--porcelain=v1','--untracked-files=all'])) throw new Error('Dynamic immutable checkout');
       const entries=lockedSourceEntries(checkout,source);
       const packed=packDynamic(source,entries);writeFileSync(join(staging,assetName(packed.game)),packed.archive);return packed.game;
