@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "690f4b606aa280560e8540fc513755527e07387e",
+      "revision": "909f3eff15d9507dae2bba713ebbc6fb8b70267f",
       "directory": "dist",
-      "version": "0.3.17",
-      "contentCode": 28,
+      "version": "0.3.20",
+      "contentCode": 29,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -155,7 +155,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.17：追平已审默认分支690f4b6，更新红石3D直接/连续计算、布线间距、几何和稀疏方向箭头等显示；布局读取与核心v1格式保持，旧布局可继续使用。"
+      "releaseNotes": "0.3.20：新增独立隐藏蓝色箭头、自定义逻辑门名称编辑；保护紧凑输入出口，修复拉杆避让区封死出口导致的三维断线，可离开端口升高绕行。"
     },
     {
       "id": "traffic-planner",
