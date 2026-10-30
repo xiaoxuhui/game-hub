@@ -106,3 +106,18 @@
 - 本地 `node --test tests/turing-preservation.test.mjs tests/turing-compatibility.test.mjs tests/turing-ui-integration.test.mjs tests/turing-resource-activation.test.mjs`：31/31 通过。
 - 锁定 Turing 来源在独立检出目录完成适配和 Vite 资源构建；finalizeTuringResource 来源与输出校验通过。
 - 浏览器 UI 运行检查受安全策略限制：本地服务 URL 超时，`file:` 页面打开被浏览器策略拒绝。未尝试绕过策略；需要后续在允许的本地浏览器工作流中验证。
+
+## Stage C1 红绿变换配置文件复审
+
+- 日期：2026-10-30
+- 功能提交：`4667743`（`feat(red-green): import and export puzzle config`）
+- 独立审阅结论：CLOSED；未发现阻断性正确性或回归问题。
+- 审阅证据：导入先验证文件大小、JSON、游戏 ID、schema 与数量范围，再更新输入并重新生成流程；无效文件/取消不会替换有效状态。导出同样有界且带游戏标识。
+- 定向验证：`node --test tests/red-green-puzzle.test.mjs`，5/5 通过；来源证明验证通过。
+- 非阻断批改：来源证明的 `changes` 说明未提及新文件导入/导出。
+
+### 批改与复审
+
+- 批改提交：`6caae0b`（`docs(red-green): clarify project file provenance`），补充配置 JSON 导入/导出说明。
+- 独立复审结论：CLOSED；来源脚本只读读取固定 GitHub origin 的固定 SHA Git 对象（`git show`），不切换或修改原游戏仓库；来源证明哈希维持有效。
+- Stage C1 已完成。Stage C2（兰顿蚂蚁与两款 TurboWarp 项目文件读写适配）尚未开始。
