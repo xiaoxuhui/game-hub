@@ -10,7 +10,8 @@
     "Extract unchanged Gray domain rules; validate 1..10 before allocation",
     "Restore valid local parameters and truthful clipboard fallback",
     "Use local ES module entry and preserve full MIT",
-    "Include existing N26 icon in the complete output proof; domain rules unchanged"
+    "Include existing N26 icon in the complete output proof; domain rules unchanged",
+    "Add bounded, versioned JSON import/export for the selected size without changing the solver"
   ],
   "inputs": [
     {
