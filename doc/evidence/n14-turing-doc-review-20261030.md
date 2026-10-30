@@ -133,3 +133,15 @@
 - 测试：定向适配 4/4、来源锁更新 2/2 通过。当前最终代码的全仓重跑状态另记发行记录；Windows 环境有 Git/MSYS clone 权限和 symlink 权限间歇限制。
 - 固定来源实证：从 `dynamic-sources.lock.json` 锁定的 Git blob 直接读取红绿变换 `6caae0b1`、兰顿蚂蚁 `20e30825`、TurboWarp 神经网络 `63943ff2`、TurboWarp 逻辑实验室 `04089708`，四项均执行 pack + verifyPackedDynamic 并通过；源仓库只读。
 - 复审未覆盖项：真实桌面/手机浏览器交互；本地浏览器安全策略之前阻断，未尝试绕过，保留人工验收。
+
+## Stage D 离线 Turing 静态资源构建审阅与复打记录
+
+- 日期：2026-10-30
+- 被审提交：`9a4ac33`（`fix(resources): build Turing from lock-matched offline cache`）。
+- 独立审阅：**CLOSED，无阻断问题**。审阅者确认静态源缓存核对固定 origin、完整 SHA 与干净状态，并在独立 staging checkout 中构建，不切换或改动原游戏仓库；离线工具按 `pnpm-lock.yaml` 版本核对，Vite 生产构建成功。
+- 非阻断限制：缓存依赖目前只比较包版本，未逐个校验 pnpm 完整性哈希；离线构建跳过 TypeScript 类型检查。后续可补充缓存完整性验证，并在可正常安装依赖的环境补跑 typecheck。
+- Turing 资源构建：来源仓库 `xiaoxuhui/turing-machine-simulator` 固定 SHA `ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3`，版本 `0.6.0`，`contentCode: 4`；入口 `index.html`，同时包含 `campaign.html` 与 route worker。ZIP `game-turing-4-a3e00a02f35d.zip`，175,997 字节，SHA-256 `a3e00a02f35d81891a767326c1aa426edb4daff04d95fe2420a6baefa7139528`。
+- 资源清单：四个静态资源包完整校验通过；bundle manifest SHA-256 `6eabedd454b943c9c8b928e48e6567c40f403ff5d24ed9327a58bcfd60e4e840`，绑定构建提交 `9a4ac33f95455afc27ea2ccc6e0b7d72dd286dc0`。
+- 可复现性：两次完整静态资源构建逐文件比较，六个候选工件完全一致。
+- 测试：`node --test tests/bundle.test.mjs` 6/6 通过。完整 `node --test` 共 243 项，242 通过；唯一失败为 `tests/resource-bundle.test.mjs` 创建负向测试用符号链接时被 Windows 环境拒绝（`EPERM`），非断言或功能回归。
+- 未完成事项：该记录确认资源候选已构建，并不表示已推送到 `main`、已发布到 GitHub Release 或已通过真机/浏览器验收；这些状态须以后续线上证据确认。
