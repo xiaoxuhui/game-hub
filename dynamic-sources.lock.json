@@ -77,10 +77,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "31eec2e638357d8e3e6a0550afc780e09bdaac49",
+      "revision": "6caae0b14f8a5457015c12454d51142321ae4264",
       "directory": "examples/red-green-puzzle",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "red-green-puzzle-dynamic-v1",
       "files": [
@@ -90,7 +90,7 @@
         "index.html",
         "upstream-source.json"
       ],
-      "releaseNotes": "红绿变换首次接入：数量限1到10、最多683行，恢复本机数量参数；复制不可用时可选全文手动复制。固定图灵上游592027，适配源码与完整MIT许可随包。"
+      "releaseNotes": "配置存档更新：支持带版本的JSON配置导入/导出，先校验游戏ID、版本和数量范围再应用；无效文件不改变当前流程。"
     },
     {
       "id": "mini-scratch",
@@ -216,9 +216,10 @@
       "revision": "20e308259c62e7a88ade50e08fab0182e12dbdcf",
       "directory": "dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "langtons-ant-dynamic-v1",
+      "resourceIntegration": "langtons-ant-file-io-v1",
       "files": [
         "LICENSE",
         "index.html",
@@ -229,7 +230,7 @@
         "src/storage.js",
         "styles.css"
       ],
-      "releaseNotes": "0.1.0：独立离线网页，触摸绘制/擦除/平移、本地自动存档，恢复时暂停。"
+      "releaseNotes": "支持导出完整画布/蚂蚁/设置JSON并导入；严格复用存档验证器，确认后替换，保持暂停。"
     },
     {
       "id": "turbowarp-neural-network",
@@ -240,9 +241,10 @@
       "revision": "63943ff21d51ba4ba56f1817fc970c0fab88cde0",
       "directory": "web-dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "turbowarp-neural-network-dynamic-v1",
+      "resourceIntegration": "turbowarp-file-io-v1",
       "files": [
         "LICENSE",
         "MPL-2.0.txt",
@@ -251,7 +253,7 @@
         "index.html",
         "scaffolding-min.js.LICENSE.txt"
       ],
-      "releaseNotes": "原有 TurboWarp 神经网络作品的离线网页封装；保留训练和预测积木，支持触摸及训练成果本地恢复。"
+      "releaseNotes": "新增完整项目变量JSON导入/导出；复用schema校验，导入前保留本地恢复副本，失败时回滚。"
     },
     {
       "id": "turbowarp-logic-lab",
@@ -262,9 +264,10 @@
       "revision": "04089708095ed77b4fde2c3c023406a79a3d68b5",
       "directory": "web-dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "turbowarp-logic-lab-dynamic-v1",
+      "resourceIntegration": "turbowarp-file-io-v1",
       "files": [
         "LICENSE",
         "MPL-2.0.txt",
@@ -273,7 +276,7 @@
         "index.html",
         "scaffolding-min.js.LICENSE.txt"
       ],
-      "releaseNotes": "原有 TurboWarp 逻辑小实验室作品的离线网页封装；保留 NAND 电路和原生交互，支持触摸及电路本地恢复。"
+      "releaseNotes": "新增完整项目变量JSON导入/导出；复用schema校验，导入前保留本地恢复副本，失败时回滚。"
     }
   ]
 }

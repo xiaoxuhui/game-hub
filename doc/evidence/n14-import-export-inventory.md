@@ -3,7 +3,7 @@
 - 日期：2026-10-30
 - 范围：`resource-sources.lock.json` 与 `dynamic-sources.lock.json` 中全部 15 个 ID。
 - 方式：逐项检查锁定适配资源、本地可读上游或应用源码的入口控件、事件处理及持久化路径；本表反映当前版本，不代表 N14 修复已实现。
-- 结论：11 个游戏已有相应 JSON/项目文件入口；4 个有用户数据的游戏缺少完整文件往返入口；图灵机已有入口但自动恢复与用户偏好冲突。
+- 结论：12 个游戏已有相应 JSON/项目文件入口；3 个有用户数据的游戏此前缺少完整文件往返入口；图灵机已修复默认启动恢复行为。
 
 | ID / 游戏 | 用户数据与本地持久化 | 当前文件导入 / 导出 | 启动恢复 | 结论与证据 |
 |---|---|---|---|---|
@@ -14,14 +14,14 @@
 | `memory-demo` 配对练习 | 当前进度自动写入本地存储 | 有：JSON 导入/导出；文件最大 65,536 字节并验证 schema | 自动续上进度 | 已具备。`examples/memory-demo/app.js`（自动加载、导入导出和大小校验）。 |
 | `abelian-sandpile` 阿贝尔沙滩 | 沙盘、教学进度写入本地存储 | 有：JSON 导入/导出；最大 2 MiB；校验后应用 | 自动恢复且暂停 | 已具备。`examples/abelian-sandpile/src/app.js`（`#export`、`#import` 和 `P.decode`）。 |
 | `lambda-diagram-game` Lambda 线路实验室 | 函数库、归约状态、关卡进度和检查点保存在本机 | 有：存档 JSON 导入/导出、完整原始存储恢复导出和备份 | 默认新会话；手动“恢复已保存状态” | 已具备。`examples/lambda-diagram-game/lambda-lab.html`（`#restore-state`、`#export-state`、`#import-state`；`prepareManualRestore`）。 |
-| `red-green-puzzle` 红绿变换 | 保存单一数量参数；按参数重新生成确定性流程 | **缺少项目 JSON 导入/导出**；可复制生成的文本结果，但不能用项目文件往返设置 | 自动恢复数量参数并立即生成 | 需补参数配置文件往返；结果保持由 schema 配置重新生成。`examples/red-green-puzzle/app.js`、`core.js`、`index.html`。 |
+| `red-green-puzzle` 红绿变换 | 保存单一数量参数；按参数重新生成确定性流程 | 已补：带版本的 JSON 配置导入/导出，限制 64 KiB，绑定游戏 ID，数量 1–10；无效输入不更新流程 | 自动恢复数量参数并立即生成 | 结果仍由 schema 配置确定性重新生成。`examples/red-green-puzzle/core.js` 与 `app.js`；测试 5/5，来源证明通过；Stage C1 独立审阅 CLOSED。`examples/red-green-puzzle/app.js`、`core.js`、`index.html`。 |
 | `mini-scratch` 灵感积木 | 完整作品和版本迁移备份写入本机 | 有：作品 JSON 导入/导出；4 MiB 预算并先完整验证 | 自动载入项目 | 已具备。`D:/soft/mini-scratch/dist/index.html`、`src/app.js`、`src/project.js`。 |
 | `logic-circuit` 逻辑工坊 | 电路布局、自定义门和撤销历史保存在本机 | 有：完整 JSON 文本/文件导入导出，并有“全部删除并导出”备份路径 | 自动载入本机布局 | 已具备。`D:/soft/logic-circuit/dist/index.html`、`src/app.js`。 |
 | `traffic-planner` 路流·交通规划 | 道路/地铁方案自动保存在本机 | 有：方案 JSON 导入/导出；导入限制 1 MiB 并校验 | 按模式自动载入方案 | 已具备。`D:/soft/traffic-planner/dist/index.html`、`src/app.js`。 |
 | `hex-cell-lab` 元胞实验室 | 元胞棋盘、规则和撤销历史保存在本机 | 有：完整 JSON 项目导入/导出，2 MiB 上限 | 自动载入本机项目 | 已具备。`examples/hex-cell-lab/index.html`、`src/app.js`。 |
-| `langtons-ant` 兰顿蚂蚁 | 画布、蚂蚁状态、运行设置自动保存在本机；恢复时暂停 | **没有项目文件导入/导出**；只有重置、随机填充、清空等控制；持久化文本限长 4 MiB（实现按 JS 字符串长度比较，不等于 UTF-8 字节数） | 自动恢复本机状态并暂停 | 需补完整 JSON 往返并确保无效/取消导入不改当前画布。`D:/soft/langtons-ant/dist/index.html`、`src/app.js`、`src/storage.js`。 |
-| `turbowarp-neural-network` 神经网络实验室 | 训练样本、轮次、权重和缩放值自动存储 | **没有文件导入/导出**；有从原始作品重新开始及恢复副本机制 | 自动恢复训练变量 | 需补 schema 验证的 JSON 往返，保留当前数据直至候选完整验证。`D:/soft/turbowarp-neural-network/web-dist/index.html`（状态包装器 299–389 行）。 |
-| `turbowarp-logic-lab` 逻辑小实验室 | NAND 电路、工具与撤销状态自动存储 | **没有文件导入/导出**；有从原始作品重新开始及恢复副本机制 | 自动恢复电路变量 | 需补 schema 验证的 JSON 往返，避免导入中途产生半成品电路。`D:/soft/turbowarp-logic-lab/web-dist/index.html`（状态包装器 299–389 行）。 |
+| `langtons-ant` 兰顿蚂蚁 | 画布、蚂蚁状态、运行设置自动保存在本机；恢复时暂停 | 构建期适配已加入：完整 JSON 文件导入/导出，文件最大 4 MiB，复用 `AntStorage.decode` 验证，确认后替换并暂停 | 自动恢复本机状态并暂停 | 固定 SHA 适配锚点和失败关闭测试通过；真实浏览器操作待补验。原仓库未修改。
+| `turbowarp-neural-network` 神经网络实验室 | 训练样本、轮次、权重和缩放值自动存储 | 资源适配已加入：完整项目变量 JSON 文件导入/导出，100,000 字符上限，复用 `TurboHallState.parse` 验证；导入前保存恢复副本，失败回滚 | 自动恢复训练变量 | 还需浏览器运行时验收；两个项目使用同一份固定锚点适配器，未改源仓库。`D:/soft/turbowarp-neural-network/web-dist/index.html`（状态包装器 299–389 行）。 |
+| `turbowarp-logic-lab` 逻辑小实验室 | NAND 电路、工具与撤销状态自动存储 | 资源适配已加入：完整项目变量 JSON 文件导入/导出，100,000 字符上限，复用 `TurboHallState.parse` 验证；导入前保存恢复副本，失败回滚 | 自动恢复电路变量 | 还需浏览器运行时验收；失败会尝试恢复应用前的变量状态并保留本机存档。`D:/soft/turbowarp-logic-lab/web-dist/index.html`（状态包装器 299–389 行）。 |
 
 ## 实施顺序与安全边界
 
@@ -36,5 +36,10 @@
 ## 独立审阅与更正
 
 - 审阅提交：`3bdd033`（`docs: inventory game save import and export`）。
-- 结论：**CLOSED**；覆盖 15 个锁定 ID，4 个缺文件往返入口的识别正确，图灵机启动恢复问题成立。
+- 结论：12 个游戏已有相应 JSON/项目文件入口；3 个有用户数据的游戏此前缺少完整文件往返入口；图灵机已修复默认启动恢复行为。
 - 更正：EML 5 MiB 和兰顿蚂蚁 4 MiB 都由 JavaScript 字符串长度实施，不应表述为输入文件的字节限制。表内已修正。
+## 2026-10-30 实施状态补记
+
+- `red-green-puzzle` 已于 C1 阶段实现并审阅闭环。`langtons-ant`、`turbowarp-neural-network`、`turbowarp-logic-lab` 的构建期资源适配已写入 game-hub，不改任何上游仓库的 Git blob，资源 ZIP 内保留原文件集。
+- TurboWarp 状态导入沿用 source schema/模板验证并保留恢复副本；兰顿蚂蚁复用其完整存档验证器，确认后保持暂停。
+- 浏览器真实交互尚未进行；本地浏览器安全策略已阻断，未尝试绕过。入口适配由定向 Node 测试和固定 SHA Git blob 实际锚点校验覆盖。

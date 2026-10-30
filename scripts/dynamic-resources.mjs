@@ -4,6 +4,7 @@ import { join, resolve, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { strictJson, safePath, sha256, mime, assetName, LIMITS } from './resource-protocol.mjs';
 import { dynamicId, validateDynamicCatalog } from './dynamic-protocol.mjs';
+import { adaptDynamicResource } from './dynamic-resource-adapters.mjs';
 import { createZip, readStoredZip, inspectResources } from './resource-bundle.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -16,11 +17,14 @@ export function dynamicSources(bytes) {
     ids.add(source.id);safePath(source.directory);
     if(!Array.isArray(source.files) || !source.files.length || new Set(source.files).size!==source.files.length) throw new Error('Dynamic source file list');
     source.files.forEach(safePath); if(!source.files.includes('LICENSE') || !source.files.includes(source.entryPage)) throw new Error('Dynamic required files');
+    if(source.resourceIntegration!==undefined){
+      const expected=source.id==='langtons-ant'?'langtons-ant-file-io-v1':['turbowarp-neural-network','turbowarp-logic-lab'].includes(source.id)?'turbowarp-file-io-v1':null;
+      if(!expected||source.resourceIntegration!==expected)throw new Error('Unreviewed dynamic resource integration');
+    }
   }
   return lock;
 }
-export function packDynamic(source, entries) {
-  if(entries.map(e=>e.path).sort().join('\0')!==[...source.files].sort().join('\0')) throw new Error('Dynamic complete files');
+function packEntries(source, entries) {
   inspectResources(entries,source.id);const archive=createZip(entries);
   const game={id:source.id,displayName:source.displayName,iconKind:source.iconKind,available:source.available,version:source.version,contentCode:source.contentCode,
     sourceRepository:source.repository,sourceRevision:source.revision,minHostVersionCode:4,maxHostVersionCode:2147483647,resourceProtocol:2,bridgeProtocol:1,
@@ -30,6 +34,10 @@ export function packDynamic(source, entries) {
   validateDynamicCatalog({schemaVersion:2,channel:'game-hub-resources-v2',releaseId:1,catalogSequence:'1',issuedAt:issued.toISOString(),expiresAt:expires.toISOString(),games:[{...game,assetId:1}]},issued.getTime());
   if(source.storageContract!==`${source.id}-dynamic-v1`) throw new Error('Production storage contract');
   return {game,archive};
+}
+export function packDynamic(source, entries) {
+  if(entries.map(e=>e.path).sort().join('\\0')!==[...source.files].sort().join('\\0')) throw new Error('Dynamic complete files');
+  return packEntries(source,adaptDynamicResource(source,entries));
 }
 function walk(directory, base=directory) {
   return readdirSync(directory).sort().flatMap(name=>{
@@ -55,7 +63,7 @@ function lockedSourceEntries(checkout, source) {
   return entries;
 }
 export function verifyPackedDynamic(source, sourceEntries, game, archive) {
-  const actual=packDynamic(source,readStoredZip(archive)),expected=packDynamic(source,sourceEntries);
+  const actual=packEntries(source,readStoredZip(archive)),expected=packDynamic(source,sourceEntries);
   if(!actual.archive.equals(archive) || JSON.stringify(actual.game)!==JSON.stringify(game) ||
     !expected.archive.equals(archive) || JSON.stringify(expected.game)!==JSON.stringify(game)) throw new Error('Dynamic candidate differs from immutable source bytes');
 }
