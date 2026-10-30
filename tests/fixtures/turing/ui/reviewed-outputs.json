@@ -51,13 +51,13 @@
   },
   {
     "path": "hub/turing-preservation.js",
-    "bytes": 11819,
-    "sha256": "550aa88d17228d02a09e0225c4ab15065017afe7074f6c128c7150a685a93604"
+    "bytes": 12302,
+    "sha256": "440d5b3bbff3169f582a615c683be7770b90d85cb33342bbe6485b8ea5cd1cb3"
   },
   {
     "path": "hub/turing-ui.js",
-    "bytes": 14694,
-    "sha256": "52dcb88b79cc100bc3e13cfbabebf08de2fa1d458dbf8839d029d715d71267e3"
+    "bytes": 12712,
+    "sha256": "c2c236dfe55c0c65144b3388c4ef159cd52ab0965b002b81051392e9b5f8c280"
   },
   {
     "path": "index.html",
