@@ -88,6 +88,7 @@
         "app.js",
         "core.js",
         "index.html",
+        "icon.png",
         "upstream-source.json"
       ],
       "releaseNotes": "配置存档更新：支持带版本的JSON配置导入/导出，先校验游戏ID、版本和数量范围再应用；无效文件不改变当前流程。"
