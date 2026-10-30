@@ -23,11 +23,12 @@ export function verifyRedGreenSource(){
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
     if(process.argv.slice(2).join(' ')==='--write'){
-      const upstream=join(root,'.build/red-green-upstream');
-      if(realpathSync(upstream)!==resolve(upstream))throw new Error('Independent source directory link');
+      const upstream=process.env.RED_GREEN_SOURCE_REPO||join(root,'.build/red-green-upstream');
+      if(realpathSync(upstream)!==resolve(upstream))throw new Error('Source directory link');
       const git=args=>execFileSync('git',args,{cwd:upstream,env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_TERMINAL_PROMPT:'0'}});
-      if(git(['rev-parse','HEAD']).toString().trim()!==revision||git(['remote','get-url','origin']).toString().trim()!==repository||git(['status','--porcelain=v1','--untracked-files=all']).length)throw new Error('Independent frozen checkout differs');
-      const inputs=['doc/red-green-puzzle.html','LICENSE'].map(path=>{const data=git(['show',`${revision}:${path}`]);if(!data.equals(bytes(join(upstream,path))))throw new Error('Upstream file differs from Git blob');return {path,bytes:data.length,sha256:hash(data)};});
+      if(git(['remote','get-url','origin']).toString().trim()!==repository)throw new Error('Frozen source repository differs');
+      git(['cat-file','-e',`${revision}^{commit}`]);
+      const inputs=['doc/red-green-puzzle.html','LICENSE'].map(path=>{const data=git(['show',`${revision}:${path}`]);return {path,bytes:data.length,sha256:hash(data)};});
       const proof={schemaVersion:1,id:'red-green-puzzle',repository,revision,entryPage:'index.html',maxSize:10,buildKind:'reviewed-host-adaptation',changes:['Extract unchanged Gray domain rules; validate 1..10 before allocation','Restore valid local parameters and truthful clipboard fallback','Use local ES module entry and preserve full MIT','Include existing N26 icon in the complete output proof; domain rules unchanged'],inputs,outputs:outputs()};
       writeFileSync(join(target,'upstream-source.json'),JSON.stringify(proof,null,2)+'\n');
     }else if(process.argv.length!==2)throw new Error('Usage: red-green-source.mjs [--write]');

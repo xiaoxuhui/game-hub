@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
-import {buildSolution,canFlip,validSize,restoreSize,flowText} from '../examples/red-green-puzzle/core.js';
+import {buildSolution,canFlip,validSize,restoreSize,flowText,encodeConfig,decodeConfig} from '../examples/red-green-puzzle/core.js';
 import {verifyRedGreenSource} from '../scripts/red-green-source.mjs';
 
 const original = readFileSync(new URL('fixtures/red-green-upstream.txt', import.meta.url), 'utf8');
@@ -50,4 +50,9 @@ test('invalid sizes are rejected before building and bounded text remains comple
 test('only valid versioned parameters restore, invalid storage defaults safely', () => {
   assert.equal(restoreSize('{"schemaVersion":1,"size":10}'), 10);
   for (const raw of [null,'','{','null','{}','{"size":10}','{"schemaVersion":2,"size":10}','{"schemaVersion":1,"size":20}','{"schemaVersion":1,"size":"10"}']) assert.equal(restoreSize(raw),6);
+});
+test('configuration file roundtrip is versioned, game-bound, bounded and validates before apply', () => {
+  assert.equal(decodeConfig(encodeConfig(10)), 10);
+  for (const raw of ['', '{', 'null', JSON.stringify({schemaVersion:2,game:'red-green-puzzle',size:5}), JSON.stringify({schemaVersion:1,game:'other',size:5}), JSON.stringify({schemaVersion:1,game:'red-green-puzzle',size:11}), ' '.repeat(65537)]) assert.throws(() => decodeConfig(raw));
+  assert.throws(() => encodeConfig(11));
 });

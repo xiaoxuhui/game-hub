@@ -2,6 +2,17 @@ export const MAX_SIZE = 10;
 export const STORAGE_KEY = 'red-green-puzzle.parameters.v1';
 
 export function validSize(size) { return Number.isInteger(size) && size >= 1 && size <= MAX_SIZE; }
+export function encodeConfig(size) {
+  if (!validSize(size)) throw new Error('数量必须为1到10之间的整数');
+  return JSON.stringify({ schemaVersion: 1, game: 'red-green-puzzle', size }, null, 2);
+}
+export function decodeConfig(raw) {
+  if (typeof raw !== 'string' || raw.length > 65536) throw new Error('配置文件超过64KiB');
+  let data;
+  try { data = JSON.parse(raw); } catch { throw new Error('不是有效的JSON文件'); }
+  if (!data || data.schemaVersion !== 1 || data.game !== 'red-green-puzzle' || !validSize(data.size)) throw new Error('配置版本、游戏ID或数量无效');
+  return data.size;
+}
 export function gray(rank) { return rank ^ (rank >> 1); }
 export function inverseGray(value) { let result = 0; while (value > 0) { result ^= value; value >>= 1; } return result; }
 export function toBits(value, width) { return value.toString(2).padStart(width, '0'); }

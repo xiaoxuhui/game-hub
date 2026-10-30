@@ -1,6 +1,7 @@
-import { buildSolution, validSize, restoreSize, flowText, STORAGE_KEY } from './core.js';
+import { buildSolution, validSize, restoreSize, flowText, encodeConfig, decodeConfig, STORAGE_KEY } from './core.js';
 
 const ui = Object.fromEntries(['sizeInput', 'generateBtn', 'copyBtn', 'board', 'summary', 'stepStat', 'rowStat', 'notice', 'copyText', 'copyStatus'].map(id => [id, document.getElementById(id)]));
+ui.exportConfig = document.getElementById('exportConfigBtn'); ui.importConfig = document.getElementById('importConfigBtn'); ui.configFile = document.getElementById('configFile');
 let latestStates = [], generation = 0;
 
 function render(states) {
@@ -45,6 +46,24 @@ async function copySolution() {
     else { ui.copyStatus.textContent = '自动复制不可用，请在下方文本框长按或全选后手动复制。'; }
   }
 }
+ui.exportConfig.addEventListener('click', () => {
+  try {
+    const text = encodeConfig(Number(ui.sizeInput.value));
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' })), link = document.createElement('a');
+    link.href = url; link.download = 'red-green-puzzle-config.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    ui.copyStatus.textContent = '已请求导出配置文件。';
+  } catch (error) { ui.copyStatus.textContent = `导出失败：${error.message}`; }
+});
+ui.importConfig.addEventListener('click', () => ui.configFile.click());
+ui.configFile.addEventListener('change', async () => {
+  const file = ui.configFile.files?.[0]; ui.configFile.value = ''; if (!file) return;
+  try {
+    if (file.size > 65536) throw new Error('配置文件超过64KiB');
+    const size = decodeConfig(await file.text());
+    ui.sizeInput.value = String(size); generate();
+    if (validSize(Number(ui.sizeInput.value))) ui.copyStatus.textContent = '配置已导入，流程已重新生成。';
+  } catch (error) { ui.copyStatus.textContent = `导入失败：${error.message}；当前有效流程保持不变。`; }
+});
 try { ui.sizeInput.value = String(restoreSize(localStorage.getItem(STORAGE_KEY))); }
 catch { ui.sizeInput.value = '6'; }
 ui.generateBtn.addEventListener('click', generate);
