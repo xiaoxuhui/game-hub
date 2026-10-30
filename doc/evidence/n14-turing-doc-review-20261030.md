@@ -86,3 +86,23 @@
 - 结论：**CLOSED**
 - 审阅意见：独立审阅确认移除无法验证的快照路径后，有限配置来源规则可实现且与存档规范一致；保留 Max-only 原文、拒绝从旧 C4 包装推断兼容值的行为已说明。代价是缺少匹配有限原档时，新编辑不会生成新的旧版镜像，这是保证语义正确的明确取舍。
 - Stage A 文档审阅现已关闭，可以开始全游戏盘点；不代表代码实现或产品验收已完成。
+
+## Stage B 图灵机手动恢复代码复审
+
+- 日期：2026-10-30
+- 被审提交：`e7033cc`（`fix(turing): start fresh and preserve Max saves`）
+- 结论：**CLOSED（实现逻辑）**
+- 审阅视角：独立审阅代理；未修改仓库文件。
+
+### 审阅意见
+
+- 启动始终返回初始项目；冲突情况只读；首次有内容的保存先保护上次完整原文，再写新项目。
+- 新 Max 项目使用 `legacyMaxSteps: null` 并保留旧镜像字节；旧 C4 包装仍可读但其历史兼容数字不会传递到新写入；有限项目由自身 `maxSteps` 生成镜像。
+- 资源 `contentCode: 4` 与冻结运行文件摘要一致。31 项定向测试通过。
+- 非阻断项：浏览器真实交互尚未验收；现有 UI 测试覆盖源集成与行为文本，不是浏览器运行验证。
+
+### 验收记录
+
+- 本地 `node --test tests/turing-preservation.test.mjs tests/turing-compatibility.test.mjs tests/turing-ui-integration.test.mjs tests/turing-resource-activation.test.mjs`：31/31 通过。
+- 锁定 Turing 来源在独立检出目录完成适配和 Vite 资源构建；finalizeTuringResource 来源与输出校验通过。
+- 浏览器 UI 运行检查受安全策略限制：本地服务 URL 超时，`file:` 页面打开被浏览器策略拒绝。未尝试绕过策略；需要后续在允许的本地浏览器工作流中验证。
