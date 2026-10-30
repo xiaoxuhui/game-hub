@@ -121,3 +121,15 @@
 - 批改提交：`6caae0b`（`docs(red-green): clarify project file provenance`），补充配置 JSON 导入/导出说明。
 - 独立复审结论：CLOSED；来源脚本只读读取固定 GitHub origin 的固定 SHA Git 对象（`git show`），不切换或修改原游戏仓库；来源证明哈希维持有效。
 - Stage C1 已完成。Stage C2（兰顿蚂蚁与两款 TurboWarp 项目文件读写适配）尚未开始。
+
+## Stage C2 三款资源文件导入导出复审
+
+- 功能提交：`1e486a9`（`feat(resources): add file import export to three games`）。
+- 首轮独立审阅：**OPEN**。兰顿事件处理器无条件显示成功，覆盖了上游同步保存失败提示。
+- 批改提交：`61b9dea`（`fix(resources): report Langton save failures accurately`）；移除包装器的成功提示覆盖，由应用保存结果决定状态。
+- 第二轮独立审阅：兰顿问题关闭；另发现 TurboWarp 导出未要求空闲状态，也未校验将下载的数据，逻辑连线过程中可能导出无法再导入的文件。
+- 批改提交：`1ea3b1e`（`fix(resources): validate TurboWarp exports`）；导出前检查 ready/locked/idle，并使用 `codec.validate` 校验同一个快照。
+- 最终独立审阅：**CLOSED**；确认兰顿失败提示不再覆盖，TurboWarp 导出与导入边界对称。
+- 测试：定向适配 4/4、来源锁更新 2/2 通过。当前最终代码的全仓重跑状态另记发行记录；Windows 环境有 Git/MSYS clone 权限和 symlink 权限间歇限制。
+- 固定来源实证：从 `dynamic-sources.lock.json` 锁定的 Git blob 直接读取红绿变换 `6caae0b1`、兰顿蚂蚁 `20e30825`、TurboWarp 神经网络 `63943ff2`、TurboWarp 逻辑实验室 `04089708`，四项均执行 pack + verifyPackedDynamic 并通过；源仓库只读。
+- 复审未覆盖项：真实桌面/手机浏览器交互；本地浏览器安全策略之前阻断，未尝试绕过，保留人工验收。
