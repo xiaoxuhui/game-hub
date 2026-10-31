@@ -137,7 +137,8 @@ class DynamicResourceStoreTest {
     }
     @Test fun unsupportedBridgeAndOversizedCumulativeDirectoryNeverInstall() {
         Fixture().use {f->val store=f.store();val (catalog,envelope,_)=f.release(bridge=2);store.acceptCatalog(envelope);assertFalse(store.isEligible(catalog.games.single()))
-            rejected {f.release(ids=(0..16).map {"demo-$it"})}
+            assertEquals(100,f.release(ids=(0 until 100).map {"demo-$it"}).first.games.size)
+            rejected {f.release(ids=(0..100).map {"demo-$it"})}
         }
     }
     @Test fun collectionRejectsLinkedParentWithoutTouchingItsTarget() {
