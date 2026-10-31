@@ -33,3 +33,10 @@ The upstream watch found Lambda and Traffic resource-file changes, but their cur
 ## Browser-test limitation
 
 The existing `scripts/eml-hall-browser.cjs --candidate` harness could not start because this independent checkout has no `playwright` Node module. No browser or device result is claimed. The EML compatibility, resource-lock, preservation, UI adaptation, license tests and full Node suite pass.
+
+
+## 可复核的发行前证据
+
+- 两次构建的逐次输出和 ZIP 摘要：`doc/evidence/n20-eml-resource-builds.json`；报告断言两次清单、manifest 和每个 ZIP SHA-256 完全一致。
+- sequence 7 匿名预检输入摘要、原始输出和前快照摘要：`doc/evidence/n20-eml-v1-preflight.json`。上一份已签名目录原文 SHA 与 GitHub 当前资产一致。
+- 今日上游巡检的完整只读结果：`doc/evidence/n20-eml-upstream-watch.json`。

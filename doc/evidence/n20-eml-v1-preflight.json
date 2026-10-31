@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "command": "node scripts/resource-v1-successor.mjs preflight <evidence-dir> 1c144d7f87f8d26c5cdafe2d40c5c5843b3288f366ed13c183c3df3290f29d20 7",
+  "producerCommit": "d54b51d7ddab0ae59fe0668ded765a0e69bd7b83",
+  "releaseId": 407293817,
+  "currentSequence": "6",
+  "nextSequence": "7",
+  "currentCatalogSha256": "1c144d7f87f8d26c5cdafe2d40c5c5843b3288f366ed13c183c3df3290f29d20",
+  "beforeSnapshot": {
+    "bytes": 64907,
+    "sha256": "9d549cc8ac23c6568af789102ffe4828c09540d8daa57cc2e046d5fbed1113cb"
+  },
+  "preflightOutput": [
+    "Verified 4 resource ZIPs and complete file manifests; source commit d54b51d7ddab0ae59fe0668ded765a0e69bd7b83",
+    "Preflight verified v1 sequence 6 and four immutable candidates"
+  ],
+  "outcome": "passed",
+  "completedAt": "2026-10-31T01:33:14.578Z"
+}

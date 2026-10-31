@@ -1,0 +1,745 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-31T01:25:38.430Z",
+  "sourceCommit": null,
+  "publication": "not-attempted",
+  "status": "checked",
+  "sources": [
+    {
+      "id": "conway",
+      "repository": "https://github.com/xiaoxuhui/conway-life-game.git",
+      "baselineVersion": "0.17.0",
+      "consumers": [
+        {
+          "id": "conway",
+          "baselineRevision": "a531a560b3ecce070be80fb6470cbc916971bce4",
+          "status": "same-revision"
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "a531a560b3ecce070be80fb6470cbc916971bce4",
+      "release": {
+        "status": "same-version",
+        "tag": "v0.17.0",
+        "publishedAt": "2026-09-28T14:15:38Z",
+        "url": "https://github.com/xiaoxuhui/conway-life-game/releases/tag/v0.17.0"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "eml",
+      "repository": "https://github.com/xiaoxuhui/EML.git",
+      "baselineVersion": "1.3.1",
+      "consumers": [
+        {
+          "id": "eml",
+          "baselineRevision": "cb408648ad4233baba757a530aa39278ecdb5127",
+          "status": "same-revision"
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "cb408648ad4233baba757a530aa39278ecdb5127",
+      "release": {
+        "status": "same-version",
+        "tag": "v1.3.1",
+        "publishedAt": "2026-10-11T21:13:08Z",
+        "url": "https://github.com/xiaoxuhui/EML/releases/tag/v1.3.1"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "light",
+      "repository": "https://github.com/xiaoxuhui/light_game.git",
+      "baselineVersion": "1.2.1",
+      "consumers": [
+        {
+          "id": "light",
+          "baselineRevision": "85163534ccae2b023928c877e002581a8f35f0cb",
+          "status": "metadata-only",
+          "resourceFiles": [],
+          "reviewFiles": [],
+          "metadataFiles": [
+            ".github/workflows/daily-maintenance.yml",
+            "doc/安卓打包实施计划.md",
+            "doc/安卓真机验证记录-v1.2.0.md",
+            "doc/安卓真机验证记录-v1.2.1.md",
+            "doc/安卓真机验证记录.md",
+            "doc/实施计划.md"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "6adff61adfddae5c2ee38f41b18934570dce3423",
+      "release": {
+        "status": "same-version",
+        "tag": "v1.2.1",
+        "publishedAt": "2026-10-01T04:59:03Z",
+        "url": "https://github.com/xiaoxuhui/light_game/releases/tag/v1.2.1"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "turing",
+      "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+      "baselineVersion": "0.6.0",
+      "consumers": [
+        {
+          "id": "turing",
+          "baselineRevision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+          "status": "other-change-pending-review",
+          "resourceFiles": [],
+          "reviewFiles": [
+            "doc/函数直接调用/evidence/browser.json",
+            "doc/函数示例/evidence/browser.json",
+            "doc/向后查找函数/evidence/browser.json",
+            "doc/教学更新/evidence/browser.json",
+            "doc/斐波那契示例/evidence/browser.json",
+            "doc/规则错误定位/evidence/browser.json",
+            "doc/规则错误定位/evidence/line-100.png",
+            "doc/调用返回顺序/evidence/browser.json",
+            "doc/路线符号配色/evidence/browser.json",
+            "doc/路线符号配色/evidence/route-colors.png",
+            "package.json",
+            "scripts/start-dev-server.mjs",
+            "scripts/verify-campaign-learning.mjs",
+            "scripts/verify-direct-function-call.mjs",
+            "scripts/verify-fibonacci-example.mjs",
+            "scripts/verify-forward-function-calls.mjs",
+            "scripts/verify-function-examples.mjs",
+            "scripts/verify-route-colors.mjs",
+            "scripts/verify-rule-diagnostics.mjs",
+            "scripts/verify-tape-viewport.mjs",
+            "src/campaign-advanced.ts",
+            "src/campaign-main.ts",
+            "src/campaign-styles.css",
+            "src/campaign.ts",
+            "src/core.ts",
+            "src/editor-draft.ts",
+            "src/example-source.ts",
+            "src/examples.ts",
+            "src/fibonacci-example.ts",
+            "src/function-examples.ts",
+            "src/main.ts",
+            "src/project-codec.test.ts",
+            "src/project-codec.ts",
+            "src/register-tm.ts",
+            "src/route-colors.ts",
+            "src/rule-diagnostics.css",
+            "src/rule-diagnostics.ts",
+            "src/rule-error.ts",
+            "src/rule-format.ts",
+            "src/rule-functions.ts",
+            "src/styles.css",
+            "src/text-insertion.ts"
+          ],
+          "metadataFiles": [
+            "CHANGELOG.md",
+            "README.en.md",
+            "README.md",
+            "doc/函数直接调用/实施计划.md",
+            "doc/函数直接调用/测试报告.md",
+            "doc/函数直接调用/设计文档.md",
+            "doc/函数直接调用/需求与测试用例.md",
+            "doc/函数示例/实施计划.md",
+            "doc/函数示例/测试报告.md",
+            "doc/函数示例/设计文档.md",
+            "doc/函数示例/需求与测试用例.md",
+            "doc/函数返回/实施计划.md",
+            "doc/函数返回/测试报告.md",
+            "doc/函数返回/设计文档.md",
+            "doc/函数返回/需求与测试用例.md",
+            "doc/后台服务/实施计划.md",
+            "doc/后台服务/测试报告.md",
+            "doc/后台服务/设计文档.md",
+            "doc/后台服务/需求与测试用例.md",
+            "doc/向后查找函数/实施计划.md",
+            "doc/向后查找函数/测试报告.md",
+            "doc/向后查找函数/设计文档.md",
+            "doc/向后查找函数/需求与测试用例.md",
+            "doc/教学更新/实施计划.md",
+            "doc/教学更新/测试报告.md",
+            "doc/教学更新/设计文档.md",
+            "doc/教学更新/需求与测试用例.md",
+            "doc/斐波那契示例/实施计划.md",
+            "doc/斐波那契示例/测试报告.md",
+            "doc/斐波那契示例/设计文档.md",
+            "doc/斐波那契示例/需求与测试用例.md",
+            "doc/纸带裁切/实施计划.md",
+            "doc/纸带裁切/测试报告.md",
+            "doc/纸带裁切/设计文档.md",
+            "doc/纸带裁切/需求与测试用例.md",
+            "doc/规则函数/实施计划.md",
+            "doc/规则函数/测试报告.md",
+            "doc/规则函数/设计文档.md",
+            "doc/规则函数/需求与测试用例.md",
+            "doc/规则错误定位/实施计划.md",
+            "doc/规则错误定位/测试报告.md",
+            "doc/规则错误定位/设计文档.md",
+            "doc/规则错误定位/需求与测试用例.md",
+            "doc/调用返回顺序/实施计划.md",
+            "doc/调用返回顺序/测试报告.md",
+            "doc/调用返回顺序/设计文档.md",
+            "doc/调用返回顺序/需求与测试用例.md",
+            "doc/路线符号配色/实施计划.md",
+            "doc/路线符号配色/测试报告.md",
+            "doc/路线符号配色/设计文档.md",
+            "doc/路线符号配色/需求与测试用例.md",
+            "tests/campaign-advanced-solutions.ts",
+            "tests/campaign.test.ts",
+            "tests/core.test.ts",
+            "tests/editor-draft.test.ts",
+            "tests/example-source.test.ts",
+            "tests/examples.test.ts",
+            "tests/fibonacci-example.test.ts",
+            "tests/fixtures/fibonacci-original.tm",
+            "tests/fixtures/function-calls-no-ret.tm",
+            "tests/raw-fixtures.d.ts",
+            "tests/route-colors.test.ts",
+            "tests/rule-diagnostics.test.ts",
+            "tests/rule-format.test.ts",
+            "tests/rule-functions.test.ts",
+            "tests/tape-viewport.test.ts",
+            "tests/text-insertion.test.ts"
+          ]
+        },
+        {
+          "id": "red-green-puzzle",
+          "baselineRevision": "592027dbc5cab9cb83f91b904f4f23a9e3cbe24b",
+          "status": "other-change-pending-review",
+          "resourceFiles": [],
+          "reviewFiles": [
+            "android/README.md",
+            "android/app/build.gradle.kts",
+            "doc/函数直接调用/evidence/browser.json",
+            "doc/函数示例/evidence/browser.json",
+            "doc/向后查找函数/evidence/browser.json",
+            "doc/教学更新/evidence/browser.json",
+            "doc/斐波那契示例/evidence/browser.json",
+            "doc/规则错误定位/evidence/browser.json",
+            "doc/规则错误定位/evidence/line-100.png",
+            "doc/调用返回顺序/evidence/browser.json",
+            "doc/路线符号配色/evidence/browser.json",
+            "doc/路线符号配色/evidence/route-colors.png",
+            "package.json",
+            "scripts/start-dev-server.mjs",
+            "scripts/verify-campaign-learning.mjs",
+            "scripts/verify-direct-function-call.mjs",
+            "scripts/verify-fibonacci-example.mjs",
+            "scripts/verify-forward-function-calls.mjs",
+            "scripts/verify-function-examples.mjs",
+            "scripts/verify-route-colors.mjs",
+            "scripts/verify-rule-diagnostics.mjs",
+            "scripts/verify-tape-viewport.mjs",
+            "src/busy-beaver-examples.ts",
+            "src/campaign-advanced.ts",
+            "src/campaign-main.ts",
+            "src/campaign-styles.css",
+            "src/campaign.ts",
+            "src/conjecture-examples.ts",
+            "src/core.ts",
+            "src/editor-draft.ts",
+            "src/example-source.ts",
+            "src/examples.ts",
+            "src/fibonacci-example.ts",
+            "src/function-examples.ts",
+            "src/gijswijt-direct.ts",
+            "src/gijswijt-tm.ts",
+            "src/gijswijt-worker.ts",
+            "src/gijswijt.ts",
+            "src/hyperoperation-examples.ts",
+            "src/main.ts",
+            "src/project-codec.test.ts",
+            "src/project-codec.ts",
+            "src/register-tm.ts",
+            "src/route-colors.ts",
+            "src/rule-diagnostics.css",
+            "src/rule-diagnostics.ts",
+            "src/rule-error.ts",
+            "src/rule-format.ts",
+            "src/rule-functions.ts",
+            "src/rule-source.ts",
+            "src/speed-input.ts",
+            "src/speed-preference.ts",
+            "src/styles.css",
+            "src/text-insertion.ts",
+            "src/unary-examples.ts"
+          ],
+          "metadataFiles": [
+            ".github/workflows/daily-maintenance.yml",
+            "CHANGELOG.md",
+            "README.en.md",
+            "README.md",
+            "doc/一进制示例测试报告.md",
+            "doc/函数直接调用/实施计划.md",
+            "doc/函数直接调用/测试报告.md",
+            "doc/函数直接调用/设计文档.md",
+            "doc/函数直接调用/需求与测试用例.md",
+            "doc/函数示例/实施计划.md",
+            "doc/函数示例/测试报告.md",
+            "doc/函数示例/设计文档.md",
+            "doc/函数示例/需求与测试用例.md",
+            "doc/函数返回/实施计划.md",
+            "doc/函数返回/测试报告.md",
+            "doc/函数返回/设计文档.md",
+            "doc/函数返回/需求与测试用例.md",
+            "doc/吉斯维杰特图灵机测试报告.md",
+            "doc/后台服务/实施计划.md",
+            "doc/后台服务/测试报告.md",
+            "doc/后台服务/设计文档.md",
+            "doc/后台服务/需求与测试用例.md",
+            "doc/向后查找函数/实施计划.md",
+            "doc/向后查找函数/测试报告.md",
+            "doc/向后查找函数/设计文档.md",
+            "doc/向后查找函数/需求与测试用例.md",
+            "doc/实施计划-Max步数模式.md",
+            "doc/实施计划-v0.6.0发布.md",
+            "doc/实施计划.md",
+            "doc/教学更新/实施计划.md",
+            "doc/教学更新/测试报告.md",
+            "doc/教学更新/设计文档.md",
+            "doc/教学更新/需求与测试用例.md",
+            "doc/斐波那契示例/实施计划.md",
+            "doc/斐波那契示例/测试报告.md",
+            "doc/斐波那契示例/设计文档.md",
+            "doc/斐波那契示例/需求与测试用例.md",
+            "doc/测试报告-Max步数模式.md",
+            "doc/测试报告-v0.6.0发布.md",
+            "doc/目标速度回跳测试报告.md",
+            "doc/纸带裁切/实施计划.md",
+            "doc/纸带裁切/测试报告.md",
+            "doc/纸带裁切/设计文档.md",
+            "doc/纸带裁切/需求与测试用例.md",
+            "doc/规则函数/实施计划.md",
+            "doc/规则函数/测试报告.md",
+            "doc/规则函数/设计文档.md",
+            "doc/规则函数/需求与测试用例.md",
+            "doc/规则错误定位/实施计划.md",
+            "doc/规则错误定位/测试报告.md",
+            "doc/规则错误定位/设计文档.md",
+            "doc/规则错误定位/需求与测试用例.md",
+            "doc/设计文档-Max步数模式.md",
+            "doc/设计文档-v0.6.0发布.md",
+            "doc/设计文档.md",
+            "doc/调用返回顺序/实施计划.md",
+            "doc/调用返回顺序/测试报告.md",
+            "doc/调用返回顺序/设计文档.md",
+            "doc/调用返回顺序/需求与测试用例.md",
+            "doc/路线符号配色/实施计划.md",
+            "doc/路线符号配色/测试报告.md",
+            "doc/路线符号配色/设计文档.md",
+            "doc/路线符号配色/需求与测试用例.md",
+            "doc/需求与测试用例-Max步数模式.md",
+            "doc/需求与测试用例-v0.6.0发布.md",
+            "doc/需求与测试用例.md",
+            "doc/高阶运算测试报告.md",
+            "tests/campaign-advanced-solutions.ts",
+            "tests/campaign.test.ts",
+            "tests/core.test.ts",
+            "tests/editor-draft.test.ts",
+            "tests/example-source.test.ts",
+            "tests/examples.test.ts",
+            "tests/fibonacci-example.test.ts",
+            "tests/fixtures/fibonacci-original.tm",
+            "tests/fixtures/function-calls-no-ret.tm",
+            "tests/gijswijt-tm.test.ts",
+            "tests/gijswijt.test.ts",
+            "tests/hyperoperation-examples.test.ts",
+            "tests/raw-fixtures.d.ts",
+            "tests/register-tm.test.ts",
+            "tests/route-colors.test.ts",
+            "tests/rule-diagnostics.test.ts",
+            "tests/rule-format.test.ts",
+            "tests/rule-functions.test.ts",
+            "tests/rule-source.test.ts",
+            "tests/speed-input.test.ts",
+            "tests/speed-preference.test.ts",
+            "tests/tape-viewport.test.ts",
+            "tests/text-insertion.test.ts"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "e5169b3cc6cf8f45dc9e461e92d5cf231a654820",
+      "release": {
+        "status": "same-version",
+        "tag": "v0.6.0",
+        "publishedAt": "2026-10-11T21:19:23Z",
+        "url": "https://github.com/xiaoxuhui/turing-machine-simulator/releases/tag/v0.6.0"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "abelian-sandpile",
+      "repository": "https://github.com/xiaoxuhui/abelian-sandpile.git",
+      "baselineVersion": "0.1.2",
+      "consumers": [
+        {
+          "id": "abelian-sandpile",
+          "baselineRevision": "c4290283b1109e13e37d6f696b83fefd3b7a6855",
+          "status": "other-change-pending-review",
+          "resourceFiles": [],
+          "reviewFiles": [
+            "android/icon-source/icon.png"
+          ],
+          "metadataFiles": [
+            ".github/workflows/daily-maintenance.yml"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "22aa85e3f01458520eee4e4a0fa4273a436183fb",
+      "release": {
+        "status": "no-release"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+      "baselineVersion": "0.3.3",
+      "consumers": [
+        {
+          "id": "lambda-diagram-game",
+          "baselineRevision": "2ce0fa371e583bb9b57e74ace1f5cd2a7b14bd2c",
+          "status": "resource-change-pending-review",
+          "resourceFiles": [
+            "index.html",
+            "src/app.js",
+            "src/core.js",
+            "src/library.js",
+            "src/presets.js",
+            "src/snapshot.js"
+          ],
+          "reviewFiles": [
+            "dist/lambda-lab.html",
+            "src/challenges.js",
+            "src/decimal.js"
+          ],
+          "metadataFiles": [
+            "README.md",
+            "doc/列表小数需求设计.md",
+            "doc/小数完整表达式实施计划.md",
+            "doc/小数完整表达式测试报告.md",
+            "doc/小数完整表达式设计文档.md",
+            "doc/小数完整表达式需求与测试用例.md",
+            "tests/browser.cjs",
+            "tests/challenges-browser.cjs",
+            "tests/core.test.cjs",
+            "tests/decimal-browser.cjs",
+            "tests/decimal.test.cjs",
+            "tests/diagram.test.cjs",
+            "tests/library.test.cjs",
+            "tests/presets.test.cjs",
+            "tests/snapshot.test.cjs"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "master",
+      "mainRevision": "74948504d72eaa41ca8f819d1923d91f0e79473d",
+      "release": {
+        "status": "same-version",
+        "tag": "v0.3.3",
+        "publishedAt": "2026-10-12T06:55:11Z",
+        "url": "https://github.com/xiaoxuhui/lambda-diagram-game/releases/tag/v0.3.3"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "hex-cell-lab",
+      "repository": "https://github.com/xiaoxuhui/hex-cell-lab.git",
+      "baselineVersion": "1.4.0",
+      "consumers": [
+        {
+          "id": "hex-cell-lab",
+          "baselineRevision": "5040dde0521e9e38a5b640c80993a567f18a25c0",
+          "status": "resource-change-pending-review",
+          "resourceFiles": [
+            "index.html",
+            "package.json",
+            "scripts/build.cjs",
+            "src/app.js",
+            "src/core.js",
+            "src/expression.js",
+            "styles/main.css"
+          ],
+          "reviewFiles": [
+            "dist/index.html",
+            "dist/src/app.js",
+            "dist/src/core.js",
+            "dist/src/cycles.js",
+            "dist/src/expression.js",
+            "dist/styles/main.css",
+            "src/cycles.js"
+          ],
+          "metadataFiles": [
+            "CHANGELOG.md",
+            "README.md",
+            "doc/实施计划-循环长度.md",
+            "doc/实施计划-长周期延迟修复.md",
+            "doc/实施计划-鼠标导航.md",
+            "doc/循环长度测试报告.md",
+            "doc/设计文档.md",
+            "doc/长周期延迟测试报告.md",
+            "doc/需求与测试用例.md",
+            "doc/鼠标导航测试报告.md",
+            "tests/browser.cjs",
+            "tests/cycles-browser.cjs",
+            "tests/cycles.test.cjs",
+            "tests/fixtures/sbc-long-cycle.json",
+            "tests/long-cycles.test.cjs",
+            "tests/mouse-browser.cjs",
+            "tests/static.test.cjs"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "613b2a80da4ef812722e0fb457e80890caac10a6",
+      "release": {
+        "status": "no-release"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "mini-scratch",
+      "repository": "https://github.com/xiaoxuhui/mini-scratch.git",
+      "baselineVersion": "0.5.0",
+      "consumers": [
+        {
+          "id": "mini-scratch",
+          "baselineRevision": "f5d9d5b613515c2f8500e76466151127b7500baf",
+          "status": "other-change-pending-review",
+          "resourceFiles": [],
+          "reviewFiles": [
+            "icon-source/icon.png"
+          ],
+          "metadataFiles": [
+            "doc/GitHub与大厅接入报告.md",
+            "doc/v0.5-实施计划.md",
+            "doc/v0.5-测试报告.md"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "cd0f177614761d71375942f1fef52dd723891f2b",
+      "release": {
+        "status": "no-release"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "logic-circuit",
+      "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
+      "baselineVersion": "0.3.20",
+      "consumers": [
+        {
+          "id": "logic-circuit",
+          "baselineRevision": "a3830070744fe3e9360b3b65540dc920540df26d",
+          "status": "metadata-only",
+          "resourceFiles": [],
+          "reviewFiles": [],
+          "metadataFiles": [
+            "doc/0.3.20最终回归补充.md",
+            "doc/实施计划.md"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "341949877d5a287867f47c42f4959b335f439ded",
+      "release": {
+        "status": "no-release"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "traffic-planner",
+      "repository": "https://github.com/xiaoxuhui/traffic-planner.git",
+      "baselineVersion": "0.1.0",
+      "consumers": [
+        {
+          "id": "traffic-planner",
+          "baselineRevision": "86f8fb77de41c9ddef37fbd998c44d01c0623727",
+          "status": "resource-change-pending-review",
+          "resourceFiles": [
+            "dist/index.html",
+            "dist/src/app.js",
+            "dist/src/core.js",
+            "dist/src/examples.js",
+            "dist/src/simulation.js",
+            "dist/styles.css"
+          ],
+          "reviewFiles": [
+            "dist/src/layer-renderer.js",
+            "dist/src/metro-passengers.js",
+            "dist/src/metro-simulation.js",
+            "doc/evidence/blank-desktop.png",
+            "doc/evidence/blank-mobile.png",
+            "doc/evidence/browser-results.json",
+            "doc/evidence/cloverleaf-desktop.png",
+            "doc/evidence/desktop.png",
+            "doc/evidence/diversion-desktop.png",
+            "doc/evidence/examples-desktop.png",
+            "doc/evidence/examples-mobile.png",
+            "doc/evidence/gridlock-desktop.png",
+            "doc/evidence/gridlock-mobile.png",
+            "doc/evidence/layers-desktop.png",
+            "doc/evidence/layers-ground-desktop.png",
+            "doc/evidence/layers-mobile.png",
+            "doc/evidence/metro-desktop.png",
+            "doc/evidence/metro-layers-browser-results.json",
+            "doc/evidence/metro-layers-node-results.txt",
+            "doc/evidence/metro-mobile.png",
+            "doc/evidence/mobile.png",
+            "doc/evidence/multiple-routes-desktop.png",
+            "doc/evidence/multiple-routes-mobile.png",
+            "doc/evidence/overpass-desktop.png",
+            "doc/evidence/overpass-mobile.png",
+            "doc/evidence/panlong-desktop.png",
+            "doc/evidence/passengers-browser-results.json",
+            "doc/evidence/passengers-desktop.png",
+            "doc/evidence/passengers-full-browser-results.txt",
+            "doc/evidence/passengers-mobile.png",
+            "doc/evidence/passengers-node-results.txt",
+            "doc/evidence/planned-routes-desktop.png",
+            "doc/evidence/reversing-desktop.png",
+            "doc/evidence/reversing-mobile.png",
+            "game-hub.integration.json",
+            "index.html",
+            "scripts/browser-check.js",
+            "scripts/check-metro-layers.js",
+            "scripts/check-passengers.js",
+            "src/app.js",
+            "src/core.js",
+            "src/examples.js",
+            "src/layer-renderer.js",
+            "src/metro-passengers.js",
+            "src/metro-simulation.js",
+            "src/simulation.js",
+            "styles.css"
+          ],
+          "metadataFiles": [
+            "CHANGELOG.md",
+            "README.md",
+            "doc/地铁与多层道路实施计划.md",
+            "doc/地铁与多层道路测试报告.md",
+            "doc/地铁与多层道路设计.md",
+            "doc/地铁乘客实施计划.md",
+            "doc/地铁乘客测试报告.md",
+            "doc/地铁乘客设计.md",
+            "doc/实施计划.md",
+            "doc/需求与测试用例.md",
+            "tests/examples.test.js",
+            "tests/layer-renderer.test.js",
+            "tests/layers.test.js",
+            "tests/metro.test.js",
+            "tests/passengers.test.js"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "c6fa5f378b34c1301cc8b4a479456e5e50912cc6",
+      "release": {
+        "status": "same-version",
+        "tag": "v0.1.0",
+        "publishedAt": "2026-10-21T14:59:17Z",
+        "url": "https://github.com/xiaoxuhui/traffic-planner/releases/tag/v0.1.0"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "langtons-ant",
+      "repository": "https://github.com/xiaoxuhui/langtons-ant.git",
+      "baselineVersion": "0.1.0",
+      "consumers": [
+        {
+          "id": "langtons-ant",
+          "baselineRevision": "20e308259c62e7a88ade50e08fab0182e12dbdcf",
+          "status": "other-change-pending-review",
+          "resourceFiles": [],
+          "reviewFiles": [
+            "doc/evidence/game-hub-source-v0.1.0.json",
+            "doc/evidence/hub-preflight.json",
+            "doc/evidence/pages-browser-verification.json",
+            "doc/evidence/pages-resources.json",
+            "doc/evidence/public-verification.json"
+          ],
+          "metadataFiles": [
+            "doc/发布记录.md",
+            "doc/大厅接入说明.md",
+            "doc/实施计划.md",
+            "doc/第一版本测试报告.md"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "281156c59748425cfe8504fc11b2a0c93473c13c",
+      "release": {
+        "status": "same-version",
+        "tag": "v0.1.0",
+        "publishedAt": "2026-10-25T15:24:56Z",
+        "url": "https://github.com/xiaoxuhui/langtons-ant/releases/tag/v0.1.0"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "turbowarp-neural-network",
+      "repository": "https://github.com/xiaoxuhui/turbowarp-neural-network.git",
+      "baselineVersion": "0.1.0",
+      "consumers": [
+        {
+          "id": "turbowarp-neural-network",
+          "baselineRevision": "63943ff21d51ba4ba56f1817fc970c0fab88cde0",
+          "status": "metadata-only",
+          "resourceFiles": [],
+          "reviewFiles": [],
+          "metadataFiles": [
+            "doc/大厅网页接入实施计划.md",
+            "doc/大厅网页测试报告.md"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "c69611f17b2c9eaceca4e5ee90d39f4601dd3ca0",
+      "release": {
+        "status": "no-release"
+      },
+      "status": "checked"
+    },
+    {
+      "id": "turbowarp-logic-lab",
+      "repository": "https://github.com/xiaoxuhui/turbowarp-logic-lab.git",
+      "baselineVersion": "0.1.0",
+      "consumers": [
+        {
+          "id": "turbowarp-logic-lab",
+          "baselineRevision": "04089708095ed77b4fde2c3c023406a79a3d68b5",
+          "status": "metadata-only",
+          "resourceFiles": [],
+          "reviewFiles": [],
+          "metadataFiles": [
+            "doc/大厅网页接入实施计划.md",
+            "doc/大厅网页测试报告.md"
+          ]
+        }
+      ],
+      "errors": [],
+      "defaultBranch": "main",
+      "mainRevision": "1f09e4f5183e17792a7dc1a582f2966a75a49e11",
+      "release": {
+        "status": "no-release"
+      },
+      "status": "checked"
+    }
+  ]
+}

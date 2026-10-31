@@ -1,6 +1,6 @@
 # N20 EML 资源兼容更新实施计划
 
-- Status: PENDING
+- Status: IN_PROGRESS
 - Approved: 2026-10-31 用户要求完善并发布可发布游戏资源；明确不发布 APK。
 - Type: resource release
 - Source checkout: independent checkout at fixed upstream SHA; original EML repository remains read-only.
@@ -42,6 +42,7 @@
 
 - Files: EML resource candidate, issuance facts, deterministic build report。
 - DoD: U06 通过；仅 EML contentCode 递增，其他静态游戏描述和 ZIP 字节与已发布当前值完全一致；双构建相同。
+- Evidence: `doc/evidence/n20-eml-resource-candidate.md`（索引）；逐次构建摘要、预检输出和上游巡检分别在同目录下的 `n20-eml-resource-builds.json`、`n20-eml-v1-preflight.json`、`n20-eml-upstream-watch.json`。
 
 ## D 签名发行与线上验证 `[IN_PROGRESS]`
 
