@@ -8,8 +8,17 @@
 ## A 需求、设计和门禁 `[COMPLETE]`
 
 - Files: `N20-EML资源兼容更新需求与测试用例.md`、`N20-EML资源兼容更新设计.md`、本计划。
-- DoD: 独立审阅无阻断意见，审阅和批改记录归档。
-- State: 首次文档已写；等待文档阶段提交后的独立审阅。
+- DoD: 需求、设计、实施计划均已写入，`git diff --check` 通过。
+- State: 文档已提交为 `d38f7eb`。
+
+## A2 首轮独立审阅与批改记录 `[COMPLETE]`
+
+- DoD: 独立审阅 `d38f7eb`，将意见和批改记录存入 `doc/evidence/n20-eml-plan-review.md`。
+- [x] 审阅无范围/兼容阻断；修正了文档阶段状态矛盾。修订提交后的复审仍需单独完成。
+
+## A3 修订提交复审 `[PENDING]`
+
+- DoD: 独立审阅本次修订提交；若无阻断，记录归档在 `doc/evidence/n20-eml-plan-review.md`。
 
 ## B 上游适配与交叉读取验证 `[PENDING]`
 
@@ -19,7 +28,7 @@
 ## C ZIP 生产与范围核验 `[PENDING]`
 
 - Files: EML resource candidate, issuance facts, deterministic build report。
-- DoD: U06 通过；仅 EML contentCode 递增，其他静态游戏描述和 ZIP 字节不变；双构建相同。
+- DoD: U06 通过；仅 EML contentCode 递增，其他静态游戏描述和 ZIP 字节与已发布当前值完全一致；双构建相同。
 
 ## D 签名发行与线上验证 `[PENDING]`
 
