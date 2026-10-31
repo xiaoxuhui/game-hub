@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "learning-machine",
+  "repository": "https://github.com/xiaoxuhui/learning-machine.git",
+  "revision": "45e863784b89c168bef39f9c4c8b9c2645270f0f",
+  "version": "1.2.0",
+  "buildKind": "committed-dist-copy",
+  "entryPage": "index.html",
+  "inputs": [
+    {
+      "path": "dist/index.html",
+      "bytes": 11414,
+      "sha256": "b930a1e4f66b55015b91cdc48e655e25fc0634cbad0c5eb95f6dd07595b2da58"
+    },
+    {
+      "path": "dist/src/app.js",
+      "bytes": 18158,
+      "sha256": "daac85043475c2325add617ff77bfb42d2f2b38e5161f13ef811ce99ddc4e1e2"
+    },
+    {
+      "path": "dist/src/icon.svg",
+      "bytes": 330,
+      "sha256": "5ab94f470806aebed2db397529ba9a2cd5aed26a62b6d183367a03ed2b85457a"
+    },
+    {
+      "path": "dist/src/model.js",
+      "bytes": 11600,
+      "sha256": "2f306aa88a694e81f7762fec401aaba38bd6877627d7775d6456b15d1a9b78aa"
+    },
+    {
+      "path": "dist/src/styles.css",
+      "bytes": 21631,
+      "sha256": "8eb616817441bc6956481e239b2fe0ac949f2224cfcb1e55bf31ac57c8ee5cbe"
+    },
+    {
+      "path": "dist/src/visuals.js",
+      "bytes": 8229,
+      "sha256": "9bc051bdda171a8d9625bc9fc4d42cf899f63d8a4426c846b5890e012d546550"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    }
+  ],
+  "license": "MIT from upstream LICENSE"
+}

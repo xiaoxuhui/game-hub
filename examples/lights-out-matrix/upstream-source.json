@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "lights-out-matrix",
+  "repository": "https://github.com/xiaoxuhui/lights-out-matrix.git",
+  "revision": "8640861e87e45d352c963f4b68145e607a15951b",
+  "version": "1.0.0",
+  "buildKind": "committed-dist-copy",
+  "entryPage": "index.html",
+  "inputs": [
+    {
+      "path": "dist/index.html",
+      "bytes": 50807,
+      "sha256": "514304faabcff0b7fd01723f3aa529acc04732feb77afc7a40579babc57b8651"
+    }
+  ],
+  "license": "MIT authorized by copyright holder on 2026-11-01; license supplied by hall"
+}

@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ee">
+  <title>熄灯矩阵 · Lights Out</title>
+  <style>
+:root{--paper:#f5f4ee;--ink:#23362f;--muted:#737b71;--line:#dddfd4;--green:#288b57;--red:#d45147;--accent:#1e563f;--white:#fffef9;--soft:#eaf0e5;font-family:"Segoe UI","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,select{cursor:pointer}button,input,select,summary,canvas{outline-offset:4px}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,canvas:focus-visible{outline:3px solid #a67928}button{border:1px solid var(--line);background:var(--white);color:var(--ink);border-radius:7px;padding:9px 14px;transition:background .15s}button:hover{background:var(--soft)}button:disabled{cursor:default;opacity:.5}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}button.primary:hover{background:#16432f}button.primary span{margin-left:15px}.shell{max-width:1320px;margin:auto;padding:0 40px}.masthead{height:85px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{display:flex;gap:12px;align-items:center;color:var(--ink);text-decoration:none;font-size:14px;font-weight:650}.brand-en{font-family:monospace;letter-spacing:1px;font-size:11px;font-weight:400;color:var(--muted)}.brand-mark{display:grid;grid-template-columns:repeat(2,8px);gap:3px}.brand-mark i{height:8px;background:var(--green)}.brand-mark i:last-child{background:var(--red)}.field-tag,.step,.eyebrow{font-family:Consolas,monospace;font-size:11px;letter-spacing:1.5px}.field-tag{border:1px solid #cdd6c7;padding:7px 10px;border-radius:4px;color:#53644f}.intro{display:flex;align-items:center;justify-content:space-between;padding:46px 0 33px}.eyebrow{color:var(--accent);margin:0 0 13px}h1{font-size:42px;letter-spacing:-1.5px;font-weight:650;margin:0 0 13px;line-height:1.2}.subtitle{color:var(--muted);font-size:14px;margin:0;line-height:1.8}.equation{display:flex;align-items:center;gap:15px;font:italic 48px Georgia,serif;padding:0 7px 0 30px}.equation .operator{color:#9fa99b;font-size:34px;font-style:normal}.equation small{align-self:flex-end;font:11px Consolas,monospace;color:var(--muted);margin:0 0 6px -5px}.control-bar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;margin-bottom:26px;font-size:13px}#size-form{display:flex;align-items:center;gap:12px}.math{font:italic 22px Georgia,serif}.control-bar .math{font-size:18px;margin-left:5px}input[type=number]{width:66px;padding:9px 10px;border:1px solid #cbd1c4;border-radius:5px;color:var(--ink);background:var(--white)}.muted{color:var(--muted);font-size:12px}.view-control{display:flex;align-items:center;gap:12px}.view-control label{color:var(--muted)}select{padding:9px 32px 9px 12px;border:1px solid #cbd1c4;border-radius:5px;background:var(--white);color:var(--ink)}.form-error{color:#b7352b;width:100%;margin:0}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px}.workspace.result-hidden{grid-template-columns:1fr}.workspace.result-hidden .input-panel{max-width:600px;width:100%;justify-self:center}.panel{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:26px;min-width:0}.panel-top{display:flex;align-items:center;justify-content:space-between}.step{color:var(--muted);font-size:10px;letter-spacing:1.2px}h2{margin:9px 0 0;font-size:20px;font-weight:600;letter-spacing:-.4px}h2 .math{color:#8d9b83;margin-left:7px;font-size:24px}.dimension{font:12px Consolas,monospace;color:var(--muted);white-space:nowrap}.panel-description{font-size:12px;color:var(--muted);margin:14px 0 12px;line-height:1.7}.legend{display:flex;align-items:center;gap:16px;font-size:11px;color:#656e61}.legend>span{display:flex;align-items:center;gap:6px}.swatch{height:9px;width:9px;border-radius:2px;display:inline-block;flex-shrink:0}.green{background:var(--green)}.red{background:var(--red)}.board{--n:5;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:clamp(2px,.45vw,6px);width:min(100%,340px);margin:25px auto;aspect-ratio:1}.cell{padding:0;border:0;min-width:0;min-height:0;aspect-ratio:1;border-radius:5px;display:flex;align-items:center;justify-content:center;font:500 15px Consolas,monospace;color:#fff;position:relative;transition:filter .12s,transform .12s}.cell[data-value="0"]{background:var(--red)}.cell[data-value="1"]{background:var(--green)}button.cell:hover{filter:brightness(1.12);transform:scale(.95)}.board.dense .cell{font-size:10px;border-radius:3px}.board.tiny .cell{font-size:0;border-radius:2px}.output-board .cell{font-size:14px}.cell .press-mark{font-size:19px}.board.dense .press-mark{font-size:11px}.board.tiny .press-mark{font-size:0}.board-actions{display:flex;gap:8px;justify-content:center}.board-actions button{padding:8px 15px;font-size:12px}.board-actions button:last-child{margin-left:4px}.board-foot{border-top:1px solid var(--line);padding-top:15px;margin:20px 0 0;display:flex;gap:10px;justify-content:space-between;font-size:10px;color:var(--muted);line-height:1.8}.board-foot>span:first-child{white-space:nowrap}.badge{font-size:11px;background:var(--soft);color:#32603e;border:1px solid #dce6d4;border-radius:20px;padding:5px 10px}.badge.error{background:#fbeee9;color:#af3d33;border-color:#edcec4}.solution-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.solution-actions p{font-size:13px;margin:0;line-height:1.6}.solution-actions strong{font:24px Georgia,serif;margin:0 4px}.solution-actions button{font-size:12px;white-space:nowrap}.small-note{font-size:11px;color:var(--muted);line-height:1.7;margin:13px 0 0}.verification{font-size:12px;line-height:1.7;background:#edf3e8;border:1px solid #d0dfc7;border-radius:6px;padding:10px 12px;margin-top:13px;color:#32603e}.verification.error{background:#fbeee9;color:#af3d33;border-color:#edcec4}.no-solution{text-align:center;width:min(100%,340px);aspect-ratio:1;margin:25px auto;display:flex;flex-direction:column;justify-content:center;background:#faf1ec;border:1px dashed #e5c4b8;border-radius:8px;padding:20px}.no-solution>span{font:52px Georgia,serif;color:#c27868}.no-solution h3{font-size:17px;margin:18px 0 8px}.no-solution p{font-size:12px;color:#946e61;line-height:1.9;max-width:250px;margin:0 auto}.matrix-panel{margin-top:24px}.matrix-header{display:flex;align-items:center;justify-content:space-between;gap:20px}.matrix-header .dimension{display:inline-block;margin-left:16px;border-left:1px solid var(--line);padding-left:16px}.matrix-tools{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted)}input[type=range]{width:100px;accent-color:var(--accent)}.matrix-tools output{min-width:35px;font-family:monospace}.matrix-description{display:flex;gap:15px;justify-content:space-between;align-items:center;margin:15px 0 20px}.matrix-description p{font-size:12px;color:var(--muted);line-height:1.8;margin:0}.matrix-layout{display:grid;grid-template-columns:minmax(0,1fr) 215px;gap:34px}.matrix-scroll{max-height:560px;min-height:150px;overflow:auto;border:1px solid var(--line);border-radius:5px;background:#f2f1e9;padding:15px;display:flex;align-items:flex-start;justify-content:flex-start;scrollbar-color:#c0cab8 #f2f1e9}canvas{display:block;flex-shrink:0;image-rendering:pixelated}.matrix-aside{border-left:1px solid var(--line);padding:4px 0 0 28px}.matrix-aside h3{font-size:23px;font-weight:500;line-height:1.5;margin:15px 0}.matrix-aside p{font-size:12px;line-height:1.9;color:var(--muted);margin-bottom:16px}.matrix-stat{border-top:1px solid var(--line);padding:14px 0;display:flex;flex-direction:column;gap:9px}.matrix-stat span{font-size:11px;color:var(--muted)}.matrix-stat strong{font:18px Consolas,monospace;font-weight:400}.matrix-inspect{font-size:11px;color:var(--muted);margin:15px 0 0;line-height:1.7;min-height:19px}.method{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:32px 0 0;font-size:13px}.method summary{padding:20px 2px;cursor:pointer;list-style:none;display:flex;justify-content:space-between}.method summary span{font-size:19px;color:var(--muted)}.method>div{max-width:900px;color:var(--muted);font-size:12px;line-height:2;padding-bottom:14px}.method[open] summary span{transform:rotate(45deg)}footer{display:flex;gap:16px;justify-content:space-between;padding:25px 0 30px;color:#858b7c;font-size:10px;letter-spacing:.3px}.footer-dot{margin:0 7px}[hidden]{display:none!important}
+@media(min-width:1000px){.input-panel,.result-panel{padding:26px 32px}}@media(max-width:760px){.shell{padding:0 20px}.masthead{height:68px}.brand-en{display:none}.intro{padding:32px 0 26px}.intro h1{font-size:32px}.equation{font-size:33px;gap:8px;padding-left:15px}.equation .operator{font-size:25px}.equation small{font-size:9px}.subtitle{font-size:12px}.control-bar{gap:15px;align-items:flex-start}.view-control{width:100%;justify-content:space-between}.workspace{grid-template-columns:1fr;gap:18px}.panel{padding:22px}.board{width:min(100%,330px)}.matrix-panel{margin-top:18px}.matrix-header{align-items:flex-start;flex-direction:column;gap:16px}.matrix-description{align-items:flex-start}.matrix-description .legend{flex-shrink:0;gap:8px}.matrix-layout{grid-template-columns:1fr;gap:20px}.matrix-scroll{max-height:440px;padding:10px}.matrix-aside{border-left:0;border-top:1px solid var(--line);padding:18px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.matrix-aside .step,.matrix-aside h3,.matrix-aside p{display:none}.matrix-stat{border-top:0;padding:0}.matrix-stat strong{font-size:16px}footer{font-size:9px;flex-wrap:wrap;gap:10px}}@media(max-width:420px){.shell{padding:0 14px}.equation{display:none}.intro h1{font-size:31px}.control-bar #size-form{gap:8px;font-size:12px}#size-form .muted{display:none}.panel{padding:18px}.board-foot{font-size:9px}.matrix-description{flex-direction:column;gap:8px}.board-actions button{padding:8px 13px}.field-tag{font-size:9px;letter-spacing:.5px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
++.trace-panel{margin-top:24px}.trace-summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:20px}.trace-summary::-webkit-details-marker{display:none}.trace-disclosure{font-size:25px;font-weight:300;color:var(--muted)}.trace-panel:not([open]) .trace-disclosure{font-size:0}.trace-panel:not([open]) .trace-disclosure:after{content:'+';font-size:25px}.trace-body{padding-top:4px}.xor-rule{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--paper);font-size:11px;color:var(--muted)}.xor-rule code{font:12px Consolas,monospace;color:var(--ink);white-space:nowrap}.trace-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:20px 0 10px}.trace-controls button{font-size:12px;padding:8px 12px}.trace-controls output{font:12px Consolas,monospace;color:var(--muted);margin-left:auto}.trace-scrubber{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--muted);margin-bottom:20px}.trace-scrubber input{flex:1;width:100%;min-width:40px}.trace-scrubber span{white-space:nowrap}.trace-stage{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:28px}.trace-stage>div{min-width:0}.trace-matrix-label{display:flex;align-items:center;justify-content:space-between;gap:12px;font:11px Consolas,monospace;color:var(--muted);margin-bottom:10px}.trace-scroll{max-height:530px;padding:9px;background:#faf9f2}.trace-explanation{border-left:1px solid var(--line);padding:28px 0 0 25px;overflow-wrap:anywhere}.trace-explanation h3{font-size:18px;font-weight:600;line-height:1.6;margin:14px 0 10px}.trace-explanation p{font-size:12px;color:var(--muted);line-height:1.95}.trace-constant-note{border-top:1px solid var(--line);padding-top:14px}.trace-explanation #trace-finish{border-top:1px solid var(--line);margin-top:20px;padding-top:5px}.trace-explanation #trace-finish h3{color:var(--accent)}.trace-answer{font-family:Consolas,"Microsoft YaHei",monospace;background:var(--soft);padding:12px;border-radius:5px}.trace-transcript{border-top:1px solid var(--line);margin-top:20px;padding-top:14px}.trace-transcript summary{font-size:12px;cursor:pointer;color:var(--accent);padding:4px 0}.trace-transcript pre{font:12px/1.9 Consolas,"Microsoft YaHei",monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto;padding:15px;background:var(--paper);border-radius:6px}.trace-summary:focus-visible{outline:3px solid #a67928;outline-offset:5px}@media(max-width:900px){.trace-stage{grid-template-columns:1fr}.trace-explanation{border-left:0;border-top:1px solid var(--line);padding:18px 0 0}.trace-explanation h3{margin-top:8px}.trace-matrix-label{flex-wrap:wrap}.trace-controls output{margin-left:0}.trace-scroll{max-height:420px}}@media(max-width:420px){.trace-controls{gap:7px}.trace-controls button{padding:8px 9px;font-size:11px}.xor-rule{gap:9px 12px}.xor-rule>span{width:100%}.trace-summary h2{font-size:18px}.trace-summary .math{font-size:20px}}
+.trace-phase{display:inline-block;margin:0 0 14px;padding:7px 11px;border-radius:5px;border:1px solid #cddbc5;background:#edf3e8;color:#35613e;font-size:12px}.trace-phase[data-phase="upper"]{border-color:#d7d2b3;background:#f5f0de;color:#796329}
+
+</style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span> 数学实验室 <span class="brand-en">/ MATRIX LAB</span></a>
+      <span class="field-tag">GF(2) · 模 2 运算</span>
+    </header>
+    <main>
+      <section class="intro">
+        <div><p class="eyebrow">LIGHTS OUT / 01</p><h1>把亮灯，化成解。</h1><p class="subtitle">设定灯光，用模 2 高斯消元找到一组全灭方案。</p></div>
+        <div class="equation" aria-label="A 乘 x 等于 b，模 2"><span>A</span><span class="operator">·</span><span>x</span><span class="operator">=</span><span>b</span><small>mod 2</small></div>
+      </section>
+
+      <section class="control-bar" aria-label="棋盘与显示设置">
+        <form id="size-form" novalidate>
+          <label for="size">棋盘边长 <span class="math">n</span></label>
+          <input id="size" name="size" type="number" min="1" max="20" step="1" value="5" inputmode="numeric" aria-describedby="size-hint size-error">
+          <button class="primary" type="submit">生成棋盘 <span aria-hidden="true">↗</span></button>
+          <span id="size-hint" class="muted">1–20</span>
+        </form>
+        <div class="view-control"><label for="display-mode">显示内容</label><select id="display-mode"><option value="both">全部显示</option><option value="matrix">只显示操作矩阵</option><option value="result">只显示结果</option><option value="none">都不显示</option></select></div>
+        <p id="size-error" class="form-error" role="alert" hidden></p>
+      </section>
+
+      <div class="workspace" id="workspace">
+        <section class="panel input-panel" aria-labelledby="input-title">
+          <div class="panel-top"><div><span class="step">01 / INPUT</span><h2 id="input-title">初始灯光 <span class="math">b</span></h2></div><span id="board-dimension" class="dimension">5 × 5</span></div>
+          <p class="panel-description">点击格子切换亮灭，结果会自动更新。</p>
+          <div class="legend"><span><i class="swatch green"></i>亮 · 1</span><span><i class="swatch red"></i>灭 · 0</span></div>
+          <div id="input-board" class="board" role="group" aria-label="初始灯光棋盘"></div>
+          <div class="board-actions"><button id="all-on" type="button">全亮</button><button id="all-off" type="button">全灭</button><button id="example" type="button">载入示例 <span aria-hidden="true">↗</span></button></div>
+          <p class="board-foot"><span id="on-count">0 盏亮灯</span><span>自身 + 上下左右 · 边界不环绕</span></p>
+        </section>
+
+        <section class="panel result-panel" id="result-panel" aria-labelledby="result-title">
+          <div class="panel-top"><div><span class="step">02 / SOLUTION</span><h2 id="result-title">点击方案 <span class="math">x</span></h2></div><span id="solution-badge" class="badge">可解</span></div>
+          <p class="panel-description">按绿色格子各一次，红色格子不用按。</p>
+          <div class="legend"><span><i class="swatch green"></i>按一次 · 1</span><span><i class="swatch red"></i>不按 · 0</span></div>
+          <div id="output-board" class="board output-board" role="group" aria-label="求解点击方案"></div>
+          <div id="no-solution" class="no-solution" hidden><span aria-hidden="true">∅</span><h3>这个灯光状态无解</h3><p>在当前翻转规则下，无法通过点击使所有灯熄灭。试着修改输入棋盘。</p></div>
+          <div class="solution-actions"><p id="solution-summary" role="status" aria-live="polite"></p><button id="verify" class="primary" type="button">验证方案 <span aria-hidden="true">✓</span></button></div>
+          <p id="solution-note" class="small-note"></p>
+          <div id="verification" class="verification" role="status" hidden></div>
+        </section>
+      </div>
+
+      <details class="panel trace-panel" id="elimination-panel" open>
+        <summary class="trace-summary"><span><span class="step">03 / GAUSSIAN ELIMINATION</span><h2>高斯消元计算过程 <span class="math">[A | b]</span></h2></span><span class="trace-disclosure" aria-hidden="true">−</span></summary>
+        <div class="trace-body">
+          <p class="panel-description">先消左下部分，得到上三角形式；再消右上部分，得到行最简形式。绿色 = 1，红色 = 0；黄色框标出主元列和参与运算的行。</p>
+          <p id="trace-phase" class="trace-phase" data-phase="lower">第一阶段 · 消左下部分</p>
+          <div class="xor-rule"><span>模 2 加法就是异或 ⊕</span><code>0 ⊕ 0 = 0</code><code>0 ⊕ 1 = 1</code><code>1 ⊕ 0 = 1</code><code>1 ⊕ 1 = 0</code></div>
+          <div class="trace-controls" aria-label="消元过程控制"><button id="trace-first" type="button">初始矩阵</button><button id="trace-prev" type="button">← 上一步</button><button id="trace-next" class="primary" type="button">下一步 →</button><button id="trace-last" type="button">最后一步</button><button id="trace-play" type="button" aria-pressed="false">自动播放</button><output id="trace-progress" aria-live="polite">第 0 步</output></div>
+          <label class="trace-scrubber" for="trace-position"><span>步骤进度</span><input id="trace-position" type="range" min="0" max="0" value="0"><span id="trace-total">0 步</span></label>
+          <div class="trace-stage"><div><div class="trace-matrix-label"><span id="trace-size">增广矩阵</span><div class="matrix-tools"><label for="trace-zoom">放大</label><input id="trace-zoom" type="range" min="1" max="28" value="22"><output id="trace-zoom-label">22 px</output></div></div><div class="matrix-scroll trace-scroll" id="trace-scroll"><canvas id="trace-canvas" tabindex="0" role="img" aria-label="高斯消元增广矩阵" aria-describedby="trace-cell-value"></canvas></div><p id="trace-cell-value" class="matrix-inspect" aria-live="polite">指向单元格查看数值，或聚焦后使用方向键。</p></div><aside class="trace-explanation"><span class="step">CURRENT STEP</span><h3 id="trace-step-title">初始增广矩阵</h3><p id="trace-step-description"></p><p class="trace-constant-note">竖线右侧是常数列 b，换行和异或时也要一起变化。</p><div id="trace-finish" hidden><h3 id="trace-conclusion-title"></h3><p id="trace-conclusion"></p><p id="trace-answer" class="trace-answer"></p></div></aside></div>
+          <details id="trace-transcript" class="trace-transcript"><summary>查看完整文字步骤</summary><pre id="trace-text"></pre></details>
+        </div>
+      </details>
+
+      <section class="panel matrix-panel" id="matrix-panel" aria-labelledby="matrix-title">
+        <div class="matrix-header"><div><span class="step">04 / OPERATION MATRIX</span><h2 id="matrix-title">操作矩阵 <span class="math">A</span><span class="dimension" id="matrix-dimension">25 × 25</span></h2></div><div class="matrix-tools"><label for="zoom">格子大小</label><input id="zoom" type="range" min="1" max="28" value="18"><output id="zoom-label" for="zoom">18 px</output></div></div>
+        <div class="matrix-description"><p>列 = 点击的格子 j；行 = 受影响的格子 i。绿色表示会翻转，红色表示不影响。</p><div class="legend"><span><i class="swatch green"></i>1</span><span><i class="swatch red"></i>0</span></div></div>
+        <div class="matrix-layout"><div class="matrix-scroll" id="matrix-scroll"><canvas id="matrix-canvas" tabindex="0" role="img" aria-label="操作矩阵；可用方向键查询单元格" aria-describedby="matrix-inspect"></canvas></div><aside class="matrix-aside"><span class="step">READ THE MATRIX</span><h3>一次点击，<br>对应一列。</h3><p>按从左到右、从上到下的顺序给棋盘格编号 1 到 n²。</p><p>每个格子影响自身及相邻格，所以每列最多有 5 个 1。</p><div class="matrix-stat"><span>矩阵大小</span><strong id="matrix-stat-size">25 × 25</strong></div><div class="matrix-stat"><span>秩 / 自由变量</span><strong id="rank-stat">—</strong></div></aside></div>
+        <p id="matrix-inspect" class="matrix-inspect" aria-live="polite">指向矩阵查看数值；聚焦后可用方向键移动。</p>
+      </section>
+
+      <details class="method"><summary>这组结果是怎么算出来的？<span aria-hidden="true">+</span></summary><div><p>将初始灯光展成列向量 b，求解 A·x = b（模 2）。每次点击会翻转灯光，重复两次抵消，因此消元用异或代替加减。得到的 x 再按原来的顺序排回 n×n。</p><p>如果存在多组解，程序把自由变量设为 0，给出其中一组可行方案；它不保证点击次数最少。验证会把输出方案实际作用于输入，检查是否全部变为 0。</p></div></details>
+    </main>
+    <footer><span>LIGHTS OUT <span class="footer-dot">·</span> 熄灯矩阵</span><span>离线计算 · 灯光数据仅保留在当前页面</span></footer>
+  </div>
+  <script>
+/* Pure GF(2) operations. Shared by the offline page and Node tests. */
+(function (root) {
+  'use strict';
+  const MAX_SIZE = 20;
+  function validateSize(value) {
+    const n = typeof value === 'string' && value.trim() === '' ? NaN : Number(value);
+    if (value == null || !Number.isInteger(n) || n < 1 || n > MAX_SIZE) {
+      throw new RangeError('请输入 1 到 20 之间的整数。');
+    }
+    return n;
+  }
+  function validateBits(bits, length) {
+    if (!bits || bits.length !== length) throw new RangeError('棋盘或向量长度不正确。');
+    if (Array.from(bits).some(bit => bit !== 0 && bit !== 1)) throw new TypeError('数值只能为 0 或 1。');
+  }
+  function neighbors(n, index) {
+    const row = Math.floor(index / n), col = index % n, list = [index];
+    if (row > 0) list.push(index - n);
+    if (row < n - 1) list.push(index + n);
+    if (col > 0) list.push(index - 1);
+    if (col < n - 1) list.push(index + 1);
+    return list;
+  }
+  function createOperationMatrix(value) {
+    const n = validateSize(value), m = n * n;
+    const matrix = Array.from({ length: m }, () => new Uint8Array(m));
+    for (let column = 0; column < m; column++) {
+      for (const row of neighbors(n, column)) matrix[row][column] = 1;
+    }
+    return matrix;
+  }
+  function solveGF2(matrix, board, options = {}) {
+    const m = matrix.length;
+    if (!m || matrix.some(row => row.length !== m)) throw new RangeError('系数矩阵必须是非空方阵。');
+    validateBits(board, m);
+    const words = Math.ceil((m + 1) / 32);
+    const rows = matrix.map((row, i) => {
+      validateBits(row, m);
+      const packed = new Uint32Array(words);
+      for (let j = 0; j < m; j++) if (row[j]) packed[j >>> 5] |= 1 << (j & 31);
+      if (board[i]) packed[m >>> 5] |= 1 << (m & 31);
+      return packed;
+    });
+    const bit = (row, column) => row[column >>> 5] >>> (column & 31) & 1;
+    const pivots = [];
+    const steps = options.recordSteps ? [] : null;
+    let rank = 0;
+    for (let col = 0; col < m && rank < m; col++) {
+      let pivot = rank;
+      while (pivot < m && !bit(rows[pivot], col)) pivot++;
+      if (pivot === m) {
+        if (steps) steps.push({ type: 'free', column: col, phase: 'lower' });
+        continue;
+      }
+      if (steps && pivot !== rank) steps.push({ type: 'swap', source: pivot, target: rank, column: col, phase: 'lower' });
+      [rows[rank], rows[pivot]] = [rows[pivot], rows[rank]];
+      if (steps) steps.push({ type: 'pivot', row: rank, column: col, phase: 'lower' });
+      // Forward phase: eliminate only below each pivot.
+      for (let row = rank + 1; row < m; row++) {
+        if (bit(rows[row], col)) {
+          if (steps) steps.push({ type: 'xor', source: rank, target: row, column: col, phase: 'lower' });
+          for (let w = col >>> 5; w < words; w++) rows[row][w] ^= rows[rank][w];
+        }
+      }
+      pivots.push(col);
+      rank++;
+    }
+    // Only after all forward columns: eliminate above pivots, right to left.
+    if (steps) steps.push({ type: 'phase', phase: 'upper' });
+    for (let pivotRow = pivots.length - 1; pivotRow >= 0; pivotRow--) {
+      const col = pivots[pivotRow];
+      if (steps) steps.push({ type: 'pivot', row: pivotRow, column: col, phase: 'upper' });
+      for (let row = 0; row < pivotRow; row++) {
+        if (bit(rows[row], col)) {
+          if (steps) steps.push({ type: 'xor', source: pivotRow, target: row, column: col, phase: 'upper' });
+          for (let w = col >>> 5; w < words; w++) rows[row][w] ^= rows[pivotRow][w];
+        }
+      }
+    }
+    const metadata = { rank, nullity: m - rank, pivots, ...(steps ? { steps } : {}) };
+    for (let row = rank; row < m; row++) {
+      if (bit(rows[row], m)) return { ...metadata, solvable: false, solution: null, contradictionRow: row };
+    }
+    const solution = new Uint8Array(m); // Free variables are chosen as zero.
+    pivots.forEach((column, row) => { solution[column] = bit(rows[row], m); });
+    return { ...metadata, solvable: true, solution };
+  }
+  function createAugmentedMatrix(matrix, board) {
+    validateBits(board, matrix.length);
+    return matrix.map((row, i) => Uint8Array.from([...row, board[i]]));
+  }
+  function applyEliminationStep(rows, step) {
+    if (step.type === 'swap') {
+      [rows[step.source], rows[step.target]] = [rows[step.target], rows[step.source]];
+    } else if (step.type === 'xor') {
+      for (let col = 0; col < rows[step.target].length; col++) rows[step.target][col] ^= rows[step.source][col];
+    }
+    return rows;
+  }
+  function solveLights(value, board) {
+    const n = validateSize(value);
+    return solveGF2(createOperationMatrix(n), board);
+  }
+  function applyClicks(value, board, clicks) {
+    const n = validateSize(value), m = n * n;
+    validateBits(board, m);
+    validateBits(clicks, m);
+    const result = Uint8Array.from(board);
+    for (let i = 0; i < m; i++) if (clicks[i]) {
+      for (const j of neighbors(n, i)) result[j] ^= 1;
+    }
+    return result;
+  }
+  const api = { MAX_SIZE, validateSize, createOperationMatrix, solveGF2, solveLights, applyClicks, createAugmentedMatrix, applyEliminationStep };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.LightsCore = api;
+})(typeof globalThis === 'undefined' ? this : globalThis);
+
+</script>
+  <script>
+(function () {
+  'use strict';
+  const { solveGF2, createAugmentedMatrix, applyEliminationStep } = window.LightsCore;
+  window.createEliminationViewer = function () {
+    const $ = id => document.getElementById(id);
+    const panel = $('elimination-panel'), canvas = $('trace-canvas');
+    let matrix, board, result, rows, cursor = 0, cell = 22, timer = null, selectedRow = 0, selectedCol = 0;
+    function pause() {
+      clearInterval(timer); timer = null;
+      $('trace-play').textContent = '自动播放'; $('trace-play').setAttribute('aria-pressed', 'false');
+    }
+    function describe(step) {
+      if (step.type === 'phase') return {
+        title: '左下消元完成，开始消右上部分',
+        description: '所有系数列已检查完毕，各主元下方已经是 0。现在从最后一个主元向前，逐个消掉主元上方的 1；不再进行前向换行。'
+      };
+      if (step.type === 'swap') return {
+        title: `R${step.target + 1} ↔ R${step.source + 1}`,
+        description: `第 ${step.column + 1} 列需要一个值为 1 的主元。交换第 ${step.target + 1} 行和第 ${step.source + 1} 行，整行连同常数列一起交换。`
+      };
+      if (step.type === 'pivot') return {
+        title: `${step.phase === 'upper' ? '反向处理主元' : '选主元'}：第 ${step.row + 1} 行，第 ${step.column + 1} 列`,
+        description: `这个位置的数值为 1。以 R${step.row + 1} 为主元行，${step.phase === 'upper' ? '只消去这一列主元上方的 1，从最后一个主元向前处理' : '只消去这一列主元下方的 1，上方保留到第二阶段处理'}。模 2 下不需要除法。`
+      };
+      if (step.type === 'free') return {
+        title: `第 ${step.column + 1} 列无新主元，跳过本列`,
+        description: `尚未使用的行在这一列都是 0。${step.column + 1 < board.length ? '这不代表消元结束：保持当前主元行位置，继续检查右边的列。' : '本列已是最后一个系数列，所有列检查完毕后再判定方程组。'}x${step.column + 1} 是自由变量；有解时本页选取它为 0。`
+      };
+      return {
+        title: `R${step.target + 1} ← R${step.target + 1} ⊕ R${step.source + 1}`,
+        description: `${step.phase === 'upper' ? '消右上部分' : '消左下部分'}：把第 ${step.source + 1} 行逐项异或到第 ${step.target + 1} 行，包含常数列。第 ${step.column + 1} 列原来的 1 变为 1 ⊕ 1 = 0。`
+      };
+    }
+    function conclusion() {
+      if (!result.solvable) return {
+        title: '出现 0 = 1，因此无解',
+        text: `第 ${result.contradictionRow + 1} 行的所有系数都为 0，但常数项为 1。这是矛盾方程，当前初始灯光无法全部熄灭。`, answer: ''
+      };
+      const free = Array.from({ length: board.length }, (_, i) => i).filter(i => !result.pivots.includes(i));
+      const explanation = free.length
+        ? `有 ${free.length} 个自由变量：${free.map(i => `x${i + 1}`).join('、')}。将它们取为 0 后，每个主元变量等于对应行最右侧的常数项。`
+        : '每个变量都有主元，左侧已化为单位矩阵。最右侧的常数列就是唯一的解 x。';
+      return { title: free.length ? '消元完成，读取一组可行解' : '消元完成，读取唯一解', text: explanation,
+        answer: `x = (${Array.from(result.solution).join(', ')})。按从左到右、从上到下排回棋盘；1 按一次，0 不按。` };
+    }
+    function inspect(row, col) {
+      if (!rows) return;
+      selectedRow = Math.max(0, Math.min(rows.length - 1, row));
+      selectedCol = Math.max(0, Math.min(rows.length, col));
+      const isConstant = selectedCol === rows.length;
+      $('trace-cell-value').textContent = `第 ${selectedRow + 1} 行，${isConstant ? '常数列' : `第 ${selectedCol + 1} 列`}：${rows[selectedRow][selectedCol]}${isConstant ? '（右侧 b）' : ''}。`;
+    }
+    function geometry() {
+      return { left: cell >= 12 ? 42 : 8, top: cell >= 12 ? 29 : 16, divider: cell >= 6 ? 7 : 3 };
+    }
+    function draw() {
+      const m = rows.length, { left, top, divider } = geometry();
+      const xAt = col => left + col * cell + (col === m ? divider : 0);
+      canvas.width = left + (m + 1) * cell + divider + 4; canvas.height = top + m * cell + 4;
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.fillStyle = '#fffef9'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const gap = cell >= 6 ? 1 : 0;
+      for (let r = 0; r < m; r++) for (let c = 0; c <= m; c++) {
+        ctx.fillStyle = rows[r][c] ? '#288b57' : '#d45147';
+        ctx.fillRect(xAt(c), top + r * cell, cell - gap, cell - gap);
+        if (cell >= 14) {
+          ctx.fillStyle = '#fff'; ctx.font = `${Math.floor(cell * .57)}px Consolas,monospace`;
+          ctx.fillText(rows[r][c], xAt(c) + cell / 2 - .5, top + (r + .5) * cell);
+        }
+      }
+      ctx.fillStyle = '#737b71'; ctx.font = '10px Consolas,monospace';
+      if (cell >= 14) {
+        for (let c = 0; c < m; c++) ctx.fillText(`x${c + 1}`, xAt(c) + cell / 2, 12);
+        for (let r = 0; r < m; r++) ctx.fillText(`R${r + 1}`, left / 2 - 2, top + (r + .5) * cell);
+      }
+      ctx.fillText('b', xAt(m) + cell / 2, cell >= 12 ? 12 : 7);
+      ctx.fillStyle = '#23362f'; ctx.fillRect(left + m * cell + Math.floor(divider / 2) - 1, top - 2, 2, m * cell + 2);
+      const step = cursor ? result.steps[cursor - 1] : null;
+      if (step && step.type !== 'phase') {
+        ctx.strokeStyle = '#e5b32d'; ctx.lineWidth = 2;
+        ctx.strokeRect(xAt(step.column) + .5, top + .5, Math.max(1, cell - 2), Math.max(1, m * cell - 2));
+        const activeRows = step.type === 'pivot' ? [step.row] : step.type === 'free' ? [] : [step.source, step.target];
+        for (const r of activeRows) ctx.strokeRect(left + .5, top + r * cell + .5, (m + 1) * cell + divider - 2, Math.max(1, cell - 2));
+      }
+      if (cursor === result.steps.length && !result.solvable) {
+        ctx.strokeStyle = '#23362f'; ctx.lineWidth = 3;
+        ctx.strokeRect(left, top + result.contradictionRow * cell, (m + 1) * cell + divider, cell);
+      }
+      canvas.setAttribute('aria-label', `${m} 行 ${m + 1} 列的增广矩阵，第 ${cursor} 步；绿色 1，红色 0，最后一列为常数列`);
+    }
+    function render() {
+      if (!result || !panel.open || panel.hidden) return;
+      const total = result.steps.length, end = cursor === total;
+      const current = cursor ? describe(result.steps[cursor - 1]) : {
+        title: '初始增广矩阵 [A | b]',
+        description: `左侧 ${board.length} 列是操作矩阵 A，右侧是初始灯光 b。先从左到右，只消主元下方的 1；完成左下消元后，再从最后一个主元向前消右上部分。`
+      };
+      $('trace-step-title').textContent = current.title;
+      $('trace-step-description').textContent = current.description;
+      const phase = cursor && result.steps[cursor - 1].phase === 'upper' ? 'upper' : 'lower';
+      $('trace-phase').textContent = phase === 'upper' ? '第二阶段 · 消右上部分' : '第一阶段 · 消左下部分';
+      $('trace-phase').dataset.phase = phase;
+      $('trace-progress').textContent = `第 ${cursor} / ${total} 步`;
+      $('trace-position').value = cursor;
+      $('trace-first').disabled = cursor === 0; $('trace-prev').disabled = cursor === 0;
+      $('trace-next').disabled = end; $('trace-last').disabled = end; $('trace-play').disabled = end;
+      $('trace-finish').hidden = !end;
+      if (end) {
+        const finish = conclusion();
+        $('trace-conclusion-title').textContent = finish.title;
+        $('trace-conclusion').textContent = finish.text; $('trace-answer').textContent = finish.answer;
+      }
+      draw();
+    }
+    function ensureTrace() {
+      if (result || !matrix || panel.hidden || !panel.open) return;
+      result = solveGF2(matrix, board, { recordSteps: true });
+      rows = createAugmentedMatrix(matrix, board); cursor = 0;
+      $('trace-position').max = result.steps.length;
+      $('trace-total').textContent = `${result.steps.length} 步`;
+      $('trace-size').textContent = `[A | b] · ${board.length} × ${board.length + 1}`;
+      render();
+    }
+    function seek(position) {
+      ensureTrace();
+      if (!result) return;
+      const next = Math.max(0, Math.min(result.steps.length, position));
+      while (cursor < next) applyEliminationStep(rows, result.steps[cursor++]);
+      while (cursor > next) applyEliminationStep(rows, result.steps[--cursor]);
+      if (cursor === result.steps.length) pause();
+      render();
+    }
+    $('trace-first').addEventListener('click', () => { pause(); seek(0); });
+    $('trace-prev').addEventListener('click', () => { pause(); seek(cursor - 1); });
+    $('trace-next').addEventListener('click', () => { pause(); seek(cursor + 1); });
+    $('trace-last').addEventListener('click', () => { pause(); ensureTrace(); seek(result.steps.length); });
+    $('trace-position').addEventListener('input', () => { pause(); seek(Number($('trace-position').value)); });
+    $('trace-play').addEventListener('click', () => {
+      if (timer) { pause(); return; }
+      ensureTrace();
+      if (!result || cursor === result.steps.length) return;
+      $('trace-play').textContent = '暂停'; $('trace-play').setAttribute('aria-pressed', 'true');
+      timer = setInterval(() => seek(cursor + 1), 650);
+    });
+    $('trace-zoom').addEventListener('input', () => {
+      cell = Number($('trace-zoom').value); $('trace-zoom-label').textContent = `${cell} px`; render();
+    });
+    panel.addEventListener('toggle', () => { if (panel.open) { ensureTrace(); render(); } else pause(); });
+    $('trace-transcript').addEventListener('toggle', () => {
+      if (!$('trace-transcript').open || !result) return;
+      const lines = ['求解 A·x=b（模 2）。初始增广矩阵 [A | b]。', '顺序：先消左下部分，前向消元全部完成后，再消右上部分。', '异或规则：0⊕0=0；0⊕1=1；1⊕0=1；1⊕1=0。', ''];
+      result.steps.forEach((step, i) => {
+        const description = describe(step); lines.push(`${i + 1}. [${step.phase === 'upper' ? '第二阶段' : '第一阶段'}] ${description.title}\n   ${description.description}`);
+      });
+      const finish = conclusion();
+      lines.push('', finish.title, finish.text, finish.answer);
+      $('trace-text').textContent = lines.join('\n');
+    });
+    canvas.addEventListener('pointermove', event => {
+      if (!rows) return;
+      const rect = canvas.getBoundingClientRect(), { left, top, divider } = geometry();
+      const x = event.clientX - rect.left - left, y = event.clientY - rect.top - top;
+      if (x < 0 || y < 0) return;
+      inspect(Math.floor(y / cell), x >= rows.length * cell ? rows.length : Math.floor(x / cell));
+    });
+    canvas.addEventListener('focus', () => inspect(selectedRow, selectedCol));
+    canvas.addEventListener('keydown', event => {
+      if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      inspect(selectedRow + (event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0), selectedCol + (event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0));
+      const { left, top, divider } = geometry(), holder = $('trace-scroll');
+      const x = left + selectedCol * cell + (selectedCol === rows.length ? divider : 0), y = top + selectedRow * cell;
+      if (x < holder.scrollLeft || x + cell > holder.scrollLeft + holder.clientWidth - 30) holder.scrollLeft = x;
+      if (y < holder.scrollTop || y + cell > holder.scrollTop + holder.clientHeight - 30) holder.scrollTop = y;
+    });
+    return {
+      setInput(newMatrix, newBoard) {
+        pause(); matrix = newMatrix; board = Uint8Array.from(newBoard); result = null; rows = null; cursor = 0;
+        selectedRow = 0; selectedCol = 0;
+        cell = Math.max(1, Math.min(22, Math.floor(640 / (board.length + 1))));
+        $('trace-zoom').max = Math.min(28, Math.floor(4020 / (board.length + 1)));
+        $('trace-zoom').value = cell; $('trace-zoom-label').textContent = `${cell} px`;
+        $('trace-transcript').open = false; $('trace-text').textContent = '';
+        $('trace-cell-value').textContent = '指向单元格查看数值，或聚焦后使用方向键。';
+        ensureTrace();
+      },
+      setVisible(visible) {
+        panel.hidden = !visible;
+        if (visible) { ensureTrace(); render(); } else pause();
+      }
+    };
+  };
+})();
+
+</script>
+  <script>
+(function () {
+  'use strict';
+  const { validateSize, createOperationMatrix, solveGF2, applyClicks } = window.LightsCore;
+  const $ = id => document.getElementById(id);
+  const state = { n: 5, board: null, matrix: null, result: null, cellSize: 18, selectedRow: 0, selectedCol: 0 };
+  const inputBoard = $('input-board'), outputBoard = $('output-board'), canvas = $('matrix-canvas');
+  const eliminationViewer = window.createEliminationViewer();
+
+  function boardClass(element) {
+    element.style.setProperty('--n', state.n);
+    element.classList.toggle('dense', state.n > 7);
+    element.classList.toggle('tiny', state.n > 13);
+  }
+  function buildInput() {
+    boardClass(inputBoard);
+    const cells = document.createDocumentFragment();
+    for (let i = 0; i < state.n ** 2; i++) {
+      const cell = document.createElement('button');
+      cell.type = 'button'; cell.className = 'cell'; cell.dataset.index = i;
+      cell.tabIndex = i === 0 ? 0 : -1;
+      cells.append(cell);
+    }
+    inputBoard.replaceChildren(cells);
+  }
+  function updateInput() {
+    [...inputBoard.children].forEach((cell, i) => {
+      const value = state.board[i];
+      cell.dataset.value = value; cell.textContent = value;
+      cell.setAttribute('aria-pressed', String(Boolean(value)));
+      cell.setAttribute('aria-label', `第 ${Math.floor(i / state.n) + 1} 行，第 ${i % state.n + 1} 列：${value ? '亮' : '灭'}，点击${value ? '熄灭' : '点亮'}`);
+    });
+    $('on-count').textContent = `${state.board.reduce((a, b) => a + b, 0)} 盏亮灯`;
+  }
+  function updateOutput() {
+    const { result, n } = state, m = n * n;
+    boardClass(outputBoard);
+    outputBoard.hidden = !result.solvable;
+    $('no-solution').hidden = result.solvable;
+    $('verify').disabled = !result.solvable;
+    $('solution-badge').textContent = result.solvable ? '可解' : '无解';
+    $('solution-badge').classList.toggle('error', !result.solvable);
+    $('rank-stat').textContent = `${result.rank} / ${result.nullity}`;
+    if (!result.solvable) {
+      outputBoard.replaceChildren();
+      $('solution-summary').textContent = '无法使当前棋盘全灭';
+      $('solution-note').textContent = '模 2 方程组存在矛盾行，因此没有可行点击方案。';
+      return;
+    }
+    const cells = document.createDocumentFragment();
+    result.solution.forEach((value, i) => {
+      const cell = document.createElement('span');
+      cell.className = 'cell'; cell.dataset.value = value; cell.textContent = value;
+      cell.setAttribute('role', 'img');
+      cell.setAttribute('aria-label', `第 ${Math.floor(i / n) + 1} 行，第 ${i % n + 1} 列：${value ? '按一次' : '不按'}`);
+      cells.append(cell);
+    });
+    outputBoard.replaceChildren(cells);
+    const count = result.solution.reduce((sum, bit) => sum + bit, 0);
+    $('solution-summary').replaceChildren();
+    if (count === 0) $('solution-summary').textContent = '已经全灭，无需操作';
+    else {
+      const number = document.createElement('strong'); number.textContent = count;
+      $('solution-summary').append('共需按 ', number, ' 个格子');
+    }
+    $('solution-note').textContent = result.nullity
+      ? `有多组解 · ${result.nullity} 个自由变量。本页给出其中一组，不保证点击次数最少。`
+      : `唯一解 · ${m} 个变量均已确定。每个绿色格子只按一次，顺序任意。`;
+  }
+  function solve() {
+    state.result = solveGF2(state.matrix, state.board);
+    $('verification').hidden = true;
+    updateInput(); updateOutput();
+    eliminationViewer.setInput(state.matrix, state.board);
+  }
+  function inspect(row, col) {
+    const m = state.n ** 2;
+    state.selectedRow = Math.max(0, Math.min(m - 1, row));
+    state.selectedCol = Math.max(0, Math.min(m - 1, col));
+    const i = state.selectedRow, j = state.selectedCol, value = state.matrix[i][j];
+    $('matrix-inspect').textContent = `A[${i + 1}, ${j + 1}] = ${value} · 点击第 ${j + 1} 格${value ? '会翻转' : '不影响'}第 ${i + 1} 格（行 ${Math.floor(i / state.n) + 1}，列 ${i % state.n + 1}）。`;
+  }
+  function drawMatrix() {
+    if ($('matrix-panel').hidden) return;
+    const m = state.n ** 2, size = state.cellSize;
+    canvas.width = m * size; canvas.height = m * size;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    ctx.fillStyle = '#fffef9'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const gap = size >= 6 ? 1 : 0;
+    for (let row = 0; row < m; row++) for (let col = 0; col < m; col++) {
+      const value = state.matrix[row][col];
+      ctx.fillStyle = value ? '#288b57' : '#d45147';
+      ctx.fillRect(col * size, row * size, size - gap, size - gap);
+      if (size >= 14) {
+        ctx.fillStyle = '#fff'; ctx.font = `${Math.floor(size * .58)}px Consolas, monospace`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(String(value), (col + .5) * size - .5, (row + .5) * size);
+      }
+    }
+    canvas.setAttribute('aria-label', `${m} 行 ${m} 列的操作矩阵，绿色为 1，红色为 0；可用方向键查询单元格`);
+  }
+  function setDisplay() {
+    const mode = $('display-mode').value;
+    $('result-panel').hidden = mode === 'matrix' || mode === 'none';
+    $('matrix-panel').hidden = mode === 'result' || mode === 'none';
+    $('workspace').classList.toggle('result-hidden', $('result-panel').hidden);
+    eliminationViewer.setVisible(mode !== 'none');
+    drawMatrix();
+  }
+  function generate(n) {
+    state.n = n; state.board = new Uint8Array(n * n); state.matrix = createOperationMatrix(n);
+    state.selectedRow = 0; state.selectedCol = 0;
+    const m = n * n;
+    state.cellSize = Math.max(1, Math.min(18, Math.floor(600 / m)));
+    $('zoom').max = Math.min(28, Math.floor(4096 / m));
+    $('zoom').value = state.cellSize; $('zoom-label').textContent = `${state.cellSize} px`;
+    $('board-dimension').textContent = `${n} × ${n}`;
+    $('matrix-dimension').textContent = `${m} × ${m}`;
+    $('matrix-stat-size').textContent = `${m} × ${m}`;
+    $('size-error').hidden = true; $('size').removeAttribute('aria-invalid');
+    buildInput(); solve(); drawMatrix();
+    $('matrix-scroll').scrollTo(0, 0);
+    $('matrix-inspect').textContent = '指向矩阵查看数值；聚焦后可用方向键移动。';
+  }
+  function loadExample() {
+    const clicks = new Uint8Array(state.n ** 2);
+    clicks[0] = 1;
+    if (clicks.length > 1) clicks[Math.floor(clicks.length / 2)] = 1;
+    if (clicks.length > 4) clicks[clicks.length - 2] = 1;
+    state.board = applyClicks(state.n, new Uint8Array(state.n ** 2), clicks);
+    solve();
+  }
+  $('size-form').addEventListener('submit', event => {
+    event.preventDefault();
+    try { generate(validateSize($('size').value)); }
+    catch (error) {
+      $('size-error').textContent = error.message; $('size-error').hidden = false;
+      $('size').setAttribute('aria-invalid', 'true'); $('size').focus();
+    }
+  });
+  inputBoard.addEventListener('click', event => {
+    const cell = event.target.closest('button.cell');
+    if (!cell) return;
+    [...inputBoard.children].forEach(item => { item.tabIndex = item === cell ? 0 : -1; });
+    state.board[Number(cell.dataset.index)] ^= 1; solve();
+  });
+  inputBoard.addEventListener('keydown', event => {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    const cell = event.target.closest('button.cell');
+    if (!cell) return;
+    event.preventDefault();
+    const index = Number(cell.dataset.index), row = Math.floor(index / state.n), col = index % state.n;
+    const nextRow = Math.max(0, Math.min(state.n - 1, row + (event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0)));
+    const nextCol = Math.max(0, Math.min(state.n - 1, col + (event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0)));
+    const next = inputBoard.children[nextRow * state.n + nextCol];
+    cell.tabIndex = -1; next.tabIndex = 0; next.focus();
+  });
+  $('all-on').addEventListener('click', () => { state.board.fill(1); solve(); });
+  $('all-off').addEventListener('click', () => { state.board.fill(0); solve(); });
+  $('example').addEventListener('click', loadExample);
+  $('display-mode').addEventListener('change', setDisplay);
+  $('zoom').addEventListener('input', () => {
+    state.cellSize = Number($('zoom').value); $('zoom-label').textContent = `${state.cellSize} px`; drawMatrix();
+  });
+  canvas.addEventListener('pointermove', event => {
+    const rect = canvas.getBoundingClientRect();
+    inspect(Math.floor((event.clientY - rect.top) / state.cellSize), Math.floor((event.clientX - rect.left) / state.cellSize));
+  });
+  canvas.addEventListener('focus', () => inspect(state.selectedRow, state.selectedCol));
+  canvas.addEventListener('keydown', event => {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    inspect(state.selectedRow + (event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0), state.selectedCol + (event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0));
+    const x = state.selectedCol * state.cellSize, y = state.selectedRow * state.cellSize, holder = $('matrix-scroll');
+    if (x < holder.scrollLeft || x + state.cellSize > holder.scrollLeft + holder.clientWidth - 30) holder.scrollLeft = x;
+    if (y < holder.scrollTop || y + state.cellSize > holder.scrollTop + holder.clientHeight - 30) holder.scrollTop = y;
+  });
+  $('verify').addEventListener('click', () => {
+    if (!state.result.solvable) return;
+    const finalBoard = applyClicks(state.n, state.board, state.result.solution);
+    const remaining = finalBoard.reduce((sum, value) => sum + value, 0), verified = remaining === 0;
+    $('verification').classList.toggle('error', !verified);
+    $('verification').textContent = verified
+      ? `✓ 验证通过 · 将方案作用于初始棋盘后，${finalBoard.length} 个格子全部熄灭。`
+      : `验证失败 · 仍有 ${remaining} 盏灯亮着。`;
+    $('verification').hidden = false;
+  });
+  generate(5); loadExample(); setDisplay();
+})();
+
+</script>
+</body>
+</html>
