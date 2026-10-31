@@ -24,3 +24,10 @@
 - 复审 `1ca212c` 结论 OPEN：候选索引仍记录旧构建 `b8ddf0e` 与旧 manifest SHA `b7d1de…`，与双构建报告的 `d54b51d` / `5428fc…` 不一致。
 - 已核对当前候选 `candidate.json`、`bundle-manifest.json` 和两次构建记录，三者均为 producer `d54b51d7ddab0ae59fe0668ded765a0e69bd7b83`、manifest SHA-256 `5428fc30b3546bad0d3bc4767d410cf3a13630895588117424da431951b0c57a`。
 - 已将 `n20-eml-resource-candidate.md` 索引更新到该提交和摘要；C 状态回退至 IN_PROGRESS，等待复审 CLOSED。
+
+
+## 术语批改
+
+- `bf18c99` 复审建议将 `Candidate manifest` 改称资源构建清单，避免与 `games.unsigned.json` 候选清单混淆。
+- 已在 `n20-eml-resource-candidate.md` 将其改为“Staged resource bundle manifest SHA-256”，该摘要指 `bundle-manifest.json`。
+- 复审仅明确 CLOSED 证据身份修订，未明确批准 C 阶段本身；C 状态暂保持 IN_PROGRESS，待独立审阅确认 U06 门禁结论。
