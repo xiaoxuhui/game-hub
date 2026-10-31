@@ -1,0 +1,20 @@
+{
+  "producer": "74bc7e7d6fad87037ec2b319d784350f38721dca",
+  "catalogSequence": "40",
+  "catalogSha256": "4ff16a1767f264c7b3d31af6e04c9032eb746dcb3e7c4e00559729ad600e99a7",
+  "oldGamesPreserved": 11,
+  "newGames": [
+    {
+      "id": "lights-out-matrix",
+      "assetId": 696709961,
+      "bytes": 52728,
+      "sha256": "f41c720ea024c33e2b78ebecd0685540e2cdae0150d77c55305ad9450f73aba1"
+    },
+    {
+      "id": "learning-machine",
+      "assetId": 696709993,
+      "bytes": 75142,
+      "sha256": "283250cb105d0c8fbc18c32f4347cb563cff9332e90eb59595548661efc5bcdb"
+    }
+  ]
+}

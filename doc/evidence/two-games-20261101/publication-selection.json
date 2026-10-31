@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "selector": "two-new-games",
+  "producerCommit": "74bc7e7d6fad87037ec2b319d784350f38721dca",
+  "previousSha": "a13aa7dcdce0e60895f7771a4df58dbafc8fdf5cc713b4936d94a9895c6f59cc",
+  "nextSequence": "40",
+  "previousGamesSha256": "81eb9f7d31de59e62b2fee696608b6ce84e9112b4097d051e76865dd999e9a06",
+  "selected": [
+    {
+      "id": "lights-out-matrix",
+      "contentCode": 1,
+      "archiveBytes": 52728,
+      "archiveSha256": "f41c720ea024c33e2b78ebecd0685540e2cdae0150d77c55305ad9450f73aba1",
+      "descriptorSha256": "28b140c472bccf4d85215a48c59818d04f6ee62e47c42edee492e11dfb0554be",
+      "assetName": "game-lights-out-matrix-1-f41c720ea024.zip"
+    },
+    {
+      "id": "learning-machine",
+      "contentCode": 1,
+      "archiveBytes": 75142,
+      "archiveSha256": "283250cb105d0c8fbc18c32f4347cb563cff9332e90eb59595548661efc5bcdb",
+      "descriptorSha256": "b02dbf95817efbc8d5559a88e666ca662c031bdb8d8bfae07fb89f1e3c12e37f",
+      "assetName": "game-learning-machine-1-283250cb105d.zip"
+    }
+  ]
+}
