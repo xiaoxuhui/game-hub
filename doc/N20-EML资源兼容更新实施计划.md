@@ -27,6 +27,12 @@
 - DoD: U01–U05 通过；旧版直接读取和兼容封套读取均由真实固定读取器验证；原仓状态不变。
 - Evidence: 36 项 EML 定向测试通过；全仓 `node --test` 237 项通过；精确源输入锁为 `cb408648`，单独源码克隆 HEAD 一致且工作树清洁。
 
+## B1 阶段 B 独立审阅与批改 `[VERIFIED]`
+
+- Commit reviewed: `a65a90197130c9aa929de6a26fd0e92389ec4001`。
+- Independent result: CLOSED，无阻断项；审阅意见与批改记录见 `doc/evidence/n20-eml-adaptation-review.md`。
+- Correction: 将 EML 递增断言从图灵机测试移入 EML 专属测试；两组相关测试 7 项通过。
+
 ## C ZIP 生产与范围核验 `[PENDING]`
 
 - Files: EML resource candidate, issuance facts, deterministic build report。
@@ -39,3 +45,4 @@
 ## E 归档与最终独立复核 `[PENDING]`
 
 - DoD: 代码/发行各阶段按逻辑切片提交；每次提交后独立审阅并记录批改；最终原仓只读状态、主分支及资源目录状态都可复核。
+
