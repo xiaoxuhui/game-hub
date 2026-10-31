@@ -4,7 +4,7 @@ test('C1 and Lambda refreshes preserve other sources after later admissions',()=
  const before=JSON.parse(execFileSync('git',['show','cd413ba63eadc0d61502272ffd0425db197f8279:dynamic-sources.lock.json'],{cwd:new URL('../',import.meta.url)})).sources,current=JSON.parse(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources;
  const previousIds=new Set(before.map(g=>g.id)),previousCurrent=current.filter(g=>previousIds.has(g.id));
  assert.deepEqual(previousCurrent.map(g=>g.id),before.map(g=>g.id));
- assert.deepEqual(current.filter(g=>!previousIds.has(g.id)).map(g=>g.id),['turbowarp-neural-network','turbowarp-logic-lab']);
+ assert.deepEqual(current.filter(g=>!previousIds.has(g.id)).map(g=>g.id),['turbowarp-neural-network','turbowarp-logic-lab','lights-out-matrix','learning-machine']);
  const changed=previousCurrent.filter(g=>JSON.stringify(g)!==JSON.stringify(before.find(o=>o.id===g.id))).map(g=>g.id);assert.deepEqual(changed,['lambda-diagram-game','logic-circuit','traffic-planner']);
  const logic=current.find(g=>g.id==='logic-circuit'),traffic=current.find(g=>g.id==='traffic-planner');assert.equal(logic.revision,'a3830070744fe3e9360b3b65540dc920540df26d');assert.equal(logic.contentCode,29);assert.equal(traffic.revision,'86f8fb77de41c9ddef37fbd998c44d01c0623727');assert.equal(traffic.contentCode,2);assert.ok(traffic.files.includes('src/reversing.js'));for(const game of [logic,traffic])assert.equal(game.storageContract,game.id+'-dynamic-v1');
 });
