@@ -18,3 +18,9 @@
 - 已将历史 EML 发行记录与本次递增断言放入 `tests/eml-katex-assets.test.mjs`；图灵机专属测试仅保留其自身与其他既有发行身份断言。
 - 复核 `tests/eml-katex-assets.test.mjs` 与 `tests/turing-resource-activation.test.mjs`：7 项通过。
 - 未发现兼容、安全、资源范围或发布门禁阻断。
+
+## 补充审阅：EML 函数重命名往返用例
+
+- `f339b34c3cb91af77d7143248b2c19858a6d0395` 初审为 OPEN：用例执行了重命名和完整往返，但未直接断言更新状态中的名称/定义。
+- 已在 `ca1630722426f77ed59954b222d17ca4def08489` 增加 `updated.state` 的 `name === 'G'` 与定义文本断言。
+- 独立复审 `ca16307` 结论 CLOSED，无阻断；定向兼容测试 12/12、全仓测试 237/237 通过。

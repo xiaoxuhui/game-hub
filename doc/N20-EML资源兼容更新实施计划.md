@@ -33,6 +33,11 @@
 - Independent result: CLOSED，无阻断项；审阅意见与批改记录见 `doc/evidence/n20-eml-adaptation-review.md`。
 - Correction: 将 EML 递增断言从图灵机测试移入 EML 专属测试；两组相关测试 7 项通过。
 
+## B2 EML 函数重命名兼容复核 `[VERIFIED]`
+
+- Commits: `f339b34` 初审 OPEN，`ca16307` 批改后复审 CLOSED。
+- 独立审阅与批改记录已追加至 `doc/evidence/n20-eml-adaptation-review.md`；U03 重命名状态、定义 AST 的完整往返均有断言。
+
 ## C ZIP 生产与范围核验 `[PENDING]`
 
 - Files: EML resource candidate, issuance facts, deterministic build report。
@@ -45,4 +50,5 @@
 ## E 归档与最终独立复核 `[PENDING]`
 
 - DoD: 代码/发行各阶段按逻辑切片提交；每次提交后独立审阅并记录批改；最终原仓只读状态、主分支及资源目录状态都可复核。
+
 
