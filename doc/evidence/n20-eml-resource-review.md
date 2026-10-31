@@ -45,3 +45,12 @@
 - 失败的两次预检没有读取凭据或写远端；第三次预检通过，签名、上传、历史目录归档和公网全历史验证成功。
 - 详细 release ID、asset IDs、摘要与验证文件见 `doc/evidence/n20-eml-v1-publication.md` 及关联 JSON。
 - D 阶段已完成；E 阶段独立最终复核待执行。
+
+
+## E 阶段最终独立复核
+
+- Reviewed commit: `3a0dce3d709e6c9d73798856b84f57707641e685`
+- Result: **CLOSED，无阻断项**。
+- 审阅者从当前 GitHub release 重新下载并核验：sequence 7 catalog asset `694073326`，SHA-256 `dfcc326c7db3892b472aca6fae145f07ebd20a90f26522270ef46dc51ff547bc`，签名有效；EML-3 asset `694072897` 的大小和 SHA-256 与记录一致。
+- sequence 6 历史资产 `676509558` 存在；下载核验的历史签名目录覆盖 sequence 1–6，与当前 sequence 7 构成完整历史链；11 个唯一 ZIP 的 ID、字节数和摘要均与归档结果一致。
+- 生产提交 `c1c17f3` 是 main `3a0dce3` 的祖先；发行归档提交仅更新文档/证据，无 APK 发布。测试 237/237、资源 80 文件校验通过。

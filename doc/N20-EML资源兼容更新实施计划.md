@@ -1,6 +1,6 @@
 # N20 EML 资源兼容更新实施计划
 
-- Status: IN_PROGRESS
+- Status: COMPLETE
 - Approved: 2026-10-31 用户要求完善并发布可发布游戏资源；明确不发布 APK。
 - Type: resource release
 - Source checkout: independent checkout at fixed upstream SHA; original EML repository remains read-only.
@@ -50,9 +50,10 @@
 - DoD: U07 通过；资源目录历史连续可验；新 ZIP 公网摘要与候选相符；不构建或发布 APK。
 - Evidence: `doc/evidence/n20-eml-v1-publication.md`；线上 sequence 1–7 连续验签，11 个唯一 ZIP 重新下载摘要通过。
 
-## E 归档与最终独立复核 `[IN_PROGRESS]`
+## E 归档与最终独立复核 `[COMPLETE]`
 
 - DoD: 代码/发行各阶段按逻辑切片提交；每次提交后独立审阅并记录批改；最终原仓只读状态、主分支及资源目录状态都可复核。
+- Final independent review of `3a0dce3`: CLOSED，无阻断；审阅者重新下载并验签当前目录、EML ZIP、历史链和 11 个唯一资源。结果已存档于 `doc/evidence/n20-eml-resource-review.md`。
 
 
 
