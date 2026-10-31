@@ -274,6 +274,49 @@
         "scaffolding-min.js.LICENSE.txt"
       ],
       "releaseNotes": "原有 TurboWarp 逻辑小实验室作品的离线网页封装；保留 NAND 电路和原生交互，支持触摸及电路本地恢复。"
+    },
+    {
+      "id": "lights-out-matrix",
+      "displayName": "熄灯矩阵",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "09e81cfbe52e656b8c8d210325f069531e116f94",
+      "directory": "examples/lights-out-matrix",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "lights-out-matrix-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "index.html",
+        "upstream-source.json"
+      ],
+      "releaseNotes": "首次接入：固定上游 8640861，资源含 MIT 许可和来源证明。"
+    },
+    {
+      "id": "learning-machine",
+      "displayName": "学习小机器",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "09e81cfbe52e656b8c8d210325f069531e116f94",
+      "directory": "examples/learning-machine",
+      "version": "1.2.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "learning-machine-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "index.html",
+        "src/app.js",
+        "src/icon.svg",
+        "src/model.js",
+        "src/styles.css",
+        "src/visuals.js",
+        "upstream-source.json"
+      ],
+      "releaseNotes": "首次接入：固定上游 45e8637；训练数据只在当前页面内存中，离开或刷新后丢失。"
     }
   ]
 }

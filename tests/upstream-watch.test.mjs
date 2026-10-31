@@ -12,9 +12,10 @@ const getter = (options = {}) => async path => {
   return {default_branch: 'main'};
 };
 
-test('thirteen actual upstreams include Ant, curated hex and every released source', () => {
+test('fifteen actual upstreams include both new games and every released source', () => {
   const sources = loadSources();
-  assert.equal(sources.length, 13);
+  assert.equal(sources.length, 15);
+  for (const id of ['lights-out-matrix','learning-machine']) { const source=sources.find(s=>s.id===id); assert.equal(source.repository,`https://github.com/xiaoxuhui/${id}.git`); assert.ok(source.consumers[0].inputs.includes('dist/index.html')); }
   const hex=sources.find(s=>s.id==='hex-cell-lab');assert.equal(hex.repository,'https://github.com/xiaoxuhui/hex-cell-lab.git');assert.ok(hex.consumers[0].inputs.includes('src/core.js'));
   const ant=sources.find(s=>s.id==='langtons-ant');assert.equal(ant.repository,'https://github.com/xiaoxuhui/langtons-ant.git');assert.ok(ant.consumers[0].inputs.includes('dist/src/core.js'));assert.equal(classifyChanges([{filename:'dist/src/core.js'}],ant.consumers[0].inputs).status,'resource-change-pending-review');
   const turing = sources.find(s => s.id === 'turing');
