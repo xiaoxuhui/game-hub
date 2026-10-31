@@ -31,3 +31,9 @@
 - `bf18c99` 复审建议将 `Candidate manifest` 改称资源构建清单，避免与 `games.unsigned.json` 候选清单混淆。
 - 已在 `n20-eml-resource-candidate.md` 将其改为“Staged resource bundle manifest SHA-256”，该摘要指 `bundle-manifest.json`。
 - 复审仅明确 CLOSED 证据身份修订，未明确批准 C 阶段本身；C 状态暂保持 IN_PROGRESS，待独立审阅确认 U06 门禁结论。
+
+
+## C 阶段 U06 复审结论
+
+- 独立复审确认 C 阶段 **VERIFIED**：双构建一致；与 sequence 6 线上目录相比，仅 EML contentCode 从 2 升至 3，其他三款 ZIP 摘要及编号不变；40 项 proof、资源闭包、MIT/KaTeX 许可与测试均通过。
+- D 阶段注意：后续归档提交使 d54 候选绑定过期。正式发行应在最终 producer commit 的干净独立检出中重新构建、校验并做最新线上预检。
