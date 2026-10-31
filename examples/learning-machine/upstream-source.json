@@ -43,5 +43,12 @@
       "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
     }
   ],
-  "license": "MIT from upstream LICENSE"
+  "license": "MIT from upstream LICENSE",
+  "adaptations": [
+    {
+      "file": "index.html",
+      "description": "Show a visible warning that leaving, closing or refreshing loses in-memory training data.",
+      "sha256": "5d906867a930c3ab1a77278414292590d7a58762c23036a8d3ef9b6c6438173d"
+    }
+  ]
 }
