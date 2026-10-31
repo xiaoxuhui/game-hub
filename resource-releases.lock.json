@@ -8,10 +8,10 @@
       "releaseNotes": "固定上游a531a560，增加自定义演化规则及完整世界备份/恢复。新导出保留合法v2基础和rule扩展；旧版只能恢复格局、代数、视图，非默认规则在旧版按B3/S23演化。完整原文备份、显式旧档规则选择和保存失败保护；完整MIT随包。"
     },
     "eml": {
-      "contentCode": 2,
-      "sourceRevision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+      "contentCode": 3,
+      "sourceRevision": "cb408648ad4233baba757a530aa39278ecdb5127",
       "storageContract": "eml-baseline-v1",
-      "releaseNotes": "固定上游63cbfd8f，增加组合函数与cos表达式。兼容导出保留旧版可表达数值/EML公式及完整原文扩展；旧版编辑后明确选择恢复，完整保护先于缓存镜像，失败可手动导出。补齐离线KaTeX20字体与MIT许可，正文MIT随包。"
+      "releaseNotes": "固定上游 cb408648（EML 1.3.1）；新增自定义函数结构预览与函数重命名。资源继续附带兼容投影与完整新格式扩展，由固定旧版读取器校验旧版可读性；KaTeX 离线字体和 MIT 许可完整随包。"
     },
     "light": {
       "contentCode": 2,

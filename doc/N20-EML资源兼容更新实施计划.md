@@ -21,10 +21,11 @@
 - DoD: 独立审阅本次修订提交；若无阻断，记录归档在 `doc/evidence/n20-eml-plan-review.md`。
 - [x] `5c15dd2` 独立复审 CLOSED，无阻断意见；记录已追加。
 
-## B 上游适配与交叉读取验证 `[PENDING]`
+## B 上游适配与交叉读取验证 `[VERIFIED]`
 
 - Files: EML resource lock、EML integration scripts、固定夹具、targeted tests。
 - DoD: U01–U05 通过；旧版直接读取和兼容封套读取均由真实固定读取器验证；原仓状态不变。
+- Evidence: 36 项 EML 定向测试通过；全仓 `node --test` 237 项通过；精确源输入锁为 `cb408648`，单独源码克隆 HEAD 一致且工作树清洁。
 
 ## C ZIP 生产与范围核验 `[PENDING]`
 

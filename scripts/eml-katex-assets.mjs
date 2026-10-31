@@ -1,7 +1,7 @@
 import{readFileSync,writeFileSync,mkdirSync,readdirSync,lstatSync}from'node:fs';import{join}from'node:path';import{sha256}from'./resource-protocol.mjs';
-import{EML_LEGACY_REVISION,EML_OLD_HASHES}from'./eml-legacy-reader.mjs';
+import{EML_REVISION,EML_LEGACY_REVISION,EML_OLD_HASHES}from'./eml-legacy-reader.mjs';
 export const EML_CSS_SHA='f787891b550d554c214aa8902f39ac46df2dbd48fdec500a2040a5dce1e8ab58';
-export const EML_BUILD_INPUTS_SHA='1f38122d2708295df185e08a59d56da8b2d3483c93ef51aa8f621caaa250a814';
+export const EML_BUILD_INPUTS_SHA='0e4668ee5ee34a7cc4053f6c5eea8320ef363852114cae411bd94121a2a03e2d';
 const PROOF_SHA='4ea02107b40e79834e68f573a14bc936cb04c2d4cdf9d393ca5b704b88b4b11b';
 export function emlBuildInputs(){const bytes=readFileSync(new URL('../tests/fixtures/eml/build-inputs.source.json',import.meta.url));if(sha256(bytes)!==EML_BUILD_INPUTS_SHA)throw Error('Frozen EML build-input proof changed');return JSON.parse(bytes);}
 export function emlKaTeXProof(){const bytes=readFileSync(new URL('../licenses/katex-0.16.21.proof.json',import.meta.url));if(sha256(bytes)!==PROOF_SHA)throw Error('Frozen official KaTeX proof changed');return JSON.parse(bytes);}
@@ -30,7 +30,7 @@ function walk(directory,prefix=''){return readdirSync(directory).sort().flatMap(
 export function finalizeEMLAssets(directory){
  const official=emlKaTeXProof(),files=walk(directory),expected=[...EML_RESOURCE_FILES,'LICENSE'].sort();if(JSON.stringify(files.sort())!==JSON.stringify(expected))throw Error('EML complete resource file set differs');
  const proof=JSON.parse(readFileSync(join(directory,'hub-source-proof.json')));
- if(proof.schemaVersion!==1||proof.repository!=='https://github.com/xiaoxuhui/EML.git'||proof.integration!=='eml-base-full-preservation-v1'||proof.revision!=='63cbfd8fdce98874802cf1ac608b1084c8e48d40'||JSON.stringify(proof.inputs)!==JSON.stringify(emlBuildInputs())||JSON.stringify(proof.thirdParty)!==JSON.stringify(official))throw Error('EML source proof binding changed');
+ if(proof.schemaVersion!==1||proof.repository!=='https://github.com/xiaoxuhui/EML.git'||proof.integration!=='eml-base-full-preservation-v1'||proof.revision!==EML_REVISION||JSON.stringify(proof.inputs)!==JSON.stringify(emlBuildInputs())||JSON.stringify(proof.thirdParty)!==JSON.stringify(official))throw Error('EML source proof binding changed');
  const legacySource={repository:'https://github.com/xiaoxuhui/EML.git',revision:EML_LEGACY_REVISION,inputs:Object.entries(EML_OLD_HASHES).map(([name,hash])=>({path:'src/'+name,sha256:hash})),licenseSha256:sha256(readFileSync(new URL('../tests/fixtures/eml/old/LICENSE',import.meta.url)))};
  if(JSON.stringify(proof.legacySource)!==JSON.stringify(legacySource))throw Error('EML frozen legacy input proof changed');
  if(Object.keys(proof.runtimeFiles).sort().join()!==EML_RESOURCE_FILES.filter(path=>path.startsWith('hub/')).sort().join())throw Error('EML runtime identity proof changed');

@@ -1,35 +1,35 @@
 [
   {
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/app.js",
     "fixture": "new-app.txt",
-    "bytes": 43013,
-    "sha256": "16313a1f0d1936cc7b2939c41fb93c6238367db6ae5dc426485113102dbb9c4d"
+    "bytes": 52427,
+    "sha256": "155b4456ee0f7163f9bf9faf3c5748172b202798c4faedc0a1d41bf4cc73d7a3"
   },
   {
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/template.html",
     "fixture": "new-template.txt",
-    "bytes": 6236,
-    "sha256": "9869438937e1b7015407c438d2a1b52b40edb534885d391ae7bd2e89fb4e21ca"
+    "bytes": 6686,
+    "sha256": "d1fa0e9db2523ec4ac75ff26a9a643de29f57fbdb72baf44f3620e449b3e153c"
   },
   {
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/styles.css",
     "fixture": "new-styles.txt",
-    "bytes": 14671,
-    "sha256": "7fd33f9ecc7ab100657e6332ddf3411267de2321bd61340695301e9d3f91eb7f"
+    "bytes": 15984,
+    "sha256": "c726dcdb42114d1ff728b16249b17ed638bc88eec55ab517a7f1dd69279a341a"
   },
   {
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "scripts/build.mjs",
     "fixture": "new-build.txt",
-    "bytes": 1523,
-    "sha256": "ea20b11c982141b14d82b777bb2b2f4e9b0ea689daab844eee4d7740e80540ec"
+    "bytes": 1550,
+    "sha256": "aace59730cf672749f1bc075b8fe318149064bfd88feb89f2ff6c83ed9349c05"
   },
   {
     "repository": "https://github.com/xiaoxuhui/EML.git",

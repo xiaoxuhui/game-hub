@@ -3,6 +3,15 @@
     "label": "old",
     "repository": "https://github.com/xiaoxuhui/EML.git",
     "revision": "2616c9e9b081762b01599cc79da919d20340d0a2",
+    "path": "LICENSE",
+    "fixture": "old/LICENSE",
+    "bytes": 1066,
+    "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+  },
+  {
+    "label": "old",
+    "repository": "https://github.com/xiaoxuhui/EML.git",
+    "revision": "2616c9e9b081762b01599cc79da919d20340d0a2",
     "path": "src/evaluator.js",
     "fixture": "old/evaluator.js",
     "bytes": 1845,
@@ -72,18 +81,18 @@
     "sha256": "079e65314a4b6cdf95e4058a12a459994fe76add63a5e65b6997c2aa907d1c8c"
   },
   {
-    "label": "old",
+    "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "2616c9e9b081762b01599cc79da919d20340d0a2",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "LICENSE",
-    "fixture": "old/LICENSE",
+    "fixture": "new/LICENSE",
     "bytes": 1066,
     "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
   },
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/eml-composition.js",
     "fixture": "new/eml-composition.js",
     "bytes": 15239,
@@ -92,7 +101,7 @@
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/evaluator.js",
     "fixture": "new/evaluator.js",
     "bytes": 1845,
@@ -101,7 +110,7 @@
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/expression-properties.js",
     "fixture": "new/expression-properties.js",
     "bytes": 7988,
@@ -110,16 +119,16 @@
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/expression.js",
     "fixture": "new/expression.js",
-    "bytes": 14184,
-    "sha256": "60d5f87751799257a6bd79b61e673d93c8c633308d90917d4288bcface3af27a"
+    "bytes": 14591,
+    "sha256": "03e21e387e0fb9c4f434cc6c5061f65a12d0f1448750b0f783e9a5a1a449dc5e"
   },
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/formula-rules.js",
     "fixture": "new/formula-rules.js",
     "bytes": 5017,
@@ -128,7 +137,16 @@
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
+    "path": "src/function-structure.js",
+    "fixture": "new/function-structure.js",
+    "bytes": 4524,
+    "sha256": "cb19acb7a0ce5dae18e73bc2b8f98bc5345ea79e9a73fbbffd3b83b6a5ff6f74"
+  },
+  {
+    "label": "new",
+    "repository": "https://github.com/xiaoxuhui/EML.git",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/persistence.js",
     "fixture": "new/persistence.js",
     "bytes": 10530,
@@ -137,7 +155,7 @@
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/rules-algebra.js",
     "fixture": "new/rules-algebra.js",
     "bytes": 31574,
@@ -146,7 +164,7 @@
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/rules-transcendental.js",
     "fixture": "new/rules-transcendental.js",
     "bytes": 20401,
@@ -155,19 +173,10 @@
   {
     "label": "new",
     "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
+    "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
     "path": "src/value-store.js",
     "fixture": "new/value-store.js",
-    "bytes": 20001,
-    "sha256": "7fc1c75fb23692021cfd41a1124bd1219c1e7b9cde698fff20e9f6abb6ce10b9"
-  },
-  {
-    "label": "new",
-    "repository": "https://github.com/xiaoxuhui/EML.git",
-    "revision": "63cbfd8fdce98874802cf1ac608b1084c8e48d40",
-    "path": "LICENSE",
-    "fixture": "new/LICENSE",
-    "bytes": 1066,
-    "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    "bytes": 21990,
+    "sha256": "565bde4f9a0acda929d6ae2dd02e7b05b6d10d7550a2ad90179c60d79b677cae"
   }
 ]

@@ -1,6 +1,6 @@
 import{readFileSync}from'node:fs';
 import{sha256}from'./resource-protocol.mjs';
-export const EML_REVISION='63cbfd8fdce98874802cf1ac608b1084c8e48d40';
+export const EML_REVISION='cb408648ad4233baba757a530aa39278ecdb5127';
 export const EML_LEGACY_REVISION='2616c9e9b081762b01599cc79da919d20340d0a2';
 export const EML_INTEGRATION='eml-base-full-preservation-v1';
 export const EML_OLD_HASHES=Object.freeze({

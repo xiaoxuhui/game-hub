@@ -2,10 +2,10 @@ import{readFileSync,writeFileSync,mkdirSync,lstatSync}from'node:fs';import{join,
 import{sha256}from'./resource-protocol.mjs';import{EML_REVISION,EML_LEGACY_REVISION,EML_OLD_HASHES,EML_INTEGRATION,emlLegacyRuntime}from'./eml-legacy-reader.mjs';import{emlFormatRuntime}from'./eml-compatibility.mjs';import{emlPreservationRuntime}from'./eml-preservation.mjs';import{emlUIRuntime,emlCompatibilityCSS}from'./eml-compatibility-ui.mjs';
 import{emlBuildInputs,stageEMLLicenses,finalizeEMLAssets}from'./eml-katex-assets.mjs';
 export const EML_UI_INPUTS=Object.freeze({
- 'src/app.js':'16313a1f0d1936cc7b2939c41fb93c6238367db6ae5dc426485113102dbb9c4d',
- 'src/template.html':'9869438937e1b7015407c438d2a1b52b40edb534885d391ae7bd2e89fb4e21ca',
- 'src/styles.css':'7fd33f9ecc7ab100657e6332ddf3411267de2321bd61340695301e9d3f91eb7f',
- 'scripts/build.mjs':'ea20b11c982141b14d82b777bb2b2f4e9b0ea689daab844eee4d7740e80540ec',
+ 'src/app.js':'155b4456ee0f7163f9bf9faf3c5748172b202798c4faedc0a1d41bf4cc73d7a3',
+ 'src/template.html':'d1fa0e9db2523ec4ac75ff26a9a643de29f57fbdb72baf44f3620e449b3e153c',
+ 'src/styles.css':'c726dcdb42114d1ff728b16249b17ed638bc88eec55ab517a7f1dd69279a341a',
+ 'scripts/build.mjs':'aace59730cf672749f1bc075b8fe318149064bfd88feb89f2ff6c83ed9349c05',
 });
 const once=(text,before,after)=>{if(text.split(before).length!==2)throw Error('Reviewed EML UI marker changed');return text.replace(before,after);};
 export function adaptEMLTexts(inputs){
@@ -44,7 +44,7 @@ export function prepareEMLResource(source,directory){
  if(JSON.stringify(sourceInputs)!==JSON.stringify(emlBuildInputs()))throw Error('EML immutable full build-input set changed');
  const inputs=Object.fromEntries(Object.keys(EML_UI_INPUTS).map(path=>[path,readFileSync(join(directory,path))])),adapted=adaptEMLTexts(inputs);
  const adapters=['eml-resource-integration.mjs','eml-legacy-reader.mjs','eml-compatibility.mjs','eml-preservation.mjs','eml-compatibility-ui.mjs','eml-katex-assets.mjs'];
- const scriptFiles=['expression.js','expression-properties.js','rules-transcendental.js','rules-algebra.js','formula-rules.js','evaluator.js','eml-composition.js','value-store.js','persistence.js','tree-viewport.js','tree-controller.js','derivation-trace.js','app.js'];
+ const scriptFiles=['expression.js','expression-properties.js','rules-transcendental.js','rules-algebra.js','formula-rules.js','evaluator.js','eml-composition.js','function-structure.js','value-store.js','persistence.js','tree-viewport.js','tree-controller.js','derivation-trace.js','app.js'];
  const inlineScripts=scriptFiles.map(file=>`/* ${file} */\n`+(adapted.sources['src/'+file]??readFileSync(join(directory,'src',file))).toString('utf8')).join('\n\n');
  const expectedHTML=Buffer.from(adapted.sources['src/template.html'].toString('utf8').replace('/*__STYLES__*/',adapted.sources['src/styles.css'].toString('utf8')).replace('/*__SCRIPTS__*/',inlineScripts));
  const thirdParty=stageEMLLicenses(join(directory,'dist'));
