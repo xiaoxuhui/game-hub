@@ -38,7 +38,7 @@
 - Commits: `f339b34` 初审 OPEN，`ca16307` 批改后复审 CLOSED。
 - 独立审阅与批改记录已追加至 `doc/evidence/n20-eml-adaptation-review.md`；U03 重命名状态、定义 AST 的完整往返均有断言。
 
-## C ZIP 生产与范围核验 `[VERIFIED]`
+## C ZIP 生产与范围核验 `[IN_PROGRESS]`
 
 - Files: EML resource candidate, issuance facts, deterministic build report。
 - DoD: U06 通过；仅 EML contentCode 递增，其他静态游戏描述和 ZIP 字节与已发布当前值完全一致；双构建相同。

@@ -1,6 +1,6 @@
 # N20 EML 资源候选与范围核验
 
-- Producer source commit: `b8ddf0e60808fa7d992e302a23de78828c833452`
+- Producer source commit: `d54b51d7ddab0ae59fe0668ded765a0e69bd7b83`
 - Source mode: independent immutable upstream checkouts; original game repositories were not modified.
 - Scope: static game-resource packages and signed catalog only; no APK build/upload.
 - Daily upstream report: `.build/upstream-watch/report.json` at `2026-10-31T01:25:38Z`, status `checked`, 14 source consumers, no errors.
@@ -16,7 +16,7 @@ Two independent `node scripts/resource-sources.mjs` builds from the same produce
 | Light | 2 | 115,671 | `19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267` | Identical to current online asset |
 | Turing | 3 | 177,496 | `282aabcc00306551df4e8d31aec8db58e43a2142203c818ff8abd96f046ae626` | Identical to current online asset |
 
-Candidate manifest SHA-256: `b7d1de439b909d36efc56c5e4bf2adace43eb5935288b75869383fc2284d5e4e`.
+Candidate manifest SHA-256: `5428fc30b3546bad0d3bc4767d410cf3a13630895588117424da431951b0c57a`.
 The EML built HTML is 221,191 bytes. The locked source is `cb408648ad4233baba757a530aa39278ecdb5127`; the 40-entry source proof, old-reader compatibility tests, MIT and KaTeX licenses are validated by the suite.
 
 ## Current directory preflight

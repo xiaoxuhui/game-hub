@@ -17,3 +17,10 @@
 - 新增 `n20-eml-upstream-watch.json`：完整保留当天只读巡检报告。
 - 更新 `N20-EML资源兼容更新实施计划.md`，把 C 阶段证据文件逐一链接。
 - 修订后的提交将再次由独立视角复审；C 未 CLOSED 前不执行签名、上传或切换 main。
+
+
+## 第二轮复审意见与批改
+
+- 复审 `1ca212c` 结论 OPEN：候选索引仍记录旧构建 `b8ddf0e` 与旧 manifest SHA `b7d1de…`，与双构建报告的 `d54b51d` / `5428fc…` 不一致。
+- 已核对当前候选 `candidate.json`、`bundle-manifest.json` 和两次构建记录，三者均为 producer `d54b51d7ddab0ae59fe0668ded765a0e69bd7b83`、manifest SHA-256 `5428fc30b3546bad0d3bc4767d410cf3a13630895588117424da431951b0c57a`。
+- 已将 `n20-eml-resource-candidate.md` 索引更新到该提交和摘要；C 状态回退至 IN_PROGRESS，等待复审 CLOSED。
