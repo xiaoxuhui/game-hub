@@ -2,6 +2,13 @@ import {sha256,assetName} from './resource-protocol.mjs';
 function insist(value,message){if(!value)throw Error(message);}
 export function selectResourceCandidates(old,candidates,selector){
   if(selector===undefined)return candidates;
+  if(selector==='two-new-games'){
+    const ids=['lights-out-matrix','learning-machine'];
+    insist(old.games.length===11&&new Set(old.games.map(g=>g.id)).size===11&&ids.every(id=>!old.games.some(g=>g.id===id)),'Two-game publication requires exact previous 11 unique games');
+    const selected=ids.map(id=>candidates.filter(g=>g.id===id));
+    insist(selected.every(a=>a.length===1&&a[0].contentCode===1),'Exactly two distinct initial candidates required');
+    return selected.map(a=>a[0]);
+  }
   insist(['hex-cell-lab','langtons-ant'].includes(selector),'Unsupported publication selection');
   const expected=selector==='hex-cell-lab'?7:8;
   insist(old.games.length===expected&&new Set(old.games.map(g=>g.id)).size===expected&&!old.games.some(g=>g.id===selector)&&(selector!=='langtons-ant'||old.games.some(g=>g.id==='hex-cell-lab')),'New game requires exact previous catalog without selected ID');
@@ -9,12 +16,18 @@ export function selectResourceCandidates(old,candidates,selector){
 }
 export function selectionRecord(old,candidates,selector,{producerCommit,previousSha,sequence}){
   insist(/^[a-f0-9]{40}$/.test(producerCommit)&&/^[a-f0-9]{64}$/.test(previousSha)&&/^[1-9][0-9]{0,18}$/.test(sequence)&&BigInt(sequence)===BigInt(old.catalogSequence)+1n,'Invalid selection context');
-  const [game]=selectResourceCandidates(old,candidates,selector);
-  return {schemaVersion:1,selector,producerCommit,previousSha,nextSequence:sequence,previousGamesSha256:sha256(JSON.stringify(old.games)),selected:[{id:game.id,contentCode:game.contentCode,archiveBytes:game.archiveBytes,archiveSha256:game.archiveSha256,descriptorSha256:sha256(JSON.stringify(game)),assetName:assetName(game)}]};
+  const games=selectResourceCandidates(old,candidates,selector);
+  return {schemaVersion:1,selector,producerCommit,previousSha,nextSequence:sequence,previousGamesSha256:sha256(JSON.stringify(old.games)),selected:games.map(game=>({id:game.id,contentCode:game.contentCode,archiveBytes:game.archiveBytes,archiveSha256:game.archiveSha256,descriptorSha256:sha256(JSON.stringify(game)),assetName:assetName(game)}))};
 }
 export function verifySelection(record,old,candidates,selector,context){insist(JSON.stringify(record)===JSON.stringify(selectionRecord(old,candidates,selector,context)),'Publication selection changed or missing');}
-export function assertFreshSelectedAssets(assets,selector){insist(['hex-cell-lab','langtons-ant'].includes(selector),'Unsupported publication selection');insist(!assets.some(a=>typeof a.name==='string'&&a.name.toLowerCase().startsWith('game-'+selector)),'Existing selected asset requires inspection and verified resume');}
+export function assertFreshSelectedAssets(assets,selector){if(selector==='two-new-games'){for(const id of ['lights-out-matrix','learning-machine'])insist(!assets.some(a=>typeof a.name==='string'&&a.name.toLowerCase().startsWith('game-'+id)),'Existing selected asset requires inspection and verified resume');return;}insist(['hex-cell-lab','langtons-ant'].includes(selector),'Unsupported publication selection');insist(!assets.some(a=>typeof a.name==='string'&&a.name.toLowerCase().startsWith('game-'+selector)),'Existing selected asset requires inspection and verified resume');}
 export function assertSelectedSuccessor(old,next,game,selector){
+  if(selector==='two-new-games'){
+    const games=selectResourceCandidates(old,game,selector);
+    insist(next.games.length===old.games.length+2&&new Set(next.games.map(g=>g.id)).size===next.games.length,'Two-game successor must add exactly two games');
+    for(const before of old.games)insist(JSON.stringify(next.games.find(g=>g.id===before.id))===JSON.stringify(before),'Selected publication altered an existing game');
+    for(const candidate of games){const added=next.games.find(g=>g.id===candidate.id);insist(added&&Number.isSafeInteger(added.assetId)&&added.assetId>0,'New selected asset identity missing');const {assetId,...descriptor}=added;insist(JSON.stringify(descriptor)===JSON.stringify(candidate),'Selected descriptor changed');}return;
+  }
   selectResourceCandidates(old,[game],selector);insist(next.games.length===old.games.length+1&&new Set(next.games.map(g=>g.id)).size===next.games.length,'Selected successor must add exactly one game');
   for(const before of old.games)insist(JSON.stringify(next.games.find(g=>g.id===before.id))===JSON.stringify(before),'Selected publication altered an existing game');
   const added=next.games.find(g=>g.id===selector);insist(added&&Number.isSafeInteger(added.assetId)&&added.assetId>0,'New selected asset identity missing');const {assetId,...descriptor}=added;insist(JSON.stringify(descriptor)===JSON.stringify(game),'Selected descriptor changed');

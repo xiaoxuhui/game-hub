@@ -75,15 +75,15 @@ async function download(asset){
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
     const [mode,directory,expected,sequence,selector]=process.argv.slice(2);
-    if(![6,7].includes(process.argv.length)||!directory||!expected||!sequence||selector!==undefined&&!['hex-cell-lab','langtons-ant'].includes(selector))throw new Error('Usage: resource-successor.mjs preflight|resume|payload|online directory previous-sha next-sequence [hex-cell-lab|langtons-ant]');
+    if(![6,7].includes(process.argv.length)||!directory||!expected||!sequence||selector!==undefined&&!['hex-cell-lab','langtons-ant','two-new-games'].includes(selector))throw new Error('Usage: resource-successor.mjs preflight|resume|payload|online directory previous-sha next-sequence [hex-cell-lab|langtons-ant]');
     if(selector===undefined&&existsSync(join(directory,'publication-selection.json')))throw Error('Cannot drop a recorded publication selection');
     const context=()=>({producerCommit:json(root,'.build/dynamic-candidate/candidate.json').bundleCommit,previousSha:expected,sequence});
     const candidates=old=>{const all=verifyDynamicResources(),selected=selectResourceCandidates(old,all,selector);if(selector&&mode!=='preflight')verifySelection(json(directory,'publication-selection.json'),old,all,selector,context());return selected;};
-    const successor=(old,games,snapshot)=>{const payload=successorPayload(old,games,snapshot,sequence);if(selector)assertSelectedSuccessor(old,payload,games[0],selector);return payload;};
+    const successor=(old,games,snapshot)=>{const payload=successorPayload(old,games,snapshot,sequence);if(selector)assertSelectedSuccessor(old,payload,selector==='two-new-games'?games:games[0],selector);return payload;};
     if(mode==='upload-preflight'){
-      if(!['hex-cell-lab','langtons-ant'].includes(selector))throw Error('Selected upload guard requires explicit reviewed selection');
+      if(!['hex-cell-lab','langtons-ant','two-new-games'].includes(selector))throw Error('Selected upload guard requires explicit reviewed selection');
       const old=previous(directory,expected),games=candidates(old);
-      if(games.length!==1)throw Error('Exactly one selected upload required');
+      if(games.length!==(selector==='two-new-games'?2:1))throw Error('Exact selected uploads required');
       console.log('Verified full immutable selection and signed previous catalog before credentials/uploads');
     }else if(mode==='resume'){
       const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2'),before=json(directory,'before-snapshot.json');
@@ -129,7 +129,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const bytes=await download(current[0]),local=readFileSync(join(directory,'catalog.signed.json'));
       if(!bytes.equals(local))throw new Error('Online signed bytes differ from reviewed issuance');
       const next=verifyEnvelope(bytes,publicKey,keyId).catalog;validateSigningInput(next,snapshot,old);
-      if(selector){const games=candidates(old);assertSelectedSuccessor(old,next,games[0],selector);}
+      if(selector){const games=candidates(old);assertSelectedSuccessor(old,next,selector==='two-new-games'?games:games[0],selector);}
       if(next.catalogSequence!==sequence)throw new Error('Online sequence mismatch');
       const history=assets.filter(a=>a.name===`catalog-seq${old.catalogSequence}-${expected.slice(0,12)}.signed.json`);
       if(history.length!==1||sha256(await download(history[0]))!==expected)throw new Error('Archived signed history missing');

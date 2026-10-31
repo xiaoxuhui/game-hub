@@ -3,10 +3,11 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('legacy','n9','n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24','n28','t1')][string]$TaskScope='legacy',
+    [ValidateSet('legacy','n9','n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24','n28','t1','two20261101')][string]$TaskScope='legacy',
     [switch]$ResumeAfterUploads,
     [switch]$OnlyNewHex,
-    [switch]$OnlyNewAnt
+    [switch]$OnlyNewAnt,
+    [switch]$OnlyTwoNew
 )
 $ErrorActionPreference='Stop'
 $taskCheckout='D:\soft\.ci-tmp\game-hub-work\v030-final'
@@ -76,17 +77,22 @@ if($TaskScope -ieq 't1'){
     $taskCheckout='D:\soft\.ci-tmp\turbowarp-hall-20261026\work'
     $taskEvidenceRoot='D:\soft\.ci-tmp\turbowarp-hall-20261026\evidence\publication'
 }
+if($TaskScope -ieq 'two20261101'){
+    $taskCheckout='D:\aiden\game-hub-publisher-20261101'
+    $taskEvidenceRoot='D:\aiden\game-hub-publisher-evidence-20261101'
+}
 $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resource-successor';'X-GitHub-Api-Version'='2022-11-28'}
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null
 $taskSelectionArgs=@()
-if($OnlyNewHex -and $OnlyNewAnt){throw 'New-game selection flags are mutually exclusive'}
-$taskSelectedId=if($OnlyNewHex){'hex-cell-lab'}elseif($OnlyNewAnt){'langtons-ant'}else{$null}
-if($taskSelectedId){if($TaskScope -ine 'n28'){throw 'Selected publication is restricted to reviewed N28 scope'};$taskSelectionArgs=@($taskSelectedId)}
+if(@($OnlyNewHex,$OnlyNewAnt,$OnlyTwoNew | Where-Object {$_}).Count -gt 1){throw 'New-game selection flags are mutually exclusive'}
+$taskSelectedId=if($OnlyNewHex){'hex-cell-lab'}elseif($OnlyNewAnt){'langtons-ant'}elseif($OnlyTwoNew){'two-new-games'}else{$null}
+if($TaskScope -ieq 'two20261101' -and -not $OnlyTwoNew){throw 'Two-game scope requires exact selection'}
+if($taskSelectedId){if(($taskSelectedId -eq 'two-new-games' -and $TaskScope -ine 'two20261101') -or ($taskSelectedId -ne 'two-new-games' -and $TaskScope -ine 'n28')){throw 'Selected publication has wrong reviewed scope'};$taskSelectionArgs=@($taskSelectedId)}
 if($Commit -notmatch '^[0-9a-f]{40}$' -or $ExpectedPreviousSha -notmatch '^[0-9a-f]{64}$' -or $NextSequence -notmatch '^[1-9][0-9]{0,18}$'){throw 'Explicit exact commit, previous SHA and sequence required'}
 $taskDirectory=[IO.Path]::GetFullPath($EvidenceDirectory)
 if(-not $taskDirectory.StartsWith($taskEvidenceRoot+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Exact task evidence subdirectory required'}
 if($ResumeAfterUploads){
-    if($TaskScope -notin @('n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24','n28','t1')){throw 'Resume is restricted to reviewed task scopes'}
+    if($TaskScope -notin @('n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24','n28','t1','two20261101')){throw 'Resume is restricted to reviewed task scopes'}
     foreach($taskRequired in @('before-snapshot.json','previous.signed.json','uploaded-resources.json')){
         if(-not (Test-Path -LiteralPath (Join-Path $taskDirectory $taskRequired) -PathType Leaf)){throw 'Verified post-upload records required for resume'}
     }
@@ -114,11 +120,23 @@ try {
     $taskUploadGames=@(Get-Content -LiteralPath '.build\dynamic-candidate\games.unsigned.json' -Raw | ConvertFrom-Json)
     if($taskSelectedId){
         $taskSelection=Get-Content -LiteralPath (Join-Path $taskDirectory 'publication-selection.json') -Raw | ConvertFrom-Json
+        if($taskSelectedId -eq 'two-new-games'){
+            $taskIds=@('lights-out-matrix','learning-machine')
+            $taskUploadGames=@($taskUploadGames | Where-Object { $_.id -cin $taskIds })
+            if($taskSelection.schemaVersion -ne 1 -or $taskSelection.selector -cne $taskSelectedId -or $taskSelection.producerCommit -cne $Commit -or $taskSelection.previousSha -cne $ExpectedPreviousSha -or $taskSelection.nextSequence -cne $NextSequence -or @($taskSelection.selected).Count -ne 2 -or $taskUploadGames.Count -ne 2){throw 'Exact two-game preflight selection required'}
+            foreach($id in $taskIds){
+                $selected=@($taskUploadGames | Where-Object id -CEQ $id); $chosen=@($taskSelection.selected | Where-Object id -CEQ $id)
+                if($selected.Count -ne 1 -or $chosen.Count -ne 1){throw 'Selected game missing or duplicated'}
+                $item=$selected[0]; $record=$chosen[0]; $name="game-$id-$($item.contentCode)-$($item.archiveSha256.Substring(0,12)).zip"
+                if($record.contentCode -ne 1 -or $item.contentCode -ne 1 -or $record.archiveBytes -ne $item.archiveBytes -or $record.archiveSha256 -cne $item.archiveSha256 -or $record.assetName -cne $name){throw 'Upload differs from exact immutable selected ZIP'}
+            }
+        }else{
         $taskUploadGames=@($taskUploadGames | Where-Object id -CEQ $taskSelectedId)
         if($taskSelection.schemaVersion -ne 1 -or $taskSelection.selector -cne $taskSelectedId -or $taskSelection.producerCommit -cne $Commit -or $taskSelection.previousSha -cne $ExpectedPreviousSha -or $taskSelection.nextSequence -cne $NextSequence -or @($taskSelection.selected).Count -ne 1 -or $taskUploadGames.Count -ne 1){throw 'Exact preflight selection required before credentials or uploads'}
         $taskChosen=$taskSelection.selected[0];$taskSelected=$taskUploadGames[0]
         $taskSelectedAsset="game-$taskSelectedId-$($taskSelected.contentCode)-$($taskSelected.archiveSha256.Substring(0,12)).zip"
         if($taskChosen.id -cne $taskSelectedId -or $taskChosen.contentCode -ne 1 -or $taskSelected.contentCode -ne 1 -or $taskChosen.archiveBytes -ne $taskSelected.archiveBytes -or $taskChosen.archiveSha256 -cne $taskSelected.archiveSha256 -or $taskChosen.assetName -cne $taskSelectedAsset){throw 'Upload differs from exact immutable selected ZIP'}
+        }
         node scripts/resource-successor.mjs upload-preflight $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
         if($LASTEXITCODE -ne 0){throw 'Full selected descriptor/previous games proof failed before credentials or uploads'}
     }

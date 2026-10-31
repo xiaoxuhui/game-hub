@@ -21,3 +21,17 @@ test('Ant selection requires eight unique old games including hex and only initi
   assert.throws(()=>assertSelectedSuccessor(old,{games:[...next.games,{id:'extra'}]},ant,'langtons-ant'));
   for(const name of ['game-langtons-ant-1-a.zip','GAME-LANGTONS-ANT.pending','game-langtons-ant-orphan'])assert.throws(()=>assertFreshSelectedAssets([{name}],'langtons-ant'));assertFreshSelectedAssets([{name:'game-hex-cell-lab-1-a.zip'}],'langtons-ant');
 });
+test('two-game publication admits exactly two initial games and preserves all 11 existing descriptors',()=>{
+ const old={catalogSequence:'39',games:Array.from({length:11},(_,i)=>({id:'old-'+i,contentCode:1,assetId:i+1,archiveSha256:'b'.repeat(64)}))};
+ const games=['lights-out-matrix','learning-machine'].map((id,i)=>({id,contentCode:1,archiveBytes:100+i,archiveSha256:(i?'c':'a').repeat(64)}));
+ const context={producerCommit:'c'.repeat(40),previousSha:'d'.repeat(64),sequence:'40'};
+ assert.deepEqual(selectResourceCandidates(old,[...games,{id:'unrelated'}],'two-new-games'),games);
+ const record=selectionRecord(old,games,'two-new-games',context);verifySelection(record,old,games,'two-new-games',context);assert.equal(record.selected.length,2);
+ for(const bad of [[],[games[0]], [...games,games[0]],[games[0],{...games[1],contentCode:2}]])assert.throws(()=>selectResourceCandidates(old,bad,'two-new-games'));
+ for(const bad of [{...old,games:old.games.slice(1)},{...old,games:[...old.games.slice(1),games[0]]}])assert.throws(()=>selectResourceCandidates(bad,games,'two-new-games'));
+ const next={games:[...old.games,...games.map((g,i)=>({...g,assetId:12+i}))]};assertSelectedSuccessor(old,next,games,'two-new-games');
+ const altered=structuredClone(next);altered.games[0].contentCode=2;assert.throws(()=>assertSelectedSuccessor(old,altered,games,'two-new-games'));
+ assert.throws(()=>assertSelectedSuccessor(old,{games:[...next.games,{id:'extra'}]},games,'two-new-games'));
+ for(const id of games.map(g=>g.id))assert.throws(()=>assertFreshSelectedAssets([{name:'game-'+id+'-orphan.zip'}],'two-new-games'));
+ const changed=structuredClone(record);changed.selected[1].archiveBytes=1;assert.throws(()=>verifySelection(changed,old,games,'two-new-games',context));
+});
