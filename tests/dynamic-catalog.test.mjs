@@ -55,3 +55,9 @@ test('actual CLI signs via stdin, verifies public DER, rejects overwrite and req
     const second=run(['sign',input,'-','fixture',join(root,'second.json'),snap,signed]);assert.equal(second.status,0,second.stderr);
   } finally {rmSync(root,{recursive:true,force:true});}
 });
+
+test('production legacy channel refuses more than 16 games before asset validation',()=>{
+  const {payload,snapshot}=fixture(),base=payload.games[0];
+  payload.games=Array.from({length:17},(_,i)=>({...base,id:'game-'+i,assetId:100+i,storageContract:'game-'+i+'-dynamic-v1'}));
+  assert.throws(()=>validateSigningInput(payload,snapshot,null,now),/Legacy v2 clients support at most 16/);
+});

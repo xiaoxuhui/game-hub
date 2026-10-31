@@ -24,8 +24,12 @@ export function validateSuccessor(previous, next) {
   }
   return next;
 }
+export function assertLegacyCatalogCapacity(payload) {
+  if (payload.games.length > 16) throw new Error('Legacy v2 clients support at most 16 games; a separate compatible channel is required');
+}
 export function validateSigningInput(payload, snapshot, previous = null, now = Date.now()) {
   validateDynamicCatalog(payload, now);
+  assertLegacyCatalogCapacity(payload);
   validateReleaseSnapshot(payload, snapshot, tag);
   return validateSuccessor(previous, payload);
 }
@@ -38,7 +42,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     } else if (mode === 'sign' && output && snapshotPath) {
       const payload = strictJson(readFileSync(input)), snapshot = strictJson(readFileSync(snapshotPath), 4 * 1048576);
       // Reject malformed protocol, incomplete assets and unsigned higher sequences before reading a key.
-      validateDynamicCatalog(payload); validateReleaseSnapshot(payload, snapshot, tag);
+      validateDynamicCatalog(payload); assertLegacyCatalogCapacity(payload); validateReleaseSnapshot(payload, snapshot, tag);
       if (!previousPath) validateSuccessor(null, payload);
       const key = readFileSync(keyPath === '-' ? 0 : keyPath);
       try {

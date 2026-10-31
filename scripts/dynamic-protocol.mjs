@@ -2,7 +2,7 @@ import { IDS, validateCatalog } from './resource-protocol.mjs';
 
 export const dynamicId = id => typeof id === 'string' && /^[a-z][a-z0-9-]{0,31}$/.test(id) && !IDS.includes(id);
 export function validateDynamicCatalog(catalog, now = Date.now()) {
-  if (catalog.schemaVersion !== 2 || catalog.channel !== 'game-hub-resources-v2' || !Array.isArray(catalog.games) || catalog.games.length > 16) throw new Error('Dynamic catalog protocol');
+  if (catalog.schemaVersion !== 2 || catalog.channel !== 'game-hub-resources-v2' || !Array.isArray(catalog.games) || catalog.games.length > 100) throw new Error('Dynamic catalog protocol');
   const ids = new Set(), assets = new Set();
   for (const game of catalog.games) {
     if (!dynamicId(game.id) || ids.has(game.id) || assets.has(game.assetId)) throw new Error('Dynamic identity');

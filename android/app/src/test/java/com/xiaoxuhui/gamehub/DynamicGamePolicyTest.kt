@@ -26,6 +26,13 @@ class DynamicGamePolicyTest {
         rejected { ResourcePolicy.parseCatalog(json,"d".repeat(64)) }
         assertEquals(0,DynamicGamePolicy.parseCatalog(json.put("games",JSONArray()),"d".repeat(64)).games.size)
     }
+    @Test fun accepts100GamesAndRejects101() {
+        val json=fixture(); val template=json.getJSONArray("games").getJSONObject(0); val list=JSONArray()
+        for (i in 0 until 100) list.put(JSONObject(template.toString()).put("id","game-$i").put("storageContract","game-$i-dynamic-v1").put("assetId",1000+i))
+        json.put("games",list); assertEquals(100,DynamicGamePolicy.parseCatalog(json,"d".repeat(64)).games.size)
+        list.put(JSONObject(template.toString()).put("id","game-100").put("storageContract","game-100-dynamic-v1").put("assetId",1100))
+        rejected { DynamicGamePolicy.parseCatalog(json,"d".repeat(64)) }
+    }
     @Test fun rejectsDuplicatesReservedIdsPathsAndCoercion() {
         for((key,value) in listOf("id" to "conway","id" to "../x","available" to "true","bridgeProtocol" to 0,"sourceRepository" to "https://evil.example/x.git","assetId" to 0,"minHostVersionCode" to 3,"entryPage" to "plugin.dex")) {
             val json=fixture();json.getJSONArray("games").getJSONObject(0).put(key,value);rejected { DynamicGamePolicy.parseCatalog(json,"d".repeat(64)) }

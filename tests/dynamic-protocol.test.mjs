@@ -34,3 +34,11 @@ test('raw signed integer decimals and exponents cannot fold into accepted JS int
     assert.throws(()=>verifyEnvelope(envelope,pair.publicKey,'fixture'),/Noncanonical integer/);
   }
 });
+
+test('dynamic catalog accepts 100 distinct games and rejects 101',()=>{
+  const data=fixture(), base=data.games[0];
+  data.games=Array.from({length:100},(_,i)=>({...base,id:'game-'+i,storageContract:'game-'+i+'-dynamic-v1',assetId:1000+i}));
+  assert.equal(validateDynamicCatalog(data,now).games.length,100);
+  data.games.push({...base,id:'game-100',storageContract:'game-100-dynamic-v1',assetId:1100});
+  assert.throws(()=>validateDynamicCatalog(data,now),/Dynamic catalog protocol/);
+});

@@ -9,7 +9,7 @@ import { createZip, readStoredZip, inspectResources } from './resource-bundle.mj
 const root = fileURLToPath(new URL('../', import.meta.url));
 function git(directory, args) { return execFileSync('git', args, {cwd:directory, encoding:'utf8', env:{...process.env,GIT_TERMINAL_PROMPT:'0',GIT_OPTIONAL_LOCKS:'0'}}).trim(); }
 export function dynamicSources(bytes) {
-  const lock=strictJson(bytes); if(lock.schemaVersion!==1 || !Array.isArray(lock.sources) || lock.sources.length>16) throw new Error('Dynamic source lock');
+  const lock=strictJson(bytes); if(lock.schemaVersion!==1 || !Array.isArray(lock.sources) || lock.sources.length>100) throw new Error('Dynamic source lock');
   const ids=new Set();
   for(const source of lock.sources) {
     if(!dynamicId(source.id) || ids.has(source.id) || !/^https:\/\/github\.com\/xiaoxuhui\/[A-Za-z0-9_.-]+\.git$/.test(source.repository) || !/^[0-9a-f]{40}$/.test(source.revision)) throw new Error('Dynamic immutable source identity');

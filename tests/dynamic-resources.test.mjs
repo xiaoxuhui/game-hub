@@ -30,3 +30,9 @@ test('v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse',()
   payload.games[0].available=false;assert.throws(()=>validateReleaseSnapshot(payload,{...snapshot,assetPages:[{page:1,hasNext:false,assets:[]}]},'game-resources-v2'));
   assert.throws(()=>attachAssets([game],release,[...assets,assets[0]],'game-resources-v2'));
 });
+
+test('dynamic source lock accepts 100 distinct games and rejects 101',()=>{
+  const s=structuredClone(source),make=n=>({schemaVersion:1,sources:Array.from({length:n},(_,i)=>({...s,id:'game-'+i}))});
+  assert.equal(dynamicSources(Buffer.from(JSON.stringify(make(100)))).sources.length,100);
+  assert.throws(()=>dynamicSources(Buffer.from(JSON.stringify(make(101)))),/Dynamic source lock/);
+});

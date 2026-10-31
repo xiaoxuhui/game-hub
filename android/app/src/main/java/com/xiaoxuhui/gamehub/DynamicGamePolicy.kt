@@ -5,7 +5,7 @@ import org.json.JSONObject
 /** A separate channel: accepting a dynamic game must never relax the four-game v1 parser. */
 internal object DynamicGamePolicy {
     const val CHANNEL = "game-hub-resources-v2"
-    const val MAX_GAMES = 16
+    const val MAX_GAMES = 100
     private val builtins = setOf("conway", "eml", "light", "turing")
     fun validId(id: String) = Regex("[a-z][a-z0-9-]{0,31}").matches(id) && id !in builtins
     fun contract(id: String) = "$id-dynamic-v1"
