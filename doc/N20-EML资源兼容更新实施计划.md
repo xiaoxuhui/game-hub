@@ -45,11 +45,12 @@
 - Evidence: `doc/evidence/n20-eml-resource-candidate.md`（索引）；逐次构建摘要、预检输出和上游巡检分别在同目录下的 `n20-eml-resource-builds.json`、`n20-eml-v1-preflight.json`、`n20-eml-upstream-watch.json`。
 - Independent result: CLOSED；审阅确认 U06 达标。D 将在最终 producer commit 重新构建并在线预检。
 
-## D 签名发行与线上验证 `[IN_PROGRESS]`
+## D 签名发行与线上验证 `[VERIFIED]`
 
 - DoD: U07 通过；资源目录历史连续可验；新 ZIP 公网摘要与候选相符；不构建或发布 APK。
+- Evidence: `doc/evidence/n20-eml-v1-publication.md`；线上 sequence 1–7 连续验签，11 个唯一 ZIP 重新下载摘要通过。
 
-## E 归档与最终独立复核 `[PENDING]`
+## E 归档与最终独立复核 `[IN_PROGRESS]`
 
 - DoD: 代码/发行各阶段按逻辑切片提交；每次提交后独立审阅并记录批改；最终原仓只读状态、主分支及资源目录状态都可复核。
 

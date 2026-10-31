@@ -1,0 +1,94 @@
+{
+  "catalogSequence": "7",
+  "catalogAssetId": 694073326,
+  "catalogSha256": "dfcc326c7db3892b472aca6fae145f07ebd20a90f26522270ef46dc51ff547bc",
+  "historyAssetId": 676509558,
+  "verifiedHistorySequences": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7"
+  ],
+  "resources": [
+    {
+      "id": "conway",
+      "contentCode": 1,
+      "assetId": 623110366,
+      "bytes": 269135,
+      "sha256": "77af28d46a71d3539b23f32948634305275bc1d968ac7c2da020ac162ed5cc65"
+    },
+    {
+      "id": "eml",
+      "contentCode": 1,
+      "assetId": 623110443,
+      "bytes": 106336,
+      "sha256": "20205b0dfba473bf72af9b4099a0cd5526cddee89fa6b78f7f3220d1b29f90e6"
+    },
+    {
+      "id": "light",
+      "contentCode": 1,
+      "assetId": 623110476,
+      "bytes": 114919,
+      "sha256": "9df0cadcfc979a355df2b07e6f0d0aff5c09fd8a0669b33324eef176b42530c0"
+    },
+    {
+      "id": "turing",
+      "contentCode": 1,
+      "assetId": 623110526,
+      "bytes": 83347,
+      "sha256": "e633a50595e969d6fd96b52c0d1d5380a17220b0a0acad88055549c570339ce1"
+    },
+    {
+      "id": "light",
+      "contentCode": 2,
+      "assetId": 628400804,
+      "bytes": 115671,
+      "sha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267"
+    },
+    {
+      "id": "turing",
+      "contentCode": 2,
+      "assetId": 628400874,
+      "bytes": 86435,
+      "sha256": "ad26e84c8b60d88bcff9f6569172e2f2e518aa031e036ecafd1432731f63af43"
+    },
+    {
+      "id": "conway",
+      "contentCode": 2,
+      "assetId": 631362543,
+      "bytes": 297262,
+      "sha256": "54e9dc88bcc90f426075d16d2037c50b1f992c87f3525aa599c7d8f9bc19629f"
+    },
+    {
+      "id": "conway",
+      "contentCode": 3,
+      "assetId": 675911480,
+      "bytes": 328473,
+      "sha256": "f9207e077589e67bc7d9d531e302a95fffc4027c8497035509ca258f803e6285"
+    },
+    {
+      "id": "eml",
+      "contentCode": 2,
+      "assetId": 676157535,
+      "bytes": 843507,
+      "sha256": "6f3dff273d70e47243bce75b167a9ce5ab4b6513deed35b363b903ddc5738935"
+    },
+    {
+      "id": "turing",
+      "contentCode": 3,
+      "assetId": 676509142,
+      "bytes": 177496,
+      "sha256": "282aabcc00306551df4e8d31aec8db58e43a2142203c818ff8abd96f046ae626"
+    },
+    {
+      "id": "eml",
+      "contentCode": 3,
+      "assetId": 694072897,
+      "bytes": 861794,
+      "sha256": "d13a6ac888dd8662225788ca016824a3370a3c3683f3c2f114a6a9656bb424c7"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "producerCommit": "c1c17f31726c4bf305b3c1562a95372ceb5b3e26",
+  "sourceLockSha256": "189f9f904455ae46f3dafc7a6eabd99386fd609402a742de562b612173c1c2ac",
+  "resourceSourceLockSha256": "3cfe49becedf29f235e1df38bc9c429c53c860f83ca2ddf0d16771adbc2a0b1e",
+  "resourceReleaseLockSha256": "73dce63b0097680756f4b23644872b8ed4ce4d0de479c61c33f2834c28a2231a",
+  "resourceBundleManifest": {
+    "bytes": 15297,
+    "sha256": "750d892b12af0ba985e6422776c8b9e89098e06dff852bd45637fc4e56c254ff",
+    "files": 80
+  },
+  "unsignedCatalogSha256": "f045f01c4c621e548fd01b8b4db65eb025134bf6d3932d4796c4a8e8e088a95f",
+  "archives": [
+    {
+      "name": "game-conway-3-f9207e077589.zip",
+      "bytes": 328473,
+      "sha256": "f9207e077589e67bc7d9d531e302a95fffc4027c8497035509ca258f803e6285"
+    },
+    {
+      "name": "game-eml-3-d13a6ac888dd.zip",
+      "bytes": 861794,
+      "sha256": "d13a6ac888dd8662225788ca016824a3370a3c3683f3c2f114a6a9656bb424c7"
+    },
+    {
+      "name": "game-light-2-19adc2db9b14.zip",
+      "bytes": 115671,
+      "sha256": "19adc2db9b143289c4c8fa6b83d024209ce050fd7744888bd932a7035d115267"
+    },
+    {
+      "name": "game-turing-3-282aabcc0030.zip",
+      "bytes": 177496,
+      "sha256": "282aabcc00306551df4e8d31aec8db58e43a2142203c818ff8abd96f046ae626"
+    }
+  ],
+  "verification": {
+    "resourceBundle": "passed",
+    "completeFiles": 80,
+    "fullNodeTests": "237 passed, 0 failed",
+    "apkBuild": "not run"
+  }
+}

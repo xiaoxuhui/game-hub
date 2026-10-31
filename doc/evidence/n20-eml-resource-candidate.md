@@ -40,3 +40,8 @@ The existing `scripts/eml-hall-browser.cjs --candidate` harness could not start 
 - 两次构建的逐次输出和 ZIP 摘要：`doc/evidence/n20-eml-resource-builds.json`；报告断言两次清单、manifest 和每个 ZIP SHA-256 完全一致。
 - sequence 7 匿名预检输入摘要、原始输出和前快照摘要：`doc/evidence/n20-eml-v1-preflight.json`。上一份已签名目录原文 SHA 与 GitHub 当前资产一致。
 - 今日上游巡检的完整只读结果：`doc/evidence/n20-eml-upstream-watch.json`。
+
+
+## 最终生产检出
+
+- 在远端 `main` 的 producer `c1c17f31726c4bf305b3c1562a95372ceb5b3e26` 全新发行克隆中重新构建并校验；最终 SHA、80 文件 manifest 与 unsigned 清单见 `n20-eml-final-production-build.json`。ZIP 摘要与阶段 C 双构建一致。

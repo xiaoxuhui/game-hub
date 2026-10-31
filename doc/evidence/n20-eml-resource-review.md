@@ -37,3 +37,11 @@
 
 - 独立复审确认 C 阶段 **VERIFIED**：双构建一致；与 sequence 6 线上目录相比，仅 EML contentCode 从 2 升至 3，其他三款 ZIP 摘要及编号不变；40 项 proof、资源闭包、MIT/KaTeX 许可与测试均通过。
 - D 阶段注意：后续归档提交使 d54 候选绑定过期。正式发行应在最终 producer commit 的干净独立检出中重新构建、校验并做最新线上预检。
+
+
+## D 阶段发行结果
+
+- 最终生产检出 `c1c17f3` 发布资源目录 sequence 7；只增加 EML-3 ZIP 并激活新签名目录。
+- 失败的两次预检没有读取凭据或写远端；第三次预检通过，签名、上传、历史目录归档和公网全历史验证成功。
+- 详细 release ID、asset IDs、摘要与验证文件见 `doc/evidence/n20-eml-v1-publication.md` 及关联 JSON。
+- D 阶段已完成；E 阶段独立最终复核待执行。
