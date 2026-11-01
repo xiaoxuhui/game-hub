@@ -135,7 +135,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "8a32e080dd586824a2f21b8e0ef3bb9b23b5d73a",
+      "revision": "42b315b89c3be1c8a28eed12fff0d5f38a3f0fcb",
       "directory": "dist",
       "version": "0.3.23",
       "contentCode": 32,
@@ -157,7 +157,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.23：自制门输入也采用单一起点和物理分岔，信号交叉自动使用同步的三异或交叉器；保留原电路。"
+      "releaseNotes": "0.3.23：自制门单源分岔与同步三异或交叉，自动去掉最后一次使用后的多余支线；新增完整电路PNG导出，去除画布叠字，保留原存档。"
     },
     {
       "id": "traffic-planner",
