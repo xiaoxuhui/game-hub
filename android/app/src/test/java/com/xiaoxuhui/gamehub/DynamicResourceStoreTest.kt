@@ -135,6 +135,24 @@ class DynamicResourceStoreTest {
             broken.recoverAllBuiltinsFromTrustedHistory();assertEquals(catalog.games.single().contentCode,broken.selection("memory-demo").highestCode);assertTrue(broken.selection("memory-demo").pinned)
         }
     }
+    @Test fun expandedCatalogPreservesOldInstallationAndPersists100GameWatermarks() {
+        Fixture().use { f ->
+            val store=f.store(); val (old,oldEnvelope,archive)=f.release()
+            store.acceptCatalog(oldEnvelope); store.install(old.games.single(),oldEnvelope,archive)
+            store.openSession("memory-demo",true).close()
+            val before=store.selection("memory-demo")
+            // The first expanded publication is byte-identical to the legacy catalog.
+            assertEquals(old.sequence,store.acceptCatalog(oldEnvelope).sequence)
+            val ids=listOf("memory-demo")+(0 until 99).map {"demo-$it"}
+            val (expanded,envelope,_)=f.release(sequence=2,ids=ids)
+            assertEquals(100,store.acceptCatalog(envelope).games.size)
+            assertEquals(before.active,store.selection("memory-demo").active)
+            val reopened=f.store();assertNull(reopened.failure())
+            assertEquals(100,reopened.rememberedCatalog()!!.games.size)
+            reopened.openSession("memory-demo",true).use { assertEquals(old.games.single().identity,it.game!!.identity) }
+            assertEquals(expanded.sequence,reopened.rememberedCatalog()!!.sequence)
+        }
+    }
     @Test fun unsupportedBridgeAndOversizedCumulativeDirectoryNeverInstall() {
         Fixture().use {f->val store=f.store();val (catalog,envelope,_)=f.release(bridge=2);store.acceptCatalog(envelope);assertFalse(store.isEligible(catalog.games.single()))
             assertEquals(100,f.release(ids=(0 until 100).map {"demo-$it"}).first.games.size)
