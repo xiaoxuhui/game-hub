@@ -135,7 +135,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "42b315b89c3be1c8a28eed12fff0d5f38a3f0fcb",
+      "revision": "4f7db4c635afc033c8fff83cd304adacc4a5cd4a",
       "directory": "dist",
       "version": "0.3.23",
       "contentCode": 32,
@@ -157,7 +157,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.23：自制门单源分岔与同步三异或交叉，自动去掉最后一次使用后的多余支线；新增完整电路PNG导出，去除画布叠字，保留原存档。"
+      "releaseNotes": "0.3.23：自制门单源分岔和同步三异或交叉，退休多余支线；完整PNG导出、去除叠字，所有未倒骨牌统一白色，保留原存档。"
     },
     {
       "id": "traffic-planner",
