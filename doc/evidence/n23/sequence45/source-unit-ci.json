@@ -1,0 +1,10 @@
+{
+  "repository": "xiaoxuhui/logic-circuit",
+  "revision": "891d2e2eb5f3da0f0088d5517366754c61156251",
+  "runId": 41349025013,
+  "jobId": 124974963667,
+  "jobName": "build",
+  "status": "completed",
+  "conclusion": "success",
+  "scope": "unit tests and committed distribution verification; full browser job not included"
+}
