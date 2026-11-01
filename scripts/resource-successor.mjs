@@ -126,7 +126,9 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const current=snapshot.assetPages.flatMap(p=>p.assets).filter(a=>a.name==='catalog.signed.json');
       if(current.length!==1||current[0].digest!==`sha256:${expected}`)throw new Error('Current history moved since preflight');
       const payload=successor(old,candidates(old),snapshot);
-      const guard=await guardLegacyPublication(snapshot,readFileSync(join(directory,'previous.signed.json')),payload,publicKey,download);
+      let expandedRaw;
+      const guard=await guardLegacyPublication(snapshot,readFileSync(join(directory,'previous.signed.json')),payload,publicKey,async asset=>{expandedRaw=await download(asset);return expandedRaw;});
+      put(directory,'expanded-signing.signed.json',expandedRaw);
       put(directory,'expanded-signing-guard.json',JSON.stringify(guard,null,2)+'\n');
       put(directory,'signing-snapshot.json',JSON.stringify(snapshot,null,2)+'\n');
       put(directory,'payload.json',JSON.stringify(payload)+'\n');console.log(`Prepared asset-bound successor sequence ${sequence}`);

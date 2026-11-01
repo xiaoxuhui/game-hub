@@ -61,3 +61,7 @@ test('production legacy channel refuses more than 16 games before asset validati
   payload.games=Array.from({length:17},(_,i)=>({...base,id:'game-'+i,assetId:100+i,storageContract:'game-'+i+'-dynamic-v1'}));
   assert.throws(()=>validateSigningInput(payload,snapshot,null,now),/Legacy v2 clients support at most 16/);
 });
+test('production signing cannot bypass verified expanded proof or read key first',()=>{
+  const root=mkdtempSync(join(tmpdir(),'legacy-production-guard-'));
+  try{const {payload,snapshot}=fixture(),issued=Date.now()-1000;payload.issuedAt=new Date(issued).toISOString();payload.expiresAt=new Date(issued+86400000).toISOString();const input=join(root,'payload.json'),snap=join(root,'snapshot.json'),out=join(root,'signed.json'),cli=fileURLToPath(new URL('../scripts/dynamic-catalog.mjs',import.meta.url));writeFileSync(input,JSON.stringify(payload));writeFileSync(snap,JSON.stringify(snapshot));const r=spawnSync(process.execPath,[cli,'sign',input,join(root,'no-private-key'),'resources-20261008',out,snap],{encoding:'utf8'});assert.notEqual(r.status,0);assert.match(r.stderr,/Production legacy signing requires previous and expanded signed proofs/);}finally{rmSync(root,{recursive:true,force:true});}
+});

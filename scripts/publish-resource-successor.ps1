@@ -180,7 +180,7 @@ try {
     $taskDer=[Security.Cryptography.ProtectedData]::Unprotect($taskEncrypted,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
     $taskPem="-----BEGIN PRIVATE KEY-----`n"+[Convert]::ToBase64String($taskDer,[Base64FormattingOptions]::InsertLineBreaks)+"`n-----END PRIVATE KEY-----`n"
     $signed=Join-Path $taskDirectory 'catalog.signed.json'
-    $taskPem | node scripts/dynamic-catalog.mjs sign (Join-Path $taskDirectory 'payload.json') - resources-20261008 $signed (Join-Path $taskDirectory 'signing-snapshot.json') (Join-Path $taskDirectory 'previous.signed.json')
+    $taskPem | node scripts/dynamic-catalog.mjs sign (Join-Path $taskDirectory 'payload.json') - resources-20261008 $signed (Join-Path $taskDirectory 'signing-snapshot.json') (Join-Path $taskDirectory 'previous.signed.json') (Join-Path $taskDirectory 'expanded-signing.signed.json')
     if($LASTEXITCODE -ne 0){throw 'History-aware signing failed; old catalog remains current'}
     node scripts/dynamic-catalog.mjs verify $signed android/app/src/main/res/raw/resource_public_key.der resources-20261008
     if($LASTEXITCODE -ne 0){throw 'Production public verification failed'}

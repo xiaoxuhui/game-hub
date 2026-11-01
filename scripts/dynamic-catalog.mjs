@@ -35,7 +35,7 @@ export function validateSigningInput(payload, snapshot, previous = null, now = D
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const [mode, input, keyPath, keyId, output, snapshotPath, previousPath] = process.argv.slice(2);
+    const [mode, input, keyPath, keyId, output, snapshotPath, previousPath, expandedPath] = process.argv.slice(2);
     if (mode === 'capture' && input && !keyPath) {
       writeFileSync(input, JSON.stringify(await captureReleaseSnapshot(fetch, tag), null, 2) + '\n', { flag: 'wx' });
       console.log('Captured fixed v2 public resource release and complete asset pages');
@@ -44,6 +44,12 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       // Reject malformed protocol, incomplete assets and unsigned higher sequences before reading a key.
       validateDynamicCatalog(payload); assertLegacyCatalogCapacity(payload); validateReleaseSnapshot(payload, snapshot, tag);
       if (!previousPath) validateSuccessor(null, payload);
+      if (keyId === 'resources-20261008') {
+        if (!previousPath || !expandedPath) throw new Error('Production legacy signing requires previous and expanded signed proofs');
+        const {validateLegacyAgainstExpanded}=await import('./expanded-legacy-guard.mjs');
+        const productionKey=createPublicKey({key:readFileSync(new URL('../android/app/src/main/res/raw/resource_public_key.der',import.meta.url)),format:'der',type:'spki'});
+        validateLegacyAgainstExpanded(readFileSync(previousPath),payload,readFileSync(expandedPath),snapshot,productionKey);
+      }
       const key = readFileSync(keyPath === '-' ? 0 : keyPath);
       try {
         const previous = previousPath ? verifyEnvelope(readFileSync(previousPath), key, keyId).catalog : null;
