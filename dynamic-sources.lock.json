@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "891d2e2eb5f3da0f0088d5517366754c61156251",
+      "revision": "86a671bf597dce78adeec725cb27f8066962aa6d",
       "directory": "dist",
-      "version": "0.3.25",
-      "contentCode": 34,
+      "version": "0.3.26",
+      "contentCode": 35,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -153,11 +153,15 @@
         "src/minecraft-view.js",
         "src/domino-model.js",
         "src/domino-view.js",
+        "src/wireworld-model.js",
+        "src/wireworld-compile.js",
+        "src/wireworld-worker.js",
+        "src/wireworld-view.js",
         "src/vendor/three.min.js",
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.25：异或交叉后明确接同向或门汇流，再共用输出干线；两路同时触发合并为1，两路传播时间保持一致，原存档不变。"
+      "releaseNotes": "0.3.26：新增电线世界，黑空白、橙线、蓝头、白尾；支持当前电路真实CA转换、输入切换、运行到输出及延迟逐轮采样，另有手绘、速度、备份、图案和PNG导出。"
     },
     {
       "id": "traffic-planner",
