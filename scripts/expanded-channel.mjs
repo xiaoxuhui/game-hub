@@ -37,13 +37,14 @@ export function validateLegacyTransition(previousLegacyProof,nextLegacyProof,exp
 
 // Expanded updates retain every ID from both channels and use a sequence above
 // both watermarks. Asset binding is validated against a complete public snapshot.
-export function expandedSuccessor(legacyProof,expandedProof,candidates,snapshot,now=Date.now()){
+export function expandedSuccessor(legacyProof,expandedProof,candidates,snapshot,now=Date.now(),reserveLegacyAdvance=false){
   const {legacy,expanded}=validateDualCatalogs(legacyProof,expandedProof);
   assert(Array.isArray(candidates)&&new Set(candidates.map(g=>g.id)).size===candidates.length,'Candidate identities');
   const replacements=attachAssets(candidates,snapshot.release,snapshot.assetPages.flatMap(p=>p.assets),'game-resources-v2');
   const games=expanded.games.map(g=>replacements.find(x=>x.id===g.id)??g);
   games.push(...replacements.filter(g=>!expanded.games.some(x=>x.id===g.id)));
-  const sequence=(BigInt(expanded.catalogSequence)>BigInt(legacy.catalogSequence)?BigInt(expanded.catalogSequence):BigInt(legacy.catalogSequence))+1n;
+  const legacyFloor=BigInt(legacy.catalogSequence)+(reserveLegacyAdvance?1n:0n);
+  const sequence=(BigInt(expanded.catalogSequence)>legacyFloor?BigInt(expanded.catalogSequence):legacyFloor)+1n;
   const payload={schemaVersion:2,channel:'game-hub-resources-v2',releaseId:legacy.releaseId,catalogSequence:String(sequence),issuedAt:new Date(now).toISOString(),expiresAt:new Date(now+89*86400000).toISOString(),games};
   validateDynamicCatalog(payload,now);validateReleaseSnapshot(payload,snapshot,'game-resources-v2');validateSuccessor(expanded,payload);
   // A fresh successor has strictly greater sequence; hash is irrelevant here.
