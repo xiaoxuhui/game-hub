@@ -135,7 +135,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "d2db551badfc6bbbc766fc856856be1c870eb7dd",
+      "revision": "98a998c4e19cf84a6555b5d2ba6d5e194fb1b6b7",
       "directory": "dist",
       "version": "0.3.21",
       "contentCode": 30,
@@ -157,7 +157,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.21：新增多米诺骨牌模式，实际接触驱动倒牌、平滑转弯、共享分岔、逐步/自动推倒和重新立牌；支持当前电路、全加器示例和延迟跨轮采样，原电路不变。"
+      "releaseNotes": "0.3.21：新增骨牌模式、平滑转弯和接触分岔；默认或门/异或门、三异或交叉器与A/B/C_in单起点接线示例，保留原电路。"
     },
     {
       "id": "traffic-planner",
