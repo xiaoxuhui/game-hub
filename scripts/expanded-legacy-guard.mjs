@@ -19,3 +19,11 @@ export function validateLegacyAgainstExpanded(previousBytes,nextLegacy,expandedB
   const next={catalog:nextLegacy,payloadSha256:sha256(JSON.stringify(nextLegacy))};
   validateLegacyTransition(previous,next,expanded,snapshot);return {expandedSequence:expanded.catalog.catalogSequence,expandedSha256:sha256(expandedBytes)};
 }
+
+export async function guardLegacyPublication(snapshot,previousBytes,nextLegacy,publicKey,download,now=Date.now(),expectedReleaseId=407394942){
+  const matches=snapshot.assetPages.flatMap(p=>p.assets).filter(a=>a.name==='catalog-expanded.signed.json');
+  if(matches.length!==1)throw Error('Expanded catalog missing or duplicated; stop legacy publication');
+  const bytes=await download(matches[0]);
+  const checked=validateLegacyAgainstExpanded(previousBytes,nextLegacy,bytes,snapshot,publicKey,now,expectedReleaseId);
+  return {...checked,assetId:matches[0].id};
+}

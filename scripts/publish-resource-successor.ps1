@@ -185,6 +185,11 @@ try {
     node scripts/dynamic-catalog.mjs verify $signed android/app/src/main/res/raw/resource_public_key.der resources-20261008
     if($LASTEXITCODE -ne 0){throw 'Production public verification failed'}
     Assert-FixedTags
+    # Guard against an expanded-channel change after the last signed snapshot.
+    $expandedGuard=Get-Content -LiteralPath (Join-Path $taskDirectory 'expanded-signing-guard.json') -Raw | ConvertFrom-Json
+    if($expandedGuard.assetId -le 0 -or $expandedGuard.expandedSha256 -notmatch '^[0-9a-f]{64}$'){throw 'Missing expanded signing guard'}
+    $expandedCurrent=Invoke-RestMethod -Uri "$taskApi/releases/assets/$($expandedGuard.assetId)" -Headers $taskHeaders
+    if($expandedCurrent.name -cne 'catalog-expanded.signed.json' -or $expandedCurrent.digest -cne "sha256:$($expandedGuard.expandedSha256)" -or $expandedCurrent.state -cne 'uploaded'){throw 'Expanded channel moved before legacy activation; inspect'}
     $current=Invoke-RestMethod -Uri "$taskApi/releases/assets/$taskOldId" -Headers $taskHeaders
     if($current.name -cne 'catalog.signed.json' -or $current.digest -ne "sha256:$ExpectedPreviousSha" -or $current.state -ne 'uploaded'){throw 'Old current asset moved before activation; inspect'}
     $oldPayload=Get-Content -LiteralPath (Join-Path $taskDirectory 'payload.json') -Raw | ConvertFrom-Json

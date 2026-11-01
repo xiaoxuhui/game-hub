@@ -6,6 +6,8 @@ import {assetName,sha256,strictJson,verifyEnvelope,LIMITS} from './resource-prot
 import {captureReleaseSnapshot,validateReleaseSnapshot,attachAssets} from './resource-catalog.mjs';
 import {validateSigningInput} from './dynamic-catalog.mjs';
 import {validateDynamicCatalog} from './dynamic-protocol.mjs';
+import {guardLegacyPublication} from './expanded-legacy-guard.mjs';
+import {validateDualCatalogs} from './expanded-channel.mjs';
 import {verifyDynamicResources} from './dynamic-resources.mjs';
 import {selectResourceCandidates,selectionRecord,verifySelection,assertFreshSelectedAssets,assertSelectedSuccessor} from './resource-selection.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
@@ -91,7 +93,9 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       if(originals.length!==1||originals[0].digest!==`sha256:${expected}`)throw new Error('Original current catalog record differs');
       const games=candidates(old);
       validateUploadedResume(old,games,snapshot,json(directory,'uploaded-resources.json'),expected,originals[0].id);
-      successor(old,games,snapshot);
+      const next=successor(old,games,snapshot);
+      const guard=await guardLegacyPublication(snapshot,readFileSync(join(directory,'previous.signed.json')),next,publicKey,download);
+      put(directory,'expanded-resume-guard.json',JSON.stringify(guard,null,2)+'\n');
       put(directory,'resume-snapshot.json',JSON.stringify(snapshot,null,2)+'\n');
       console.log('Resume admission verified existing uploads and unchanged production current; no write to remote');
     }else if(mode==='preflight'){
@@ -111,7 +115,10 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const all=fake.assetPages.flatMap(p=>p.assets),pages=[];
       for(let i=0;i<all.length;i+=100)pages.push({page:pages.length+1,hasNext:i+100<all.length,assets:all.slice(i,i+100)});
       const admission={...fake,assetPages:pages};
-      successor(old,games,admission);if(selector)put(directory,'publication-selection.json',JSON.stringify(selectionRecord(old,games,selector,context()),null,2)+'\n');
+      const next=successor(old,games,admission);
+      const guard=await guardLegacyPublication(admission,bytes,next,publicKey,download);
+      put(directory,'expanded-preflight-guard.json',JSON.stringify(guard,null,2)+'\n');
+      if(selector)put(directory,'publication-selection.json',JSON.stringify(selectionRecord(old,games,selector,context()),null,2)+'\n');
       console.log(`Preflight verified previous sequence ${old.catalogSequence}, ${games.length} immutable candidates`);
     }else if(mode==='payload'){
       const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2');
@@ -119,6 +126,8 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const current=snapshot.assetPages.flatMap(p=>p.assets).filter(a=>a.name==='catalog.signed.json');
       if(current.length!==1||current[0].digest!==`sha256:${expected}`)throw new Error('Current history moved since preflight');
       const payload=successor(old,candidates(old),snapshot);
+      const guard=await guardLegacyPublication(snapshot,readFileSync(join(directory,'previous.signed.json')),payload,publicKey,download);
+      put(directory,'expanded-signing-guard.json',JSON.stringify(guard,null,2)+'\n');
       put(directory,'signing-snapshot.json',JSON.stringify(snapshot,null,2)+'\n');
       put(directory,'payload.json',JSON.stringify(payload)+'\n');console.log(`Prepared asset-bound successor sequence ${sequence}`);
     }else if(mode==='online'){
@@ -128,7 +137,10 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       if(current.length!==1)throw new Error('Current catalog missing');
       const bytes=await download(current[0]),local=readFileSync(join(directory,'catalog.signed.json'));
       if(!bytes.equals(local))throw new Error('Online signed bytes differ from reviewed issuance');
-      const next=verifyEnvelope(bytes,publicKey,keyId).catalog;validateSigningInput(next,snapshot,old);
+      const nextProof=verifyEnvelope(bytes,publicKey,keyId),next=nextProof.catalog;validateSigningInput(next,snapshot,old);
+      const expandedAssets=assets.filter(a=>a.name==='catalog-expanded.signed.json');if(expandedAssets.length!==1)throw Error('Expanded catalog unavailable after publication');
+      const expandedBytes=await download(expandedAssets[0]),expandedProof=verifyEnvelope(expandedBytes,publicKey,keyId);
+      validateDynamicCatalog(expandedProof.catalog);validateReleaseSnapshot(expandedProof.catalog,snapshot,'game-resources-v2');validateDualCatalogs(nextProof,expandedProof);
       if(selector){const games=candidates(old);assertSelectedSuccessor(old,next,selector==='two-new-games'?games:games[0],selector);}
       if(next.catalogSequence!==sequence)throw new Error('Online sequence mismatch');
       const history=assets.filter(a=>a.name===`catalog-seq${old.catalogSequence}-${expected.slice(0,12)}.signed.json`);
