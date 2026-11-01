@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "4f7db4c635afc033c8fff83cd304adacc4a5cd4a",
+      "revision": "9d692eea12720f7057ff1fa758d7828f42b32534",
       "directory": "dist",
-      "version": "0.3.23",
-      "contentCode": 32,
+      "version": "0.3.24",
+      "contentCode": 33,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -157,7 +157,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.23：自制门单源分岔和同步三异或交叉，退休多余支线；完整PNG导出、去除叠字，所有未倒骨牌统一白色，保留原存档。"
+      "releaseNotes": "0.3.24：多米诺模式新增保存到相册按钮，PNG保存窗口默认定位图片；可取消，不支持原生窗口时转为下载，保持原存档不变。"
     },
     {
       "id": "traffic-planner",
