@@ -54,7 +54,7 @@ class ResourceCatalogClientTest {
             val signature = Signature.getInstance("SHA256withRSA").run { initSign(pair.private); update(payload); sign() }
             envelope = JSONObject().put("envelopeVersion", 1).put("keyId", ResourcePolicy.KEY_ID).put("payloadBase64", Base64.getEncoder().encodeToString(payload)).put("signatureBase64", Base64.getEncoder().encodeToString(signature)).toString().toByteArray()
             catalog = policy.fresh(envelope, pair.public.encoded, now)
-            assets = listOf(asset(50, "catalog.signed.json", envelope.size.toLong(), ResourcePolicy.sha256(envelope))) + catalog.games.map { asset(it.assetId, it.assetName, it.archiveBytes, it.archiveSha256) }
+            assets = listOf(asset(50, policy.catalogAssetName, envelope.size.toLong(), ResourcePolicy.sha256(envelope))) + catalog.games.map { asset(it.assetId, it.assetName, it.archiveBytes, it.archiveSha256) }
             network.replies[releaseUrl] = Reply(JSONObject().put("id", 10).put("draft", false).put("prerelease", true).put("tag_name", policy.releaseTag).toString().toByteArray(), headers = mapOf("ETag" to "release"))
             network.replies[pageUrl] = Reply(JSONArray(assets).toString().toByteArray(), headers = mapOf("ETag" to "assets"))
             network.replies["$root/releases/assets/50"] = Reply(envelope)
@@ -77,6 +77,16 @@ class ResourceCatalogClientTest {
         f.network.replies[f.releaseUrl]=Reply(JSONObject().put("id",10).put("draft",false).put("prerelease",true).put("tag_name","game-resources-v1").toString().toByteArray())
         rejected {f.client().query()}
         assertTrue(f.network.calls.all {it.closed})
+    }
+    @Test fun dynamicClientUsesExpandedCatalogAndNeverFallsBackToLegacy() {
+        val f=Fixture(ResourceStorePolicy.DYNAMIC)
+        val legacy=f.asset(51,"catalog.signed.json",f.envelope.size.toLong(),ResourcePolicy.sha256(f.envelope))
+        f.network.replies[f.pageUrl]=Reply(JSONArray(f.assets+legacy).toString().toByteArray())
+        assertEquals(1,f.client().query().catalog.games.size)
+        f.network.replies[f.pageUrl]=Reply(JSONArray(listOf(legacy)+f.assets.drop(1)).toString().toByteArray())
+        rejected {f.client().query()}
+        f.network.replies[f.pageUrl]=Reply(JSONArray(f.assets+f.assets.first()+legacy).toString().toByteArray())
+        rejected {f.client().query()}
     }
     @Test fun retiredDynamicAssetsMustRemainBoundButCannotReserveDownload() {
         val f=Fixture(ResourceStorePolicy.DYNAMIC,available=false);val offer=f.client().query();val game=offer.catalog.games.single()

@@ -49,7 +49,7 @@ internal class ResourceCatalogClient(private val publicKey: ByteArray, private v
         }
         val ids = assets.map { ResourcePolicy.integer(it, "id", 1) }; val names = assets.map { it.getString("name") }
         require(ids.size == ids.toSet().size && names.size == names.toSet().size) { "资产编号或名称重复" }
-        val signed = assets.singleOrNull { it.getString("name") == "catalog.signed.json" } ?: error("没有唯一签名资源目录")
+        val signed = assets.singleOrNull { it.getString("name") == policy.catalogAssetName } ?: error("没有唯一签名资源目录")
         require(signed.getString("state") == "uploaded")
         val size = ResourcePolicy.integer(signed, "size", 1, 1048576).toInt(); val catalogDigest = digest(signed)
         var envelope = byteArrayOf()

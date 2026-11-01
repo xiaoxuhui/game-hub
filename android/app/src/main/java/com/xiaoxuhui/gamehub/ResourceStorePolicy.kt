@@ -4,6 +4,7 @@ package com.xiaoxuhui.gamehub
 internal enum class ResourceStorePolicy {
     BUILTIN, DYNAMIC;
     val releaseTag get() = if (this == BUILTIN) "game-resources-v1" else "game-resources-v2"
+    val catalogAssetName get() = if (this == BUILTIN) "catalog.signed.json" else "catalog-expanded.signed.json"
     val updateChannel get() = if (this == BUILTIN) "resources" else "dynamic"
     val downloadKind get() = if (this == BUILTIN) UpdateDownloadKind.RESOURCE else UpdateDownloadKind.DYNAMIC
     val baselineCode get() = if (this == BUILTIN) 1 else 0
