@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "068095534d2e8f74ba3cb9ef75af4e60c820f45f",
+      "revision": "8a32e080dd586824a2f21b8e0ef3bb9b23b5d73a",
       "directory": "dist",
-      "version": "0.3.22",
-      "contentCode": 31,
+      "version": "0.3.23",
+      "contentCode": 32,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -157,7 +157,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.22：全加器A/B/进位各单一骨牌起点，实际分岔和三异或交叉；新增最多步、最少步输入分析，保留原电路。"
+      "releaseNotes": "0.3.23：自制门输入也采用单一起点和物理分岔，信号交叉自动使用同步的三异或交叉器；保留原电路。"
     },
     {
       "id": "traffic-planner",
