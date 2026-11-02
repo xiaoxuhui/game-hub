@@ -17,8 +17,18 @@ if($Resume){
 }elseif(Test-Path -LiteralPath $dir){throw 'Fresh evidence subdirectory required'}
 if((git -C $checkout rev-parse HEAD).Trim() -ne $Commit -or (git -C $checkout status --porcelain=v1 --untracked-files=all)){throw 'Clean exact independent producer required'}
 if((git -C $checkout remote get-url origin).Trim() -ne 'https://github.com/xiaoxuhui/game-hub.git'){throw 'Producer remote mismatch'}
+$env:GIT_TERMINAL_PROMPT='0'
+if($Resume){
+    git -C $checkout fetch --no-tags origin main
+    if($LASTEXITCODE -ne 0){throw 'Cannot fetch current main for recovery'}
+    $fetched=(git -C $checkout rev-parse FETCH_HEAD).Trim()
+}
 $main=@(git -C $checkout ls-remote origin refs/heads/main)
-if($LASTEXITCODE -ne 0 -or $main.Count -ne 1 -or ($main[0] -split '\s+')[0] -ne $Commit){throw 'Exact pushed main required'}
+if($LASTEXITCODE -ne 0 -or $main.Count -ne 1){throw 'Cannot verify remote main'}
+$mainTip=($main[0] -split '\s+')[0]
+if($Resume -and $mainTip -cne $fetched){throw 'Remote main moved during recovery audit'}
+. (Join-Path $PSScriptRoot 'resource-publication-main.ps1')
+Assert-ResourcePublicationMain ([bool]$Resume) $Commit $mainTip $checkout
 foreach($tag in @('v0.4.0','game-resources-v2')){$refs=@(git -C $checkout ls-remote origin "refs/tags/$tag^{}");if($LASTEXITCODE -ne 0 -or $refs.Count -ne 1 -or ($refs[0] -split '\s+')[0] -ne '4aacb1f81b7fc381d2ca7fd725fd93dd109e390e'){throw 'Existing tag moved'}}
 . (Join-Path $PSScriptRoot 'resource-publication-lock.ps1')
 $lock=Enter-ResourcePublicationLock
