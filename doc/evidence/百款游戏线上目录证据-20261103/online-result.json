@@ -1,0 +1,22 @@
+{
+  "legacyId": 703202044,
+  "expandedId": 703531878,
+  "sequence": "47",
+  "catalogSha256": "8f93633a1713e38d4d70b0e3ab96e935f367ed044426aeddbce881e3f94f997d",
+  "payloadSha256": "b9e17f20a6fc8253228ccabdf824d228ab7fdd9f55570476b0a73869c0d05d52",
+  "gameIds": [
+    "memory-demo",
+    "abelian-sandpile",
+    "lambda-diagram-game",
+    "red-green-puzzle",
+    "mini-scratch",
+    "logic-circuit",
+    "traffic-planner",
+    "hex-cell-lab",
+    "langtons-ant",
+    "turbowarp-neural-network",
+    "turbowarp-logic-lab",
+    "lights-out-matrix",
+    "learning-machine"
+  ]
+}
