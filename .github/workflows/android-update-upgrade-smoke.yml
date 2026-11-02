@@ -12,6 +12,9 @@ jobs:
     timeout-minutes: 50
     steps:
       - uses: actions/checkout@v6
+        with:
+          # Compatibility tests verify historical committed source and license bytes.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
