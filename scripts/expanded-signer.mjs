@@ -12,7 +12,8 @@ import {validateDualCatalogs} from './expanded-channel.mjs';
 // catalog proofs are signed raw bytes; caller never asserts their validity.
 export function validateExpandedSigning(legacyBytes,previousBytes,next,snapshot,publicKey,now=Date.now(),expectedReleaseId=407394942){
   const legacy=verifyEnvelope(legacyBytes,publicKey,'resources-20261008'),previous=verifyEnvelope(previousBytes,publicKey,'resources-20261008');
-  validateDynamicCatalog(legacy.catalog,now);validateDynamicCatalog(previous.catalog,now);validateDynamicCatalog(next,now);
+  // Historical proofs may be expired; only a newly issued successor must be fresh.
+  validateDynamicCatalog(legacy.catalog,Date.parse(legacy.catalog.issuedAt));validateDynamicCatalog(previous.catalog,Date.parse(previous.catalog.issuedAt));validateDynamicCatalog(next,now);
   if(legacy.catalog.releaseId!==expectedReleaseId||previous.catalog.releaseId!==expectedReleaseId||next.releaseId!==expectedReleaseId)throw Error('Unexpected release');
   validateReleaseSnapshot(legacy.catalog,snapshot,'game-resources-v2');validateReleaseSnapshot(previous.catalog,snapshot,'game-resources-v2');validateReleaseSnapshot(next,snapshot,'game-resources-v2');
   const assets=snapshot.assetPages.flatMap(p=>p.assets);

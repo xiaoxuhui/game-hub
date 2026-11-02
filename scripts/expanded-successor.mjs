@@ -19,7 +19,7 @@ async function current(snapshot,expectedLegacy,expectedExpanded){
  if(snapshot.release.id!==releaseId||legacy.length!==1||expanded.length!==1)throw Error('Current channel identity unavailable');
  const [legacyBytes,expandedBytes]=await Promise.all([download(legacy[0]),download(expanded[0])]);
  if(sha256(legacyBytes)!==expectedLegacy||sha256(expandedBytes)!==expectedExpanded)throw Error('Current signed channel moved');
- const l=verifyEnvelope(legacyBytes,publicKey,keyId),e=verifyEnvelope(expandedBytes,publicKey,keyId);validateDynamicCatalog(l.catalog);validateDynamicCatalog(e.catalog);validateReleaseSnapshot(l.catalog,snapshot,'game-resources-v2');validateReleaseSnapshot(e.catalog,snapshot,'game-resources-v2');validateDualCatalogs(l,e);
+ const l=verifyEnvelope(legacyBytes,publicKey,keyId),e=verifyEnvelope(expandedBytes,publicKey,keyId);validateDynamicCatalog(l.catalog,Date.parse(l.catalog.issuedAt));validateDynamicCatalog(e.catalog,Date.parse(e.catalog.issuedAt));validateReleaseSnapshot(l.catalog,snapshot,'game-resources-v2');validateReleaseSnapshot(e.catalog,snapshot,'game-resources-v2');validateDualCatalogs(l,e);
  if(e.catalog.expandedPreviousSha256===undefined){if(!expandedBytes.equals(legacyBytes))throw Error('Expanded bootstrap is not exact legacy bytes');}
  else await verifyExpandedHistory(snapshot,publicKey,download);
  return {assets,legacy:legacy[0],expanded:expanded[0],legacyBytes,expandedBytes,l,e};
@@ -45,7 +45,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
     if(legacy.length!==1||currentAssets.length!==1)throw Error('Online channel identity unavailable');
     const legacyBytes=await download(legacy[0]),currentBytes=await download(currentAssets[0]),local=readFileSync(join(dir,'expanded.signed.json'));
     if(sha256(legacyBytes)!==legacySha||!currentBytes.equals(local))throw Error('Online signed channel differs');
-    const l=verifyEnvelope(legacyBytes,publicKey,keyId),e=verifyEnvelope(currentBytes,publicKey,keyId);validateDynamicCatalog(l.catalog);validateDynamicCatalog(e.catalog);validateReleaseSnapshot(l.catalog,snapshot,'game-resources-v2');validateReleaseSnapshot(e.catalog,snapshot,'game-resources-v2');validateDualCatalogs(l,e);
+    const l=verifyEnvelope(legacyBytes,publicKey,keyId),e=verifyEnvelope(currentBytes,publicKey,keyId);validateDynamicCatalog(l.catalog,Date.parse(l.catalog.issuedAt));validateDynamicCatalog(e.catalog);validateReleaseSnapshot(l.catalog,snapshot,'game-resources-v2');validateReleaseSnapshot(e.catalog,snapshot,'game-resources-v2');validateDualCatalogs(l,e);
     const oldBytes=readFileSync(join(dir,'previous-expanded.signed.json')),previous=verifyEnvelope(oldBytes,publicKey,keyId);validateSuccessor(previous.catalog,e.catalog);
     const historyName=`catalog-expanded-seq${previous.catalog.catalogSequence}-${expandedSha.slice(0,12)}.signed.json`,history=assets.filter(a=>a.name===historyName);if(history.length!==1||sha256(await download(history[0]))!==expandedSha)throw Error('Expanded signed history missing');
     const entries=await verifyExpandedHistory(snapshot,publicKey,download),catalogs=entries.map(item=>item.catalog);

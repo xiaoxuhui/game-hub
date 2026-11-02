@@ -6,7 +6,8 @@ import {validateLegacyTransition} from './expanded-channel.mjs';
 // Inputs are actual downloaded signed bytes, never caller assertions about signatures.
 export function validateLegacyAgainstExpanded(previousBytes,nextLegacy,expandedBytes,snapshot,publicKey,now=Date.now(),expectedReleaseId=407394942){
   const previous=verifyEnvelope(previousBytes,publicKey,'resources-20261008'),expanded=verifyEnvelope(expandedBytes,publicKey,'resources-20261008');
-  validateDynamicCatalog(previous.catalog,now);validateDynamicCatalog(expanded.catalog,now);
+  // The prior legacy proof may be expired, but the expanded successor must be fresh.
+  validateDynamicCatalog(previous.catalog,Date.parse(previous.catalog.issuedAt));validateDynamicCatalog(expanded.catalog,now);
   if(previous.catalog.releaseId!==expectedReleaseId||expanded.catalog.releaseId!==expectedReleaseId)throw Error('Unexpected release');
   validateReleaseSnapshot(previous.catalog,snapshot,'game-resources-v2');validateReleaseSnapshot(expanded.catalog,snapshot,'game-resources-v2');
   const assets=snapshot.assetPages.flatMap(p=>p.assets);
