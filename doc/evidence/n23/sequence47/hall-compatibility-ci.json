@@ -1,0 +1,18 @@
+{
+  "repository": "game-hub",
+  "id": 41525956063,
+  "name": "Lambda resource compatibility",
+  "head_sha": "12f8d4da96d57bd664d24f92b2fdab7c2a491320",
+  "status": "completed",
+  "conclusion": "success",
+  "html_url": "https://github.com/xiaoxuhui/game-hub/actions/runs/41525956063",
+  "jobs": [
+    {
+      "id": 125553612377,
+      "name": "compatibility",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/xiaoxuhui/game-hub/actions/runs/41525956063/job/125553612377"
+    }
+  ]
+}

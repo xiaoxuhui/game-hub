@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "a3830070744fe3e9360b3b65540dc920540df26d",
+      "revision": "d0261f2c76e748cef5e7fe189c37a5d28ebd2488",
       "directory": "dist",
-      "version": "0.3.20",
-      "contentCode": 29,
+      "version": "0.3.27",
+      "contentCode": 36,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -148,14 +148,21 @@
         "src/core.js",
         "src/expanded.js",
         "src/app.js",
+        "src/presets.js",
         "src/minecraft-redstone.js",
         "src/minecraft-model.js",
         "src/minecraft-view.js",
+        "src/domino-model.js",
+        "src/domino-view.js",
+        "src/wireworld-model.js",
+        "src/wireworld-compile.js",
+        "src/wireworld-worker.js",
+        "src/wireworld-view.js",
         "src/vendor/three.min.js",
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.20：新增独立隐藏蓝色箭头、自定义逻辑门名称编辑；保护紧凑输入出口，修复拉杆避让区封死出口导致的三维断线，可离开端口升高绕行。"
+      "releaseNotes": "0.3.26：新增电线世界，黑空白、橙线、蓝头、白尾；支持当前电路真实CA转换、输入切换、运行到输出及延迟逐轮采样，另有手绘、速度、备份、图案和PNG导出。"
     },
     {
       "id": "traffic-planner",

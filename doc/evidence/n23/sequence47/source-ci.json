@@ -1,0 +1,25 @@
+{
+  "repository": "logic-circuit",
+  "id": 41525893932,
+  "name": "Check logic workshop",
+  "head_sha": "d0261f2c76e748cef5e7fe189c37a5d28ebd2488",
+  "status": "in_progress",
+  "conclusion": null,
+  "html_url": "https://github.com/xiaoxuhui/logic-circuit/actions/runs/41525893932",
+  "jobs": [
+    {
+      "id": 125553404591,
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/xiaoxuhui/logic-circuit/actions/runs/41525893932/job/125553404591"
+    },
+    {
+      "id": 125553404792,
+      "name": "browser",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/xiaoxuhui/logic-circuit/actions/runs/41525893932/job/125553404792"
+    }
+  ]
+}
