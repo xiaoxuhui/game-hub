@@ -19,6 +19,7 @@ export function validateExpandedSigning(legacyBytes,previousBytes,next,snapshot,
   for(const [name,bytes] of [['catalog.signed.json',legacyBytes],['catalog-expanded.signed.json',previousBytes]]){
     const found=assets.filter(a=>a.name===name);if(found.length!==1||found[0].state!=='uploaded'||found[0].size!==bytes.length||found[0].digest!==`sha256:${sha256(bytes)}`)throw Error('Signed catalog asset mismatch');
   }
+  if(next.expandedPreviousSha256!==sha256(previousBytes)||next.legacySnapshotSha256!==sha256(legacyBytes))throw Error('Expanded signed history or legacy anchor mismatch');
   validateDualCatalogs(legacy,previous);validateSuccessor(previous.catalog,next);
   if(BigInt(next.catalogSequence)<=BigInt(legacy.catalog.catalogSequence))throw Error('Expanded sequence must exceed legacy');
   const bytes=Buffer.from(JSON.stringify(next));if(bytes.length>LIMITS.payload)throw Error('Expanded payload limit');
