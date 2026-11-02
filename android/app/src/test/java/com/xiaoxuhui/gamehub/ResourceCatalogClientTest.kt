@@ -28,7 +28,7 @@ class ResourceCatalogClientTest {
         val replies = mutableMapOf<String, Reply>(); val calls = mutableListOf<Fake>()
         fun open(url: String): HttpURLConnection = Fake(url, replies[url] ?: error("Unexpected endpoint: $url")).also { calls.add(it) }
     }
-    private class Fixture(val policy: ResourceStorePolicy = ResourceStorePolicy.BUILTIN, available: Boolean = true) {
+    private class Fixture(val policy: ResourceStorePolicy = ResourceStorePolicy.BUILTIN, available: Boolean = true, dynamicCount: Int = 1) {
         val now = 1791417600000L
         val pair = KeyPairGenerator.getInstance("RSA").apply { initialize(3072) }.generateKeyPair()
         val network = Network()
@@ -40,7 +40,7 @@ class ResourceCatalogClientTest {
         val assets: List<JSONObject>
         init {
             val dynamic = policy == ResourceStorePolicy.DYNAMIC
-            val repos = if(dynamic) mapOf("memory-demo" to "game-hub") else mapOf("conway" to "conway-life-game", "eml" to "EML", "light" to "light_game", "turing" to "turing-machine-simulator")
+            val repos = if(dynamic) (0 until dynamicCount).associate { (if(it==0) "memory-demo" else "demo-$it") to "game-hub" } else mapOf("conway" to "conway-life-game", "eml" to "EML", "light" to "light_game", "turing" to "turing-machine-simulator")
             val games = repos.entries.mapIndexed { index, (id, repo) ->
                 val entry = if (id == "eml") "eml-workbench.html" else "index.html"
                 JSONObject().put("id", id).put("version", "1.0.0").put("contentCode", 2).put("sourceRepository", "https://github.com/xiaoxuhui/$repo.git").put("sourceRevision", "a".repeat(40))
@@ -87,6 +87,17 @@ class ResourceCatalogClientTest {
         rejected {f.client().query()}
         f.network.replies[f.pageUrl]=Reply(JSONArray(f.assets+f.assets.first()+legacy).toString().toByteArray())
         rejected {f.client().query()}
+    }
+    @Test fun expandedCatalogWith100GamesBindsPaginatedReleaseAssets() {
+        val f=Fixture(ResourceStorePolicy.DYNAMIC,dynamicCount=100)
+        val next="${f.root}/releases/10/assets?per_page=100&page=2"
+        val first=f.assets.take(100); val second=f.assets.drop(100)
+        f.network.replies[f.pageUrl]=Reply(JSONArray(first).toString().toByteArray(),headers=mapOf("Link" to "<$next>; rel=\"next\""))
+        f.network.replies[next]=Reply(JSONArray(second).toString().toByteArray())
+        assertTrue(f.envelope.size<1048576)
+        assertTrue(JSONArray(f.assets).toString().toByteArray().size<4194304)
+        val offer=f.client().query()
+        assertEquals(100,offer.catalog.games.size);assertTrue(f.network.calls.all {it.closed})
     }
     @Test fun retiredDynamicAssetsMustRemainBoundButCannotReserveDownload() {
         val f=Fixture(ResourceStorePolicy.DYNAMIC,available=false);val offer=f.client().query();val game=offer.catalog.games.single()
