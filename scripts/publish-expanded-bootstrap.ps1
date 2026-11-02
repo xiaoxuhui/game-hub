@@ -17,6 +17,10 @@ foreach($tag in @('v0.4.0','game-resources-v2')){
     $refs=@(git -C $taskCheckout ls-remote origin "refs/tags/$tag^{}")
     if($LASTEXITCODE -ne 0 -or $refs.Count -ne 1 -or ($refs[0] -split '\s+')[0] -ne '4aacb1f81b7fc381d2ca7fd725fd93dd109e390e'){throw 'Existing tag moved; no write permitted'}
 }
+. (Join-Path $PSScriptRoot 'resource-publication-lock.ps1')
+$publicationLock=Enter-ResourcePublicationLock
+$publicationMutationStarted=$false;$publicationVerified=$false
+try {
 New-Item -ItemType Directory -Path $dir | Out-Null
 $first=Join-Path $dir 'preflight';$second=Join-Path $dir 'before-upload';$online=Join-Path $dir 'online'
 New-Item -ItemType Directory -Path $first,$second,$online | Out-Null
@@ -41,6 +45,7 @@ try{
     $file=Join-Path $second 'legacy-for-expanded.signed.json';$size=(Get-Item -LiteralPath $file).Length
     $record=@{legacyAssetId=$b.legacyId;legacySha256=$ExpectedLegacySha;sequence=$b.sequence;expandedName='catalog-expanded.signed.json';bytes=$size;producerCommit=$Commit}
     $record | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $dir 'bootstrap-intent.json') -Encoding utf8
+    $publicationMutationStarted=$true
     $upload=Invoke-RestMethod -Method Post -Uri 'https://uploads.github.com/repos/xiaoxuhui/game-hub/releases/407394942/assets?name=catalog-expanded.signed.json' -Headers $headers -ContentType 'application/octet-stream' -InFile $file
     if($upload.name -cne 'catalog-expanded.signed.json' -or $upload.state -cne 'uploaded' -or $upload.size -ne $size -or $upload.digest -cne "sha256:$ExpectedLegacySha"){throw 'Upload outcome uncertain; inspect before retry'}
     @{assetId=$upload.id;sha256=$ExpectedLegacySha;size=$size;sequence=$b.sequence} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $dir 'bootstrap-published.json') -Encoding utf8
@@ -48,7 +53,12 @@ try{
     if($LASTEXITCODE -ne 0){throw 'Uploaded asset exists but anonymous verification failed; inspect before any retry'}
     $verified=Get-Content -LiteralPath (Join-Path $online 'bootstrap-online-result.json') -Raw | ConvertFrom-Json
     if($verified.expandedId -ne $upload.id -or $verified.legacyId -ne $b.legacyId -or $verified.catalogSha256 -cne $ExpectedLegacySha){throw 'Online identities changed; inspect'}
+    $publicationVerified=$true
     Write-Output "Expanded bootstrap online verified: sequence $($b.sequence), asset $($upload.id)"
 }finally{
     $credentialLines=$null;$credential=$null;$headers.Remove('Authorization');Pop-Location
+}
+
+} finally {
+    Complete-ResourcePublicationLock $publicationLock $publicationMutationStarted $publicationVerified
 }

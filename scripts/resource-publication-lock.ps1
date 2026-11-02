@@ -13,3 +13,7 @@ function Exit-ResourcePublicationLock($Lock) {
     $Lock.Stream.Dispose()
     Remove-Item -LiteralPath $Lock.Path -Force -ErrorAction Stop
 }
+function Complete-ResourcePublicationLock($Lock,[bool]$MutationStarted,[bool]$Verified) {
+    if($MutationStarted -and -not $Verified){$Lock.Stream.Dispose();Write-Warning 'Publication outcome needs inspection; lock retained'}
+    else {Exit-ResourcePublicationLock $Lock}
+}

@@ -111,6 +111,10 @@ function Assert-FixedTags {
     }
 }
 Assert-FixedTags
+. (Join-Path $PSScriptRoot 'resource-publication-lock.ps1')
+$publicationLock=Enter-ResourcePublicationLock
+$publicationMutationStarted=$false;$publicationVerified=$false
+try {
 if(-not $ResumeAfterUploads){New-Item -ItemType Directory -Path $taskDirectory | Out-Null}
 Push-Location -LiteralPath $taskCheckout
 try {
@@ -165,6 +169,7 @@ try {
         if($asset.state -ne 'uploaded' -or $asset.digest -ne "sha256:$hash" -or $asset.size -ne $size){throw 'Upload outcome unverified; inspect before retry'}
         return $asset
     }
+    $publicationMutationStarted=$true
     if(-not $ResumeAfterUploads){
         $games=$taskUploadGames
         $uploads=@()
@@ -204,8 +209,13 @@ try {
     @{releaseId=407394942;sequence=$NextSequence;catalogAssetId=$catalog.id;catalogDigest=$catalog.digest;historyAssetId=$taskOldId;historyName=$historyName} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskDirectory 'published.json') -Encoding utf8
     node scripts/resource-successor.mjs online $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
     if($LASTEXITCODE -ne 0){throw 'Publication completed but anonymous final verification failed; inspect outcome'}
+    $publicationVerified=$true
 } finally {
     if($taskDer){[Array]::Clear($taskDer,0,$taskDer.Length)}
     $taskPem=$null;$taskDer=$null;$taskEncrypted=$null;$taskCredentialLines=$null;$taskCredential=$null
     $taskHeaders.Remove('Authorization');Pop-Location
+}
+
+} finally {
+    Complete-ResourcePublicationLock $publicationLock $publicationMutationStarted $publicationVerified
 }
