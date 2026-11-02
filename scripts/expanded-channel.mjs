@@ -21,7 +21,7 @@ export function validateDualCatalogs(legacyProof,expandedProof){
     const next=expanded.games.find(g=>g.id===old.id);
     assert(next,'Expanded catalog omits legacy game');
     assert(next.contentCode>=old.contentCode,'Expanded game behind legacy');
-    if(next.contentCode===old.contentCode)assert(canonical(next)===canonical(old),'Same-code channel descriptor conflict');
+    if(next.contentCode===old.contentCode){const identity=g=>Object.fromEntries(Object.entries(g).filter(([key])=>key!=='available'));assert(canonical(identity(next))===canonical(identity(old)),'Same-code channel descriptor conflict');}
   }
   return {legacy,expanded};
 }
@@ -32,7 +32,9 @@ export function validateLegacyTransition(previousLegacyProof,nextLegacyProof,exp
   const previous=proof(previousLegacyProof),next=proof(nextLegacyProof);
   assert(BigInt(next.catalogSequence)===BigInt(previous.catalogSequence)+1n,'Legacy sequence must advance exactly one');
   validateSuccessor(previous,next);validateReleaseSnapshot(next,snapshot,'game-resources-v2');
-  validateDualCatalogs(nextLegacyProof,expandedProof);return next;
+  const dual=validateDualCatalogs(nextLegacyProof,expandedProof);
+  for(const game of next.games)assert(dual.expanded.games.find(g=>g.id===game.id).available===game.available,'Legacy availability not yet mirrored by expanded catalog');
+  return next;
 }
 
 // Expanded updates retain every ID from both channels and use a sequence above
