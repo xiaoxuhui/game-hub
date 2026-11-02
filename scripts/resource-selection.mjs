@@ -1,7 +1,13 @@
 import {sha256,assetName} from './resource-protocol.mjs';
 function insist(value,message){if(!value)throw Error(message);}
 export function selectResourceCandidates(old,candidates,selector){
-  if(selector===undefined)return candidates;
+  if(selector===undefined){
+    insist(Array.isArray(old.games)&&old.games.length<=16&&new Set(old.games.map(g=>g.id)).size===old.games.length,'Invalid legacy identity set');
+    insist(Array.isArray(candidates)&&new Set(candidates.map(g=>g.id)).size===candidates.length,'Duplicate candidate identity');
+    const known=new Set(old.games.map(g=>g.id)),slots=16-known.size,newIds=candidates.filter(g=>!known.has(g.id)).slice(0,slots).map(g=>g.id),included=new Set(newIds);
+    const selected=candidates.filter(g=>known.has(g.id)||included.has(g.id));
+    return selected.length===candidates.length?candidates:selected;
+  }
   if(selector==='two-new-games'){
     const ids=['lights-out-matrix','learning-machine'];
     insist(old.games.length===11&&new Set(old.games.map(g=>g.id)).size===11&&ids.every(id=>!old.games.some(g=>g.id===id)),'Two-game publication requires exact previous 11 unique games');
@@ -32,6 +38,12 @@ export function assertSelectedSuccessor(old,next,game,selector){
   for(const before of old.games)insist(JSON.stringify(next.games.find(g=>g.id===before.id))===JSON.stringify(before),'Selected publication altered an existing game');
   const added=next.games.find(g=>g.id===selector);insist(added&&Number.isSafeInteger(added.assetId)&&added.assetId>0,'New selected asset identity missing');const {assetId,...descriptor}=added;insist(JSON.stringify(descriptor)===JSON.stringify(game),'Selected descriptor changed');
 }
+export function legacySelectionRecord(old,candidates,{producerCommit,previousSha,sequence}){
+  insist(/^[a-f0-9]{40}$/.test(producerCommit)&&/^[a-f0-9]{64}$/.test(previousSha)&&/^[1-9][0-9]{0,18}$/.test(sequence)&&BigInt(sequence)===BigInt(old.catalogSequence)+1n,'Invalid selection context');
+  const selected=selectResourceCandidates(old,candidates),chosen=new Set(selected.map(g=>g.id));
+  return {schemaVersion:1,producerCommit,previousSha,nextSequence:sequence,previousGamesSha256:sha256(JSON.stringify(old.games)),candidateSha256:sha256(JSON.stringify(candidates)),selected:selected.map(game=>({id:game.id,contentCode:game.contentCode,archiveBytes:game.archiveBytes,archiveSha256:game.archiveSha256,descriptorSha256:sha256(JSON.stringify(game)),assetName:assetName(game)})),omitted:candidates.filter(g=>!chosen.has(g.id)).map(g=>g.id)};
+}
+export function verifyLegacySelection(record,old,candidates,context){insist(JSON.stringify(record)===JSON.stringify(legacySelectionRecord(old,candidates,context)),'Legacy publication selection changed or missing');}
 // Keep the original hex contract API and records byte-compatible for recovery/audit.
 export const hexSelectionRecord=(old,candidates,context)=>selectionRecord(old,candidates,'hex-cell-lab',context);
 export const verifyHexSelection=(record,old,candidates,context)=>verifySelection(record,old,candidates,'hex-cell-lab',context);
