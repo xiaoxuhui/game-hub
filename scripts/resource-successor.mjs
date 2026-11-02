@@ -9,7 +9,7 @@ import {validateDynamicCatalog} from './dynamic-protocol.mjs';
 import {guardLegacyPublication} from './expanded-legacy-guard.mjs';
 import {validateDualCatalogs} from './expanded-channel.mjs';
 import {verifyDynamicResources} from './dynamic-resources.mjs';
-import {selectResourceCandidates,selectionRecord,verifySelection,assertFreshSelectedAssets,assertSelectedSuccessor} from './resource-selection.mjs';
+import {selectResourceCandidates,selectionRecord,verifySelection,legacySelectionRecord,verifyLegacySelection,assertFreshSelectedAssets,assertSelectedSuccessor} from './resource-selection.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const releaseId=407394942,keyId='resources-20261008';
 const der=readFileSync(join(root,'android/app/src/main/res/raw/resource_public_key.der'));
@@ -80,12 +80,11 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
     if(![6,7].includes(process.argv.length)||!directory||!expected||!sequence||selector!==undefined&&!['hex-cell-lab','langtons-ant','two-new-games'].includes(selector))throw new Error('Usage: resource-successor.mjs preflight|resume|payload|online directory previous-sha next-sequence [hex-cell-lab|langtons-ant]');
     if(selector===undefined&&existsSync(join(directory,'publication-selection.json')))throw Error('Cannot drop a recorded publication selection');
     const context=()=>({producerCommit:json(root,'.build/dynamic-candidate/candidate.json').bundleCommit,previousSha:expected,sequence});
-    const candidates=old=>{const all=verifyDynamicResources(),selected=selectResourceCandidates(old,all,selector);if(selector&&mode!=='preflight')verifySelection(json(directory,'publication-selection.json'),old,all,selector,context());return selected;};
+    const candidates=old=>{const all=verifyDynamicResources(),selected=selectResourceCandidates(old,all,selector);if(mode!=='preflight'){if(selector)verifySelection(json(directory,'publication-selection.json'),old,all,selector,context());else verifyLegacySelection(json(directory,'legacy-default-selection.json'),old,all,context());}return selected;};
     const successor=(old,games,snapshot)=>{const payload=successorPayload(old,games,snapshot,sequence);if(selector)assertSelectedSuccessor(old,payload,selector==='two-new-games'?games:games[0],selector);return payload;};
     if(mode==='upload-preflight'){
-      if(!['hex-cell-lab','langtons-ant','two-new-games'].includes(selector))throw Error('Selected upload guard requires explicit reviewed selection');
       const old=previous(directory,expected),games=candidates(old);
-      if(games.length!==(selector==='two-new-games'?2:1))throw Error('Exact selected uploads required');
+      if(selector&&games.length!==(selector==='two-new-games'?2:1))throw Error('Exact selected uploads required');
       console.log('Verified full immutable selection and signed previous catalog before credentials/uploads');
     }else if(mode==='resume'){
       const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2'),before=json(directory,'before-snapshot.json');
@@ -119,6 +118,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
       const guard=await guardLegacyPublication(admission,bytes,next,publicKey,download);
       put(directory,'expanded-preflight-guard.json',JSON.stringify(guard,null,2)+'\n');
       if(selector)put(directory,'publication-selection.json',JSON.stringify(selectionRecord(old,games,selector,context()),null,2)+'\n');
+      else put(directory,'legacy-default-selection.json',JSON.stringify(legacySelectionRecord(old,verifyDynamicResources(),context()),null,2)+'\n');
       console.log(`Preflight verified previous sequence ${old.catalogSequence}, ${games.length} immutable candidates`);
     }else if(mode==='payload'){
       const old=previous(directory,expected),snapshot=await captureReleaseSnapshot(fetch,'game-resources-v2');

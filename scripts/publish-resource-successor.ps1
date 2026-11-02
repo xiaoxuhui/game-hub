@@ -141,9 +141,21 @@ try {
         $taskSelectedAsset="game-$taskSelectedId-$($taskSelected.contentCode)-$($taskSelected.archiveSha256.Substring(0,12)).zip"
         if($taskChosen.id -cne $taskSelectedId -or $taskChosen.contentCode -ne 1 -or $taskSelected.contentCode -ne 1 -or $taskChosen.archiveBytes -ne $taskSelected.archiveBytes -or $taskChosen.archiveSha256 -cne $taskSelected.archiveSha256 -or $taskChosen.assetName -cne $taskSelectedAsset){throw 'Upload differs from exact immutable selected ZIP'}
         }
-        node scripts/resource-successor.mjs upload-preflight $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
-        if($LASTEXITCODE -ne 0){throw 'Full selected descriptor/previous games proof failed before credentials or uploads'}
+    }else{
+        $taskSelection=Get-Content -LiteralPath (Join-Path $taskDirectory 'legacy-default-selection.json') -Raw | ConvertFrom-Json
+        if($taskSelection.schemaVersion -ne 1 -or $taskSelection.producerCommit -cne $Commit -or $taskSelection.previousSha -cne $ExpectedPreviousSha -or $taskSelection.nextSequence -cne $NextSequence){throw 'Legacy selection context changed'}
+        $taskIds=@($taskSelection.selected | ForEach-Object { $_.id })
+        $taskUploadGames=@($taskUploadGames | Where-Object { $_.id -cin $taskIds })
+        if($taskUploadGames.Count -ne $taskIds.Count -or $taskIds.Count -gt 16){throw 'Legacy upload selection differs from admission'}
+        foreach($item in $taskUploadGames){
+            $chosen=@($taskSelection.selected | Where-Object id -CEQ $item.id)
+            $name="game-$($item.id)-$($item.contentCode)-$($item.archiveSha256.Substring(0,12)).zip"
+            if($chosen.Count -ne 1 -or $chosen[0].contentCode -ne $item.contentCode -or $chosen[0].archiveBytes -ne $item.archiveBytes -or $chosen[0].archiveSha256 -cne $item.archiveSha256 -or $chosen[0].assetName -cne $name){throw 'Legacy upload differs from admitted ZIP'}
+        }
+        Write-Host "Legacy catalog omits $(@($taskSelection.omitted).Count) candidate(s): $($taskSelection.omitted -join ', ')"
     }
+    node scripts/resource-successor.mjs upload-preflight $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
+    if($LASTEXITCODE -ne 0){throw 'Full selected descriptor/previous games proof failed before credentials or uploads'}
     $taskSnapshotName=if($ResumeAfterUploads){'resume-snapshot.json'}else{'before-snapshot.json'}
     $taskBefore=Get-Content -LiteralPath (Join-Path $taskDirectory $taskSnapshotName) -Raw | ConvertFrom-Json
     $taskAssets=@($taskBefore.assetPages | ForEach-Object {$_.assets})
