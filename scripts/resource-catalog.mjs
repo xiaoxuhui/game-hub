@@ -47,7 +47,9 @@ export async function captureReleaseSnapshot(request = fetch, tag = 'game-resour
   for (let page = 1; page <= 100; page++) {
     const { json: assets, link } = await get(`${api}/${release.id}/assets?per_page=100&page=${page}`);
     const next = link.split(',').find(part => /;\s*rel="next"/.test(part));
-    if (next) { const match = /^\s*<([^>]+)>;\s*rel="next"\s*$/.exec(next); if (!match) throw new Error('Invalid pagination Link'); const target = new URL(match[1]); if (target.origin !== 'https://api.github.com' || target.pathname !== `/repos/xiaoxuhui/game-hub/releases/${release.id}/assets` || target.searchParams.get('page') !== String(page + 1) || target.searchParams.get('per_page') !== '100') throw new Error('Unexpected next page'); }
+    // GitHub may canonicalize Link paths to this repository's immutable numeric ID.
+    // Links are validation-only: requests still use our own owner/name URLs above.
+    if (next) { const match = /^\s*<([^>]+)>;\s*rel="next"\s*$/.exec(next); if (!match) throw new Error('Invalid pagination Link'); const target = new URL(match[1]),paths=[`/repos/xiaoxuhui/game-hub/releases/${release.id}/assets`,`/repositories/1397438992/releases/${release.id}/assets`]; if (target.origin !== 'https://api.github.com' || !paths.includes(target.pathname) || target.username || target.password || target.searchParams.get('page') !== String(page + 1) || target.searchParams.get('per_page') !== '100') throw new Error('Unexpected next page'); }
     assetPages.push({ page, hasNext: Boolean(next), assets });
     if (!next) return { schemaVersion: 1, capturedAt: new Date().toISOString(), pageSize: 100, release, assetPages };
   }

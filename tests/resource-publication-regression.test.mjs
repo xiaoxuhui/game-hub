@@ -31,9 +31,13 @@ test('consecutive snapshots bypass fixed-URL cache while keeping consecutive bou
 });
 
 test('snapshot cache key does not weaken pagination origin path or sequence checks',async()=>{
-  for(const next of ['https://evil.example/assets?per_page=100&page=2','https://api.github.com/repos/xiaoxuhui/other/releases/1/assets?per_page=100&page=2','https://api.github.com/repos/xiaoxuhui/game-hub/releases/1/assets?per_page=100&page=3']){
+  for(const next of ['https://evil.example/assets?per_page=100&page=2','https://api.github.com/repos/xiaoxuhui/other/releases/1/assets?per_page=100&page=2','https://api.github.com/repos/xiaoxuhui/game-hub/releases/1/assets?per_page=100&page=3','https://api.github.com/repositories/999/releases/1/assets?per_page=100&page=2','https://api.github.com/repositories/1397438992/releases/2/assets?per_page=100&page=2','https://attacker@api.github.com/repositories/1397438992/releases/1/assets?per_page=100&page=2']){
     let calls=0;await assert.rejects(captureReleaseSnapshot(async()=>++calls===1?Response.json({id:1,tag_name:'game-resources-v2',draft:false,prerelease:true}):Response.json([],{headers:{link:`<${next}>; rel="next"`}}),'game-resources-v2'),/Unexpected next page/);assert.equal(calls,2);
   }
+});
+
+test('101 assets accept the verified repository numeric Link without following that Link',async()=>{
+  const seen=[];const snapshot=await captureReleaseSnapshot(async input=>{const url=new URL(input);seen.push(url);if(url.pathname.endsWith('/tags/game-resources-v2'))return Response.json({id:407394942,tag_name:'game-resources-v2',draft:false,prerelease:true});assert.equal(url.pathname,'/repos/xiaoxuhui/game-hub/releases/407394942/assets');const page=Number(url.searchParams.get('page'));return page===1?Response.json(Array.from({length:100},(_,i)=>({id:i+1})),{headers:{link:'<https://api.github.com/repositories/1397438992/releases/407394942/assets?per_page=100&page=2&snapshot_request=old>; rel="next"'}}):Response.json([{id:101}]);},'game-resources-v2');assert.equal(seen.length,3);assert.equal(snapshot.assetPages.length,2);assert.equal(snapshot.assetPages.flatMap(p=>p.assets).length,101);assert.deepEqual(snapshot.assetPages.map(p=>p.hasNext),[true,false]);assert.equal(seen[2].searchParams.get('page'),'2');assert.notEqual(seen[2].searchParams.get('snapshot_request'),'old');
 });
 
 test('actual publisher receipt serialization preserves zero one and multiple upload arrays',{skip:process.platform!=='win32'},()=>{
