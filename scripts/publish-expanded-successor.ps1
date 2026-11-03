@@ -3,11 +3,16 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedLegacySha,
     [Parameter(Mandatory=$true)][string]$ExpectedExpandedSha,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
+    [ValidateSet('expanded','n23')][string]$TaskScope='expanded',
     [switch]$Resume
 )
 $ErrorActionPreference='Stop'
 $checkout='D:\aiden\game-hub-expanded-publisher-20261101'
 $evidenceRoot='D:\aiden\game-hub-expanded-evidence-20261101'
+if($TaskScope -ieq 'n23'){
+    $checkout='D:\soft\.ci-tmp\game-hub-n23\work'
+    $evidenceRoot='D:\soft\.ci-tmp\game-hub-n23\evidence\publication'
+}
 if($Commit -notmatch '^[0-9a-f]{40}$' -or $ExpectedLegacySha -notmatch '^[0-9a-f]{64}$' -or $ExpectedExpandedSha -notmatch '^[0-9a-f]{64}$'){throw 'Exact commit and channel digests required'}
 $dir=[IO.Path]::GetFullPath($EvidenceDirectory)
 if(-not $dir.StartsWith($evidenceRoot+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Task evidence subdirectory required'}
