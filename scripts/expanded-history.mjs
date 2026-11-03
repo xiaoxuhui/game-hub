@@ -1,7 +1,7 @@
 import {verifyEnvelope,sha256} from './resource-protocol.mjs';
 import {validateDynamicCatalog} from './dynamic-protocol.mjs';
 import {validateReleaseSnapshot} from './resource-catalog.mjs';
-import {validateSuccessor} from './dynamic-catalog.mjs';
+import {validateSuccessor} from './dynamic-history.mjs';
 import {validateDualCatalogs} from './expanded-channel.mjs';
 
 export async function verifyExpandedHistory(snapshot,publicKey,download,now=Date.now(),expectedReleaseId=407394942){

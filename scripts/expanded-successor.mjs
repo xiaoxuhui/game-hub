@@ -4,7 +4,7 @@ import {sha256,strictJson,verifyEnvelope,LIMITS,assetName} from './resource-prot
 import {captureReleaseSnapshot,validateReleaseSnapshot} from './resource-catalog.mjs';
 import {verifyDynamicResources} from './dynamic-resources.mjs';
 import {validateDynamicCatalog} from './dynamic-protocol.mjs';
-import {validateSuccessor} from './dynamic-catalog.mjs';
+import {validateSuccessor} from './dynamic-history.mjs';
 import {validateDualCatalogs,expandedSuccessor} from './expanded-channel.mjs';
 import {validateExpandedSigning} from './expanded-signer.mjs';
 import {verifyExpandedHistory} from './expanded-history.mjs';

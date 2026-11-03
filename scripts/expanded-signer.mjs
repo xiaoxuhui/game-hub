@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createPublicKey} from 'node:crypto';
 import {validateDynamicCatalog} from './dynamic-protocol.mjs';
 import {validateReleaseSnapshot} from './resource-catalog.mjs';
-import {validateSuccessor} from './dynamic-catalog.mjs';
+import {validateSuccessor} from './dynamic-history.mjs';
 import {validateDualCatalogs} from './expanded-channel.mjs';
 
 // All three catalogs are bound to the same complete Release snapshot. Input

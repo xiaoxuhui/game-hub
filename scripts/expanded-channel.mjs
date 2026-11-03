@@ -1,5 +1,5 @@
 import {validateDynamicCatalog} from './dynamic-protocol.mjs';
-import {validateSuccessor} from './dynamic-catalog.mjs';
+import {validateSuccessor} from './dynamic-history.mjs';
 import {validateReleaseSnapshot,attachAssets} from './resource-catalog.mjs';
 
 const assert=(v,m)=>{if(!v)throw new Error(m)};
