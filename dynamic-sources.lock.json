@@ -135,9 +135,9 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "7afc6874a50b7b933136108827a9033692cf03db",
+      "revision": "13cc484954d0cd3d68eddaa8cf1259b820e204a2",
       "directory": "dist",
-      "version": "0.3.31",
+      "version": "0.3.32",
       "contentCode": 40,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
@@ -162,7 +162,7 @@
         "src/vendor/THREE-LICENSE.txt",
         "src/vendor/three.provenance.json"
       ],
-      "releaseNotes": "0.3.26：新增电线世界，黑空白、橙线、蓝头、白尾；支持当前电路真实CA转换、输入切换、运行到输出及延迟逐轮采样，另有手绘、速度、备份、图案和PNG导出。"
+      "releaseNotes": "0.3.32：电线世界统一输入分叉、三原生异或交换、真实闭环反馈与查看防误绘；顶部增加Golly RLE导出及打开入口，保留坐标、电子状态与代数。含默认自制门、八位计算器和256×8位读写存储器。"
     },
     {
       "id": "traffic-planner",
