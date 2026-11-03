@@ -324,6 +324,75 @@
         "upstream-source.json"
       ],
       "releaseNotes": "首次接入：固定上游 45e8637；训练数据只在当前页面内存中，离开或刷新后丢失。"
+    },
+    {
+      "id": "compass-polygon-studio",
+      "displayName": "尺规工坊",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/compass-polygon-studio.git",
+      "revision": "fdfaa173f056b88e85bbbcade03c95e37f156927",
+      "directory": "dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "compass-polygon-studio-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "app.js",
+        "geometry.js",
+        "index.html",
+        "style.css"
+      ],
+      "releaseNotes": "离线尺规作图，按步骤构造正多边形。"
+    },
+    {
+      "id": "fourier-drawing-studio",
+      "displayName": "傅里叶画室",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/fourier-drawing-studio.git",
+      "revision": "62dde93b83169565c6c05acaa98072bdfffe9472",
+      "directory": "dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "fourier-drawing-studio-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "app.js",
+        "contours.js",
+        "fourier.js",
+        "index.html",
+        "style.css"
+      ],
+      "releaseNotes": "离线傅里叶绘图与轮廓实验。"
+    },
+    {
+      "id": "ai-racing-lab",
+      "displayName": "AI 赛车实验室",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/ai-racing-lab.git",
+      "revision": "3b9c66bf5c13b761f220c5037153892a44f14767",
+      "directory": "dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "ai-racing-lab-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "app.js",
+        "editor.css",
+        "engine.js",
+        "fleet.js",
+        "index.html",
+        "memory.js",
+        "style.css",
+        "vision.css",
+        "vision.js"
+      ],
+      "releaseNotes": "离线赛车训练、地图编辑和实验。"
     }
   ]
 }
