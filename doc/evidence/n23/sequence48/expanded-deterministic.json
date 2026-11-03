@@ -1,0 +1,169 @@
+{
+  "producer": "40c1e127e1d4dffdde1d5d9cb6d0b789e7eded3c",
+  "source": "8b1cec8effe0986146a0c930457aeb9e12554965",
+  "identical": true,
+  "archiveBytesUnchangedAfterPaginationFix": true,
+  "first": [
+    {
+      "name": "candidate.json",
+      "bytes": 164,
+      "sha256": "986ee9a1f92d8a319e0c44106f1659baa2587394a0d3bf7f73bb204f6f11b26d"
+    },
+    {
+      "name": "game-abelian-sandpile-2-47a35517606c.zip",
+      "bytes": 83688,
+      "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3"
+    },
+    {
+      "name": "game-hex-cell-lab-1-deff47942132.zip",
+      "bytes": 90867,
+      "sha256": "deff4794213295b5de5ffdcb7ad92462e4e847a2d317468c68435145cff72c80"
+    },
+    {
+      "name": "game-lambda-diagram-game-6-6264e126b39a.zip",
+      "bytes": 217036,
+      "sha256": "6264e126b39a7fbea3e4628e5b99aac758144ae507f1351576a71acbe50eb79f"
+    },
+    {
+      "name": "game-langtons-ant-1-91063cf24ee6.zip",
+      "bytes": 26902,
+      "sha256": "91063cf24ee605cf109975901d72931c5b9dc3bb24c92266ba049b2693238b00"
+    },
+    {
+      "name": "game-learning-machine-1-283250cb105d.zip",
+      "bytes": 75142,
+      "sha256": "283250cb105d0c8fbc18c32f4347cb563cff9332e90eb59595548661efc5bcdb"
+    },
+    {
+      "name": "game-lights-out-matrix-1-f41c720ea024.zip",
+      "bytes": 52728,
+      "sha256": "f41c720ea024c33e2b78ebecd0685540e2cdae0150d77c55305ad9450f73aba1"
+    },
+    {
+      "name": "game-logic-circuit-37-df8ca6f3b88c.zip",
+      "bytes": 1136689,
+      "sha256": "df8ca6f3b88c33e60e135da8089c6501157e04e9204253820482d711537e52af"
+    },
+    {
+      "name": "game-memory-demo-2-178d01e9ee05.zip",
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "name": "game-mini-scratch-7-29548a43c015.zip",
+      "bytes": 312805,
+      "sha256": "29548a43c01500b539c009a15b47b869358a60d1fe638999ee3fff7601534593"
+    },
+    {
+      "name": "game-red-green-puzzle-1-81edc7c967f7.zip",
+      "bytes": 14620,
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+    },
+    {
+      "name": "game-traffic-planner-2-86aa41c3f093.zip",
+      "bytes": 99665,
+      "sha256": "86aa41c3f09304f1234131e61a8c4dcba34b9c41d5b2dc92a80a732e93ebc2c6"
+    },
+    {
+      "name": "game-turbowarp-logic-lab-1-84371f9bcdc9.zip",
+      "bytes": 1909088,
+      "sha256": "84371f9bcdc97ed6c657d4a7d39ebb26d463741976a9cf898f714cf311f28a60"
+    },
+    {
+      "name": "game-turbowarp-neural-network-1-3a55b17ff933.zip",
+      "bytes": 1881586,
+      "sha256": "3a55b17ff933740fe2304e500984c7182b47e972ebe275196803d98342e9dbf7"
+    },
+    {
+      "name": "games.unsigned.json",
+      "bytes": 34014,
+      "sha256": "2a498af4b3066fd2e69f29ebfcb89056ab6b137c46c5fb822cd39a558ee6df44"
+    }
+  ],
+  "second": [
+    {
+      "name": "candidate.json",
+      "bytes": 164,
+      "sha256": "986ee9a1f92d8a319e0c44106f1659baa2587394a0d3bf7f73bb204f6f11b26d"
+    },
+    {
+      "name": "game-abelian-sandpile-2-47a35517606c.zip",
+      "bytes": 83688,
+      "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3"
+    },
+    {
+      "name": "game-hex-cell-lab-1-deff47942132.zip",
+      "bytes": 90867,
+      "sha256": "deff4794213295b5de5ffdcb7ad92462e4e847a2d317468c68435145cff72c80"
+    },
+    {
+      "name": "game-lambda-diagram-game-6-6264e126b39a.zip",
+      "bytes": 217036,
+      "sha256": "6264e126b39a7fbea3e4628e5b99aac758144ae507f1351576a71acbe50eb79f"
+    },
+    {
+      "name": "game-langtons-ant-1-91063cf24ee6.zip",
+      "bytes": 26902,
+      "sha256": "91063cf24ee605cf109975901d72931c5b9dc3bb24c92266ba049b2693238b00"
+    },
+    {
+      "name": "game-learning-machine-1-283250cb105d.zip",
+      "bytes": 75142,
+      "sha256": "283250cb105d0c8fbc18c32f4347cb563cff9332e90eb59595548661efc5bcdb"
+    },
+    {
+      "name": "game-lights-out-matrix-1-f41c720ea024.zip",
+      "bytes": 52728,
+      "sha256": "f41c720ea024c33e2b78ebecd0685540e2cdae0150d77c55305ad9450f73aba1"
+    },
+    {
+      "name": "game-logic-circuit-37-df8ca6f3b88c.zip",
+      "bytes": 1136689,
+      "sha256": "df8ca6f3b88c33e60e135da8089c6501157e04e9204253820482d711537e52af"
+    },
+    {
+      "name": "game-memory-demo-2-178d01e9ee05.zip",
+      "bytes": 9510,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442"
+    },
+    {
+      "name": "game-mini-scratch-7-29548a43c015.zip",
+      "bytes": 312805,
+      "sha256": "29548a43c01500b539c009a15b47b869358a60d1fe638999ee3fff7601534593"
+    },
+    {
+      "name": "game-red-green-puzzle-1-81edc7c967f7.zip",
+      "bytes": 14620,
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62"
+    },
+    {
+      "name": "game-traffic-planner-2-86aa41c3f093.zip",
+      "bytes": 99665,
+      "sha256": "86aa41c3f09304f1234131e61a8c4dcba34b9c41d5b2dc92a80a732e93ebc2c6"
+    },
+    {
+      "name": "game-turbowarp-logic-lab-1-84371f9bcdc9.zip",
+      "bytes": 1909088,
+      "sha256": "84371f9bcdc97ed6c657d4a7d39ebb26d463741976a9cf898f714cf311f28a60"
+    },
+    {
+      "name": "game-turbowarp-neural-network-1-3a55b17ff933.zip",
+      "bytes": 1881586,
+      "sha256": "3a55b17ff933740fe2304e500984c7182b47e972ebe275196803d98342e9dbf7"
+    },
+    {
+      "name": "games.unsigned.json",
+      "bytes": 34014,
+      "sha256": "2a498af4b3066fd2e69f29ebfcb89056ab6b137c46c5fb822cd39a558ee6df44"
+    }
+  ],
+  "changed": [
+    "logic-circuit"
+  ],
+  "logic": {
+    "version": "0.3.28",
+    "contentCode": 37,
+    "archiveSha256": "df8ca6f3b88c33e60e135da8089c6501157e04e9204253820482d711537e52af",
+    "files": 19
+  }
+}

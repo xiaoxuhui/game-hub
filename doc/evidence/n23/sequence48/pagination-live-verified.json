@@ -1,0 +1,33 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "count": 100,
+      "hasNext": true
+    },
+    {
+      "page": 2,
+      "count": 1,
+      "hasNext": false
+    }
+  ],
+  "channels": [
+    {
+      "id": 703531878,
+      "name": "catalog-expanded.signed.json",
+      "digest": "sha256:8f93633a1713e38d4d70b0e3ab96e935f367ed044426aeddbce881e3f94f997d"
+    },
+    {
+      "id": 703202044,
+      "name": "catalog.signed.json",
+      "digest": "sha256:8f93633a1713e38d4d70b0e3ab96e935f367ed044426aeddbce881e3f94f997d"
+    }
+  ],
+  "zip": [
+    {
+      "id": 705431263,
+      "digest": "sha256:df8ca6f3b88c33e60e135da8089c6501157e04e9204253820482d711537e52af",
+      "size": 1136689
+    }
+  ]
+}

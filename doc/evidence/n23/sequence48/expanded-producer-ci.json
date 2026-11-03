@@ -1,0 +1,18 @@
+{
+  "repository": "game-hub",
+  "id": 41631716835,
+  "name": "Check Android game hub",
+  "head_sha": "40c1e127e1d4dffdde1d5d9cb6d0b789e7eded3c",
+  "status": "completed",
+  "conclusion": "success",
+  "html_url": "https://github.com/xiaoxuhui/game-hub/actions/runs/41631716835",
+  "jobs": [
+    {
+      "id": 125902674839,
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/xiaoxuhui/game-hub/actions/runs/41631716835/job/125902674839"
+    }
+  ]
+}
