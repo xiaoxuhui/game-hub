@@ -1,0 +1,29 @@
+{
+  "legacyStayedAt": "49",
+  "legacySha256": "c43a5c7d749e275e766387ef589626cf1e29ba166f5acfe1f20616b361c80369",
+  "unsignedLegacyAttempts": [
+    {
+      "name": "library0330-legacy50",
+      "files": [
+        "before-snapshot.json",
+        "previous.signed.json"
+      ]
+    },
+    {
+      "name": "library0330-legacy50-final",
+      "files": [
+        "before-snapshot.json",
+        "previous.signed.json"
+      ]
+    },
+    {
+      "name": "library0330-legacy50-network-recovered",
+      "files": [
+        "before-snapshot.json",
+        "previous.signed.json"
+      ]
+    }
+  ],
+  "readonlyRecoveredPreflight": "library0330-preflight-network-diagnosis",
+  "resolution": "No legacy upload or signature; final 0.3.31 replaces the planned 0.3.30 legacy successor. Expanded sequence 51 is already signed and verified and remains in history."
+}

@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "c3d4ef958d7286b81d9258d8b8ca74dd2aeeb807",
+      "revision": "7afc6874a50b7b933136108827a9033692cf03db",
       "directory": "dist",
-      "version": "0.3.30",
-      "contentCode": 39,
+      "version": "0.3.31",
+      "contentCode": 40,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
