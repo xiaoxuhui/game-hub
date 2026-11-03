@@ -1,0 +1,118 @@
+{
+  "catalogSequence": "52",
+  "catalogSha256": "121749dec16591ba3fdacbd090fe27c2b0a01f973b076cba7568c1c1083f57f8",
+  "legacySha256": "c43a5c7d749e275e766387ef589626cf1e29ba166f5acfe1f20616b361c80369",
+  "catalogAssetId": 706713884,
+  "historyAssetId": 706291500,
+  "verifiedSequences": [
+    "47",
+    "49",
+    "50",
+    "51",
+    "52"
+  ],
+  "games": [
+    {
+      "id": "memory-demo",
+      "assetId": 625120403,
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+      "bytes": 9510
+    },
+    {
+      "id": "abelian-sandpile",
+      "assetId": 631376685,
+      "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3",
+      "bytes": 83688
+    },
+    {
+      "id": "lambda-diagram-game",
+      "assetId": 681813905,
+      "sha256": "6264e126b39a7fbea3e4628e5b99aac758144ae507f1351576a71acbe50eb79f",
+      "bytes": 217036
+    },
+    {
+      "id": "red-green-puzzle",
+      "assetId": 625642734,
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62",
+      "bytes": 14620
+    },
+    {
+      "id": "mini-scratch",
+      "assetId": 644807162,
+      "sha256": "29548a43c01500b539c009a15b47b869358a60d1fe638999ee3fff7601534593",
+      "bytes": 312805
+    },
+    {
+      "id": "logic-circuit",
+      "assetId": 703200966,
+      "sha256": "b34af3a3b57e7350d7979bc80b8b7e53b092e3091bb183180c705a7c4f2da836",
+      "bytes": 1135317
+    },
+    {
+      "id": "traffic-planner",
+      "assetId": 675758235,
+      "sha256": "86aa41c3f09304f1234131e61a8c4dcba34b9c41d5b2dc92a80a732e93ebc2c6",
+      "bytes": 99665
+    },
+    {
+      "id": "hex-cell-lab",
+      "assetId": 675526846,
+      "sha256": "deff4794213295b5de5ffdcb7ad92462e4e847a2d317468c68435145cff72c80",
+      "bytes": 90867
+    },
+    {
+      "id": "langtons-ant",
+      "assetId": 675670859,
+      "sha256": "91063cf24ee605cf109975901d72931c5b9dc3bb24c92266ba049b2693238b00",
+      "bytes": 26902
+    },
+    {
+      "id": "turbowarp-neural-network",
+      "assetId": 678511874,
+      "sha256": "3a55b17ff933740fe2304e500984c7182b47e972ebe275196803d98342e9dbf7",
+      "bytes": 1881586
+    },
+    {
+      "id": "turbowarp-logic-lab",
+      "assetId": 678512142,
+      "sha256": "84371f9bcdc97ed6c657d4a7d39ebb26d463741976a9cf898f714cf311f28a60",
+      "bytes": 1909088
+    },
+    {
+      "id": "lights-out-matrix",
+      "assetId": 696709961,
+      "sha256": "f41c720ea024c33e2b78ebecd0685540e2cdae0150d77c55305ad9450f73aba1",
+      "bytes": 52728
+    },
+    {
+      "id": "learning-machine",
+      "assetId": 696709993,
+      "sha256": "283250cb105d0c8fbc18c32f4347cb563cff9332e90eb59595548661efc5bcdb",
+      "bytes": 75142
+    },
+    {
+      "id": "logic-circuit",
+      "assetId": 705431263,
+      "sha256": "df8ca6f3b88c33e60e135da8089c6501157e04e9204253820482d711537e52af",
+      "bytes": 1136689
+    },
+    {
+      "id": "logic-circuit",
+      "assetId": 706041897,
+      "sha256": "dbde8a17ba8d5ebfb21629a9ff0a2b5d1d23ac26a2d3b5ddbba68a04e51529ef",
+      "bytes": 1139534
+    },
+    {
+      "id": "logic-circuit",
+      "assetId": 706288376,
+      "sha256": "2784f8d469ba8c8b0f850511b0ecb56c73258b590f16c2f0ed3ae9d8a306dce3",
+      "bytes": 1146370
+    },
+    {
+      "id": "logic-circuit",
+      "assetId": 706710581,
+      "sha256": "e0441820c7024ef13389b6a4d2a8d769ddb88bbc18d540394a6b30f5dfbf9a39",
+      "bytes": 1172094
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "producer": "884411badbc41e0fd32f724a80da94950a99188d",
+  "source": "2f863de388d5b75866a2056fd120ba0845b944d1",
+  "version": "0.3.32",
+  "contentCode": 40,
+  "independentBuildsEqual": true,
+  "unchangedOtherGames": 12,
+  "games": [
+    {
+      "id": "memory-demo",
+      "sha256": "178d01e9ee05f66cf22d4dd8c77fd3ddd47cb94bfce20e6e38fe406f9fde8442",
+      "bytes": 9510,
+      "version": "1.0.1",
+      "contentCode": 2,
+      "source": "80898b3ba78ea51a62533c42362f00a4e37421f1"
+    },
+    {
+      "id": "abelian-sandpile",
+      "sha256": "47a35517606cb363f25c73702873d8cb5a534577de3b2f8f5a1aa5dd74e1c7d3",
+      "bytes": 83688,
+      "version": "0.1.2",
+      "contentCode": 2,
+      "source": "06febcbf7ae9a16ed40cb10aa6507ce6e1ceb4cc"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "sha256": "6264e126b39a7fbea3e4628e5b99aac758144ae507f1351576a71acbe50eb79f",
+      "bytes": 217036,
+      "version": "0.3.4",
+      "contentCode": 6,
+      "source": "54180fe859232e69b45b49168318715d211a5e95"
+    },
+    {
+      "id": "red-green-puzzle",
+      "sha256": "81edc7c967f7cdfabd1a1e8707b677ec0d930d63e12cc0b8d427f65261767c62",
+      "bytes": 14620,
+      "version": "1.0.0",
+      "contentCode": 1,
+      "source": "31eec2e638357d8e3e6a0550afc780e09bdaac49"
+    },
+    {
+      "id": "mini-scratch",
+      "sha256": "29548a43c01500b539c009a15b47b869358a60d1fe638999ee3fff7601534593",
+      "bytes": 312805,
+      "version": "0.5.0",
+      "contentCode": 7,
+      "source": "f5d9d5b613515c2f8500e76466151127b7500baf"
+    },
+    {
+      "id": "logic-circuit",
+      "sha256": "e0441820c7024ef13389b6a4d2a8d769ddb88bbc18d540394a6b30f5dfbf9a39",
+      "bytes": 1172094,
+      "version": "0.3.32",
+      "contentCode": 40,
+      "source": "2f863de388d5b75866a2056fd120ba0845b944d1"
+    },
+    {
+      "id": "traffic-planner",
+      "sha256": "86aa41c3f09304f1234131e61a8c4dcba34b9c41d5b2dc92a80a732e93ebc2c6",
+      "bytes": 99665,
+      "version": "0.1.0",
+      "contentCode": 2,
+      "source": "86f8fb77de41c9ddef37fbd998c44d01c0623727"
+    },
+    {
+      "id": "hex-cell-lab",
+      "sha256": "deff4794213295b5de5ffdcb7ad92462e4e847a2d317468c68435145cff72c80",
+      "bytes": 90867,
+      "version": "1.4.0",
+      "contentCode": 1,
+      "source": "893f0c238d2eb4f20bf8ea907559f149730161a4"
+    },
+    {
+      "id": "langtons-ant",
+      "sha256": "91063cf24ee605cf109975901d72931c5b9dc3bb24c92266ba049b2693238b00",
+      "bytes": 26902,
+      "version": "0.1.0",
+      "contentCode": 1,
+      "source": "20e308259c62e7a88ade50e08fab0182e12dbdcf"
+    },
+    {
+      "id": "turbowarp-neural-network",
+      "sha256": "3a55b17ff933740fe2304e500984c7182b47e972ebe275196803d98342e9dbf7",
+      "bytes": 1881586,
+      "version": "0.1.0",
+      "contentCode": 1,
+      "source": "63943ff21d51ba4ba56f1817fc970c0fab88cde0"
+    },
+    {
+      "id": "turbowarp-logic-lab",
+      "sha256": "84371f9bcdc97ed6c657d4a7d39ebb26d463741976a9cf898f714cf311f28a60",
+      "bytes": 1909088,
+      "version": "0.1.0",
+      "contentCode": 1,
+      "source": "04089708095ed77b4fde2c3c023406a79a3d68b5"
+    },
+    {
+      "id": "lights-out-matrix",
+      "sha256": "f41c720ea024c33e2b78ebecd0685540e2cdae0150d77c55305ad9450f73aba1",
+      "bytes": 52728,
+      "version": "1.0.0",
+      "contentCode": 1,
+      "source": "09e81cfbe52e656b8c8d210325f069531e116f94"
+    },
+    {
+      "id": "learning-machine",
+      "sha256": "283250cb105d0c8fbc18c32f4347cb563cff9332e90eb59595548661efc5bcdb",
+      "bytes": 75142,
+      "version": "1.2.0",
+      "contentCode": 1,
+      "source": "09e81cfbe52e656b8c8d210325f069531e116f94"
+    }
+  ]
+}
