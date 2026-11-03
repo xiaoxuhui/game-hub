@@ -1,0 +1,432 @@
+{
+  "source": {
+    "repository": "xiaoxuhui/logic-circuit",
+    "commit": "05b69818dd8c97ea6f54f6c02c71049250f27e66",
+    "runId": 41660633118,
+    "jobs": [
+      {
+        "id": 126002558746,
+        "name": "build",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41660633118,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run pnpm/action-setup@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Install dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Unit tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Build dist",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Verify committed dist is up to date",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Post Run pnpm/action-setup@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          }
+        ]
+      },
+      {
+        "id": 126002559713,
+        "name": "browser",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41660633118,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run pnpm/action-setup@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Install dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Cache Chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Install Chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Browser tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Upload browser evidence",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9
+          },
+          {
+            "name": "Post Cache Chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run pnpm/action-setup@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      }
+    ]
+  },
+  "hall": {
+    "repository": "xiaoxuhui/game-hub",
+    "commit": "371a143dfb18479914d72136868d742c694c94c5",
+    "runId": 41660774500,
+    "jobs": [
+      {
+        "id": 126003049986,
+        "name": "build",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41660774500,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run pnpm/action-setup@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Verify source lock and assembler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Build four pinned sources in this isolated checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Verify bundle manifest and resource hashes",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Audit shared-origin storage keys",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/setup-java@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Run gradle/actions/setup-gradle@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Run android-actions/setup-android@v3",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Test Android asset policy and assemble debug APK",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Check APK permissions and included resources",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Verify packaged hashes, app identity and debug signature",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Run actions/upload-artifact@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Upload build diagnostics on failure",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 16
+          },
+          {
+            "name": "Post Run gradle/actions/setup-gradle@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 28
+          },
+          {
+            "name": "Post Run actions/setup-java@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 29
+          },
+          {
+            "name": "Post Run pnpm/action-setup@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 30
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 31
+          },
+          {
+            "name": "Post Run actions/checkout@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 32
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 33
+          }
+        ]
+      }
+    ],
+    "compatibilityRunId": 41660774798,
+    "compatibilityJobs": [
+      {
+        "id": 126003051832,
+        "name": "compatibility",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41660774798,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run node --test",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.56.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run node tests/lambda-manual-restore.browser.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run node scripts/lambda-hall-browser.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      }
+    ]
+  },
+  "local": {
+    "unitTests": 338,
+    "unitFailures": 0,
+    "mainBrowserChecks": 81,
+    "mainBrowserFailures": 0,
+    "targetedBrowserSuites": [
+      "queued-input-browser.cjs",
+      "wire-force-browser.cjs",
+      "wire-force-views-browser.cjs",
+      "delay-browser.cjs"
+    ],
+    "isolatedGeneratedSaves": true
+  }
+}
