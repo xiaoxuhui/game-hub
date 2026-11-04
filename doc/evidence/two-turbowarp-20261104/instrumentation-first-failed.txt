@@ -1,0 +1,56 @@
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stream=
+com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest:
+INSTRUMENTATION_STATUS: test=originalGamesLoadOfflineAndKeepIndependentProgressAcrossReload
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stack=org.junit.ComparisonFailure: expected:<["turbowarp-life-lab.state.v1"]> but was:<[null]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest.originalGamesLoadOfflineAndKeepIndependentProgressAcrossReload(NewTurboWarpCandidateWebViewTest.kt:96)
+
+INSTRUMENTATION_STATUS: stream=
+Error in originalGamesLoadOfflineAndKeepIndependentProgressAcrossReload(com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest):
+org.junit.ComparisonFailure: expected:<["turbowarp-life-lab.state.v1"]> but was:<[null]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest.originalGamesLoadOfflineAndKeepIndependentProgressAcrossReload(NewTurboWarpCandidateWebViewTest.kt:96)
+
+INSTRUMENTATION_STATUS: test=originalGamesLoadOfflineAndKeepIndependentProgressAcrossReload
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.NewTurboWarpStoreDeviceTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stream=
+com.xiaoxuhui.gamehub.NewTurboWarpStoreDeviceTest:
+INSTRUMENTATION_STATUS: test=candidateResourcesInstallAndReopenFromPrivateStore
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.xiaoxuhui.gamehub.NewTurboWarpStoreDeviceTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=2
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=candidateResourcesInstallAndReopenFromPrivateStore
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 11.331
+There was 1 failure:
+1) originalGamesLoadOfflineAndKeepIndependentProgressAcrossReload(com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest)
+org.junit.ComparisonFailure: expected:<["turbowarp-life-lab.state.v1"]> but was:<[null]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at com.xiaoxuhui.gamehub.NewTurboWarpCandidateWebViewTest.originalGamesLoadOfflineAndKeepIndependentProgressAcrossReload(NewTurboWarpCandidateWebViewTest.kt:96)
+
+FAILURES!!!
+Tests run: 2,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
