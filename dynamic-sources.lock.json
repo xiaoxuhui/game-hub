@@ -393,6 +393,50 @@
         "vision.js"
       ],
       "releaseNotes": "离线赛车训练、地图编辑和实验。"
+    },
+    {
+      "id": "turbowarp-life-lab",
+      "displayName": "生命规则实验室",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/turbowarp-life-lab.git",
+      "revision": "553b2d4e7af9d3e6bcbf26bccf0bd72234ea02b2",
+      "directory": "web-dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "turbowarp-life-lab-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "MPL-2.0.txt",
+        "THIRD_PARTY_NOTICES.md",
+        "build-info.json",
+        "index.html",
+        "scaffolding-min.js.LICENSE.txt"
+      ],
+      "releaseNotes": "原生 Scratch 生命规则作品的离线网页封装，支持触摸及棋盘、规则本地恢复。"
+    },
+    {
+      "id": "turbowarp-turing-lab",
+      "displayName": "图灵机实验室",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/turbowarp-turing-lab.git",
+      "revision": "8a3e6ebf08ae9726ee38e60bc68738db7a2132c4",
+      "directory": "web-dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "turbowarp-turing-lab-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "MPL-2.0.txt",
+        "THIRD_PARTY_NOTICES.md",
+        "build-info.json",
+        "index.html",
+        "scaffolding-min.js.LICENSE.txt"
+      ],
+      "releaseNotes": "原生 Scratch 图灵机作品的离线网页封装，支持规则输入及纸带与运行状态本地恢复。"
     }
   ]
 }
