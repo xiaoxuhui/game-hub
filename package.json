@@ -1,6 +1,6 @@
 {
   "name": "game-hub",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "description": "离线四项目 Android 游戏大厅",
   "license": "MIT",
@@ -15,8 +15,8 @@
   "engines": { "node": ">=20.19.0" },
   "packageManager": "pnpm@11.19.0",
   "scripts": {
-    "test": "node --test",
-    "check": "node --check scripts/bundle.mjs && node --test",
+    "test": "node --test tests/*.test.mjs tests/*.test.cjs",
+    "check": "node --check scripts/bundle.mjs && node --test tests/*.test.mjs tests/*.test.cjs",
     "bundle": "node scripts/bundle.mjs",
     "verify:bundle": "node scripts/bundle.mjs --verify",
     "audit:storage": "node scripts/audit-storage.mjs",
