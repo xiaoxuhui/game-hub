@@ -20,13 +20,16 @@ internal class GameContentResolver(private val assets: AssetManager, val gameId:
         if (!allowed(uri)) return blocked()
         val path = uri.path!!; val relative = path.removePrefix(prefix)
         return try {
-            val type = metadata?.get(path)?.mime ?: ResourcePolicy.mime(relative)
+            val declaredType = metadata?.get(path)?.mime ?: ResourcePolicy.mime(relative)
+            val type = responseMime(relative, declaredType)
             val input = if (session.root == null) assets.open(path.removePrefix("/assets/")) else java.io.File(session.root, relative).inputStream()
             WebResourceResponse(type, if (type.startsWith("text/") || type in setOf("application/javascript", "application/json", "image/svg+xml")) "UTF-8" else null,
                 200, "OK", mapOf("Cache-Control" to "no-store", "X-Content-Type-Options" to "nosniff"), input)
         } catch (error: Exception) { blocked() }
     }
     companion object {
+        fun responseMime(path: String, declaredType: String): String =
+            if (path.endsWith(".wasm", ignoreCase = true) && declaredType == "application/octet-stream") "application/wasm" else declaredType
         fun blocked() = WebResourceResponse("text/plain", "UTF-8", 404, "Not Found", mapOf("Cache-Control" to "no-store"), ByteArrayInputStream("Blocked unregistered resource".toByteArray()))
     }
 }

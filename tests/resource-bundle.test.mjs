@@ -13,6 +13,11 @@ import { resourceInputs } from '../scripts/resource-sources.mjs';
 const sources = JSON.parse(readFileSync(new URL('../sources.lock.json', import.meta.url))).sources;
 const now = Date.UTC(2026, 9, 8);
 const game = (source, i) => ({ id: source.id, version: source.version, contentCode: 1, sourceRepository: source.repository, sourceRevision: source.revision, minHostVersionCode: 3, maxHostVersionCode: 4, resourceProtocol: 1, storageContract: CONTRACTS[source.id], entryPage: source.entryPage, assetId: i + 10, archiveBytes: 100, archiveSha256: 'a'.repeat(64), files: [source.entryPage, 'LICENSE'].map(path => ({ path, bytes: 10, sha256: 'b'.repeat(64), mime: mime(path) })), releaseNotes: '兼容资源' });
+
+test('WebAssembly metadata stays compatible with previous hosts', () => {
+  assert.equal(mime('runtime/pyodide.asm.wasm'), 'application/octet-stream');
+  assert.equal(mime('runtime/pyodide.mjs'), 'application/octet-stream');
+});
 const catalog = () => ({ schemaVersion: 1, channel: 'game-hub-resources-v1', releaseId: 1, catalogSequence: '1', issuedAt: new Date(now).toISOString(), expiresAt: new Date(now + 86400000).toISOString(), games: sources.map(game) });
 
 test('strict parser rejects duplicate escaped keys, UTF8 corruption and invalid JSON', () => {

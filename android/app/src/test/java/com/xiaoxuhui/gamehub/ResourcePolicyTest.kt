@@ -9,6 +9,12 @@ import java.security.Signature
 import java.util.Base64
 
 class ResourcePolicyTest {
+    @Test fun webAssemblyMetadataRemainsCompatibleAndIsServedWithBrowserMimeType() {
+        val declared = ResourcePolicy.mime("runtime/pyodide.asm.wasm")
+        assertEquals("application/octet-stream", declared)
+        assertEquals("application/wasm", GameContentResolver.responseMime("runtime/pyodide.asm.wasm", declared))
+        assertEquals("application/javascript", GameContentResolver.responseMime("runtime/pyodide.js", "application/javascript"))
+    }
     private fun payload(): JSONObject {
         val repos = mapOf("conway" to "conway-life-game", "eml" to "EML", "light" to "light_game", "turing" to "turing-machine-simulator")
         return JSONObject().put("schemaVersion", 1).put("channel", "game-hub-resources-v1").put("releaseId", 10)

@@ -437,6 +437,58 @@
         "scaffolding-min.js.LICENSE.txt"
       ],
       "releaseNotes": "原生 Scratch 图灵机作品的离线网页封装，支持规则输入及纸带与运行状态本地恢复。"
+    },
+    {
+      "id": "snake-speed",
+      "displayName": "贪吃蛇 · Python 编程版",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/snake-speed.git",
+      "revision": "493bcddce7b9bd99485c759634f4a14eed9beb70",
+      "directory": "dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "minHostVersionCode": 9,
+      "storageContract": "snake-speed-dynamic-v1",
+      "releaseNotes": "离线 Python 控制贪吃蛇，运行时随资源提供。",
+      "files": [
+        "LICENSE",
+        "game.js",
+        "index.html",
+        "pyodide/LICENSE.txt",
+        "pyodide/PYTHON-LICENSE.txt",
+        "pyodide/pydoc_data-1.0.0-py2.py3-none-any.whl",
+        "pyodide/pyodide-lock.json",
+        "pyodide/pyodide.asm.js",
+        "pyodide/pyodide.asm.wasm",
+        "pyodide/pyodide.js",
+        "pyodide/python_stdlib.zip",
+        "python-worker.js",
+        "python.js"
+      ]
+    },
+    {
+      "id": "turbowarp-graph-lab",
+      "displayName": "函数图形实验室",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/turbowarp-graph-lab.git",
+      "revision": "f049219553c743b52fb919f7feb0540135ba5b1d",
+      "directory": "web-dist",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "turbowarp-graph-lab-dynamic-v1",
+      "releaseNotes": "原生 Scratch 函数图形实验室的离线网页封装，支持本地保存。",
+      "files": [
+        "LICENSE",
+        "MPL-2.0.txt",
+        "THIRD_PARTY_NOTICES.md",
+        "build-info.json",
+        "index.html",
+        "scaffolding-min.js.LICENSE.txt"
+      ]
     }
   ]
 }

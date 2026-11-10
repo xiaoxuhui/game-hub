@@ -23,7 +23,7 @@ export function packDynamic(source, entries) {
   if(entries.map(e=>e.path).sort().join('\0')!==[...source.files].sort().join('\0')) throw new Error('Dynamic complete files');
   inspectResources(entries,source.id);const archive=createZip(entries);
   const game={id:source.id,displayName:source.displayName,iconKind:source.iconKind,available:source.available,version:source.version,contentCode:source.contentCode,
-    sourceRepository:source.repository,sourceRevision:source.revision,minHostVersionCode:4,maxHostVersionCode:2147483647,resourceProtocol:2,bridgeProtocol:1,
+    sourceRepository:source.repository,sourceRevision:source.revision,minHostVersionCode:source.minHostVersionCode ?? 4,maxHostVersionCode:2147483647,resourceProtocol:2,bridgeProtocol:1,
     storageContract:source.storageContract,entryPage:source.entryPage,archiveBytes:archive.length,archiveSha256:sha256(archive),
     files:[...entries].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0).map(e=>({path:e.path,bytes:e.data.length,sha256:sha256(e.data),mime:mime(e.path)})),releaseNotes:source.releaseNotes};
   const issued=new Date(),expires=new Date(issued.getTime()+86400000);
