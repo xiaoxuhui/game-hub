@@ -44,7 +44,8 @@ internal class ResourceCatalogClient(private val publicKey: ByteArray, private v
             }
             val target = java.net.URI(next.single()); val query = target.rawQuery?.split('&') ?: emptyList()
             require(items.length() == 100 && target.scheme == "https" && target.host == "api.github.com" && target.port == -1 && target.userInfo == null && target.fragment == null &&
-                target.rawPath == "/repos/xiaoxuhui/game-hub/releases/$releaseId/assets" && query.size == 2 && query.toSet() == setOf("per_page=100", "page=${page + 1}")) { "资产分页地址不可信" }
+                target.rawPath in setOf("/repos/xiaoxuhui/game-hub/releases/$releaseId/assets", "/repositories/1397438992/releases/$releaseId/assets") &&
+                query.size == 2 && query.toSet() == setOf("per_page=100", "page=${page + 1}")) { "资产分页地址不可信" }
             page++
         }
         val ids = assets.map { ResourcePolicy.integer(it, "id", 1) }; val names = assets.map { it.getString("name") }

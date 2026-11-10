@@ -131,6 +131,9 @@ class ResourceCatalogClientTest {
         assertEquals(4, f.client().query().catalog.games.size)
         f.network.replies[f.pageUrl] = f.network.replies[f.pageUrl]!!.copy(headers = mapOf("Link" to "<${f.root}/releases/10/assets?page=2&per_page=100>; rel=\"next\""))
         assertEquals(4, f.client().query().catalog.games.size)
+        f.network.replies[f.pageUrl] = f.network.replies[f.pageUrl]!!.copy(headers = mapOf("Link" to "<https://api.github.com/repositories/1397438992/releases/10/assets?per_page=100&page=2>; rel=\"next\""))
+        assertEquals(4, f.client().query().catalog.games.size)
+        f.network.replies[f.pageUrl] = f.network.replies[f.pageUrl]!!.copy(headers = mapOf("Link" to "<https://api.github.com/repositories/1397438993/releases/10/assets?per_page=100&page=2>; rel=\"next\"")); rejected { f.client().query() }
         f.network.replies[f.pageUrl] = f.network.replies[f.pageUrl]!!.copy(headers = mapOf("Link" to "<https://evil.example/assets>; rel=\"next\"")); rejected { f.client().query() }
         f.network.replies[f.pageUrl] = f.network.replies[f.pageUrl]!!.copy(headers = mapOf("Link" to "not-a-valid-next-link")); rejected { f.client().query() }
         f.network.replies[f.pageUrl] = Reply(JSONArray(f.assets + fillers.take(95)).toString().toByteArray())
