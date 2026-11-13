@@ -233,6 +233,8 @@ def check_update_query() -> None:
         messages = [node.attrib.get("text", "") for node in nodes(root)]
         state = ("no_public_release" if "暂无公开版本（仓库仍私有或尚未发布）" in messages else
                  "up_to_date" if "当前已是最新公开版本" in messages else
+                 "up_to_date" if any(message.startswith("大厅：已安装大厅 ") and "正式发布 " in message and "已核对" in message for message in messages) else
+                 "new_version" if any(message.startswith("大厅：大厅 ") and "可更新" in message for message in messages) else
                  "new_version" if any(message.startswith("发现新版本 v") for message in messages) else None)
         if state is not None:
             (EVIDENCE / "update-query.json").write_text(json.dumps({"state": state}, ensure_ascii=False), encoding="utf-8")
