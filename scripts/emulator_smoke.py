@@ -102,7 +102,7 @@ def node_visible(node: ET.Element) -> bool:
 def find_game_button(root: ET.Element, name: str):
     for card in nodes(root):
         if (card.attrib.get("package") == PACKAGE and card.attrib.get("clickable") == "true"
-                and card.attrib.get("content-desc", "").startswith(f"{name}，版本") and node_visible(card)):
+                and card.attrib.get("content-desc", "").startswith(f"{name}，") and node_visible(card)):
             return card
     return None
 
