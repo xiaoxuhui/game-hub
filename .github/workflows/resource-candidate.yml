@@ -22,7 +22,7 @@ jobs:
       - run: pnpm run check
       - run: pnpm run prepare:resources
       - run: pnpm run verify:resources
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: unsigned-resource-candidate-${{ github.sha }}
           path: .build/resource-candidate/
