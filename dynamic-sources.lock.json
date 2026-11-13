@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "54180fe859232e69b45b49168318715d211a5e95",
-      "directory": "examples/lambda-diagram-game",
-      "version": "0.3.4",
-      "contentCode": 6,
+      "revision": "ec9851d5f54da1f2e4c7f3857306ea298ddc1901",
+      "directory": "examples/lambda-diagram-motion",
+      "version": "0.3.5",
+      "contentCode": 7,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "0.3.4修复：兼容0.3.3首次升级后自动存档已迁移、旧检查点仍保留的设备。原始自动存档与检查点先归档，再原子迁移到新存档；打开仍显示新会话，需手动点“恢复已保存状态”或“导入存档”。用户编辑后继续自动保存；存档格式和其他游戏资源不变。"
+      "releaseNotes": "归约、回退和重置增加淡入过渡，滚轮、键盘和按钮缩放围绕焦点平滑过渡，触屏捏合直接跟随手指。可继续手动恢复之前的存档。"
     },
     {
       "id": "red-green-puzzle",

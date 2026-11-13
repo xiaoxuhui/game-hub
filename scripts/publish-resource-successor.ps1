@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('legacy','n9','n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24','n28','t1','two20261101')][string]$TaskScope='legacy',
+    [ValidateSet('legacy','n9','n10','n12','n13','n14','n15','n16','n18','n19','n20','n21','n22','n23','n24','n28','t1','two20261101','lambda-motion')][string]$TaskScope='legacy',
     [switch]$ResumeAfterUploads,
     [switch]$OnlyNewHex,
     [switch]$OnlyNewAnt,
@@ -12,6 +12,11 @@ param(
 $ErrorActionPreference='Stop'
 $taskCheckout='D:\soft\.ci-tmp\game-hub-work\v030-final'
 $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-work\v030-evidence\v040-resource-update'
+if($TaskScope -ieq 'lambda-motion'){
+    $taskCheckout=Split-Path -Parent $PSScriptRoot
+    $taskEvidenceRoot='D:\soft\.ci-tmp\lambda-motion-evidence-20261114'
+    $env:GAME_HUB_DYNAMIC_GAME='lambda-diagram-game'
+}
 if($TaskScope -ieq 'n9'){
     $taskCheckout='D:\soft\.ci-tmp\game-hub-n9\work'
     $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n9\evidence\publication'

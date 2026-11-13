@@ -19,6 +19,13 @@ export function dynamicSources(bytes) {
   }
   return lock;
 }
+function publicationSources(bytes) {
+  const {sources}=dynamicSources(bytes),id=process.env.GAME_HUB_DYNAMIC_GAME;
+  if(!id)return sources;
+  const source=sources.find(entry=>entry.id===id);
+  if(!source)throw new Error('Unknown dynamic publication game');
+  return [source];
+}
 export function packDynamic(source, entries) {
   if(entries.map(e=>e.path).sort().join('\0')!==[...source.files].sort().join('\0')) throw new Error('Dynamic complete files');
   inspectResources(entries,source.id);const archive=createZip(entries);
@@ -61,14 +68,14 @@ export function verifyPackedDynamic(source, sourceEntries, game, archive) {
 }
 export function verifyDynamicResources(output=join(root,'.build/dynamic-candidate'), checkout=root) {
   if(!lstatSync(output).isDirectory() || lstatSync(output).isSymbolicLink() || realpathSync(output)!==resolve(output)) throw new Error('Dynamic candidate root link');
-  const bytes=readFileSync(join(checkout,'dynamic-sources.lock.json')),lock=dynamicSources(bytes),candidate=strictJson(readFileSync(join(output,'candidate.json')));
+  const bytes=readFileSync(join(checkout,'dynamic-sources.lock.json')),sources=publicationSources(bytes),candidate=strictJson(readFileSync(join(output,'candidate.json')));
   if(candidate.schemaVersion!==1 || candidate.sourceLockSha256!==sha256(bytes) || candidate.bundleCommit!==git(checkout,['rev-parse','HEAD'])) throw new Error('Stale dynamic candidate');
   const games=strictJson(readFileSync(join(output,'games.unsigned.json')));
-  if(!Array.isArray(games) || games.length!==lock.sources.length || new Set(games.map(g=>g.id)).size!==games.length) throw new Error('Dynamic candidate identities');
+  if(!Array.isArray(games) || games.length!==sources.length || new Set(games.map(g=>g.id)).size!==games.length) throw new Error('Dynamic candidate identities');
   const expected=[...games.map(assetName),'candidate.json','games.unsigned.json'].sort();
   if(JSON.stringify(readdirSync(output).sort())!==JSON.stringify(expected) || expected.some(name=>!lstatSync(join(output,name)).isFile() || lstatSync(join(output,name)).isSymbolicLink())) throw new Error('Unexpected dynamic candidate file');
   for(const game of games) {
-    const source=lock.sources.find(s=>s.id===game.id);if(!source) throw new Error('Unknown dynamic candidate');
+    const source=sources.find(s=>s.id===game.id);if(!source) throw new Error('Unknown dynamic candidate');
     const archive=readFileSync(join(output,assetName(game)));
     verifyPackedDynamic(source,lockedSourceEntries(checkout,source),game,archive);
   }
@@ -76,13 +83,13 @@ export function verifyDynamicResources(output=join(root,'.build/dynamic-candidat
 }
 export function prepareDynamicResources(checkout=root) {
   if(process.env.GAME_HUB_LOCAL_SOURCES || git(checkout,['status','--porcelain=v1','--untracked-files=all'])) throw new Error('Dynamic production requires clean independent checkout and remote SHA sources');
-  const bytes=readFileSync(join(checkout,'dynamic-sources.lock.json')),lock=dynamicSources(bytes),build=join(checkout,'.build');mkdirSync(build,{recursive:true});
+  const bytes=readFileSync(join(checkout,'dynamic-sources.lock.json')),selected=publicationSources(bytes),build=join(checkout,'.build');mkdirSync(build,{recursive:true});
   if(realpathSync(build)!==resolve(build)) throw new Error('Dynamic build root link');
   const sources=join(build,'dynamic-sources');mkdirSync(sources,{recursive:true});
   if(realpathSync(sources)!==resolve(sources)) throw new Error('Dynamic checkout root link');
   const staging=mkdtempSync(join(build,'dynamic-staging-')),output=join(build,'dynamic-candidate'),backup=staging+'-previous';
   try {
-    const games=lock.sources.map(source=>{
+    const games=selected.map(source=>{
       const directory=join(sources,source.id);
       const fresh=!existsSync(directory);
       if(fresh) execFileSync('git',['clone','--quiet','--no-local','--no-checkout',source.repository,directory],{cwd:checkout,stdio:'inherit',env:{...process.env,GIT_TERMINAL_PROMPT:'0'}});
