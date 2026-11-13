@@ -191,6 +191,26 @@ class GameResourceStoreTest {
         fun close() { root.deleteRecursively() }
     }
     private fun rejected(block: () -> Unit) { try { block(); fail("Expected rejection") } catch (error: Exception) { assertNotNull(error) } }
+    @Test fun builtinBaselineCanBeReinstalledFromItsSignedHistoricalArchive() {
+        val f=Fixture(); try {
+            val store=f.store; val (baseline,oldProof,oldZip)=f.release(code=1,sequence=1)
+            val (_,currentProof,_)=f.release(code=2,sequence=2); store.acceptCatalog(currentProof)
+            rejected { store.reinstall(baseline,currentProof,oldZip,installedEnvelope=oldProof,baselineRevision="b".repeat(40)) }
+            assertEquals("builtin",store.selection("conway").active)
+            store.reinstall(baseline,currentProof,oldZip,installedEnvelope=oldProof,baselineRevision="a".repeat(40))
+            val reopened=f.store; assertEquals(2,reopened.selection("conway").highestCode)
+            reopened.openSession("conway",true).use { assertEquals(baseline.identity,it.game!!.identity) }
+        } finally { f.close() }
+    }
+    @Test fun reinstallRejectsDifferentArchiveUnderSameVersionNumber() {
+        val f=Fixture(); try {
+            val store=f.store; val (old,oldProof,oldZip)=f.release(code=1,sequence=1,body="old")
+            val (_,currentProof,_)=f.release(code=1,sequence=2,body="different")
+            store.acceptCatalog(currentProof)
+            rejected { store.reinstall(old,currentProof,oldZip,installedEnvelope=oldProof,baselineRevision="a".repeat(40)) }
+            assertEquals("builtin",store.selection("conway").active)
+        } finally { f.close() }
+    }
     @Test fun completeInstallActivatesOnlyWithoutSessionAndPinnedRestoreSurvivesRestart() {
         val f = Fixture(); try {
             val store = f.store; val (game, envelope, zip) = f.release()

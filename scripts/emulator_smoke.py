@@ -126,6 +126,11 @@ def assert_all_cards_in_viewport(root: ET.Element) -> None:
         if card is None:
             raise AssertionError(f"Lobby card is not visible: {name}")
         assert_card_in_viewport(card, name, (x1, y1, x2, y2), (width, height))
+        reinstall = next((node for node in card.iter("node")
+                          if node.attrib.get("content-desc") == f"重新安装{name}"
+                          and node.attrib.get("clickable") == "true" and node_visible(node)), None)
+        if reinstall is None:
+            raise AssertionError(f"Reinstall action is not visible or clickable: {name}")
 
 
 def assert_card_in_viewport(card: ET.Element, name: str, viewport: tuple[int, int, int, int], screen: tuple[int, int]) -> None:
@@ -264,6 +269,32 @@ def wait_for_webview(game_id: str) -> ET.Element:
     raise AssertionError(f"No populated WebView appeared for {game_id}")
 
 
+def check_reinstall_action() -> None:
+    try:
+        adb("shell", "svc", "wifi", "disable")
+        adb("shell", "svc", "data", "disable")
+        time.sleep(3)
+        root = hierarchy()
+        button = next((node for node in nodes(root)
+                       if node.attrib.get("content-desc") == "重新安装康威生命游戏" and node_visible(node)), None)
+        if button is None:
+            raise AssertionError("Reinstall action missing before interaction")
+        tap(button)
+        for _ in range(8):
+            root = hierarchy()
+            if has_text(root, "确认本次使用计费网络"):
+                cancel = next((node for node in nodes(root) if node.attrib.get("text") == "取消" and node_visible(node)), None)
+                if cancel is None:
+                    raise AssertionError("Reinstall confirmation has no cancel action")
+                tap(cancel)
+                return
+            time.sleep(1)
+        raise AssertionError("Reinstall action did not open confirmation")
+    finally:
+        adb("shell", "svc", "wifi", "enable")
+        adb("shell", "svc", "data", "enable")
+
+
 def main(apk: Path) -> None:
     EVIDENCE.mkdir(exist_ok=True)
     for stale_result in ("light-webview-check.json", "error.txt"):
@@ -281,6 +312,7 @@ def main(apk: Path) -> None:
             raise AssertionError("Native lobby title or cards are missing")
         assert_all_cards_in_viewport(root)
         snapshot("lobby")
+        check_reinstall_action()
         for game_id, name in GAMES:
             button = None
             for _ in range(6):

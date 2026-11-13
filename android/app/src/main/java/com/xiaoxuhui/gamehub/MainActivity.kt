@@ -300,7 +300,7 @@ class MainActivity : ComponentActivity() {
                     gravity = Gravity.CENTER
                     setPadding(0, dp(4), 0, 0)
                 })
-                card.addView(reinstallButton(game.id, game.name, true))
+                card.addView(reinstallButton(game.id, game.name))
             }
         }
         dynamicSection=LinearLayout(this).apply {orientation=LinearLayout.VERTICAL}
@@ -338,7 +338,7 @@ class MainActivity : ComponentActivity() {
                     card.addView(ImageView(this).apply {setImageResource(icon);contentDescription=null},LinearLayout.LayoutParams(dp(56),dp(56)))
                     card.addView(label(game.name,16f,Color.WHITE,true).apply {gravity=Gravity.CENTER;maxLines=3;setPadding(0,dp(6),0,0)})
                     card.addView(label("",11f,MUTED,false).apply {gravity=Gravity.CENTER;gameVersionLabels[game.id]=this})
-                    card.addView(reinstallButton(game.id,game.name,false))
+                    card.addView(reinstallButton(game.id,game.name))
                 }
                 if(pair.size==1)row.addView(View(this),LinearLayout.LayoutParams(0,1,1f))
             }
@@ -359,12 +359,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun reinstallButton(id: String, name: String, builtin: Boolean): TextView = label("重新安装", 12f, 0xFF8AB7FF.toInt(), true).apply {
+    private fun reinstallButton(id: String, name: String): TextView = label("重新安装", 12f, 0xFF8AB7FF.toInt(), true).apply {
         gravity=Gravity.CENTER; minHeight=dp(44); isClickable=true; isFocusable=true; contentDescription="重新安装$name"
         setOnClickListener {
-            if(builtin && updates.snapshot().localResources[id]?.selection?.active=="builtin") {
-                toast("此版本随大厅 APK 安装；重新安装大厅可修复，游戏存档保留")
-            } else confirmDownload { allowed ->
+            confirmDownload { allowed ->
                 if(!updates.reinstallResource(id,allowed)) toast("重新安装未开始，请检查网络或等待当前任务结束")
             }
         }
@@ -613,8 +611,7 @@ class MainActivity : ComponentActivity() {
                 if (local.selection.quarantine.isNotEmpty()) description("已隔离失败编号：${local.selection.quarantine.sorted().joinToString()}")
                 if (local.stateError == null) {
                     detailButton(column, "重新安装${game.name}", !state.busy) {
-                        if (local.selection.active == "builtin") toast("此版本随大厅 APK 安装；如需修复请重新安装大厅 APK，存档保留")
-                        else confirmDownload { allowed -> if (!updates.reinstallResource(game.id, allowed)) toast("请先检查更新，并确认当前版本的签名证明可用") }
+                        confirmDownload { allowed -> if (!updates.reinstallResource(game.id, allowed)) toast("请先检查更新，并确认当前版本的签名证明可用") }
                     }
                     if (local.selection.previous != local.selection.active) detailButton(column, "恢复${game.name}上个版本并固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESTORE_PREVIOUS) }
                     if (local.selection.active != "builtin" || local.selection.ready != null) detailButton(column, "恢复${game.name}内置版本并固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESTORE_BUILTIN) }

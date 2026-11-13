@@ -286,19 +286,29 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         val policy=policyFor(id); val current=(if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer) ?: return false
         val currentGame=current.catalog.games.singleOrNull { it.id==id } ?: return false
         val store=storeFor(policy)
-        val installed=try { store.installedProof(id) } catch (error: Exception) { resourceStatus(policy,error.message ?: "无法读取已安装版本证明"); return false }
+        val builtin=policy==ResourceStorePolicy.BUILTIN && store.selection(id).active=="builtin"
+        val installed=if(builtin) null else try { store.installedProof(id) } catch (error: Exception) {
+            if(store.selection(id).active==currentGame.identity) currentGame to current.envelope
+            else { resourceStatus(policy,error.message ?: "无法读取已安装版本证明"); return false }
+        }
         val token=try { current.reserveDownload(currentGame,gate,true,meteredConfirmed) }
         catch(error: Exception) { resourceStatus(policy,error.message ?: "请先检查更新"); return false } ?: return false
-        val game=installed.first; val proof=installed.second
-        publish { it.copy(busy=true,task="重新安装 ${game.displayName}",done=0,total=game.archiveBytes) }
+        publish { it.copy(busy=true,task="重新安装 ${currentGame.displayName}",done=0,total=currentGame.archiveBytes) }
         worker.execute {
             var archive: File?=null
             try {
                 current.requireDownload(currentGame)
                 val client=if(policy==ResourceStorePolicy.BUILTIN) resourceClient else dynamicClient
+                val source=installed ?: client.builtinBaseline(id,current.catalog) { !gate.valid(token) }
+                val game=source.first; val proof=source.second
+                val baselineRevision=if(builtin) {
+                    val manifest=app.assets.open("bundle-manifest.json").use { StrictJson.parse(ResourceIo.readBounded(it,1048576)) }
+                    val sources=manifest.getJSONArray("sources")
+                    (0 until sources.length()).map { sources.getJSONObject(it) }.single { it.getString("id")==id }.getString("revision")
+                } else null
                 archive=client.download(game,File(app.cacheDir,"resource-updates"),{ !gate.valid(token) },progressReporter())
                 check(gate.valid(token)) { "重新安装已取消" }
-                store.reinstall(game,current.envelope,archive,{ !gate.valid(token) },proof)
+                store.reinstall(game,current.envelope,archive,{ !gate.valid(token) },proof,baselineRevision)
                 readLocalResources(); resourceStatus(policy,"${game.displayName} 已重新安装；存档保留")
             } catch(error: Exception) {
                 if(token.cancelled) resourceStatus(policy,"重新安装已取消，原资源与存档保留") else channelFailure(policy.updateChannel,error)

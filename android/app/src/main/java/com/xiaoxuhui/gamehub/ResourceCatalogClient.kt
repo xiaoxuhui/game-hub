@@ -18,6 +18,15 @@ internal data class ResourceOffer(val catalog: ResourceCatalog, val envelope: By
 
 internal class ResourceCatalogClient(private val publicKey: ByteArray, private val http: PublicReleaseHttp = PublicReleaseHttp(),
     private val now: () -> Long = System::currentTimeMillis, private val policy: ResourceStorePolicy = ResourceStorePolicy.BUILTIN) {
+    fun builtinBaseline(id: String, current: ResourceCatalog, cancelled: () -> Boolean): Pair<ResourceGame,ByteArray> {
+        require(policy==ResourceStorePolicy.BUILTIN && policy.validId(id))
+        val deadline=PublicReleaseHttp.deadline(); var bytes=byteArrayOf()
+        http.asset(623110620,10907,deadline,cancelled) { bytes=PublicReleaseHttp.bounded(it,10907,deadline,cancelled) }
+        require(bytes.size==10907 && ResourcePolicy.sha256(bytes)=="e7f017b35cbb2fad04f5a521c47508f3616fea0ef471f4bd7245f42cd02f7d62") { "内置版本签名证明不匹配" }
+        val old=policy.proof(bytes,publicKey); require(old.releaseId==current.releaseId && old.sequence==1L)
+        val game=old.games.single { it.id==id }; require(game.contentCode==1)
+        return game to bytes
+    }
     fun query(cancelled: () -> Boolean = { false }): ResourceOffer {
         val deadline = PublicReleaseHttp.deadline()
         val release = StrictJson.parse(http.metadata("${PublicReleaseHttp.API_ROOT}/releases/tags/${policy.releaseTag}", 4194304, deadline, cancelled).bytes, 4194304)
