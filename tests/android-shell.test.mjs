@@ -12,8 +12,8 @@ test('Android application identity and minimum API stay independent of source AP
   assert.match(gradle, /applicationId\s*=\s*"com\.xiaoxuhui\.gamehub"/);
   assert.match(gradle, /minSdk\s*=\s*24/);
   assert.equal(gradle.match(/versionName\s*=\s*"([^"]+)"/)[1], JSON.parse(text('package.json')).version);
-  assert.match(gradle, /versionCode\s*=\s*9\b/);
-  assert.match(gradle, /versionName\s*=\s*"0\.5\.1"/);
+  assert.match(gradle, /versionCode\s*=\s*10\b/);
+  assert.match(gradle, /versionName\s*=\s*"0\.5\.2"/);
   assert.doesNotMatch(gradle, /storeFile\s*=\s*file\("debug\.keystore"\)/);
 });
 
@@ -22,12 +22,12 @@ test('APK upgrade smoke fixture stays one version above the app release', () => 
   const workflow = text('.github/workflows/android-update-upgrade-smoke.yml');
   const instrumentation = text('android/app/src/androidTest/java/com/xiaoxuhui/gamehub/UpdateFixtureTest.kt');
   const script = text('scripts/update_upgrade_smoke.sh');
-  assert.match(gradle, /versionCode\s*=\s*9\b/);
-  assert.match(gradle, /versionName\s*=\s*"0\.5\.1"/);
-  assert.match(workflow, /versionCode = 10/);
-  assert.match(workflow, /versionName = "0\.5\.2"/);
-  assert.match(instrumentation, /ReleaseApk\("0\.5\.2"/);
-  assert.match(script, /grep 'versionCode=10'/);
+  assert.match(gradle, /versionCode\s*=\s*10\b/);
+  assert.match(gradle, /versionName\s*=\s*"0\.5\.2"/);
+  assert.match(workflow, /versionCode = 11/);
+  assert.match(workflow, /versionName = "0\.5\.3"/);
+  assert.match(instrumentation, /ReleaseApk\("0\.5\.3"/);
+  assert.match(script, /grep 'versionCode=11'/);
 });
 
 test('Manifest has one launcher and only the planned update permission', () => {
