@@ -533,6 +533,7 @@ class MainActivity : ComponentActivity() {
                 }
                 if(local.stateError==null){
                     if(local.selection.previous!="builtin" && local.selection.previous!=local.selection.active)detailButton(column,"恢复${name}上个版本并固定",!state.busy){confirmLocalChange(id,LocalResourceAction.RESTORE_PREVIOUS)}
+                    local.otherVersions.forEach { version -> detailButton(column,"切换到已下载的${name} v${version.version}",!state.busy){confirmLocalChange(id,LocalResourceAction.SELECT_DOWNLOADED,identity=version.identity)} }
                     detailButton(column,"移除${name}资源（保留存档）",!state.busy){confirmLocalChange(id,LocalResourceAction.REMOVE)}
                 }
             }
@@ -614,6 +615,7 @@ class MainActivity : ComponentActivity() {
                         confirmDownload { allowed -> if (!updates.reinstallResource(game.id, allowed)) toast("请先检查更新，并确认当前版本的签名证明可用") }
                     }
                     if (local.selection.previous != local.selection.active) detailButton(column, "恢复${game.name}上个版本并固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESTORE_PREVIOUS) }
+                    local.otherVersions.forEach { version -> detailButton(column,"切换到已下载的${game.name} v${version.version}",!state.busy){confirmLocalChange(game.id,LocalResourceAction.SELECT_DOWNLOADED,identity=version.identity)} }
                     if (local.selection.active != "builtin" || local.selection.ready != null) detailButton(column, "恢复${game.name}内置版本并固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESTORE_BUILTIN) }
                     if (local.selection.pinned) detailButton(column, "解除${game.name}版本固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESUME) }
                     local.selection.quarantine.sorted().forEach { code -> detailButton(column, "明确重试${game.name}资源 #$code", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RETRY, code) } }
@@ -671,19 +673,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun confirmLocalChange(id: String?, action: LocalResourceAction, retryCode: Int? = null) {
+    private fun confirmLocalChange(id: String?, action: LocalResourceAction, retryCode: Int? = null, identity: String? = null) {
         val message = when (action) {
             LocalResourceAction.RECOVER_ALL -> "仅使用完整可信签名历史恢复四个内置版本并固定，保留最高更新编号。无法验证历史时不会重置。游戏存档保留。"
             LocalResourceAction.RECOVER_DYNAMIC -> "根据完整可信历史重建游戏目录，将资源选择恢复为未安装并固定，保留存档和最高更新编号。无法验证历史时不会重置；恢复后需明确重试并手动重新安装。"
             LocalResourceAction.REMOVE -> "只移除此游戏可重新下载的资源，存档和历史更新编号保留。以后需要手动选择重新安装，不会自动重装。"
             LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> "恢复资源后固定该游戏版本，并保留切换前的版本。游戏存档保留，但不会回到过去；下一次进入使用恢复版本。"
+            LocalResourceAction.SELECT_DOWNLOADED -> "将切换到已下载的资源版本并固定。如该版本曾被隔离，本次选择将允许再次使用。游戏存档保留。"
             LocalResourceAction.RESUME -> "解除固定后允许自动更新；此前失败编号继续隔离，需另行明确重试。游戏存档保留。"
             LocalResourceAction.RETRY -> "解除资源 #$retryCode 的隔离并解除固定。签名目录仍提供该编号且兼容时，允许重新尝试；更新继续遵守网络设置。游戏存档保留。"
         }
         trackConfirmation(AlertDialog.Builder(this).setTitle("资源恢复与更新设置").setMessage(message)
             .setPositiveButton("确认") { _, _ ->
                 if (activityStarted && !isDestroyed && currentGame == null && pendingInstallApk == null && filePathCallback == null && !exports.busy) {
-                    if (!updates.changeLocal(id, action, retryCode)) toast("请等待当前任务结束后重试")
+                    if (!updates.changeLocal(id, action, retryCode, identity)) toast("请等待当前任务结束后重试")
                 }
             }.setNegativeButton("取消", null).create())
     }

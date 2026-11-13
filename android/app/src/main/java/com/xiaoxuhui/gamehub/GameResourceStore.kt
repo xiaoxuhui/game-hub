@@ -9,7 +9,8 @@ internal data class ResourceSelection(val active: String = "builtin", val previo
     val pinned: Boolean = false, val highestCode: Int = 1, val highestHash: String? = null, val quarantine: Set<Int> = emptySet(),
     val available: Boolean = true)
 internal data class LocalResourceInfo(val selection: ResourceSelection, val active: ResourceGame?, val ready: ResourceGame?,
-    val activeError: String? = null, val readyError: String? = null, val stateError: String? = null, val readyFresh: Boolean = true)
+    val activeError: String? = null, val readyError: String? = null, val stateError: String? = null, val readyFresh: Boolean = true,
+    val otherVersions: List<ResourceGame> = emptyList())
 internal class ResourceSession(val game: ResourceGame?, val root: File?, private val release: () -> Unit) : AutoCloseable {
     private var closed = false
     @Synchronized override fun close() { if (!closed) { closed = true; release() } }
@@ -97,8 +98,14 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             val fresh = selection.ready?.let { identity -> ready?.isSuccess == true && runCatching {
                 policy.proof(readProof(File(version(id, identity), "catalog.signed.json")), publicKey).requireFresh(now()); true
             }.getOrDefault(false) } ?: true
+            val otherVersions = if(stateFailure!=null) emptyList() else runCatching {
+                val gameRoot=File(directory,"versions/$id"); ResourcePathGuard.requireUnlinked(gameRoot)
+                gameRoot.listFiles()?.filter { it.name !in setOf(selection.active,selection.previous,selection.ready) }
+                    ?.mapNotNull { file -> runCatching { verifyVersion(id,file.name) }.getOrNull() }
+                    ?.sortedByDescending { it.contentCode } ?: emptyList()
+            }.getOrDefault(emptyList())
             LocalResourceInfo(selection, active?.getOrNull(), ready?.getOrNull(),
-                active?.exceptionOrNull()?.message, ready?.exceptionOrNull()?.message, stateFailure, fresh)
+                active?.exceptionOrNull()?.message, ready?.exceptionOrNull()?.message, stateFailure, fresh, otherVersions)
         }
     }
     fun hasSessions(): Boolean = synchronized(lock) { references.values.sum() > 0 }
@@ -309,6 +316,13 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         if (target != "builtin") verifyVersion(id, target)
         val next = current.copy(active = target, previous = current.active, ready = null, pinned = true, quarantine = current.quarantine + listOfNotNull(failedCode))
         persist(selections + (id to next)); stateFailure = null
+    }
+    fun selectDownloadedVersion(id: String, identity: String) = synchronized(lock) {
+        require(stateFailure==null && !hasSessions()) { "请返回大厅后切换版本" }
+        val current=selections.getValue(id); require(identity!=current.active && identity!="builtin")
+        val game=verifyVersion(id,identity)
+        persist(selections+(id to current.copy(active=identity,previous=current.active,ready=null,pinned=true,quarantine=current.quarantine-game.contentCode)))
+        failedIdentities.remove("$id/$identity")
     }
     fun recoverAllBuiltinsFromTrustedHistory() = synchronized(lock) {
         require(!hasSessions() && stateFailure != null) { "Global recovery is only for damaged state while hall is idle" }

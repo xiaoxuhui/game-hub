@@ -11,7 +11,7 @@ import android.os.SystemClock
 import java.io.File
 import java.util.concurrent.Executors
 
-internal enum class LocalResourceAction { RESTORE_PREVIOUS, RESTORE_BUILTIN, RESUME, RETRY, RECOVER_ALL, REMOVE, RECOVER_DYNAMIC }
+internal enum class LocalResourceAction { RESTORE_PREVIOUS, RESTORE_BUILTIN, SELECT_DOWNLOADED, RESUME, RETRY, RECOVER_ALL, REMOVE, RECOVER_DYNAMIC }
 internal data class UpdateSnapshot(val apk: ReleaseApk? = null, val resources: List<ResourceGame> = emptyList(),
     val catalogGames: List<ResourceGame> = emptyList(), val apkCheckedAt: Long? = null, val resourcesCheckedAt: Long? = null,
     val localResources: Map<String, LocalResourceInfo> = emptyMap(),
@@ -403,13 +403,14 @@ internal class UpdateCoordinator private constructor(context: Context, private v
             }
         }
     }
-    fun changeLocal(id: String?, action: LocalResourceAction, retryCode: Int? = null): Boolean = synchronized(stateLock) {
+    fun changeLocal(id: String?, action: LocalResourceAction, retryCode: Int? = null, identity: String? = null): Boolean = synchronized(stateLock) {
         val global=action in setOf(LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC)
         require(!global || id==null)
         val policy=when(action) {LocalResourceAction.RECOVER_ALL -> ResourceStorePolicy.BUILTIN;LocalResourceAction.RECOVER_DYNAMIC -> ResourceStorePolicy.DYNAMIC;else -> policyFor(requireNotNull(id))}
         require(action in setOf(LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC) || id!=null && policy.validId(id))
         require(action!=LocalResourceAction.REMOVE || policy==ResourceStorePolicy.DYNAMIC)
         require(action != LocalResourceAction.RETRY || retryCode != null && retryCode > policy.baselineCode)
+        require(action != LocalResourceAction.SELECT_DOWNLOADED || identity != null)
         val token = gate.beginLocalChange() ?: return false
         publish { it.copy(busy = true, task = "正在处理本地资源", done = 0, total = 0) }
         worker.execute {
@@ -424,12 +425,14 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                     LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> {
                         store.restore(id!!, action == LocalResourceAction.RESTORE_BUILTIN)
                     }
+                    LocalResourceAction.SELECT_DOWNLOADED -> store.selectDownloadedVersion(id!!,identity!!)
                     LocalResourceAction.RESUME -> store.resumeAutomatic(id!!)
                     LocalResourceAction.RETRY -> store.resumeAutomatic(id!!, retryCode)
                 }
                 changed = true
                 resourceStatus(policy,when (action) {
                     LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN, LocalResourceAction.RECOVER_ALL -> "已恢复并固定资源；存档保留"
+                    LocalResourceAction.SELECT_DOWNLOADED -> "已切换到已下载版本并固定；存档保留"
                     LocalResourceAction.RECOVER_DYNAMIC -> "已从可信历史恢复目录，需明确重试并手动重新安装；存档保留"
                     LocalResourceAction.REMOVE -> "游戏资源已移除；存档和历史水位保留，重装需手动选择"
                     LocalResourceAction.RESUME -> "已解除固定；失败编号仍隔离"

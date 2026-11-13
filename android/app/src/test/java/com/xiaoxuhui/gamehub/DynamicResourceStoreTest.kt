@@ -63,6 +63,19 @@ class DynamicResourceStoreTest {
             f.store().openSession("memory-demo",true).use { assertEquals(second.games.single().identity,it.game!!.identity) }
         }
     }
+    @Test fun olderBrokenRestoreCanRecoverAnAlreadyDownloadedVersion() {
+        Fixture().use { f ->
+            val store=f.store(); val (first,p1,z1)=f.release(); store.acceptCatalog(p1); store.install(first.games.single(),p1,z1); store.openSession("memory-demo",true).close()
+            val (second,p2,z2)=f.release(2,2); store.acceptCatalog(p2); store.install(second.games.single(),p2,z2); store.openSession("memory-demo",true).close()
+            val stateFile=File(f.root,"state.json"); val state=JSONObject(stateFile.readText()); val entry=state.getJSONObject("games").getJSONObject("memory-demo")
+            entry.put("active",first.games.single().identity).put("previous",first.games.single().identity).put("pinned",true).put("quarantine",JSONArray(listOf(2)))
+            stateFile.writeText(state.toString())
+            val reopened=f.store(); assertEquals(listOf(second.games.single()),reopened.describeAll().getValue("memory-demo").otherVersions)
+            reopened.selectDownloadedVersion("memory-demo",second.games.single().identity)
+            val selected=f.store().selection("memory-demo"); assertEquals(second.games.single().identity,selected.active); assertEquals(first.games.single().identity,selected.previous); assertFalse(2 in selected.quarantine)
+            f.store().openSession("memory-demo",true).use { assertEquals(second.games.single().identity,it.game!!.identity) }
+        }
+    }
     @Test fun explicitReinstallRepairsCurrentResourceAndPreservesPriorVersion() {
         Fixture().use { f ->
             val store=f.store(); val (first,p1,z1)=f.release(); store.acceptCatalog(p1); store.install(first.games.single(),p1,z1); store.openSession("memory-demo",true).close()
