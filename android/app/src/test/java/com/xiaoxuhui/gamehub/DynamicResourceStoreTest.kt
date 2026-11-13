@@ -118,6 +118,16 @@ class DynamicResourceStoreTest {
             assertEquals("keep",saved.readText())
         }
     }
+    @Test fun reinstallRestoresMissingCurrentDirectoryFromFreshSignedCatalog() {
+        Fixture().use { f ->
+            val store=f.store(); val (catalog,proof,zip)=f.release(); val game=catalog.games.single()
+            store.acceptCatalog(proof); store.install(game,proof,zip); store.openSession(game.id,true).close()
+            assertTrue(File(f.root,"versions/${game.id}/${game.identity}").deleteRecursively())
+            assertNotNull(store.describeAll().getValue(game.id).activeError)
+            store.reinstall(game,proof,zip)
+            f.store().openSession(game.id,true).use { assertEquals(game.identity,it.game!!.identity) }
+        }
+    }
     @Test fun firstInstallRemovalReinstallRetainsWatermarksAndSeparateSaveFiles() {
         Fixture().use { f->
             val (catalog,envelope,archive)=f.release();val game=catalog.games.single();val store=f.store()

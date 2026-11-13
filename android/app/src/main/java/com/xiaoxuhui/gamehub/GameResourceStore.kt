@@ -256,7 +256,6 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             ResourceArchive.extract(archive,staging,game,cancelled); require(!cancelled()); catalog.requireFresh(now())
             proofFile(File(staging,"catalog.signed.json")).write(installedEnvelope)
             val hadDestination=destination.exists()
-            require(hadDestination || restoringBuiltin) { "当前资源目录缺失" }
             if(hadDestination) { require(backup.parentFile!!.mkdirs() || backup.parentFile!!.isDirectory); require(destination.renameTo(backup)) { "无法保护旧资源" } }
             try {
                 require(destination.parentFile!!.mkdirs() || destination.parentFile!!.isDirectory)
