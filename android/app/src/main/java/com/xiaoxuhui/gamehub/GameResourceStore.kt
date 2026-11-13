@@ -59,6 +59,8 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         } catch (error: Exception) { stateFailure = "资源状态损坏，请显式恢复内置资源；存档未删除" }
         try { journalCatalogs().maxByOrNull { it.sequence }?.let { recoverWatermark(it) } }
         catch (error: Exception) { stateFailure = "资源信任记录损坏，已停止网络更新；内置游戏和存档仍保留" }
+        try { if(stateFailure==null) recoverInterruptedReinstall() }
+        catch (error: Exception) { stateFailure = "重新安装中断，资源已保留；请检查资源恢复：${error.message}" }
         // Uncommitted staging is never a version. Private children only; never follow links.
         val stagingRoot = File(directory, "staging")
         ResourcePathGuard.requireUnlinked(stagingRoot)
@@ -204,6 +206,61 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             val current = selections.getValue(game.id)
             persist(selections + (game.id to current.copy(ready = game.identity)))
         } finally { if (staging.exists()) deletePrivate(staging) }
+    }
+    private fun recoverInterruptedReinstall() {
+        val backupRoot=File(directory,"reinstall-backups"); ResourcePathGuard.requireUnlinked(backupRoot)
+        if(!backupRoot.exists()) return
+        backupRoot.listFiles()?.forEach { gameRoot ->
+            ResourcePathGuard.requireUnlinked(gameRoot); require(gameRoot.isDirectory && gameRoot.name in selections)
+            gameRoot.listFiles()?.forEach { backup ->
+                ResourcePathGuard.requireUnlinked(backup); require(backup.isDirectory); validateIdentity(backup.name)
+                require(backup.name != "builtin" && backup.name == selections.getValue(gameRoot.name).active)
+                val destination=version(gameRoot.name,backup.name); ResourcePathGuard.requireUnlinked(destination)
+                if(destination.exists() && runCatching { verifyVersion(gameRoot.name,backup.name) }.isSuccess) deletePrivate(backup)
+                else { if(destination.exists()) deletePrivate(destination); destination.parentFile!!.mkdirs(); require(backup.renameTo(destination)) { "无法恢复原有资源" } }
+            }
+            require(gameRoot.delete() || !gameRoot.exists())
+        }
+        require(backupRoot.delete() || !backupRoot.exists())
+    }
+    fun installedProof(id: String): Pair<ResourceGame, ByteArray> = synchronized(lock) {
+        require(stateFailure==null); val selected=selections.getValue(id); require(selected.active!="builtin") { "内置版本随大厅 APK 安装" }
+        val bytes=readProof(File(version(id,selected.active),"catalog.signed.json")); val catalog=policy.proof(bytes,publicKey)
+        val game=catalog.games.single { it.id==id }; require(game.identity==selected.active && game.compatible(hostCode,policy.contract(id)))
+        game to bytes
+    }
+    fun reinstall(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean = { false }, installedEnvelope: ByteArray = envelope) = synchronized(lock) {
+        require(stateFailure == null && !hasSessions()) { "请返回大厅后重新安装" }
+        val catalog=policy.fresh(envelope,publicKey,now())
+        val current=catalog.games.singleOrNull { it.id==game.id }
+        val installedCatalog=policy.proof(installedEnvelope,publicKey)
+        require(current?.available==true && installedCatalog.releaseId==catalog.releaseId && installedCatalog.games.singleOrNull { it.id==game.id }==game && game.compatible(hostCode,policy.contract(game.id))) { "资源未获签名目录授权" }
+        val selected=selections.getValue(game.id)
+        require(selected.active==game.identity && selected.available && game.contentCode<=selected.highestCode && (game.contentCode!=selected.highestCode || game.archiveSha256==selected.highestHash)) { "当前资源身份与记录不符" }
+        acceptCatalog(envelope)
+        val bytesNeeded=game.files.sumOf { it.bytes }+game.archiveBytes+envelope.size
+        require(usedBytes(directory)+otherResourceBytes()+bytesNeeded<=ResourcePolicy.MAX_STORE && freeSpace()>=bytesNeeded+ResourcePolicy.FREE_RESERVE) { "资源空间不足，旧版本保留" }
+        val stagingParent=File(directory,"staging").apply { mkdirs() }; val staging=File(stagingParent,UUID.randomUUID().toString())
+        val destination=version(game.id,game.identity); val backup=File(directory,"reinstall-backups/${game.id}/${game.identity}")
+        ResourcePathGuard.requireUnlinked(destination); ResourcePathGuard.requireUnlinked(backup.parentFile!!); require(!backup.exists())
+        try {
+            ResourceArchive.extract(archive,staging,game,cancelled); require(!cancelled()); catalog.requireFresh(now())
+            proofFile(File(staging,"catalog.signed.json")).write(installedEnvelope)
+            require(destination.isDirectory); require(backup.parentFile!!.mkdirs() || backup.parentFile!!.isDirectory)
+            require(destination.renameTo(backup)) { "无法保护旧资源" }
+            try {
+                require(staging.renameTo(destination)) { "无法安装已校验资源" }
+                require(verifyVersion(game.id,game.identity)==game); require(!cancelled())
+                val current=selections.getValue(game.id)
+                persist(selections+(game.id to current.copy(quarantine=current.quarantine-game.contentCode)))
+                failedIdentities.remove("${game.id}/${game.identity}")
+            } catch (error: Exception) {
+                if(destination.exists()) deletePrivate(destination)
+                require(backup.renameTo(destination)) { "恢复旧资源失败，请勿删除恢复备份" }
+                throw error
+            }
+            deletePrivate(backup)
+        } finally { if(staging.exists()) deletePrivate(staging) }
     }
     private fun verifyVersion(id: String, identity: String): ResourceGame {
         val root = version(id, identity); ResourcePathGuard.requireUnlinked(root); require(root.isDirectory)

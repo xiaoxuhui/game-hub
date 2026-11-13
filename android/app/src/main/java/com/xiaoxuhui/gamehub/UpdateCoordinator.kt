@@ -49,6 +49,7 @@ internal class UpdateCoordinator private constructor(context: Context, private v
     @Volatile private var hall = true
     @Volatile private var checkEligible = true
     @Volatile private var checkCancelled = false
+    private var pendingReinstall: Pair<String,Boolean>? = null
     @Volatile private var offer: ResourceOffer? = null
     @Volatile private var dynamicOffer: ResourceOffer? = null
     private val attempted = HashSet<String>()
@@ -171,8 +172,10 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                         dynamicStatus = "目录本次检查未完成，旧结果待检查", upstreamStatus = "源本次检查未完成，旧结果待检查",
                         upstreamResults = it.upstreamResults.mapValues { (_, result) -> result.copy(issue = "本次检查未完成，旧结果待检查") }) }
                 }
-                synchronized(stateLock) { gate.endCheck(); publish(::idleStatus) }
-                automaticNext()
+                val pending=synchronized(stateLock) { gate.endCheck(); publish(::idleStatus); pendingReinstall.also { pendingReinstall=null } }
+                if(pending!=null) {
+                    if(!startReinstall(pending.first,pending.second)) resourceStatus(policyFor(pending.first),"重新安装未开始；请检查网络、签名目录和当前版本证明")
+                } else automaticNext()
             }
         }
         true
@@ -269,6 +272,41 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         val current = (if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer) ?: return false
         val game = (if(policy==ResourceStorePolicy.BUILTIN) state.resources else state.dynamicResources).singleOrNull { it.id == id } ?: return false
         startResource(current, game, true, meteredConfirmed)
+    }
+    fun reinstallResource(id: String, meteredConfirmed: Boolean): Boolean = synchronized(stateLock) {
+        val policy=policyFor(id)
+        if((if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer)==null || (if(policy==ResourceStorePolicy.BUILTIN) state.resourcesRemembered else state.dynamicRemembered)) {
+            if(!check(true)) return false
+            pendingReinstall=id to meteredConfirmed
+            return true
+        }
+        startReinstall(id,meteredConfirmed)
+    }
+    private fun startReinstall(id: String, meteredConfirmed: Boolean): Boolean = synchronized(stateLock) {
+        val policy=policyFor(id); val current=(if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer) ?: return false
+        val currentGame=current.catalog.games.singleOrNull { it.id==id } ?: return false
+        val store=storeFor(policy)
+        val installed=try { store.installedProof(id) } catch (error: Exception) { resourceStatus(policy,error.message ?: "无法读取已安装版本证明"); return false }
+        val token=try { current.reserveDownload(currentGame,gate,true,meteredConfirmed) }
+        catch(error: Exception) { resourceStatus(policy,error.message ?: "请先检查更新"); return false } ?: return false
+        val game=installed.first; val proof=installed.second
+        publish { it.copy(busy=true,task="重新安装 ${game.displayName}",done=0,total=game.archiveBytes) }
+        worker.execute {
+            var archive: File?=null
+            try {
+                current.requireDownload(currentGame)
+                val client=if(policy==ResourceStorePolicy.BUILTIN) resourceClient else dynamicClient
+                archive=client.download(game,File(app.cacheDir,"resource-updates"),{ !gate.valid(token) },progressReporter())
+                check(gate.valid(token)) { "重新安装已取消" }
+                store.reinstall(game,current.envelope,archive,{ !gate.valid(token) },proof)
+                readLocalResources(); resourceStatus(policy,"${game.displayName} 已重新安装；存档保留")
+            } catch(error: Exception) {
+                if(token.cancelled) resourceStatus(policy,"重新安装已取消，原资源与存档保留") else channelFailure(policy.updateChannel,error)
+            } finally {
+                archive?.delete(); synchronized(stateLock) { gate.finish(token); publish(::idleStatus) }; automaticNext()
+            }
+        }
+        true
     }
     private fun startResource(current: ResourceOffer, game: ResourceGame, manual: Boolean, meteredConfirmed: Boolean): Boolean {
         val token = try {

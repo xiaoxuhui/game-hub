@@ -63,6 +63,48 @@ class DynamicResourceStoreTest {
             f.store().openSession("memory-demo",true).use { assertEquals(second.games.single().identity,it.game!!.identity) }
         }
     }
+    @Test fun explicitReinstallRepairsCurrentResourceAndPreservesPriorVersion() {
+        Fixture().use { f ->
+            val store=f.store(); val (first,p1,z1)=f.release(); store.acceptCatalog(p1); store.install(first.games.single(),p1,z1); store.openSession("memory-demo",true).close()
+            val (second,p2,z2)=f.release(2,2); val game=second.games.single(); store.acceptCatalog(p2); store.install(game,p2,z2); store.openSession(game.id,true).close()
+            val saved=File(f.parent,"save-marker").apply {writeText("my progress")}
+            File(f.root,"versions/${game.id}/${game.identity}/index.html").writeText("damaged")
+            store.reinstall(game,p2,z2)
+            f.store().openSession(game.id,true).use { assertEquals("<html>resource 2</html>",File(it.root,"index.html").readText()) }
+            assertEquals(first.games.single().identity,f.store().selection(game.id).previous)
+            assertEquals("my progress",saved.readText())
+        }
+    }
+    @Test fun reinstallOfOlderSelectedVersionUsesItsOwnSignedProofAndKeepsWatermark() {
+        Fixture().use { f ->
+            val store=f.store(); val (first,p1,z1)=f.release(); store.acceptCatalog(p1); store.install(first.games.single(),p1,z1); store.openSession("memory-demo",true).close()
+            val (second,p2,z2)=f.release(2,2); store.acceptCatalog(p2); store.install(second.games.single(),p2,z2); store.openSession("memory-demo",true).close()
+            store.restore("memory-demo",false); val (old,oldProof)=store.installedProof("memory-demo")
+            store.reinstall(old,p2,z1,installedEnvelope=oldProof)
+            val reopened=f.store(); assertEquals(2,reopened.selection(old.id).highestCode); assertEquals(second.games.single().identity,reopened.selection(old.id).previous)
+            reopened.openSession(old.id,true).use { assertEquals(old.identity,it.game!!.identity) }
+        }
+    }
+    @Test fun interruptedReinstallRestoresBackedUpResourceOnRestart() {
+        Fixture().use { f ->
+            val store=f.store(); val (catalog,proof,zip)=f.release(); val game=catalog.games.single()
+            store.acceptCatalog(proof); store.install(game,proof,zip); store.openSession(game.id,true).close()
+            val destination=File(f.root,"versions/${game.id}/${game.identity}")
+            val backup=File(f.root,"reinstall-backups/${game.id}/${game.identity}"); backup.parentFile!!.mkdirs(); assertTrue(destination.renameTo(backup))
+            f.store().openSession(game.id,true).use { assertEquals(game.identity,it.game!!.identity) }
+            assertFalse(backup.exists()); assertTrue(destination.exists())
+        }
+    }
+    @Test fun failedReinstallDoesNotReplaceInstalledResourcesOrSaves() {
+        Fixture().use { f ->
+            val store=f.store(); val (catalog,proof,zip)=f.release(); val game=catalog.games.single()
+            store.acceptCatalog(proof); store.install(game,proof,zip); store.openSession(game.id,true).close()
+            val saved=File(f.parent,"save-marker").apply { writeText("keep") }; zip.writeText("invalid archive")
+            rejected { store.reinstall(game,proof,zip) }
+            f.store().openSession(game.id,true).use { assertEquals(game.identity,it.game!!.identity) }
+            assertEquals("keep",saved.readText())
+        }
+    }
     @Test fun firstInstallRemovalReinstallRetainsWatermarksAndSeparateSaveFiles() {
         Fixture().use { f->
             val (catalog,envelope,archive)=f.release();val game=catalog.games.single();val store=f.store()

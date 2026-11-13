@@ -300,6 +300,7 @@ class MainActivity : ComponentActivity() {
                     gravity = Gravity.CENTER
                     setPadding(0, dp(4), 0, 0)
                 })
+                card.addView(reinstallButton(game.id, game.name, true))
             }
         }
         dynamicSection=LinearLayout(this).apply {orientation=LinearLayout.VERTICAL}
@@ -337,6 +338,7 @@ class MainActivity : ComponentActivity() {
                     card.addView(ImageView(this).apply {setImageResource(icon);contentDescription=null},LinearLayout.LayoutParams(dp(56),dp(56)))
                     card.addView(label(game.name,16f,Color.WHITE,true).apply {gravity=Gravity.CENTER;maxLines=3;setPadding(0,dp(6),0,0)})
                     card.addView(label("",11f,MUTED,false).apply {gravity=Gravity.CENTER;gameVersionLabels[game.id]=this})
+                    card.addView(reinstallButton(game.id,game.name,false))
                 }
                 if(pair.size==1)row.addView(View(this),LinearLayout.LayoutParams(0,1,1f))
             }
@@ -354,6 +356,17 @@ class MainActivity : ComponentActivity() {
             }
             gameVersionLabels[game.id]?.text=text
             gameCards[game.id]?.contentDescription="${game.name}，$text，打开"
+        }
+    }
+
+    private fun reinstallButton(id: String, name: String, builtin: Boolean): TextView = label("重新安装", 12f, 0xFF8AB7FF.toInt(), true).apply {
+        gravity=Gravity.CENTER; minHeight=dp(44); isClickable=true; isFocusable=true; contentDescription="重新安装$name"
+        setOnClickListener {
+            if(builtin && updates.snapshot().localResources[id]?.selection?.active=="builtin") {
+                toast("此版本随大厅 APK 安装；重新安装大厅可修复，游戏存档保留")
+            } else confirmDownload { allowed ->
+                if(!updates.reinstallResource(id,allowed)) toast("重新安装未开始，请检查网络或等待当前任务结束")
+            }
         }
     }
 
@@ -517,6 +530,9 @@ class MainActivity : ComponentActivity() {
             }
             if(installed && local!=null){
                 detailButton(column,"打开$name",!state.busy){dialog.dismiss();openGame(dynamicGame(id,local,remote))}
+                detailButton(column,"重新安装$name",!state.busy){
+                    confirmDownload {allowed->if(!updates.reinstallResource(id,allowed))toast("请先检查更新，并确认当前版本的签名证明可用")}
+                }
                 if(local.stateError==null){
                     if(local.selection.previous!="builtin" && local.selection.previous!=local.selection.active)detailButton(column,"恢复${name}上个版本并固定",!state.busy){confirmLocalChange(id,LocalResourceAction.RESTORE_PREVIOUS)}
                     detailButton(column,"移除${name}资源（保留存档）",!state.busy){confirmLocalChange(id,LocalResourceAction.REMOVE)}
@@ -596,6 +612,10 @@ class MainActivity : ComponentActivity() {
                 if (local.selection.pinned) description("当前固定版本；自动检查不会改变选择")
                 if (local.selection.quarantine.isNotEmpty()) description("已隔离失败编号：${local.selection.quarantine.sorted().joinToString()}")
                 if (local.stateError == null) {
+                    detailButton(column, "重新安装${game.name}", !state.busy) {
+                        if (local.selection.active == "builtin") toast("此版本随大厅 APK 安装；如需修复请重新安装大厅 APK，存档保留")
+                        else confirmDownload { allowed -> if (!updates.reinstallResource(game.id, allowed)) toast("请先检查更新，并确认当前版本的签名证明可用") }
+                    }
                     if (local.selection.previous != local.selection.active) detailButton(column, "恢复${game.name}上个版本并固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESTORE_PREVIOUS) }
                     if (local.selection.active != "builtin" || local.selection.ready != null) detailButton(column, "恢复${game.name}内置版本并固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESTORE_BUILTIN) }
                     if (local.selection.pinned) detailButton(column, "解除${game.name}版本固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESUME) }
@@ -659,7 +679,7 @@ class MainActivity : ComponentActivity() {
             LocalResourceAction.RECOVER_ALL -> "仅使用完整可信签名历史恢复四个内置版本并固定，保留最高更新编号。无法验证历史时不会重置。游戏存档保留。"
             LocalResourceAction.RECOVER_DYNAMIC -> "根据完整可信历史重建游戏目录，将资源选择恢复为未安装并固定，保留存档和最高更新编号。无法验证历史时不会重置；恢复后需明确重试并手动重新安装。"
             LocalResourceAction.REMOVE -> "只移除此游戏可重新下载的资源，存档和历史更新编号保留。以后需要手动选择重新安装，不会自动重装。"
-            LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> "恢复资源后固定该游戏版本，隔离当前下载版本。游戏存档保留，但不会回到过去；下一次进入使用恢复版本。"
+            LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> "恢复资源后固定该游戏版本，并保留切换前的版本。游戏存档保留，但不会回到过去；下一次进入使用恢复版本。"
             LocalResourceAction.RESUME -> "解除固定后允许自动更新；此前失败编号继续隔离，需另行明确重试。游戏存档保留。"
             LocalResourceAction.RETRY -> "解除资源 #$retryCode 的隔离并解除固定。签名目录仍提供该编号且兼容时，允许重新尝试；更新继续遵守网络设置。游戏存档保留。"
         }
