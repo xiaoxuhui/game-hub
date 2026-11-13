@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+  "revision": "8d2dd79ddb066575f9110c3efedfcb1887244a0c",
+  "upstreamHtmlSha256": "4027b9e6749fe2dc5bc83c73bfe417747d1841c347234092bdde681ff85e4cf5",
+  "baseRepository": "https://github.com/xiaoxuhui/game-hub.git",
+  "baseRevision": "54180fe859232e69b45b49168318715d211a5e95",
+  "baseHtmlSha256": "5e60a55adfd74a1c0aaa5120daa387e6e48994101713c8ad36b95c844f358a1f",
+  "animationModuleSha256": {
+    "diagram-view": "3af9b97413be50fd33888163674fe8b45f2ef833170e716b61911124d851fd3c",
+    "viewport": "466d2b8c9428f3073890578002e3efadcf3334b6c22f7f5df9e896f84265217a"
+  },
+  "resourceHtmlSha256": "03474f5ef24409d83507daed541702a7be80ceecdf00b24bb8d1da3cd0d94aed"
+}
