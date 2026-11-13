@@ -48,6 +48,21 @@ class DynamicResourceStoreTest {
         override fun close() {parent.deleteRecursively()}
     }
     private fun rejected(block:()->Unit) {try{block();fail("Expected rejection")}catch(_:Exception){}}
+    @Test fun manualVersionRestorePreservesBothVersionsAcrossRestarts() {
+        Fixture().use { f ->
+            val store=f.store(); val (first,firstProof,firstZip)=f.release()
+            store.acceptCatalog(firstProof); store.install(first.games.single(),firstProof,firstZip); store.openSession("memory-demo",true).close()
+            val (second,secondProof,secondZip)=f.release(2,2)
+            store.acceptCatalog(secondProof); store.install(second.games.single(),secondProof,secondZip); store.openSession("memory-demo",true).close()
+            store.restore("memory-demo",false)
+            val restarted=f.store()
+            assertEquals(first.games.single().identity,restarted.selection("memory-demo").active)
+            assertEquals(second.games.single().identity,restarted.selection("memory-demo").previous)
+            assertTrue(restarted.selection("memory-demo").quarantine.isEmpty())
+            restarted.restore("memory-demo",false)
+            f.store().openSession("memory-demo",true).use { assertEquals(second.games.single().identity,it.game!!.identity) }
+        }
+    }
     @Test fun firstInstallRemovalReinstallRetainsWatermarksAndSeparateSaveFiles() {
         Fixture().use { f->
             val (catalog,envelope,archive)=f.release();val game=catalog.games.single();val store=f.store()

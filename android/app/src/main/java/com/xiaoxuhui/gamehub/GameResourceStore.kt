@@ -246,7 +246,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
         val target = if (builtin) "builtin" else current.previous
         require("$id/$target" !in failedIdentities && target.substringBefore('-').toIntOrNull() !in current.quarantine) { "恢复目标已隔离，请选择内置资源" }
         if (target != "builtin") verifyVersion(id, target)
-        val next = current.copy(active = target, ready = null, pinned = true, quarantine = current.quarantine + listOfNotNull(failedCode))
+        val next = current.copy(active = target, previous = current.active, ready = null, pinned = true, quarantine = current.quarantine + listOfNotNull(failedCode))
         persist(selections + (id to next)); stateFailure = null
     }
     fun recoverAllBuiltinsFromTrustedHistory() = synchronized(lock) {

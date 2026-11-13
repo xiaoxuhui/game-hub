@@ -374,8 +374,7 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                     LocalResourceAction.RECOVER_ALL,LocalResourceAction.RECOVER_DYNAMIC -> store.recoverAllBuiltinsFromTrustedHistory()
                     LocalResourceAction.REMOVE -> store.removeResources(id!!)
                     LocalResourceAction.RESTORE_PREVIOUS, LocalResourceAction.RESTORE_BUILTIN -> {
-                        val code = store.selection(id!!).active.substringBefore('-').toIntOrNull()?.takeIf { it > policy.baselineCode }
-                        store.restore(id, action == LocalResourceAction.RESTORE_BUILTIN, code)
+                        store.restore(id!!, action == LocalResourceAction.RESTORE_BUILTIN)
                     }
                     LocalResourceAction.RESUME -> store.resumeAutomatic(id!!)
                     LocalResourceAction.RETRY -> store.resumeAutomatic(id!!, retryCode)
