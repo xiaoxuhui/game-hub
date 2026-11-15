@@ -490,6 +490,48 @@
         "index.html",
         "scaffolding-min.js.LICENSE.txt"
       ]
+    },
+    {
+      "id": "fixed-point-workshop",
+      "displayName": "定点数工坊",
+      "iconKind": "logic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/fixed-point-workshop.git",
+      "revision": "094cb223141f1388364c91b83c82340a9c1efc45",
+      "directory": "dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "fixed-point-workshop-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "app.js",
+        "core.js",
+        "index.html",
+        "style.css"
+      ],
+      "releaseNotes": "通过加法和移位搭建定点数电路，支持离线使用。"
+    },
+    {
+      "id": "sokoban-ai-lab",
+      "displayName": "推箱子实验室",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/sokoban-ai-lab.git",
+      "revision": "77ffbaf1d0cf02833f682a0a87c78ffff2448f52",
+      "directory": "dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "sokoban-ai-lab-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "app.js",
+        "engine.js",
+        "index.html",
+        "style.css"
+      ],
+      "releaseNotes": "绘制地图、手动推箱子并观察强化学习。"
     }
   ]
 }
