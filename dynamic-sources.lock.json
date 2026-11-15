@@ -306,11 +306,11 @@
       "displayName": "学习小机器",
       "iconKind": "simulation",
       "available": true,
-      "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "09e81cfbe52e656b8c8d210325f069531e116f94",
-      "directory": "examples/learning-machine",
-      "version": "1.2.0",
-      "contentCode": 1,
+      "repository": "https://github.com/xiaoxuhui/learning-machine.git",
+      "revision": "e3cac51a8ac51ffeaa41e6d6df546170427c9841",
+      "directory": "dist",
+      "version": "1.4.0",
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "learning-machine-dynamic-v1",
       "files": [
@@ -320,10 +320,9 @@
         "src/icon.svg",
         "src/model.js",
         "src/styles.css",
-        "src/visuals.js",
-        "upstream-source.json"
+        "src/visuals.js"
       ],
-      "releaseNotes": "首次接入：固定上游 45e8637；训练数据只在当前页面内存中，离开或刷新后丢失。"
+      "releaseNotes": "学习小机器更新：可输入更高维度，训练时自动调整网络结构。"
     },
     {
       "id": "compass-polygon-studio",
