@@ -270,25 +270,37 @@ h3 { margin: 0 0 10px; font-size: 14px; color: #34434d; }
   width: 100%;
   height: min(58vh, 520px);
   min-height: 280px;
-  overflow: hidden;
+  overflow: clip;
   border: 1px solid var(--line);
   background: #fbfcfc;
   cursor: grab;
   touch-action: none;
 }
+.tree-horizontal-scroll, .tree-vertical-scroll {
+  margin: 0;
+  accent-color: var(--accent);
+}
+.tree-horizontal-scroll {
+  grid-column: 1;
+  width: 100%;
+  height: 18px;
+  cursor: ew-resize;
+}
 .tree-vertical-scroll {
   width: 22px;
   min-height: 0;
-  margin: 0;
   writing-mode: vertical-lr;
   direction: rtl;
-  accent-color: var(--accent);
   cursor: ns-resize;
 }
-.tree-vertical-scroll:disabled { cursor: default; opacity: 0.35; }
+.tree-horizontal-scroll:disabled, .tree-vertical-scroll:disabled { cursor: default; opacity: 0.35; }
 .tree-viewport:active { cursor: grabbing; }
 .tree-viewport:focus-visible { outline: 3px solid rgba(8, 126, 139, 0.25); outline-offset: 2px; }
 .tree-canvas {
+  --branch-line: #7599a0;
+  display: grid;
+  align-content: start;
+  justify-items: center;
   width: max-content;
   min-width: 100%;
   padding: 10px 14px 22px;
@@ -297,22 +309,61 @@ h3 { margin: 0 0 10px; font-size: 14px; color: #34434d; }
   user-select: none;
 }
 
-.tree-derivation { border-left: 3px solid #a9cdd1; padding: 4px 0 4px 14px; margin: 8px 0; }
-.tree-derivation summary { cursor: pointer; font-family: Cambria, "Times New Roman", serif; font-weight: 700; overflow-wrap: anywhere; }
-.tree-inputs, .rewrite-steps { margin: 9px 0 6px; padding-left: 22px; }
-.tree-inputs li, .rewrite-steps li { margin: 6px 0; overflow-wrap: anywhere; }
-.tree-value { color: #34434d; }
-.tree-label { font-family: Cambria, "Times New Roman", serif; font-weight: 600; }
-.rewrite-steps { color: var(--muted); font-size: 13px; }
-.expanded-eml-derivation { border-left-color: #437f88; }
-.expanded-eml-node { min-width: 0; margin: 8px 0; }
-.expanded-eml-heading { cursor: pointer; font-family: Cambria, "Times New Roman", serif; font-weight: 700; color: #173f45; }
-.expanded-eml-heading { list-style: none; }
-.expanded-eml-heading::-webkit-details-marker { display: none; }
-.expanded-eml-inputs { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 0 14px; padding-left: 12px; border-left: 2px solid #a9cdd1; }
-.expanded-eml-input { min-width: 0; color: #34434d; font-family: Cambria, "Times New Roman", serif; overflow-wrap: anywhere; }
-.expanded-eml-label { font-weight: 700; }
-.expanded-eml-value { overflow-wrap: anywhere; }
+.tree-derivation { text-align: center; }
+.tree-derivation + .tree-derivation { margin-top: 18px; padding-top: 10px; border-top: 1px solid var(--line); }
+.tree-label, .tree-branch-label {
+  font-family: Cambria, "Times New Roman", serif;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.tree-label {
+  width: fit-content;
+  max-width: 32ch;
+  margin-inline: auto;
+  text-align: center;
+}
+.tree-value { color: #34434d; text-align: center; }
+.tree-sources { padding-top: 14px; position: relative; }
+.tree-sources::before, .binary-branches::before, .binary-branches > li::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  background: var(--branch-line);
+  pointer-events: none;
+}
+.tree-sources::before { top: 2px; height: 10px; }
+.tree-derivation summary { cursor: pointer; color: var(--accent-dark); list-style: none; padding: 2px 5px; }
+.tree-derivation summary::-webkit-details-marker { display: none; }
+.tree-derivation summary:hover { text-decoration: underline; }
+.tree-inputs { list-style: none; margin: 0; padding: 0; }
+.tree-inputs:not(.binary-branches) > li { margin-top: 8px; }
+.binary-branches { display: flex; position: relative; }
+.binary-branches::before { top: 0; height: 10px; }
+.binary-branches > li { flex: 1 0 auto; position: relative; min-width: 64px; padding: 20px 10px 0; }
+/* Two half-width segments join the child centers even when their subtrees differ in width. */
+.binary-branches > li::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  width: 50%;
+  height: 1px;
+  background: var(--branch-line);
+}
+.binary-branches > li:first-child::before { right: 0; }
+.binary-branches > li:last-child::before { left: 0; }
+.binary-branches > li::after { top: 9px; height: 11px; }
+.tree-branch-label { display: block; font-size: 13px; color: var(--muted); }
+.rewrite-steps {
+  width: fit-content;
+  max-width: 34ch;
+  margin: 3px auto 6px;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
 
 /* 推导过程：从初始值到当前数值的线性建造顺序 */
 .trace-heading {

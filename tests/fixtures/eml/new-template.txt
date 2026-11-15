@@ -112,6 +112,7 @@
               <div id="calculationTree" class="tree-canvas"></div>
             </div>
             <input id="treeVerticalScroll" class="tree-vertical-scroll" type="range" min="0" max="1000" value="0" aria-label="拖动以浏览计算树高度" disabled>
+            <input id="treeHorizontalScroll" class="tree-horizontal-scroll" type="range" min="0" max="1000" value="0" aria-label="拖动以左右浏览计算树" disabled>
           </div>
         </div>
       </div>

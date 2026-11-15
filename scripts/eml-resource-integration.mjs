@@ -2,9 +2,9 @@ import{readFileSync,writeFileSync,mkdirSync,lstatSync}from'node:fs';import{join,
 import{sha256}from'./resource-protocol.mjs';import{EML_REVISION,EML_LEGACY_REVISION,EML_OLD_HASHES,EML_INTEGRATION,emlLegacyRuntime}from'./eml-legacy-reader.mjs';import{emlFormatRuntime}from'./eml-compatibility.mjs';import{emlPreservationRuntime}from'./eml-preservation.mjs';import{emlUIRuntime,emlCompatibilityCSS}from'./eml-compatibility-ui.mjs';
 import{emlBuildInputs,stageEMLLicenses,finalizeEMLAssets}from'./eml-katex-assets.mjs';
 export const EML_UI_INPUTS=Object.freeze({
- 'src/app.js':'155b4456ee0f7163f9bf9faf3c5748172b202798c4faedc0a1d41bf4cc73d7a3',
- 'src/template.html':'d1fa0e9db2523ec4ac75ff26a9a643de29f57fbdb72baf44f3620e449b3e153c',
- 'src/styles.css':'c726dcdb42114d1ff728b16249b17ed638bc88eec55ab517a7f1dd69279a341a',
+ 'src/app.js':'8fd1c4276cdb13de01b4983c0f72f241b241e54963c9ecf6461ec7c7080ba2c4',
+ 'src/template.html':'006f01240a7d580eff7decc19a1c7d48531370b74a7a15188f1b8917c26cf18b',
+ 'src/styles.css':'fe9170034e95c732ac2621414a6a6ebdbb0405a3c588c4c052c13bae800cc202',
  'scripts/build.mjs':'aace59730cf672749f1bc075b8fe318149064bfd88feb89f2ff6c83ed9349c05',
 });
 const once=(text,before,after)=>{if(text.split(before).length!==2)throw Error('Reviewed EML UI marker changed');return text.replace(before,after);};

@@ -1,7 +1,7 @@
 import{readFileSync,writeFileSync,mkdirSync,readdirSync,lstatSync}from'node:fs';import{join}from'node:path';import{sha256}from'./resource-protocol.mjs';
 import{EML_REVISION,EML_LEGACY_REVISION,EML_OLD_HASHES}from'./eml-legacy-reader.mjs';
 export const EML_CSS_SHA='f787891b550d554c214aa8902f39ac46df2dbd48fdec500a2040a5dce1e8ab58';
-export const EML_BUILD_INPUTS_SHA='0e4668ee5ee34a7cc4053f6c5eea8320ef363852114cae411bd94121a2a03e2d';
+export const EML_BUILD_INPUTS_SHA='68c60688a0c4cb909d4c551bc7bf60c9083d41a6d31dd7fe1abf189a74083a91';
 const PROOF_SHA='4ea02107b40e79834e68f573a14bc936cb04c2d4cdf9d393ca5b704b88b4b11b';
 export function emlBuildInputs(){const bytes=readFileSync(new URL('../tests/fixtures/eml/build-inputs.source.json',import.meta.url));if(sha256(bytes)!==EML_BUILD_INPUTS_SHA)throw Error('Frozen EML build-input proof changed');return JSON.parse(bytes);}
 export function emlKaTeXProof(){const bytes=readFileSync(new URL('../licenses/katex-0.16.21.proof.json',import.meta.url));if(sha256(bytes)!==PROOF_SHA)throw Error('Frozen official KaTeX proof changed');return JSON.parse(bytes);}

@@ -34,6 +34,7 @@
     derivationTrace: document.getElementById("derivationTrace"),
     calculationTreeViewport: document.getElementById("calculationTreeViewport"),
     calculationTree: document.getElementById("calculationTree"),
+    treeHorizontalScroll: document.getElementById("treeHorizontalScroll"),
     treeVerticalScroll: document.getElementById("treeVerticalScroll"),
     treeZoomOut: document.getElementById("treeZoomOut"),
     treeZoomIn: document.getElementById("treeZoomIn"),
@@ -65,7 +66,6 @@
   let definitionDraft = { body: null, selectedPath: "root", pendingSource: null };
   let editingFunctionId = null;
   let applicationStructureId = null;
-  let treeDepth = Infinity;
   const treeController = TreeController.create({
     viewport: elements.calculationTreeViewport,
     canvas: elements.calculationTree,
@@ -73,6 +73,7 @@
     zoomIn: elements.treeZoomIn,
     zoomLevel: elements.treeZoomLevel,
     resetButton: elements.treeResetView,
+    horizontalScroll: elements.treeHorizontalScroll,
     verticalScroll: elements.treeVerticalScroll,
   });
 
@@ -686,116 +687,95 @@
     }
   }
 
-  function appendValueBranch(container, label, node) {
-    const item = document.createElement("li");
-    item.className = "tree-value";
-    const heading = document.createElement("span");
-    heading.className = "tree-label";
-    heading.textContent = `${label}: ${node.label || "未知"}${node.initial ? "（初始值）" : ""}`;
-    item.appendChild(heading);
+  function renderTreeValue(node, source = node) {
+    const value = document.createElement("div");
+    value.className = "tree-value";
+    const label = document.createElement("div");
+    label.className = "tree-label";
+    label.textContent = node?.label || "未知";
+    value.appendChild(label);
 
-    if (node.type === "cycle") {
-      item.append("（检测到循环，已停止展开）");
-    } else if (node.type === "reference") {
-      item.append(node.initial ? "（初始值）" : "（已在前处展开）");
-    } else if (node.type === "deferred") {
-      item.append(node.reason === "node-limit" ? "（已达到节点显示上限）" : "（还有更早的来源）");
-    } else if (node.derivations && node.derivations.length) {
-      node.derivations.forEach((derivation) => item.appendChild(renderDerivation(derivation)));
+    if (source?.initial) {
+      label.append("（初始值）");
+    } else if (source?.type === "cycle") {
+      label.append("（检测到循环，已停止展开）");
+    } else if (source?.type === "reference") {
+      label.append("（已在前处展开）");
+    } else if (source?.type === "deferred") {
+      label.append(source.reason === "node-limit" ? "（已达到节点显示上限）" : "（还有更早的来源）");
+    } else if (source?.derivations?.length) {
+      const sources = document.createElement("div");
+      sources.className = "tree-sources";
+      for (const derivation of source.derivations) sources.appendChild(renderDerivation(derivation));
+      value.appendChild(sources);
+    } else if (node?.provenance === "definition-constant") {
+      label.append(node.sourceValueId && !source
+        ? "（函数定义中的固定值；原来源已不存在）"
+        : "（函数定义中的固定值；未记录生成来源）");
     }
-    container.appendChild(item);
+    return value;
   }
 
-  function renderExpandedEml(node, expanded) {
-    if (!node || node.type !== "eml") {
-      const value = document.createElement("div");
-      value.className = "expanded-eml-value";
-      const label = document.createElement("span");
-      label.textContent = node?.label || "未知";
-      value.appendChild(label);
-      const source = node?.source;
-      if (source?.type === "cycle") {
-        value.append("（检测到循环，已停止展开）");
-      } else if (source?.type === "reference") {
-        value.append(source.initial ? "（初始值）" : "（已在前处展开）");
-      } else if (source?.type === "deferred") {
-        value.append("（来源已折叠）");
-      } else if (source?.initial) {
-        value.append("（初始值）");
-      } else if (source?.derivations?.length) {
-        source.derivations.forEach((derivation) => value.appendChild(renderDerivation(derivation, true)));
-      } else if (node?.provenance === "definition-constant") {
-        value.append(node.sourceValueId && !source
-          ? "（函数定义中的固定值；原来源已不存在）"
-          : "（函数定义中的固定值；未记录生成来源）");
-      }
-      return value;
-    }
+  function renderTreeNode(title, branches, { binary = false, error, rewriteSteps } = {}) {
     const element = document.createElement("details");
-    element.className = "expanded-eml-node";
-    element.open = Boolean(expanded);
-    const argumentText = (argument) => argument?.type === "eml"
-      ? argument.result || "EML"
-      : argument?.label || "未知";
+    element.className = binary ? "tree-derivation expanded-eml-node" : "tree-derivation";
+    element.open = true;
     const heading = document.createElement("summary");
-    heading.className = "expanded-eml-heading";
-    heading.textContent = `EML(${argumentText(node.inputs?.[0])}, ${argumentText(node.inputs?.[1])}) = ${node.result || "?"}`;
+    heading.className = binary ? "tree-label expanded-eml-heading" : "tree-label";
+    heading.textContent = title;
     element.appendChild(heading);
-    if (node.error) {
-      const error = document.createElement("div");
-      error.className = "notice error";
-      error.textContent = node.error;
-      element.appendChild(error);
+    if (error) {
+      const message = document.createElement("div");
+      message.className = "tree-label notice error";
+      message.textContent = error;
+      element.appendChild(message);
     }
-    const inputs = document.createElement("div");
-    inputs.className = "expanded-eml-inputs";
-    ["x", "y"].forEach((name, index) => {
-      const branch = document.createElement("div");
-      branch.className = "expanded-eml-input";
-      const label = document.createElement("span");
-      label.className = "expanded-eml-label";
-      label.textContent = `${name}: `;
-      branch.appendChild(label);
-      branch.appendChild(renderExpandedEml(node.inputs?.[index], true));
-      inputs.appendChild(branch);
-    });
-    element.appendChild(inputs);
-    return element;
-  }
-
-  function renderDerivation(derivation, expanded = true) {
-    if (derivation.emlTree?.type === "eml") {
-      const container = document.createElement("div");
-      container.className = "tree-derivation expanded-eml-derivation";
-      container.appendChild(renderExpandedEml(derivation.emlTree, expanded));
-      return container;
-    }
-    const details = document.createElement("details");
-    details.className = "tree-derivation";
-    details.open = true;
-    const summary = document.createElement("summary");
-    summary.textContent = derivation.directFormula || "公式数据缺失";
-    details.appendChild(summary);
-
-    if (derivation.rewriteSteps && derivation.rewriteSteps.length) {
+    if (rewriteSteps?.length) {
       const steps = document.createElement("ol");
       steps.className = "rewrite-steps";
-      for (const step of derivation.rewriteSteps) {
+      for (const step of rewriteSteps) {
         const item = document.createElement("li");
         item.textContent = `${step.before} → ${step.after}`;
         steps.appendChild(item);
       }
-      details.appendChild(steps);
+      element.appendChild(steps);
     }
-
     const inputs = document.createElement("ul");
-    inputs.className = "tree-inputs";
-    const branches = Array.isArray(derivation.inputs)
-      ? derivation.inputs
-      : [{ name: "x", node: derivation.x }, { name: "y", node: derivation.y }];
-    branches.forEach((input) => appendValueBranch(inputs, input.name, input.node));
-    details.appendChild(inputs);
-    return details;
+    inputs.className = binary ? "tree-inputs binary-branches" : "tree-inputs";
+    for (const { name, render } of branches) {
+      const branch = document.createElement("li");
+      const label = document.createElement("span");
+      label.className = "tree-branch-label";
+      label.textContent = `${name}:`;
+      branch.appendChild(label);
+      branch.appendChild(render());
+      inputs.appendChild(branch);
+    }
+    element.appendChild(inputs);
+    return element;
+  }
+
+  function renderExpandedEml(node) {
+    if (node?.type !== "eml") return renderTreeValue(node, node?.source ?? null);
+    const argumentText = (argument) => argument?.type === "eml"
+      ? argument.result || "EML"
+      : argument?.label || "未知";
+    const [x, y] = node.inputs || [];
+    return renderTreeNode(`EML(${argumentText(x)}, ${argumentText(y)}) = ${node.result || "?"}`, [
+      { name: "X", render: () => renderExpandedEml(x) },
+      { name: "Y", render: () => renderExpandedEml(y) },
+    ], { binary: true, error: node.error });
+  }
+
+  function renderDerivation(derivation) {
+    if (derivation.emlTree?.type === "eml") return renderExpandedEml(derivation.emlTree);
+    const binary = Boolean(derivation.x && derivation.y);
+    const inputs = binary
+      ? [{ name: "X", node: derivation.x }, { name: "Y", node: derivation.y }]
+      : derivation.inputs || [];
+    return renderTreeNode(derivation.directFormula || "公式数据缺失", inputs.map(({ name, node }) => ({
+      name, render: () => renderTreeValue(node),
+    })), { binary, rewriteSteps: derivation.rewriteSteps });
   }
 
   /** 把输入的来源描述为「值（第 N 步）」，让复用关系一眼可见。 */
@@ -938,7 +918,7 @@
       const id = entry.sourceValueId || (Expr.isInteger(entry.expression, 1) ? Store.initialValueId : null);
       return id && state.values[id] ? { ...entry, source: Store.buildValueTree(state, id, { maxDepth: Infinity, maxNodes: Infinity }) } : entry;
     };
-    elements.calculationTree.appendChild(renderExpandedEml(attachFixedSources(tree), true));
+    elements.calculationTree.appendChild(renderExpandedEml(attachFixedSources(tree)));
     treeController.apply();
     return true;
   }
@@ -947,14 +927,8 @@
     if (renderApplicationStructure()) return;
     elements.selectedDetailLabel.textContent = "当前数值：";
     elements.traceDetailBlock.hidden = false;
-    const details = Store.getDetails(state, state.selectedValueId, {
-      maxDepth: treeDepth,
-      maxNodes: Infinity,
-    });
-    if (treeController.ensureValue(state.selectedValueId)) {
-      treeDepth = Infinity;
-      return renderDetails();
-    }
+    treeController.ensureValue(state.selectedValueId);
+    const details = Store.getDetails(state, state.selectedValueId);
     elements.detailsEmpty.hidden = Boolean(details);
     elements.detailsContent.hidden = !details;
     elements.directFormulaList.replaceChildren();
@@ -981,16 +955,13 @@
     renderTrace();
 
     if (details.tree.derivations.length === 0) {
-      const root = document.createElement("div");
-      root.className = "empty-formulas";
-      root.textContent = `${details.value.displayText}（初始值）`;
-      elements.calculationTree.appendChild(root);
+      elements.calculationTree.appendChild(renderTreeValue(details.tree));
     } else {
       details.tree.derivations.forEach((derivation) => {
         elements.calculationTree.appendChild(renderDerivation(derivation));
       });
     }
-    requestAnimationFrame(treeController.apply);
+    treeController.apply();
   }
 
   function render() {

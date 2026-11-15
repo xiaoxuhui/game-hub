@@ -11,8 +11,8 @@
   },
   {
     "path": "src/app.js",
-    "bytes": 52427,
-    "sha256": "155b4456ee0f7163f9bf9faf3c5748172b202798c4faedc0a1d41bf4cc73d7a3"
+    "bytes": 51288,
+    "sha256": "8fd1c4276cdb13de01b4983c0f72f241b241e54963c9ecf6461ec7c7080ba2c4"
   },
   {
     "path": "src/derivation-trace.js",
@@ -66,23 +66,23 @@
   },
   {
     "path": "src/styles.css",
-    "bytes": 15984,
-    "sha256": "c726dcdb42114d1ff728b16249b17ed638bc88eec55ab517a7f1dd69279a341a"
+    "bytes": 16994,
+    "sha256": "fe9170034e95c732ac2621414a6a6ebdbb0405a3c588c4c052c13bae800cc202"
   },
   {
     "path": "src/template.html",
-    "bytes": 6686,
-    "sha256": "d1fa0e9db2523ec4ac75ff26a9a643de29f57fbdb72baf44f3620e449b3e153c"
+    "bytes": 6858,
+    "sha256": "006f01240a7d580eff7decc19a1c7d48531370b74a7a15188f1b8917c26cf18b"
   },
   {
     "path": "src/tree-controller.js",
-    "bytes": 4652,
-    "sha256": "e07e4ae4f09229fac3b8c35b3e7c14e0571c10e54ca0ae1a95da7d63e09fc415"
+    "bytes": 5799,
+    "sha256": "4f47c01fc6b5c36ec095a85043823cb70acaa6b10f1f82b1ef828459f391d5b7"
   },
   {
     "path": "src/tree-viewport.js",
-    "bytes": 2794,
-    "sha256": "6dfe1022a1c78caf457197055aa27920b3fdc0fc1cd5b99e16701d3bd2a7be8e"
+    "bytes": 2475,
+    "sha256": "a2348d652c627b6e5d70e617dbd5e3dc2f8877c4b0f8ed8c0435befbb3e4b3a9"
   },
   {
     "path": "src/value-store.js",

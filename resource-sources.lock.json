@@ -35,7 +35,7 @@
       "id": "eml",
       "displayName": "EML 计算台",
       "repository": "https://github.com/xiaoxuhui/EML.git",
-      "revision": "cb408648ad4233baba757a530aa39278ecdb5127",
+      "revision": "ed4218812956ae4deac5ee263db8758f10a1c0bd",
       "version": "1.3.1",
       "buildKind": "eml",
       "entryPage": "eml-workbench.html",
