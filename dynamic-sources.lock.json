@@ -532,6 +532,28 @@
         "style.css"
       ],
       "releaseNotes": "绘制地图、手动推箱子并观察强化学习。"
+    },
+    {
+      "id": "tape-language-lab",
+      "displayName": "编程语言实验",
+      "iconKind": "logic",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "74b6679a3626ba55fb4c7b4859bfab348324f797",
+      "directory": "examples/tape-language-release",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "tape-language-lab-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "index.html",
+        "src/app.js",
+        "src/examples.js",
+        "src/machine.js",
+        "style.css"
+      ],
+      "releaseNotes": "支持 BF、P 双撇和图灵机的离线纸带实验。"
     }
   ]
 }
