@@ -331,10 +331,10 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/compass-polygon-studio.git",
-      "revision": "fdfaa173f056b88e85bbbcade03c95e37f156927",
+      "revision": "094fa5d144a4d21b6cf8143aad778bd08b2a148c",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "compass-polygon-studio-dynamic-v1",
       "files": [
@@ -342,9 +342,10 @@
         "app.js",
         "geometry.js",
         "index.html",
-        "style.css"
+        "style.css",
+        "desmos.js"
       ],
-      "releaseNotes": "离线尺规作图，按步骤构造正多边形。"
+      "releaseNotes": "更新尺规作图说明与交互，新增公式导出。"
     },
     {
       "id": "fourier-drawing-studio",
@@ -352,10 +353,10 @@
       "iconKind": "simulation",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/fourier-drawing-studio.git",
-      "revision": "62dde93b83169565c6c05acaa98072bdfffe9472",
+      "revision": "ed8cc7dc55140c9dcd973cceecba5eb32a4f9666",
       "directory": "dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "fourier-drawing-studio-dynamic-v1",
       "files": [
@@ -366,7 +367,7 @@
         "index.html",
         "style.css"
       ],
-      "releaseNotes": "离线傅里叶绘图与轮廓实验。"
+      "releaseNotes": "改进傅里叶绘图交互与显示。"
     },
     {
       "id": "ai-racing-lab",
