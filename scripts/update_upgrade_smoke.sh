@@ -7,6 +7,8 @@ mkdir -p "$evidence"
 
 adb install -r emulator-fixtures/base.apk
 adb install -r -t emulator-fixtures/test.apk
+adb shell am instrument -w -e class "$package.DynamicCoordinatorDeviceTest#manualButtonChecksFreshCatalogAndDownloadsNewOrSameVersion" "$package.test/androidx.test.runner.AndroidJUnitRunner" | tee "$evidence/manual-update.txt"
+grep -q 'OK (1 test)' "$evidence/manual-update.txt"
 adb push emulator-fixtures/fixture.apk /data/local/tmp/game-hub-fixture.apk
 adb shell run-as "$package" mkdir -p cache/updates files
 adb shell run-as "$package" cp /data/local/tmp/game-hub-fixture.apk cache/updates/fixture.apk

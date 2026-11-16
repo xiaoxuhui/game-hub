@@ -57,7 +57,7 @@ class DynamicCoordinatorDeviceTest {
                 address.endsWith("/releases/tags/game-resources-v1")->JSONObject().put("id",1).put("draft",false).put("prerelease",true).put("tag_name","game-resources-v1").toString().toByteArray()
                 address.endsWith("/releases/tags/game-resources-v2")->{status=dynamicStatus;JSONObject().put("id",2).put("draft",false).put("prerelease",true).put("tag_name","game-resources-v2").toString().toByteArray()}
                 address.endsWith("/releases/1/assets?per_page=100&page=1")->JSONArray().put(JSONObject().put("id",50).put("name","catalog.signed.json").put("size",builtinEnvelope.size).put("digest","sha256:${ResourcePolicy.sha256(builtinEnvelope)}").put("state","uploaded")).apply {builtinCatalog.games.forEach {put(asset(it))}}.toString().toByteArray()
-                address.endsWith("/releases/2/assets?per_page=100&page=1")->JSONArray().put(JSONObject().put("id",150).put("name","catalog.signed.json").put("size",current.second.size).put("digest","sha256:${ResourcePolicy.sha256(current.second)}").put("state","uploaded")).put(asset(current.first.games.single())).toString().toByteArray()
+                address.endsWith("/releases/2/assets?per_page=100&page=1")->JSONArray().put(JSONObject().put("id",150).put("name","catalog-expanded.signed.json").put("size",current.second.size).put("digest","sha256:${ResourcePolicy.sha256(current.second)}").put("state","uploaded")).put(asset(current.first.games.single())).toString().toByteArray()
                 address.endsWith("/releases/assets/50")->builtinEnvelope
                 address.endsWith("/releases/assets/150")->current.second
                 address.endsWith("/releases/assets/701")->current.third.clone().also {if(corrupt)it[0]=(it[0].toInt() xor 1).toByte()}
@@ -95,6 +95,21 @@ class DynamicCoordinatorDeviceTest {
     }
     private fun await(label:String,predicate:()->Boolean){val end=System.nanoTime()+TimeUnit.SECONDS.toNanos(30);while(!predicate()){check(System.nanoTime()<end){"Timeout: $label"};Thread.sleep(25)}}
     private fun checked(owner:UpdateCoordinator)=await("three-channel query/cleanup"){val s=owner.snapshot();s.apkCheckedAt!=null && s.resourcesCheckedAt!=null && s.dynamicCheckedAt!=null && !s.busy}
+    @Test fun manualButtonChecksFreshCatalogAndDownloadsNewOrSameVersion(){harness().use {h->
+        h.installFirst(); val owner=h.owner(); assertTrue(owner.settings(false,false)); await("settings saved"){!owner.snapshot().settingsSaving}
+        owner.presence(true,true); checked(owner); assertEquals(0,h.zipCount())
+        h.current=h.fixture.dynamicRelease(2,2)
+        var checks=h.requests.count {it.endsWith("/releases/tags/game-resources-v2")}
+        assertTrue(owner.reinstallResource("memory-demo",false))
+        await("newest version downloaded"){!owner.snapshot().busy && h.dynamic.selection("memory-demo").ready==h.current.first.games.single().identity}
+        assertTrue(h.requests.count {it.endsWith("/releases/tags/game-resources-v2")}>checks); assertEquals(1,h.zipCount())
+        h.dynamic.openSession("memory-demo",true).use {assertEquals(2,it.game!!.contentCode)}
+        checks=h.requests.count {it.endsWith("/releases/tags/game-resources-v2")}
+        assertTrue(owner.reinstallResource("memory-demo",false))
+        await("same version redownloaded"){!owner.snapshot().busy && h.zipCount()==2}
+        assertTrue(h.requests.count {it.endsWith("/releases/tags/game-resources-v2")}>checks)
+        h.dynamic.openSession("memory-demo",true).use {assertEquals(2,it.game!!.contentCode)}
+    }}
     @Test fun wifiFirstInstallIsManualAndRemovedGameNeverAutomaticallyReinstalls(){harness().use {h->
         val owner=h.owner();owner.presence(true,true);checked(owner)
         assertEquals(0,h.zipCount());assertFalse(h.dynamic.installed("memory-demo"));assertEquals(1,owner.snapshot().dynamicResources.size)
