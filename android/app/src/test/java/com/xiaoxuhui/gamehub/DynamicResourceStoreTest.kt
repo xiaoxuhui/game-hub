@@ -48,6 +48,46 @@ class DynamicResourceStoreTest {
         override fun close() {parent.deleteRecursively()}
     }
     private fun rejected(block:()->Unit) {try{block();fail("Expected rejection")}catch(_:Exception){}}
+    @Test fun manualUpdateAlwaysDownloadsLatestEvenAfterPinningOldVersion() {
+        Fixture().use { f ->
+            val store=f.store(); val (v1,p1,z1)=f.release(); store.acceptCatalog(p1); store.install(v1.games.single(),p1,z1); store.openSession("memory-demo",true).close()
+            val (v2,p2,z2)=f.release(2,2); val latest=v2.games.single(); store.acceptCatalog(p2); store.install(latest,p2,z2); store.openSession("memory-demo",true).close()
+            store.restore(latest.id,false); assertTrue(store.selection(latest.id).pinned)
+            store.installLatest(latest,p2,z2)
+            store.openSession(latest.id,true).use { assertEquals(latest.identity,it.game!!.identity) }
+            assertEquals(v1.games.single().identity,store.selection(latest.id).previous)
+            assertFalse(store.selection(latest.id).pinned)
+        }
+    }
+    @Test fun manualUpdateWithNoNewVersionReinstallsAndRetainsSave() {
+        Fixture().use { f ->
+            val store=f.store(); val (catalog,proof,zip)=f.release(); val game=catalog.games.single()
+            store.acceptCatalog(proof); store.install(game,proof,zip); store.openSession(game.id,true).close()
+            val saved=File(f.parent,"save-marker").apply {writeText("my progress")}
+            File(f.root,"versions/${game.id}/${game.identity}/index.html").writeText("damaged")
+            store.installLatest(game,proof,zip)
+            store.openSession(game.id,true).use {assertEquals("<html>resource 1</html>",File(it.root,"index.html").readText())}
+            assertEquals("my progress",saved.readText())
+        }
+    }
+    @Test fun failedManualUpdateLeavesPinnedVersionAndSaveUntouched() {
+        Fixture().use { f ->
+            val store=f.store(); val (v1,p1,z1)=f.release(); val old=v1.games.single(); store.acceptCatalog(p1); store.install(old,p1,z1); store.openSession(old.id,true).close()
+            val (v2,p2,z2)=f.release(2,2); val latest=v2.games.single(); store.acceptCatalog(p2); store.install(latest,p2,z2); store.openSession(old.id,true).close()
+            store.restore(old.id,false); val before=store.selection(old.id); val saved=File(f.parent,"save-marker").apply {writeText("keep")}
+            z2.writeText("invalid"); rejected {store.installLatest(latest,p2,z2)}
+            assertEquals(before,store.selection(old.id)); assertEquals("keep",saved.readText())
+        }
+    }
+    @Test fun manualUpdateRepairsCorruptedDownloadedLatestWithoutLosingCurrent() {
+        Fixture().use { f ->
+            val store=f.store(); val (v1,p1,z1)=f.release(); val old=v1.games.single(); store.acceptCatalog(p1); store.install(old,p1,z1); store.openSession(old.id,true).close()
+            val (v2,p2,z2)=f.release(2,2); val latest=v2.games.single(); store.acceptCatalog(p2); store.install(latest,p2,z2); store.openSession(old.id,true).close()
+            store.restore(old.id,false); File(f.root,"versions/${old.id}/${latest.identity}/index.html").writeText("damaged")
+            store.installLatest(latest,p2,z2); store.openSession(old.id,true).use {assertEquals(latest.identity,it.game!!.identity)}
+            assertEquals(old.identity,store.selection(old.id).previous)
+        }
+    }
     @Test fun manualVersionRestorePreservesBothVersionsAcrossRestarts() {
         Fixture().use { f ->
             val store=f.store(); val (first,firstProof,firstZip)=f.release()

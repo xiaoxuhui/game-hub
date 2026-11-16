@@ -174,7 +174,7 @@ internal class UpdateCoordinator private constructor(context: Context, private v
                 }
                 val pending=synchronized(stateLock) { gate.endCheck(); publish(::idleStatus); pendingReinstall.also { pendingReinstall=null } }
                 if(pending!=null) {
-                    if(!startReinstall(pending.first,pending.second)) resourceStatus(policyFor(pending.first),"重新安装未开始；请检查网络、签名目录和当前版本证明")
+                    if(!startReinstall(pending.first,pending.second)) resourceStatus(policyFor(pending.first),"更新未开始；请检查网络和签名资源目录")
                 } else automaticNext()
             }
         }
@@ -274,44 +274,41 @@ internal class UpdateCoordinator private constructor(context: Context, private v
         startResource(current, game, true, meteredConfirmed)
     }
     fun reinstallResource(id: String, meteredConfirmed: Boolean): Boolean = synchronized(stateLock) {
+        if(pendingReinstall!=null) return false
+        if(state.busy && state.task=="检查更新") { pendingReinstall=id to meteredConfirmed; return true }
         val policy=policyFor(id)
-        if((if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer)==null || (if(policy==ResourceStorePolicy.BUILTIN) state.resourcesRemembered else state.dynamicRemembered)) {
-            if(!check(true)) return false
-            pendingReinstall=id to meteredConfirmed
-            return true
+        if(!gate.beginCheck(true)) return false
+        checkCancelled=false
+        pendingReinstall=id to meteredConfirmed
+        publish { it.copy(busy=true,task="检查更新",done=0,total=0) }
+        worker.execute {
+            try { checkResourceChannel(policy) }
+            finally {
+                if(checkCancelled || !foreground) historicalResources(policy,"游戏检查已取消，原资源与存档保留")
+                val pending=synchronized(stateLock) { gate.endCheck(); publish(::idleStatus); pendingReinstall.also { pendingReinstall=null } }
+                if(pending!=null && !startReinstall(pending.first,pending.second)) resourceStatus(policy,"更新未开始；请检查网络和签名资源目录")
+            }
         }
-        startReinstall(id,meteredConfirmed)
+        true
     }
     private fun startReinstall(id: String, meteredConfirmed: Boolean): Boolean = synchronized(stateLock) {
         val policy=policyFor(id); val current=(if(policy==ResourceStorePolicy.BUILTIN) offer else dynamicOffer) ?: return false
         val currentGame=current.catalog.games.singleOrNull { it.id==id } ?: return false
         val store=storeFor(policy)
-        val builtin=policy==ResourceStorePolicy.BUILTIN && store.selection(id).active=="builtin"
-        val installed=if(builtin) null else try { store.installedProof(id) } catch (error: Exception) {
-            if(store.selection(id).active==currentGame.identity) currentGame to current.envelope
-            else { resourceStatus(policy,error.message ?: "无法读取已安装版本证明"); return false }
-        }
         val token=try { current.reserveDownload(currentGame,gate,true,meteredConfirmed) }
         catch(error: Exception) { resourceStatus(policy,error.message ?: "请先检查更新"); return false } ?: return false
-        publish { it.copy(busy=true,task="重新安装 ${currentGame.displayName}",done=0,total=currentGame.archiveBytes) }
+        publish { it.copy(busy=true,task="更新 ${currentGame.displayName}",done=0,total=currentGame.archiveBytes) }
         worker.execute {
             var archive: File?=null
             try {
                 current.requireDownload(currentGame)
                 val client=if(policy==ResourceStorePolicy.BUILTIN) resourceClient else dynamicClient
-                val source=installed ?: client.builtinBaseline(id,current.catalog) { !gate.valid(token) }
-                val game=source.first; val proof=source.second
-                val baselineRevision=if(builtin) {
-                    val manifest=app.assets.open("bundle-manifest.json").use { StrictJson.parse(ResourceIo.readBounded(it,1048576)) }
-                    val sources=manifest.getJSONArray("sources")
-                    (0 until sources.length()).map { sources.getJSONObject(it) }.single { it.getString("id")==id }.getString("revision")
-                } else null
-                archive=client.download(game,File(app.cacheDir,"resource-updates"),{ !gate.valid(token) },progressReporter())
-                check(gate.valid(token)) { "重新安装已取消" }
-                store.reinstall(game,current.envelope,archive,{ !gate.valid(token) },proof,baselineRevision)
-                readLocalResources(); resourceStatus(policy,"${game.displayName} 已重新安装；存档保留")
+                archive=client.download(currentGame,File(app.cacheDir,"resource-updates"),{ !gate.valid(token) },progressReporter())
+                check(gate.valid(token)) { "更新已取消" }
+                store.installLatest(currentGame,current.envelope,archive) { !gate.valid(token) }
+                readLocalResources(); resourceStatus(policy,"${currentGame.displayName} 下载完成；下次打开使用目录中的最新版，存档保留")
             } catch(error: Exception) {
-                if(token.cancelled) resourceStatus(policy,"重新安装已取消，原资源与存档保留") else channelFailure(policy.updateChannel,error)
+                if(token.cancelled) resourceStatus(policy,"更新已取消，原资源与存档保留") else channelFailure(policy.updateChannel,error)
             } finally {
                 archive?.delete(); synchronized(stateLock) { gate.finish(token); publish(::idleStatus) }; automaticNext()
             }

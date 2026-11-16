@@ -191,13 +191,26 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             } catch (error: Exception) { renewalFailures[game.id] = "候选证明续期失败，原版本保留：${error.message}" }
         }
     }
-    fun install(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean = { false }) = synchronized(lock) {
+    private fun manualEligible(game: ResourceGame): Boolean {
+        val selected=selections[game.id] ?: return false
+        return stateFailure==null && selected.available && game.available && game.compatible(hostCode,policy.contract(game.id)) &&
+            game.contentCode>=selected.highestCode && (game.contentCode!=selected.highestCode || selected.highestHash==null || game.archiveSha256==selected.highestHash)
+    }
+    fun installLatest(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean = { false }) = synchronized(lock) {
+        require(manualEligible(game)) { "最新资源与可信版本记录不一致" }
+        if(selections.getValue(game.id).active==game.identity) {
+            reinstall(game,envelope,archive,cancelled)
+            resumeAutomatic(game.id)
+        } else installCore(game,envelope,archive,cancelled,manual=true)
+    }
+    fun install(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean = { false }) = installCore(game,envelope,archive,cancelled,manual=false)
+    private fun installCore(game: ResourceGame, envelope: ByteArray, archive: File, cancelled: () -> Boolean, manual: Boolean) = synchronized(lock) {
         require(stateFailure == null && !hasSessions()) { "Install only while hall is idle" }
         val catalog = policy.fresh(envelope, publicKey, now())
-        require(catalog.games.single { it.id == game.id } == game && isEligible(game)) { "Resource not eligible" }
+        require(catalog.games.single { it.id == game.id } == game && (if(manual) manualEligible(game) else isEligible(game))) { "Resource not eligible" }
         acceptCatalog(envelope)
         val bytesNeeded = game.files.sumOf { it.bytes } + game.archiveBytes + envelope.size
-        garbageCollect()
+        if(!manual) garbageCollect()
         require(usedBytes(directory) + otherResourceBytes() + bytesNeeded <= ResourcePolicy.MAX_STORE && freeSpace() >= bytesNeeded + ResourcePolicy.FREE_RESERVE) { "资源空间不足，旧版本保留" }
         val stagingParent = File(directory, "staging").apply { mkdirs() }; val staging = File(stagingParent, UUID.randomUUID().toString())
         try {
@@ -205,13 +218,31 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             require(!cancelled()); catalog.requireFresh(now())
             proofFile(File(staging, "catalog.signed.json")).write(envelope)
             val destination = version(game.id, game.identity); destination.parentFile!!.mkdirs()
-            if (destination.exists()) {
-                require(verifyVersion(game.id, game.identity) == game) { "Installed metadata changed under the same archive identity" }
-                proofFile(File(destination, "catalog.signed.json")).write(envelope)
-                deletePrivate(staging)
-            } else require(staging.renameTo(destination)) { "Cannot commit resource directory" }
-            val current = selections.getValue(game.id)
-            persist(selections + (game.id to current.copy(ready = game.identity)))
+            var backup: File? = null
+            try {
+                if (destination.exists()) {
+                    if(runCatching { verifyVersion(game.id,game.identity)==game }.getOrDefault(false)) {
+                        proofFile(File(destination, "catalog.signed.json")).write(envelope); deletePrivate(staging)
+                    } else {
+                        require(manual) { "Installed metadata changed under the same archive identity" }
+                        val old=File(directory,"reinstall-backups/${game.id}/${game.identity}")
+                        ResourcePathGuard.requireUnlinked(old.parentFile!!); require(!old.exists())
+                        require(old.parentFile!!.mkdirs() || old.parentFile!!.isDirectory)
+                        require(destination.renameTo(old)) { "无法保护旧资源" }; backup=old
+                        require(staging.renameTo(destination)) { "无法安装已校验资源" }
+                        require(verifyVersion(game.id,game.identity)==game)
+                    }
+                } else require(staging.renameTo(destination)) { "Cannot commit resource directory" }
+                require(!cancelled()); catalog.requireFresh(now())
+                val current = selections.getValue(game.id)
+                persist(selections + (game.id to current.copy(ready = game.identity, pinned = if(manual) false else current.pinned,
+                    quarantine = if(manual) current.quarantine-game.contentCode else current.quarantine)))
+                if(manual) failedIdentities.remove("${game.id}/${game.identity}")
+            } catch(error: Exception) {
+                backup?.let { old -> if(destination.exists()) deletePrivate(destination); require(old.renameTo(destination)) { "恢复旧资源失败，请保留备份" } }
+                throw error
+            }
+            backup?.let(::deletePrivate)
         } finally { if (staging.exists()) deletePrivate(staging) }
     }
     private fun recoverInterruptedReinstall() {
@@ -222,7 +253,9 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             gameRoot.listFiles()?.forEach { backup ->
                 ResourcePathGuard.requireUnlinked(backup); require(backup.isDirectory); validateIdentity(backup.name)
                 val selected=selections.getValue(gameRoot.name)
-                require(backup.name != "builtin" && (backup.name==selected.active || policy==ResourceStorePolicy.BUILTIN && selected.active=="builtin" && backup.name.startsWith("1-")))
+                require(backup.name != "builtin" && (backup.name==selected.active || backup.name==selected.previous || backup.name==selected.ready ||
+                    selected.highestHash!=null && backup.name=="${selected.highestCode}-${selected.highestHash}" ||
+                    policy==ResourceStorePolicy.BUILTIN && selected.active=="builtin" && backup.name.startsWith("1-")))
                 val destination=version(gameRoot.name,backup.name); ResourcePathGuard.requireUnlinked(destination)
                 if(destination.exists() && runCatching { verifyVersion(gameRoot.name,backup.name) }.isSuccess) deletePrivate(backup)
                 else { if(destination.exists()) deletePrivate(destination); destination.parentFile!!.mkdirs(); require(backup.renameTo(destination)) { "无法恢复原有资源" } }
@@ -285,7 +318,6 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     }
     fun openSession(id: String, cacheProxyCleared: Boolean): ResourceSession = synchronized(lock) {
         var selected = selections.getValue(id)
-        require("$id/${selected.active}" !in failedIdentities && selected.active.substringBefore('-').toIntOrNull() !in selected.quarantine) { "该资源加载失败并已隔离，请先在大厅恢复版本" }
         if (selected.available && selected.ready != null && !selected.pinned && !hasSessions() && cacheProxyCleared && stateFailure == null) {
             val readyIdentity = selected.ready!!
             selected = try {
@@ -302,6 +334,7 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
             }
             persist(selections + (id to selected))
         }
+        require("$id/${selected.active}" !in failedIdentities && selected.active.substringBefore('-').toIntOrNull() !in selected.quarantine) { "该资源加载失败并已隔离，请先在大厅恢复版本" }
         val game = if (selected.active == "builtin") null else verifyVersion(id, selected.active)
         require(policy != ResourceStorePolicy.DYNAMIC || game != null) { "此游戏尚未安装完整可用资源，请回到目录下载" }
         val reference = "$id/${selected.active}"; references[reference] = (references[reference] ?: 0) + 1

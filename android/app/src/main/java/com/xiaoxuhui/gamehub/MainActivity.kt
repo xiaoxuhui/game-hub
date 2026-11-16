@@ -359,11 +359,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun reinstallButton(id: String, name: String): TextView = label("重新安装", 12f, 0xFF8AB7FF.toInt(), true).apply {
-        gravity=Gravity.CENTER; minHeight=dp(44); isClickable=true; isFocusable=true; contentDescription="重新安装$name"
+    private fun reinstallButton(id: String, name: String): TextView = label("更新", 12f, 0xFF8AB7FF.toInt(), true).apply {
+        gravity=Gravity.CENTER; minHeight=dp(44); isClickable=true; isFocusable=true; contentDescription="更新$name"
         setOnClickListener {
             confirmDownload { allowed ->
-                if(!updates.reinstallResource(id,allowed)) toast("重新安装未开始，请检查网络或等待当前任务结束")
+                if(!updates.reinstallResource(id,allowed)) toast("更新未开始，请检查网络或等待当前任务结束")
             }
         }
     }
@@ -522,14 +522,14 @@ class MainActivity : ComponentActivity() {
                 if(!remote.available)description("已退役：不再提供下载；已安装的版本可继续离线使用。")
                 else if(!remote.compatible(hostVersionCode,ResourceStorePolicy.DYNAMIC.contract(id)))description("此游戏与当前大厅不兼容。请在更新详情检查大厅升级；升级前不会下载此游戏。")
                 if(state.dynamicRemembered)description("这是上次检查记录；重新检查成功后才可下载。")
-                if(!state.dynamicRemembered && state.dynamicResources.any {it.id==id})detailButton(column,(if(installed) "更新" else "安装")+name,!state.busy){
+                if(!installed && !state.dynamicRemembered && state.dynamicResources.any {it.id==id})detailButton(column,"安装"+name,!state.busy){
                     confirmDownload {allowed->if(!updates.downloadResource(id,allowed))toast("下载未开始，请检查网络或重新查询")}
                 }
             }
             if(installed && local!=null){
                 detailButton(column,"打开$name",!state.busy){dialog.dismiss();openGame(dynamicGame(id,local,remote))}
-                detailButton(column,"重新安装$name",!state.busy){
-                    confirmDownload {allowed->if(!updates.reinstallResource(id,allowed))toast("请先检查更新，并确认当前版本的签名证明可用")}
+                detailButton(column,"更新$name",!state.busy){
+                    confirmDownload {allowed->if(!updates.reinstallResource(id,allowed))toast("更新未开始，请检查网络或等待当前任务结束")}
                 }
                 if(local.stateError==null){
                     if(local.selection.previous!="builtin" && local.selection.previous!=local.selection.active)detailButton(column,"恢复${name}上个版本并固定",!state.busy){confirmLocalChange(id,LocalResourceAction.RESTORE_PREVIOUS)}
@@ -611,8 +611,8 @@ class MainActivity : ComponentActivity() {
                 if (local.selection.pinned) description("当前固定版本；自动检查不会改变选择")
                 if (local.selection.quarantine.isNotEmpty()) description("已隔离失败编号：${local.selection.quarantine.sorted().joinToString()}")
                 if (local.stateError == null) {
-                    detailButton(column, "重新安装${game.name}", !state.busy) {
-                        confirmDownload { allowed -> if (!updates.reinstallResource(game.id, allowed)) toast("请先检查更新，并确认当前版本的签名证明可用") }
+                    detailButton(column, "更新${game.name}", !state.busy) {
+                        confirmDownload { allowed -> if (!updates.reinstallResource(game.id, allowed)) toast("更新未开始，请检查网络或等待当前任务结束") }
                     }
                     if (local.selection.previous != local.selection.active) detailButton(column, "恢复${game.name}上个版本并固定", !state.busy) { confirmLocalChange(game.id, LocalResourceAction.RESTORE_PREVIOUS) }
                     local.otherVersions.forEach { version -> detailButton(column,"切换到已下载的${game.name} v${version.version}",!state.busy){confirmLocalChange(game.id,LocalResourceAction.SELECT_DOWNLOADED,identity=version.identity)} }

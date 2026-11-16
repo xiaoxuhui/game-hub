@@ -127,7 +127,7 @@ def assert_all_cards_in_viewport(root: ET.Element) -> None:
             raise AssertionError(f"Lobby card is not visible: {name}")
         assert_card_in_viewport(card, name, (x1, y1, x2, y2), (width, height))
         reinstall = next((node for node in card.iter("node")
-                          if node.attrib.get("content-desc") == f"重新安装{name}"
+                          if node.attrib.get("content-desc") == f"更新{name}"
                           and node.attrib.get("clickable") == "true" and node_visible(node)), None)
         if reinstall is None:
             raise AssertionError(f"Reinstall action is not visible or clickable: {name}")
@@ -278,7 +278,7 @@ def check_reinstall_action() -> None:
         time.sleep(3)
         root = hierarchy()
         button = next((node for node in nodes(root)
-                       if node.attrib.get("content-desc") == "重新安装康威生命游戏" and node_visible(node)), None)
+                       if node.attrib.get("content-desc") == "更新康威生命游戏" and node_visible(node)), None)
         if button is None:
             raise AssertionError("Reinstall action missing before interaction")
         tap(button)
