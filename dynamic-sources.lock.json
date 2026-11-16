@@ -553,6 +553,30 @@
         "style.css"
       ],
       "releaseNotes": "支持 BF、P 双撇和图灵机的离线纸带实验。"
+    },
+    {
+      "id": "pixel-frame",
+      "displayName": "像素帧挑战",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/pixel-frame.git",
+      "revision": "77e777002e848aff1ef0329ef0bac1bb3210f6de",
+      "directory": "dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "pixel-frame-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "challenge.js",
+        "editor.js",
+        "index.html",
+        "lambda/LICENSE",
+        "lambda/core.js",
+        "lambda/tromp.js",
+        "style.css"
+      ],
+      "releaseNotes": "像素画与逐帧动画编辑，包含图案挑战，作品保存在本机。"
     }
   ]
 }
