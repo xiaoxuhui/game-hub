@@ -14,7 +14,8 @@ const getter = (options = {}) => async path => {
 
 test('actual upstreams include both new games and every released source', () => {
   const sources = loadSources();
-  assert.equal(sources.length, 22);
+  assert.equal(sources.length, 24);
+  for (const id of ['fixed-point-workshop','sokoban-ai-lab']) assert.ok(sources.some(source => source.id === id));
   for (const id of ['snake-speed','turbowarp-graph-lab']) assert.ok(sources.some(source => source.id === id));
   for (const id of ['lights-out-matrix','learning-machine']) { const source=sources.find(s=>s.id===id); assert.equal(source.repository,`https://github.com/xiaoxuhui/${id}.git`); assert.ok(source.consumers[0].inputs.includes('dist/index.html')); }
   const hex=sources.find(s=>s.id==='hex-cell-lab');assert.equal(hex.repository,'https://github.com/xiaoxuhui/hex-cell-lab.git');assert.ok(hex.consumers[0].inputs.includes('src/core.js'));
