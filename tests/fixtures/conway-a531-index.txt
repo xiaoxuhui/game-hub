@@ -9,13 +9,18 @@
   <meta name="description" content="一个无需联网、拥有无限世界与自由缩放视图的康威生命游戏。">
   <link rel="stylesheet" href="styles/main.css?v=0.17.0">
   <script defer src="scripts/life-engine.js?v=0.17.0"></script>
+  <script defer src="scripts/life-tiles.js?v=0.17.0"></script>
+  <script defer src="scripts/life-stack-renderer.js?v=0.17.0"></script>
+  <script defer src="scripts/life-stack.js?v=0.17.0"></script>
   <script defer src="scripts/presets.js?v=0.17.0"></script>
   <script defer src="scripts/pattern-library.js?v=0.17.0"></script>
+  <script defer src="scripts/golly-import.js?v=0.17.0"></script>
   <script defer src="scripts/speed-control.js?v=0.17.0"></script>
   <script defer src="scripts/logic-parse.js?v=0.17.0"></script>
   <script defer src="scripts/logic-expand.js?v=0.17.0"></script>
   <script defer src="scripts/logic-layout.js?v=0.17.0"></script>
   <script defer src="scripts/logic-compile.js?v=0.17.0"></script>
+  <script defer src="scripts/logic-inputs.js?v=0.17.0"></script>
   <script defer src="scripts/logic-safety.js?v=0.17.0"></script>
   <script defer src="scripts/logic-code.js?v=0.17.0"></script>
   <script defer src="scripts/logic-function-library.js?v=0.17.0"></script>
@@ -47,6 +52,10 @@
           <span class="readout-label">生命</span>
           <strong id="aliveValue">0</strong>
         </div>
+        <div class="readout" id="cycleReadout" hidden>
+          <span class="readout-label">循环节长度</span>
+          <strong id="cyclePeriodValue" role="status"></strong>
+        </div>
         <div class="readout">
           <span class="readout-label">实际速度</span>
           <strong id="actualSpeedValue">0/s</strong>
@@ -61,7 +70,7 @@
     <main>
       <section class="control-panel" aria-label="模拟控制">
         <div class="control-group primary-controls">
-          <button class="button button-primary" id="runToggle" type="button" aria-pressed="false" aria-keyshortcuts="Space">
+          <button class="button button-primary" id="runToggle" type="button" aria-pressed="false" aria-keyshortcuts="T Space">
             <span class="button-icon" aria-hidden="true">▶</span>
             <span class="button-label">开始</span>
           </button>
@@ -82,11 +91,21 @@
         <div class="control-group speed-control">
           <div class="control-heading">
             <label for="speedInput">演化速度</label>
-            <span>范围 1–1000</span>
+            <span>范围 1–10,000</span>
           </div>
           <div class="speed-input-row">
-            <input id="speedInput" type="number" min="1" max="1000" step="1" value="5" inputmode="numeric" aria-describedby="speedUnit">
+            <input id="speedInput" type="number" min="1" max="10000" step="1" value="5" inputmode="numeric" aria-describedby="speedUnit">
             <span id="speedUnit">代/秒</span>
+          </div>
+          <div class="jump-control">
+            <div class="control-heading">
+              <label for="jumpSizeInput">跳步</label>
+              <span>画面更新间隔</span>
+            </div>
+            <div class="speed-input-row">
+              <input id="jumpSizeInput" type="number" min="1" max="10000" step="1" value="1" inputmode="numeric" aria-describedby="jumpSizeUnit">
+              <span id="jumpSizeUnit">代/次</span>
+            </div>
           </div>
         </div>
 
@@ -146,7 +165,15 @@
             <input id="logicCodeInput" type="text" placeholder="例如：AND(A,B),A=1,B=0 / NOT 1" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="logicCodeHelp logicCodeFeedback">
             <button class="button" id="logicCodeButton" type="submit">生成结构</button>
           </div>
-          <p class="field-note" id="logicCodeHelp">支持 0/1、AND/OR/NOT、保存函数嵌套调用和末尾变量赋值；英文函数名称可直接调用。</p>
+          <p class="field-note" id="logicCodeHelp">支持 0/1、AND/OR/NOT、保存函数调用和末尾变量赋值，最多嵌套 32 层。</p>
+          <label class="logic-safety-option">
+            <input id="shareLogicInputs" type="checkbox" checked>
+            <span>同名变量共用一座输入枪</span>
+          </label>
+          <label class="logic-safety-option">
+            <input id="verifyLogicSafety" type="checkbox">
+            <span>验证安全线路（较慢）</span>
+          </label>
           <div class="logic-library-row" aria-label="我的函数库">
             <select id="logicFunctionSelect" aria-label="我的函数" disabled>
               <option value="">我的函数（暂无）</option>
@@ -180,8 +207,20 @@
           <div>
             <p class="section-kicker" id="worldPosition">WORLD ∞ · CENTER 0, 0</p>
             <h2 id="boardTitle">生命观察区</h2>
+            <label class="glider-cleanup-option" title="仅适用于 B3/S23。开启时检查当前棋盘，此后每代检查。">
+              <input id="pruneGliders" type="checkbox" autocomplete="off">
+              <span>清理离群滑翔机</span>
+            </label>
           </div>
-          <p id="boardHint">左键绘制；中键、右键或按住空格拖动；滚轮缩放。</p>
+          <div class="board-actions">
+            <div class="board-action-buttons">
+              <button class="button" id="lifeStackButton" type="button">三维演化</button>
+              <button class="button" id="importGollyButton" type="button">导入 Golly 图案</button>
+            </div>
+            <input id="importGollyInput" type="file" accept=".rle,.mc,.gz" hidden>
+            <p id="boardHint">左键绘制；中键、右键或按住空格拖动；滚轮缩放。</p>
+            <p id="boardKeyboardHint">轻按 <kbd>Tab</kbd> 单步 · 按住连续演化 · <kbd>F3</kbd> + <kbd>Tab</kbd> 跳一步 · <kbd>Shift+Tab</kbd> 离开棋盘</p>
+          </div>
         </div>
 
         <div class="board-frame" id="boardFrame">
@@ -189,7 +228,8 @@
             id="lifeCanvas"
             tabindex="0"
             role="img"
-            aria-keyshortcuts="Space ArrowRight C 0 R F Escape"
+            aria-keyshortcuts="T Space Tab ArrowRight Shift+ArrowRight C 0 R F Escape"
+            aria-describedby="boardKeyboardHint"
             aria-label="无限大的康威生命游戏世界；当前为空。"
           ></canvas>
           <div class="scan-line" aria-hidden="true"></div>
@@ -211,7 +251,8 @@
     </main>
 
     <footer class="app-footer">
-      <p><kbd>空格</kbd> 点击开始/暂停 · 按住拖动平移 · <kbd>滚轮</kbd> 缩放 · 放置时 <kbd>R</kbd> 旋转、<kbd>F</kbd> 翻转</p>
+      <p><kbd>T</kbd> 或轻按 <kbd>空格</kbd> 开始/暂停 · <kbd>Shift+→</kbd> 也可跳一步</p>
+      <p>按住 <kbd>空格</kbd> 拖动平移 · <kbd>滚轮</kbd> 缩放 · 放置时 <kbd>R</kbd> 旋转、<kbd>F</kbd> 翻转</p>
       <p>世界没有边框，所有计算只在你的浏览器中完成。</p>
     </footer>
   </div>
@@ -247,6 +288,39 @@
         <button class="button" id="cancelSavePatternButton" type="button">取消</button>
         <button class="button danger-button" id="updateExistingPatternButton" type="button" hidden>更新同名图案</button>
         <button class="button button-primary" type="submit">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="app-dialog life-stack-dialog" id="lifeStackDialog" aria-labelledby="lifeStackTitle">
+    <form id="lifeStackForm">
+      <div class="dialog-header">
+        <div>
+          <h2 id="lifeStackTitle">三维演化</h2>
+          <p class="life-stack-hint" id="lifeStackHint">当前代在底部。拖动或用滑杆旋转视角。点击画布后，W 前进、A 左移、S 后退、D 右移、空格上升、F 下降。</p>
+        </div>
+        <button class="dialog-close" id="closeLifeStackButton" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="life-stack-controls">
+        <label class="dialog-field">
+          <span>后续代数</span>
+          <input id="lifeStackSteps" type="number" min="1" max="32" value="12" required>
+        </label>
+        <button class="button button-primary" type="submit">生成</button>
+        <button class="button" id="resetLifeStackViewButton" type="button">重置视角</button>
+      </div>
+      <p id="lifeStackStatus" class="life-stack-hint" role="status"></p>
+      <canvas id="lifeStackCanvas" tabindex="0" role="img" aria-label="逐代堆叠的三维演化图"
+        aria-keyshortcuts="W A S D Space F" aria-describedby="lifeStackHint lifeStackStatus"></canvas>
+      <div class="life-stack-controls life-stack-angles">
+        <label class="dialog-field">
+          <span>水平旋转</span>
+          <input id="lifeStackRotation" type="range" min="0" max="360" value="35">
+        </label>
+        <label class="dialog-field">
+          <span>俯视角度</span>
+          <input id="lifeStackElevation" type="range" min="-80" max="80" value="28">
+        </label>
       </div>
     </form>
   </dialog>

@@ -130,6 +130,10 @@ h2 {
   font-variant-numeric: tabular-nums;
 }
 
+.readout[hidden] {
+  display: none;
+}
+
 .readout-label {
   color: var(--text-muted);
   font-size: 0.72rem;
@@ -260,6 +264,10 @@ body.is-running .button-primary {
   white-space: nowrap;
 }
 
+.jump-control {
+  margin-top: 8px;
+}
+
 .speed-input-row {
   display: flex;
   align-items: center;
@@ -349,6 +357,21 @@ body.is-running .button-primary {
 
 .logic-code-row input[aria-invalid="true"] {
   border-color: var(--danger);
+}
+
+.logic-safety-option,
+.glider-cleanup-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  font-size: 0.82rem;
+}
+
+.logic-safety-option input,
+.glider-cleanup-option input {
+  margin: 0;
+  accent-color: var(--accent);
 }
 
 .logic-code-feedback {
@@ -525,11 +548,23 @@ select {
   padding: 2px 3px 15px;
 }
 
-.board-heading p:last-child {
+.board-actions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.board-actions p {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.82rem;
   text-align: right;
+}
+
+.board-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .board-frame {
@@ -689,6 +724,54 @@ kbd {
   display: grid;
   gap: 18px;
   padding: 22px;
+}
+
+.life-stack-dialog {
+  width: min(880px, calc(100% - 28px));
+}
+
+.life-stack-dialog form {
+  gap: 12px;
+}
+
+.life-stack-hint {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.life-stack-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+
+.life-stack-controls input[type="number"] {
+  width: 90px;
+}
+
+.life-stack-angles label {
+  flex: 1 1 135px;
+}
+
+.life-stack-angles input[type="range"] {
+  min-height: 24px;
+  padding: 0;
+}
+
+#lifeStackCanvas {
+  display: block;
+  width: 100%;
+  height: clamp(180px, 48vh, 480px);
+  border-radius: 12px;
+  background: #080d0c;
+  cursor: grab;
+  touch-action: none;
+}
+
+#lifeStackCanvas:active {
+  cursor: grabbing;
 }
 
 .dialog-header {
@@ -1003,8 +1086,12 @@ noscript {
     padding: 4px 4px 12px;
   }
 
-  .board-heading p:last-child {
+  .board-actions {
     margin-top: 8px;
+    justify-items: start;
+  }
+
+  .board-actions p {
     text-align: left;
   }
 

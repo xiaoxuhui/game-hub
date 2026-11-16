@@ -6,12 +6,12 @@ import {conwayArchiveRuntime} from './conway-world-archive.mjs';
 import {conwayUIRuntime,conwayArchiveCSS} from './conway-archive-ui.mjs';
 
 export const CONWAY_UI_INPUTS = Object.freeze({
- 'scripts/app.js':'5691d4b2e962cf90f96157a753d1c64f7c6748a38bb4862a2e043ac8d099ab38',
- 'index.html':'abd84b572705574e6249012a1a07e07da32caf640b96d1223990b26d9bfbd36d',
- 'styles/main.css':'30610f528ebfc04f4ec9ef681cf78f530d0415744b44d6b0d7130ec0c87d4d76',
+ 'scripts/app.js':'5d61e7c88bed7bceefeccf778c0cf769770eacc6955534027095a725c29bcb7c',
+ 'index.html':'53bdbe8360c487888ebd6cc4b3d7a21455bdfa8be649a57abf3a3c50504f9054',
+ 'styles/main.css':'f6c8de07282c5e7fa8698c1e63fe50b732d6d89242f8af2df96562aa64dbc377',
 });
 function once(text,before,after) {
- if(text.split(before).length!==2)throw Error('Conway reviewed UI marker changed');
+ if(text.split(before).length!==2)throw Error('Conway reviewed UI marker changed: '+before);
  return text.replace(before,after);
 }
 export function adaptConwayUI(inputs) {

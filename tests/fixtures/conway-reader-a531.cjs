@@ -13,6 +13,10 @@
   const MAX_COORDINATE = Number.MAX_SAFE_INTEGER - 2;
   const DEFAULT_VIEW = Object.freeze({ centerRow: 0, centerColumn: 0, cellSize: 16 });
   const DEFAULT_RULE = "B3/S23";
+  const LIVE_CELL_BIT = 16;
+  const NEIGHBOR_MASK = 15;
+  const MAX_DENSE_AREA = 1_000_000;
+  const MAX_DENSE_AREA_PER_LIVE_CELL = 24;
   const ruleCache = new Map();
 
   function parseRule(input) {
@@ -125,26 +129,103 @@
   function nextCellSet(cells, rule = DEFAULT_RULE) {
     if (!(cells instanceof Set)) throw new TypeError("活细胞集合无效");
     const { birthMask, survivalMask } = parseRule(rule);
-    const neighborCounts = new Map();
+    if (!cells.size) return new Set();
 
+    const coordinates = [];
+    let minRow = Infinity;
+    let maxRow = -Infinity;
+    let minColumn = Infinity;
+    let maxColumn = -Infinity;
     for (const key of cells) {
       const [row, column] = parseKey(key);
-      if (!neighborCounts.has(key)) neighborCounts.set(key, 0);
-      for (let rowOffset = -1; rowOffset <= 1; rowOffset += 1) {
-        for (let columnOffset = -1; columnOffset <= 1; columnOffset += 1) {
-          if (rowOffset === 0 && columnOffset === 0) continue;
-          const neighborRow = row + rowOffset;
-          const neighborColumn = column + columnOffset;
-          if (Math.abs(neighborRow) > MAX_COORDINATE || Math.abs(neighborColumn) > MAX_COORDINATE) continue;
-          const neighborKey = coordinateKey(neighborRow, neighborColumn);
-          neighborCounts.set(neighborKey, (neighborCounts.get(neighborKey) || 0) + 1);
-        }
-      }
+      coordinates.push(row, column);
+      minRow = Math.min(minRow, row);
+      maxRow = Math.max(maxRow, row);
+      minColumn = Math.min(minColumn, column);
+      maxColumn = Math.max(maxColumn, column);
+    }
+    const width = maxColumn - minColumn + 3;
+    const height = maxRow - minRow + 3;
+    const area = width * height;
+    if (area <= MAX_DENSE_AREA && area <= cells.size * MAX_DENSE_AREA_PER_LIVE_CELL
+      && minRow > -MAX_COORDINATE && maxRow < MAX_COORDINATE
+      && minColumn > -MAX_COORDINATE && maxColumn < MAX_COORDINATE) {
+      return nextDenseCellSet(coordinates, minRow - 1, minColumn - 1, width, height, birthMask, survivalMask);
+    }
+    return nextSparseCellSet(coordinates, birthMask, survivalMask);
+  }
+
+  function nextDenseCellSet(coordinates, top, left, width, height, birthMask, survivalMask) {
+    // The one-cell margin keeps all eight neighbor indexes inside the array.
+    const counts = new Uint8Array(width * height);
+    for (let index = 0; index < coordinates.length; index += 2) {
+      const center = (coordinates[index] - top) * width + (coordinates[index + 1] - left);
+      counts[center - width - 1] += 1;
+      counts[center - width] += 1;
+      counts[center - width + 1] += 1;
+      counts[center - 1] += 1;
+      counts[center] |= LIVE_CELL_BIT;
+      counts[center + 1] += 1;
+      counts[center + width - 1] += 1;
+      counts[center + width] += 1;
+      counts[center + width + 1] += 1;
     }
 
     const next = new Set();
-    for (const [key, count] of neighborCounts) {
-      if ((cells.has(key) ? survivalMask : birthMask) & (1 << count)) next.add(key);
+    for (let row = 0; row < height; row += 1) {
+      const offset = row * width;
+      for (let column = 0; column < width; column += 1) {
+        const value = counts[offset + column];
+        const mask = value & LIVE_CELL_BIT ? survivalMask : birthMask;
+        if (mask & (1 << (value & NEIGHBOR_MASK))) next.add(coordinateKey(top + row, left + column));
+      }
+    }
+    return next;
+  }
+
+  function countNeighbor(row, column) {
+    row.set(column, (row.get(column) || 0) + 1);
+  }
+
+  function countSideNeighbors(row, column) {
+    if (column > -MAX_COORDINATE) countNeighbor(row, column - 1);
+    if (column < MAX_COORDINATE) countNeighbor(row, column + 1);
+  }
+
+  function nextSparseCellSet(coordinates, birthMask, survivalMask) {
+    const rows = new Map();
+    function getRow(row) {
+      let counts = rows.get(row);
+      if (!counts) {
+        counts = new Map();
+        rows.set(row, counts);
+      }
+      return counts;
+    }
+
+    for (let index = 0; index < coordinates.length; index += 2) {
+      const row = coordinates[index];
+      const column = coordinates[index + 1];
+      const current = getRow(row);
+      current.set(column, (current.get(column) || 0) | LIVE_CELL_BIT);
+      countSideNeighbors(current, column);
+      if (row > -MAX_COORDINATE) {
+        const above = getRow(row - 1);
+        countNeighbor(above, column);
+        countSideNeighbors(above, column);
+      }
+      if (row < MAX_COORDINATE) {
+        const below = getRow(row + 1);
+        countNeighbor(below, column);
+        countSideNeighbors(below, column);
+      }
+    }
+    const next = new Set();
+    for (const [row, counts] of rows) {
+      for (const [column, value] of counts) {
+        const mask = value & LIVE_CELL_BIT ? survivalMask : birthMask;
+        if (mask & (1 << (value & NEIGHBOR_MASK))) next.add(coordinateKey(row, column));
+      }
     }
     return next;
   }
@@ -152,6 +233,235 @@
   function nextGeneration(world, rule = DEFAULT_RULE) {
     assertWorld(world);
     return { cells: nextCellSet(world.cells, rule) };
+  }
+
+  function gliderMask(coordinates) {
+    const top = Math.min(...coordinates.map(([row]) => row));
+    const left = Math.min(...coordinates.map(([, column]) => column));
+    let mask = 0;
+    for (const [row, column] of coordinates) {
+      if (row - top > 2 || column - left > 2) return 0;
+      mask |= 1 << ((row - top) * 3 + (column - left));
+    }
+    return mask;
+  }
+
+  function createGliderMasks() {
+    const masks = new Set();
+    let cells = createWorld([[0, 1], [1, 2], [2, 0], [2, 1], [2, 2]]).cells;
+    for (let phase = 0; phase < 4; phase += 1) {
+      const coordinates = [...cells].map(parseKey);
+      for (const rowSign of [-1, 1]) {
+        for (const columnSign of [-1, 1]) {
+          masks.add(gliderMask(coordinates.map(([row, column]) => [rowSign * row, columnSign * column])));
+          masks.add(gliderMask(coordinates.map(([row, column]) => [rowSign * column, columnSign * row])));
+        }
+      }
+      cells = nextCellSet(cells);
+    }
+    return masks;
+  }
+
+  const gliderMasks = createGliderMasks();
+
+  function extremeCellKeys(cells) {
+    let minRow = Infinity;
+    let maxRow = -Infinity;
+    let minColumn = Infinity;
+    let maxColumn = -Infinity;
+    const keys = {};
+    for (const key of cells) {
+      const [row, column] = parseKey(key);
+      if (row < minRow) {
+        minRow = row;
+        keys.top = key;
+      }
+      if (row > maxRow) {
+        maxRow = row;
+        keys.bottom = key;
+      }
+      if (column < minColumn) {
+        minColumn = column;
+        keys.left = key;
+      }
+      if (column > maxColumn) {
+        maxColumn = column;
+        keys.right = key;
+      }
+    }
+    return new Set(Object.values(keys));
+  }
+
+  function gliderComponent(hasCell, seed) {
+    const component = new Map([[seed, parseKey(seed)]]);
+    for (const [row, column] of component.values()) {
+      for (let y = row - 1; y <= row + 1; y += 1) {
+        for (let x = column - 1; x <= column + 1; x += 1) {
+          const key = coordinateKey(y, x);
+          if (!hasCell(key) || component.has(key)) continue;
+          if (component.size === 5) return null;
+          component.set(key, [y, x]);
+        }
+      }
+    }
+    return component.size === 5 && gliderMasks.has(gliderMask([...component.values()])) ? component : null;
+  }
+
+  function findOutlyingGliderKeys(hasCell, seeds, boundsWithout) {
+    // A glider outside the remainder's bounds must own at least one whole outer edge.
+    const removed = [];
+    for (const seed of seeds) {
+      const glider = gliderComponent(hasCell, seed);
+      if (!glider) continue;
+      for (const key of glider.keys()) seeds.delete(key);
+      const rectangle = boundsWithout(glider);
+      if (!rectangle) continue;
+      const hasCellInside = [...glider.values()].some(([row, column]) =>
+        row >= rectangle.minRow && row <= rectangle.maxRow
+        && column >= rectangle.minColumn && column <= rectangle.maxColumn,
+      );
+      if (!hasCellInside) removed.push(...glider.keys());
+    }
+    return removed;
+  }
+
+  function pruneOutlyingGliders(world) {
+    assertWorld(world);
+    if (world.cells.size <= 5) return world;
+    const removed = findOutlyingGliderKeys(
+      (key) => world.cells.has(key),
+      extremeCellKeys(world.cells),
+      (glider) => cellBounds(world.cells, glider),
+    );
+    if (!removed.length) return world;
+    const remaining = cloneWorld(world);
+    for (const key of removed) remaining.cells.delete(key);
+    return remaining;
+  }
+
+  function sameCells(left, right) {
+    if (left.size !== right.size) return false;
+    for (const key of left) {
+      if (!right.has(key)) return false;
+    }
+    return true;
+  }
+
+  function cellSignature(cells) {
+    let sum = 0;
+    let xor = 0;
+    for (const key of cells) {
+      let hash = 2166136261;
+      for (let index = 0; index < key.length; index += 1) {
+        hash = Math.imul(hash ^ key.charCodeAt(index), 16777619);
+      }
+      sum = (sum + hash) | 0;
+      xor ^= hash;
+    }
+    return `${cells.size}:${sum}:${xor}`;
+  }
+
+  function createCycleTracker({ maxSnapshots = 256, maxTrackedCells = 160_000, describeWorld, sameWorld } = {}) {
+    const recent = new Map();
+    const snapshots = [];
+    let trackedCells = 0;
+    let checkpoint = null;
+    let checkpointWindow = 1;
+    let lastGeneration = null;
+    let period = null;
+    let cycleStart = 0;
+    let cycleFrames = null;
+
+    function worldsMatch(left, right) {
+      return sameWorld?.(left, right) ?? sameCells(left.cells, right.cells);
+    }
+
+    function clearHistory() {
+      recent.clear();
+      snapshots.length = 0;
+      trackedCells = 0;
+      checkpoint = null;
+    }
+
+    function reset() {
+      clearHistory();
+      checkpointWindow = 1;
+      lastGeneration = null;
+      period = null;
+      cycleFrames = null;
+    }
+
+    function confirm(generation, previousGeneration) {
+      period = generation - previousGeneration;
+      const first = snapshots.findIndex((snapshot) => snapshot.generation === previousGeneration);
+      if (first !== -1 && snapshots[first + period - 1]?.generation === generation - 1) {
+        cycleStart = previousGeneration;
+        cycleFrames = snapshots.slice(first, first + period).map((snapshot) => snapshot.world);
+      }
+      clearHistory();
+      return period;
+    }
+
+    // Recorded and restored phases are read-only until reset.
+    function observe(world, generation) {
+      if (lastGeneration === generation) return period;
+      if (lastGeneration !== null && generation !== lastGeneration + 1) reset();
+      lastGeneration = generation;
+      if (period !== null) return period;
+
+      const description = describeWorld?.(world);
+      const population = description?.population ?? world.cells.size;
+      const key = maxSnapshots > 0 && population <= maxTrackedCells
+        ? description?.signature ?? cellSignature(world.cells)
+        : null;
+      if (key !== null) {
+        const matches = recent.get(key) || [];
+        for (let index = matches.length - 1; index >= 0; index -= 1) {
+          const previous = matches[index];
+          if (worldsMatch(world, previous.world)) return confirm(generation, previous.generation);
+        }
+        const snapshot = { world, generation, key, population };
+        matches.push(snapshot);
+        recent.set(key, matches);
+        snapshots.push(snapshot);
+        trackedCells += population;
+        while (snapshots.length > maxSnapshots || trackedCells > maxTrackedCells) {
+          const oldest = snapshots.shift();
+          trackedCells -= oldest.population;
+          const bucket = recent.get(oldest.key);
+          bucket.shift();
+          if (bucket.length === 0) recent.delete(oldest.key);
+        }
+      }
+
+      // Brent's exponentially spaced checkpoints keep looking for longer
+      // cycles after their first occurrence leaves the snapshot window.
+      if (!checkpoint) checkpoint = { world, generation };
+      else {
+        if (worldsMatch(world, checkpoint.world)) return confirm(generation, checkpoint.generation);
+        if (generation - checkpoint.generation >= checkpointWindow) {
+          checkpoint = { world, generation };
+          checkpointWindow *= 2;
+        }
+      }
+      return period;
+    }
+
+    function fastForward(world, generation, maxGenerations) {
+      if (period === null || lastGeneration !== generation
+        || !Number.isSafeInteger(maxGenerations) || maxGenerations < 1) return null;
+      const generations = cycleFrames ? maxGenerations : maxGenerations - maxGenerations % period;
+      const target = generation + generations;
+      if (!generations || !Number.isSafeInteger(target)) return null;
+
+      lastGeneration = target;
+      return {
+        world: cycleFrames ? cycleFrames[(target - cycleStart) % period] : world,
+        generations,
+      };
+    }
+
+    return Object.freeze({ observe, fastForward, reset, get period() { return period; } });
   }
 
   function randomWorld(rows = 40, columns = 60, density = 0.25, random = Math.random, centerRow = 0, centerColumn = 0) {
@@ -202,19 +512,23 @@
 
   function bounds(world) {
     assertWorld(world);
-    if (world.cells.size === 0) return null;
+    return cellBounds(world.cells);
+  }
+
+  function cellBounds(cells, excluded) {
     let minRow = Infinity;
     let maxRow = -Infinity;
     let minColumn = Infinity;
     let maxColumn = -Infinity;
-    for (const key of world.cells) {
+    for (const key of cells) {
+      if (excluded?.has(key)) continue;
       const [row, column] = parseKey(key);
       minRow = Math.min(minRow, row);
       maxRow = Math.max(maxRow, row);
       minColumn = Math.min(minColumn, column);
       maxColumn = Math.max(maxColumn, column);
     }
-    return { minRow, maxRow, minColumn, maxColumn };
+    return minRow === Infinity ? null : { minRow, maxRow, minColumn, maxColumn };
   }
 
   function normalizeView(view = DEFAULT_VIEW) {
@@ -296,14 +610,17 @@
     cloneWorld,
     coordinateKey,
     countAlive,
+    createCycleTracker,
     createWorld,
     deserialize,
+    findOutlyingGliderKeys,
     formatRule,
     isAlive,
     nextCellSet,
     nextGeneration,
     parseRule,
     placePattern,
+    pruneOutlyingGliders,
     randomWorld,
     serialize,
     setCell,

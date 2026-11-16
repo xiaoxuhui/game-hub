@@ -1,8 +1,8 @@
 import {sha256} from './resource-protocol.mjs';
-export const CONWAY_REVISION='a531a560b3ecce070be80fb6470cbc916971bce4';
+export const CONWAY_REVISION='5b4fd48929eee5c14138c673fd5122e7db2e07a3';
 export const CONWAY_INTEGRATION='conway-v2-world-archive-v1';
 export const CONWAY_ARCHIVE_KEY='conway-hub-world-archive-v1';
-export const CONWAY_CORE_SHA='a2993a60198ca2cc5517435b8b94d312afbe0fef28909ac6c30080b06367d89a';
+export const CONWAY_CORE_SHA='ab9c0b9feca40d3e6e942ba46aeb597bac0185418e49317b60f585ffabd9833e';
 export function adaptConwayCore(bytes){
  if(sha256(bytes)!==CONWAY_CORE_SHA)throw Error('Unreviewed Conway core bytes');
  let text=bytes.toString('utf8');

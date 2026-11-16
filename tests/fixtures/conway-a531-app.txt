@@ -2,6 +2,8 @@
   "use strict";
 
   const Life = window.LifeEngine;
+  const Tiles = window.LifeTiles;
+  const LifeStack = window.LifeStack;
   const RendererModule = window.LifeRenderer;
   const Presets = window.LifePresets;
   const PatternStore = window.PatternLibrary;
@@ -14,6 +16,7 @@
   const RANDOM_DENSITY = 0.25;
   const MAX_IMPORT_BYTES = 1_000_000;
   const ZOOM_STEP = 1.5;
+  const TAB_HOLD_MS = 350;
 
   const elements = {
     ruleForm: document.querySelector("#ruleForm"),
@@ -46,13 +49,20 @@
     closeImportAllRecords: document.querySelector("#closeImportAllRecordsButton"),
     fitView: document.querySelector("#fitViewButton"),
     generation: document.querySelector("#generationValue"),
+    cycleReadout: document.querySelector("#cycleReadout"),
+    cyclePeriod: document.querySelector("#cyclePeriodValue"),
+    pruneGliders: document.querySelector("#pruneGliders"),
     importButton: document.querySelector("#importButton"),
     importInput: document.querySelector("#importInput"),
+    importGollyButton: document.querySelector("#importGollyButton"),
+    importGollyInput: document.querySelector("#importGollyInput"),
     loadPreset: document.querySelector("#loadPresetButton"),
     logicCodeButton: document.querySelector("#logicCodeButton"),
     logicCodeFeedback: document.querySelector("#logicCodeFeedback"),
     logicCodeForm: document.querySelector("#logicCodeForm"),
     logicCodeInput: document.querySelector("#logicCodeInput"),
+    verifyLogicSafety: document.querySelector("#verifyLogicSafety"),
+    shareLogicInputs: document.querySelector("#shareLogicInputs"),
     logicFunctionSelect: document.querySelector("#logicFunctionSelect"),
     logicFunctionInputs: document.querySelector("#logicFunctionInputs"),
     loadLogicFunction: document.querySelector("#loadLogicFunctionButton"),
@@ -120,6 +130,7 @@
     speed: document.querySelector("#speedInput"),
     status: document.querySelector("#statusText"),
     step: document.querySelector("#stepButton"),
+    jumpSize: document.querySelector("#jumpSizeInput"),
     toast: document.querySelector("#toast"),
     toastMessage: document.querySelector("#toastMessage"),
     undo: document.querySelector("#undoButton"),
@@ -138,6 +149,13 @@
   };
 
   const renderer = RendererModule.create(elements.canvas);
+  const cycleTracker = Life.createCycleTracker({ describeWorld: Tiles.describeWorld, sameWorld: Tiles.sameWorld });
+  let displayedFrame;
+  let manualJump = null;
+  let f3Down = false;
+  let tabHoldTimer = null;
+  let runningFromTab = false;
+  let pendingPlacement = null;
   // 状态按职责分为 world（演化/视图）/ pointer（指针与手势）/ dialogs（对话框与瞬时 UI 模式）/ storage（持久化库）四个子对象，
   // 便于维护；所有访问点已同步改为 state.<group>.<field>，行为与原扁平结构完全一致。
   const state = {
@@ -146,7 +164,10 @@
       cells: Life.createWorld(),
       generation: 0,
       running: false,
+      pruneGliders: false,
       speed: SpeedControl.DEFAULT_SPEED,
+      jumpSize: 1,
+      jumpProgress: 0,
       animationFrame: null,
       frameAccumulator: 0,
       lastFrameTimestamp: null,
@@ -240,10 +261,10 @@
     return output[key].map(([row, column]) => [output.row + row, output.column + column]);
   }
 
-  function logicAnnotations() {
+  function logicAnnotations(generation) {
     return state.world.logicOutputs.map((output) => ({
       observeGeneration: output.observeGeneration,
-      result: output.result,
+      result: generation < output.observeGeneration ? null : output.result,
       terminalCells: absoluteLogicCells(output, "terminalCells"),
     }));
   }
@@ -256,15 +277,28 @@
     }
   }
 
-  function logicOutputSummary() {
+  function logicOutputSummary(generation) {
     if (state.world.logicOutputs.length === 0) return "";
     return state.world.logicOutputs
-      .map((output) => output.result === null ? `O=?（第 ${output.observeGeneration} 代读取）` : `O=${output.result}`)
+      .map((output) => generation < output.observeGeneration || output.result === null
+        ? `O=?（第 ${output.observeGeneration} 代读取）`
+        : `O=${output.result}`)
       .join("；");
   }
 
-  function render() {
+  function renderEvolutionReadouts() {
+    const period = cycleTracker.period;
+    elements.cycleReadout.hidden = period === null;
+    const periodText = period === null ? "" : `${formatNumber(period)} 代`;
+    if (elements.cyclePeriod.textContent !== periodText) elements.cyclePeriod.textContent = periodText;
+    elements.actualSpeed.textContent = `${formatNumber(state.world.actualSpeed)}/s`;
+  }
+
+  function render(cells = state.world.cells, generation = state.world.generation) {
+    displayedFrame = { cells, generation };
     const rule = Life.parseRule(state.world.rule);
+    elements.pruneGliders.disabled = Boolean(manualJump) || rule.canonical !== Life.DEFAULT_RULE;
+    elements.pruneGliders.checked = state.world.pruneGliders;
     elements.activeRule.textContent = Life.formatRule(state.world.rule, elements.ruleNotation.value);
     elements.ruleBirth.textContent = [...rule.birth].join("、") || "无";
     elements.ruleSurvival.textContent = [...rule.survival].join("、") || "无";
@@ -272,17 +306,19 @@
       ? "当前为康威规则，逻辑电路可正常验证。"
       : "当前为自定义规则：内置图案的行为可能改变；逻辑电路仅适用于 B3/S23，已停用生成与输出锁存。";
     elements.logicCodeButton.disabled = state.world.rule !== Life.DEFAULT_RULE && !state.dialogs.logicGenerationController;
-    const alive = Life.countAlive(state.world.cells);
-    renderer.draw(state.world.cells, state.world.camera, state.world.running, state.dialogs.placement, logicAnnotations());
-    elements.generation.textContent = formatNumber(state.world.generation);
+    const alive = Tiles.describeWorld(cells)?.population ?? Life.countAlive(cells);
+    const logicSummary = logicOutputSummary(generation);
+    renderer.draw(cells, state.world.camera, state.world.running, state.dialogs.placement, logicAnnotations(generation));
+    elements.generation.textContent = formatNumber(generation);
     elements.alive.textContent = formatNumber(alive);
-    elements.actualSpeed.textContent = `${formatNumber(state.world.actualSpeed)}/s`;
+    renderEvolutionReadouts();
     elements.zoomValue.textContent = formatZoom(state.world.camera.cellSize);
-    elements.status.textContent = state.dialogs.placement ? "放置中" : state.world.running ? "演化中" : "已暂停";
+    elements.status.textContent = state.dialogs.placement ? "放置中" : manualJump ? "跳步中" : state.world.running ? "演化中" : "已暂停";
     elements.run.querySelector(".button-icon").textContent = state.world.running ? "Ⅱ" : "▶";
     elements.run.querySelector(".button-label").textContent = state.world.running ? "暂停" : "开始";
     elements.run.setAttribute("aria-pressed", String(state.world.running));
-    elements.step.disabled = state.world.running;
+    elements.run.disabled = Boolean(manualJump);
+    elements.step.disabled = state.world.running || Boolean(manualJump);
     elements.clear.disabled = alive === 0;
     elements.export.disabled = alive === 0;
     elements.savePattern.disabled = alive === 0;
@@ -298,19 +334,30 @@
     elements.flipPattern.disabled = !state.dialogs.placement;
     elements.canvas.setAttribute(
       "aria-label",
-      `无限大的康威生命游戏世界；规则 ${state.world.rule}；视图中心列 ${formatCoordinate(state.world.camera.centerColumn)}、行 ${formatCoordinate(state.world.camera.centerRow)}；第 ${state.world.generation} 代，${alive} 个活细胞，${state.dialogs.placement ? `正在放置${state.dialogs.placement.pattern.name}` : state.world.running ? "正在运行" : "已暂停"}${state.world.logicOutputs.length ? `；逻辑输出：${logicOutputSummary()}` : ""}。`,
+      `无限大的康威生命游戏世界；规则 ${state.world.rule}；视图中心列 ${formatCoordinate(state.world.camera.centerColumn)}、行 ${formatCoordinate(state.world.camera.centerRow)}；第 ${generation} 代，${alive} 个活细胞，${state.dialogs.placement ? `正在放置${state.dialogs.placement.pattern.name}` : manualJump ? "正在跳步" : state.world.running ? "正在运行" : "已暂停"}${logicSummary ? `；逻辑输出：${logicSummary}` : ""}。`,
     );
     elements.boardHint.textContent = state.dialogs.placement
       ? "拖动预览，松开或单击放置；R 旋转 · F 翻转 · Esc 完成。"
-      : state.world.logicOutputs.length
-        ? `方框中的 2×2 方块是静物输出端；${logicOutputSummary()}。`
-      : state.world.running
-        ? "正在演化；仍可拖动和缩放，暂停后可继续绘制。"
-        : "左键绘制；中键、右键或按住空格拖动；滚轮缩放。";
+      : manualJump
+        ? "正在跳步，按 Esc 停止。"
+        : logicSummary
+          ? `方框中的 2×2 方块是静物输出端；${logicSummary}。`
+          : state.world.running
+            ? "正在演化；仍可拖动和缩放，暂停后可继续绘制。"
+            : "左键绘制；中键、右键或按住空格拖动；滚轮缩放。";
     elements.worldPosition.textContent = `WORLD ∞ · CENTER ${formatCoordinate(state.world.camera.centerColumn)}, ${formatCoordinate(state.world.camera.centerRow)}`;
     document.body.classList.toggle("is-running", state.world.running);
     document.body.classList.toggle("is-placing", Boolean(state.dialogs.placement));
     updateCursorClasses();
+  }
+
+  function viewFrame() {
+    return state.world.running || manualJump ? displayedFrame : state.world;
+  }
+
+  function redrawView() {
+    const { cells, generation } = viewFrame();
+    render(cells, generation);
   }
 
   function hideToast() {
@@ -328,21 +375,94 @@
     state.dialogs.toastTimer = window.setTimeout(hideToast, options.duration || 3600);
   }
 
-  function evolveOneGeneration() {
+  function evolveOneGeneration(useTiles = state.world.running) {
     if (state.dialogs.placement) state.dialogs.placement = null;
-    state.world.cells = Life.nextGeneration(state.world.cells, state.world.rule);
+    cycleTracker.observe(state.world.cells, state.world.generation);
+    const tiled = useTiles && state.world.rule === Life.DEFAULT_RULE
+      ? Tiles.nextGeneration(state.world.cells)
+      : null;
+    state.world.cells = tiled ?? Life.nextGeneration(state.world.cells, state.world.rule);
+    if (state.world.pruneGliders && state.world.rule === Life.DEFAULT_RULE) {
+      state.world.cells = Tiles.pruneOutlyingGliders(state.world.cells) ?? Life.pruneOutlyingGliders(state.world.cells);
+    }
     state.world.generation += 1;
+    cycleTracker.observe(state.world.cells, state.world.generation);
     updateLogicOutputs();
   }
 
   function advance() {
+    if (manualJump) return;
     evolveOneGeneration();
     render();
   }
 
+  function advanceGenerations(limit, useTiles) {
+    if (cycleTracker.period !== null) {
+      const { cells, generation, logicOutputs } = state.world;
+      for (const output of logicOutputs) {
+        if (output.result === null) limit = Math.min(limit, Math.max(1, output.observeGeneration - generation));
+      }
+      const forwarded = cycleTracker.fastForward(cells, generation, limit);
+      if (forwarded) {
+        state.world.cells = forwarded.world;
+        state.world.generation += forwarded.generations;
+        updateLogicOutputs();
+        return forwarded.generations;
+      }
+    }
+    evolveOneGeneration(useTiles);
+    return 1;
+  }
+
+  function advanceFrameGenerations() {
+    const { frameAccumulator, jumpSize, jumpProgress } = state.world;
+    const toDisplay = jumpSize === 1 ? Infinity : jumpSize - jumpProgress;
+    return advanceGenerations(Math.min(Math.floor(frameAccumulator), toDisplay));
+  }
+
+  function runManualJumpFrame(job) {
+    if (manualJump !== job) return;
+    const previousPeriod = cycleTracker.period;
+    const computeStarted = performance.now();
+    try {
+      do {
+        job.remaining -= advanceGenerations(job.remaining, true);
+      } while (job.remaining > 0 && performance.now() - computeStarted < SpeedControl.FRAME_COMPUTE_BUDGET_MS);
+    } catch (error) {
+      stop();
+      showToast(error.message);
+      return;
+    }
+    if (job.remaining > 0) {
+      if (cycleTracker.period !== previousPeriod) renderEvolutionReadouts();
+      job.frame = window.requestAnimationFrame(() => runManualJumpFrame(job));
+    } else {
+      manualJump = null;
+      render();
+    }
+  }
+
+  function jumpOnce() {
+    if (state.world.running || manualJump || pendingPlacement) return;
+    clearTabHold();
+    if (state.world.jumpSize === 1) {
+      advance();
+      return;
+    }
+    endDrawing();
+    state.dialogs.placement = null;
+    if (state.world.rule === Life.DEFAULT_RULE) state.world.cells = Tiles.prepare(state.world.cells);
+    const job = { remaining: state.world.jumpSize, frame: null };
+    manualJump = job;
+    render();
+    job.frame = window.requestAnimationFrame(() => runManualJumpFrame(job));
+  }
+
   function runAnimationFrame(timestamp) {
     if (!state.world.running) return;
-    let shouldRender = false;
+    let cellsToRender;
+    let generationToRender;
+    const previousPeriod = cycleTracker.period;
     if (state.world.lastFrameTimestamp === null) {
       state.world.lastFrameTimestamp = timestamp;
       state.world.speedWindowStarted = timestamp;
@@ -355,26 +475,52 @@
       state.world.lastFrameTimestamp = timestamp;
       const computeStarted = performance.now();
       while (state.world.frameAccumulator >= 1) {
-        evolveOneGeneration();
-        state.world.frameAccumulator -= 1;
-        state.world.speedWindowGenerations += 1;
-        shouldRender = true;
+        const generations = advanceFrameGenerations();
+        state.world.frameAccumulator -= generations;
+        state.world.speedWindowGenerations += generations;
+        state.world.jumpProgress += generations;
+        if (state.world.jumpProgress >= state.world.jumpSize) {
+          state.world.jumpProgress = 0;
+          cellsToRender = state.world.cells;
+          generationToRender = state.world.generation;
+        }
         if (performance.now() - computeStarted >= SpeedControl.FRAME_COMPUTE_BUDGET_MS) break;
       }
     }
 
     const windowElapsed = timestamp - state.world.speedWindowStarted;
-    if (windowElapsed >= SpeedControl.ACTUAL_SPEED_WINDOW_MS) {
+    const updateSpeed = windowElapsed >= SpeedControl.ACTUAL_SPEED_WINDOW_MS;
+    if (updateSpeed) {
       state.world.actualSpeed = Math.round(state.world.speedWindowGenerations * 1000 / windowElapsed);
       state.world.speedWindowStarted = timestamp;
       state.world.speedWindowGenerations = 0;
-      shouldRender = true;
     }
-    if (shouldRender) render();
+    if (cellsToRender) render(cellsToRender, generationToRender);
+    else if (updateSpeed || cycleTracker.period !== previousPeriod) renderEvolutionReadouts();
     state.world.animationFrame = window.requestAnimationFrame(runAnimationFrame);
   }
 
+  function clearTabHold() {
+    if (tabHoldTimer !== null) window.clearTimeout(tabHoldTimer);
+    tabHoldTimer = null;
+    runningFromTab = false;
+  }
+
+  function endTabHold(stepOnTap = false) {
+    if (runningFromTab) {
+      stop();
+    } else if (tabHoldTimer !== null) {
+      clearTabHold();
+      if (stepOnTap) advance();
+    }
+  }
+
   function stop(options = {}) {
+    clearTabHold();
+    if (manualJump) {
+      window.cancelAnimationFrame(manualJump.frame);
+      manualJump = null;
+    }
     if (state.world.animationFrame !== null) {
       window.cancelAnimationFrame(state.world.animationFrame);
       state.world.animationFrame = null;
@@ -391,9 +537,15 @@
   }
 
   function start() {
-    if (state.world.running) return;
+    if (state.world.running || manualJump) return;
+    clearTabHold();
+    endDrawing();
     state.dialogs.placement = null;
+    if (state.world.rule === Life.DEFAULT_RULE) {
+      state.world.cells = Tiles.prepare(state.world.cells);
+    }
     state.world.running = true;
+    state.world.jumpProgress = 0;
     state.world.frameAccumulator = 0;
     state.world.lastFrameTimestamp = null;
     state.world.speedWindowStarted = null;
@@ -419,12 +571,13 @@
   }
 
   function fitView() {
-    state.world.camera = renderer.fit(Life.bounds(state.world.cells));
-    render();
+    state.world.camera = renderer.fit(Life.bounds(viewFrame().cells));
+    redrawView();
   }
 
   function resetWith(world, message, shouldFit = true) {
     stop();
+    cycleTracker.reset();
     state.dialogs.placement = null;
     state.world.cells = world;
     state.world.generation = 0;
@@ -439,6 +592,7 @@
     if (Life.countAlive(state.world.cells) === 0) return;
     const wasRunning = state.world.running;
     stop();
+    cycleTracker.reset();
     state.dialogs.placement = null;
     state.world.undoSnapshot = {
       world: Life.cloneWorld(state.world.cells),
@@ -457,6 +611,7 @@
   function undoClear() {
     if (!state.world.undoSnapshot) return;
     const snapshot = state.world.undoSnapshot;
+    cycleTracker.reset();
     state.world.undoSnapshot = null;
     state.world.cells = snapshot.world;
     state.world.generation = snapshot.generation;
@@ -528,6 +683,8 @@
   function setLogicGenerationState(running) {
     elements.logicCodeForm.setAttribute("aria-busy", String(running));
     elements.logicCodeButton.textContent = running ? "取消生成" : "生成结构";
+    elements.verifyLogicSafety.disabled = running;
+    elements.shareLogicInputs.disabled = running;
     elements.logicCodeButton.disabled = !running && state.world.rule !== Life.DEFAULT_RULE;
   }
 
@@ -565,6 +722,7 @@
     try { rule = Life.parseRule(elements.ruleInput.value); }
     catch (error) { showRuleError(error); return; }
     stop();
+    if (state.world.rule !== rule.canonical) cycleTracker.reset();
     state.world.rule = rule.canonical;
     cancelLogicForRuleChange();
     syncRuleDraft();
@@ -582,6 +740,24 @@
 
   function logicGenerationProgress(controller, progress) {
     if (state.dialogs.logicGenerationController !== controller || controller.signal.aborted) return;
+    if (progress.layoutMode === "shared-inputs") {
+      const message = progress.phase === "safety"
+        ? `正在验证共享线路（第 ${formatNumber(progress.generation)} / ${formatNumber(progress.horizon)} 代）…`
+        : "正在布置共享输入枪…";
+      setLogicCodeFeedback(message, "progress");
+      return;
+    }
+    if (progress.layoutMode === "axial-chain") {
+      const route = progress.routeStage === "reflected" ? "反射路线" : "直连路线";
+      const gates = `${formatNumber(progress.gateCount)} 个门`;
+      const generation = Number.isFinite(progress.generation)
+        ? `，第 ${formatNumber(progress.generation)} / ${formatNumber(progress.horizon)} 代`
+        : "";
+      const action = progress.phase === "routing" ? "正在同排布线"
+        : progress.phase === "rejected" ? "此路线未通过，正在换一条" : "正在验证同排线路";
+      setLogicCodeFeedback(`${action}（${gates}，${route}${generation}）…`, "progress");
+      return;
+    }
     if (progress.routeStage === "reflected") {
       const edge = progress.reflectedEdgePath
         ? `连接 ${progress.reflectedEdgePath}（${formatNumber((progress.edgeIndex || 0) + 1)} / ${formatNumber(progress.edgeCount || 1)}）`
@@ -639,6 +815,8 @@
         command, Presets.getPreset, Presets.getLogicGateKit, Presets.getLogicReflectorKit,
         {
           signal: controller.signal,
+          verifySafety: elements.verifyLogicSafety.checked,
+          shareInputs: elements.shareLogicInputs.checked,
           onProgress: (progress) => logicGenerationProgress(controller, progress),
         },
       );
@@ -649,9 +827,19 @@
       elements.presetSelect.value = `builtin:${command.presetId}`;
       Dialog.updatePresetDescription();
       state.dialogs.placement = placementAtCameraCenter(pattern);
-      const connected = Boolean(pattern.connectionCount);
+      const connected = Boolean(pattern.connectionCount || pattern.inputConnections?.length);
+      const chainSummary = pattern.routing?.mode === "axial-chain"
+        ? `${pattern.gateAnchors.length} 个独立门体同排放置，`
+        : "";
+      const sharedSummary = pattern.inputSources?.length
+        ? `${Object.keys(command.variables).length} 座变量输入枪。${pattern.inputSources.map(
+          ({ name, portCount }) => `${name} 的输入枪连接 ${portCount} 个端口`,
+        ).join("，")}。`
+        : "";
+      const connectionSummary = pattern.connectionCount ? `${pattern.connectionCount} 条滑翔机线路，` : "";
+      const verificationNote = connected && !pattern.gunSafety ? "线路未经安全验证，" : "";
       setLogicCodeFeedback(
-        `${command.expression} → 预期 O=${command.expected}；${connected ? `${pattern.connectionCount} 条滑翔机线路真实级联，` : ""}放置后运行至第 ${pattern.logic.observeGeneration} 代读取最终输出。`,
+        `${command.expression} → 预期 O=${command.expected}。${sharedSummary}${chainSummary}${connectionSummary}${verificationNote}放置后运行至第 ${pattern.logic.observeGeneration} 代读取最终输出。`,
         "success",
       );
       render();
@@ -689,9 +877,12 @@
     else startPlacement();
   }
 
-  function transformPlacement(transform) {
-    if (!state.dialogs.placement) return;
-    replacePlacementPattern(transform(state.dialogs.placement.pattern));
+  function transformPlacement(operation) {
+    const placement = state.dialogs.placement;
+    if (!placement || placement === pendingPlacement) return;
+    const { pattern } = placement;
+    const transform = operation === "rotate" ? Presets.rotatePattern : Presets.flipPattern;
+    replacePlacementPattern(pattern[operation]?.() ?? transform(pattern));
   }
 
   function closeDialog(dialog) {
@@ -730,6 +921,7 @@
     try {
       const restored = Life.deserialize(await file.text());
       stop();
+      cycleTracker.reset();
       state.world.rule = restored.rule;
       cancelLogicForRuleChange();
       syncRuleDraft();
@@ -743,6 +935,25 @@
       showToast(restored.migratedFrom === 1 ? "旧版存档已导入并升级" : "世界与视图导入成功");
     } catch (error) {
       showToast(`导入失败：${error.message}`);
+    }
+  }
+
+  async function importGollyPattern(file) {
+    if (!file) return;
+    elements.importGollyButton.disabled = true;
+    try {
+      const pattern = await window.GollyImport.readFile(file);
+      if (pattern.rule && pattern.rule !== state.world.rule) {
+        throw new Error(`图案使用 ${pattern.rule}，请先切换棋盘规则再导入`);
+      }
+      if (state.dialogs.logicGenerationController) throw new Error("请先完成或取消正在生成的逻辑结构");
+      state.dialogs.placement = placementAtCameraCenter(pattern);
+      stop();
+      showToast(`已读取 ${pattern.name}（${formatNumber(pattern.cellCount)} 个活细胞），请在观察区选择放置位置。`, { duration: 5000 });
+    } catch (error) {
+      showToast(`Golly 图案导入失败。${error.message}`, { duration: 5000 });
+    } finally {
+      elements.importGollyButton.disabled = false;
     }
   }
 
@@ -760,6 +971,7 @@
     if (state.pointer.painted.has(key)) return;
     rememberStrokeCell(coordinate.row, coordinate.column);
     state.pointer.painted.add(key);
+    if (state.pointer.strokeOriginal.get(key) !== state.pointer.drawAlive) cycleTracker.reset();
     Life.setCell(state.world.cells, coordinate.row, coordinate.column, state.pointer.drawAlive);
     state.world.logicOutputs = [];
     state.world.undoSnapshot = null;
@@ -767,7 +979,7 @@
   }
 
   function updatePlacementFromEvent(event) {
-    if (!state.dialogs.placement) return;
+    if (!state.dialogs.placement || state.dialogs.placement === pendingPlacement) return;
     const coordinate = renderer.coordinateFromPointer(event, state.world.camera);
     const row = coordinate.row - Math.floor(state.dialogs.placement.pattern.height / 2);
     const column = coordinate.column - Math.floor(state.dialogs.placement.pattern.width / 2);
@@ -778,28 +990,37 @@
   }
 
   function beginPlacementDrag(event) {
-    if (!state.dialogs.placement) return;
+    if (!state.dialogs.placement || state.dialogs.placement === pendingPlacement) return;
     state.dialogs.placement.pointerId = event.pointerId;
     updatePlacementFromEvent(event);
   }
 
-  function commitPlacement() {
-    if (!state.dialogs.placement) return;
+  async function commitPlacement() {
+    const placement = state.dialogs.placement;
+    if (!placement || pendingPlacement) return;
+    const { pattern, row, column } = placement;
+    const originalWorld = state.world.cells;
+    const isCurrent = () => state.dialogs.placement === placement && state.world.cells === originalWorld;
     try {
+      let placed;
+      if (pattern.cellsIn) {
+        pendingPlacement = placement;
+        elements.canvas.setAttribute("aria-busy", "true");
+        showToast("正在放置图案，按 Esc 可取消。", { duration: 10000 });
+        placed = await window.GollyImport.placePattern(originalWorld, pattern, row, column, isCurrent);
+        if (!placed || !isCurrent()) return;
+      } else {
+        placed = Life.placePattern(originalWorld, pattern.cells, row, column, false);
+      }
       if (state.world.generation !== 0) state.world.logicOutputs = [];
-      state.world.cells = Life.placePattern(
-        state.world.cells,
-        state.dialogs.placement.pattern.cells,
-        state.dialogs.placement.row,
-        state.dialogs.placement.column,
-        false,
-      );
+      state.world.cells = placed;
+      cycleTracker.reset();
       state.world.generation = 0;
-      const logic = state.world.rule === Life.DEFAULT_RULE ? state.dialogs.placement.pattern.logic : null;
+      const logic = state.world.rule === Life.DEFAULT_RULE ? pattern.logic : null;
       if (logic) {
         state.world.logicOutputs.push({
-          row: state.dialogs.placement.row,
-          column: state.dialogs.placement.column,
+          row,
+          column,
           gate: logic.gate,
           inputs: [...logic.inputs],
           expected: logic.expected,
@@ -813,20 +1034,26 @@
       render();
       showToast(
         logic
-          ? `已放置：${state.dialogs.placement.pattern.name}；第 ${logic.observeGeneration} 代锁存输出`
-          : `已放置：${state.dialogs.placement.pattern.name}，可继续放置`,
+          ? `已放置：${pattern.name}；第 ${logic.observeGeneration} 代锁存输出`
+          : `已放置：${pattern.name}，可继续放置`,
         { duration: logic ? 4200 : 2400 },
       );
     } catch (error) {
-      showToast(error.message);
+      if (isCurrent()) showToast(error.message);
+    } finally {
+      if (pendingPlacement === placement) {
+        pendingPlacement = null;
+        elements.canvas.removeAttribute("aria-busy");
+      }
     }
   }
 
   function beginDrawing(event) {
-    if (state.world.running) {
+    if (state.world.running || manualJump) {
       showToast("请先暂停，再绘制细胞");
       return;
     }
+    state.world.cells = Tiles.editableWorld(state.world.cells);
     const coordinate = renderer.coordinateFromPointer(event, state.world.camera);
     state.pointer.drawingPointerId = event.pointerId;
     state.pointer.drawAlive = !Life.isAlive(state.world.cells, coordinate.row, coordinate.column);
@@ -838,6 +1065,7 @@
   function endDrawing(revert = false) {
     if (state.pointer.drawingPointerId === null) return;
     if (revert) {
+      cycleTracker.reset();
       for (const [key, alive] of state.pointer.strokeOriginal) {
         const separator = key.indexOf(",");
         const row = Number(key.slice(0, separator));
@@ -886,10 +1114,18 @@
     updateCursorClasses();
   }
 
+  function focusBoard() {
+    elements.canvas.focus({ preventScroll: true });
+  }
+
+  function focusBoardAfterClick(event) {
+    if (event.detail > 0) focusBoard();
+  }
+
   function handlePointerDown(event) {
     if (![0, 1, 2].includes(event.button) && event.pointerType !== "touch") return;
     event.preventDefault();
-    elements.canvas.focus({ preventScroll: true });
+    focusBoard();
 
     if (state.dialogs.placement && event.pointerType !== "touch" && event.button === 2) {
       finishPlacement();
@@ -903,7 +1139,7 @@
     if (event.pointerType === "touch") {
       if (state.pointer.activePointers.size >= 2) beginTouchGesture();
       else if (state.dialogs.placement) beginPlacementDrag(event);
-      else if (state.world.running) beginPan(event);
+      else if (state.world.running || manualJump) beginPan(event);
       else beginDrawing(event);
       return;
     }
@@ -936,7 +1172,7 @@
       currentMidpoint.x - gesture.startMidpoint.x,
       currentMidpoint.y - gesture.startMidpoint.y,
     );
-    render();
+    redrawView();
   }
 
   function handlePointerMove(event) {
@@ -960,7 +1196,7 @@
       state.world.camera = RendererModule.panCamera(state.world.camera, deltaX, deltaY);
       state.pointer.panGesture.lastX = point.x;
       state.pointer.panGesture.lastY = point.y;
-      render();
+      redrawView();
       return;
     }
 
@@ -981,7 +1217,7 @@
     if (state.pointer.drawingPointerId === event.pointerId) endDrawing(cancelled);
     if (wasPlacement && state.dialogs.placement) {
       state.dialogs.placement.pointerId = null;
-      if (!cancelled) commitPlacement();
+      if (!cancelled) void commitPlacement();
       else render();
     }
     if (elements.canvas.hasPointerCapture(event.pointerId)) elements.canvas.releasePointerCapture(event.pointerId);
@@ -996,14 +1232,14 @@
       viewport,
       factor,
     );
-    render();
+    redrawView();
   }
 
   function handleWheel(event) {
     event.preventDefault();
     const factor = Math.exp(-event.deltaY * 0.0015);
     state.world.camera = renderer.zoomAtPointer(event, state.world.camera, factor);
-    render();
+    redrawView();
   }
 
   function ignoresGlobalShortcut() {
@@ -1011,17 +1247,48 @@
   }
 
   function handleKeyDown(event) {
+    if (stackDialog.open) return;
+    if (manualJump && event.key === "Escape" && !document.activeElement?.closest("dialog")) {
+      event.preventDefault();
+      stop();
+      return;
+    }
     if (ignoresGlobalShortcut()) return;
     if (document.activeElement?.tagName === "BUTTON" && event.code === "Space") return;
-    if (state.dialogs.placement && event.key === "Escape") {
+    const plainKey = !event.ctrlKey && !event.altKey && !event.metaKey && !event.isComposing;
+    const boardFocus = event.target === elements.canvas || event.target === document.body;
+    const canJump = plainKey && boardFocus && !state.world.running;
+    if (canJump && event.key === "F3" && !event.shiftKey) {
+      event.preventDefault();
+      f3Down = true;
+    } else if (canJump && ((f3Down && event.key === "Tab" && !event.shiftKey)
+      || (event.shiftKey && event.code === "ArrowRight"))) {
+      event.preventDefault();
+      if (!event.repeat) {
+        focusBoard();
+        jumpOnce();
+      }
+    } else if (state.dialogs.placement && event.key === "Escape") {
       event.preventDefault();
       finishPlacement();
     } else if (state.dialogs.placement && event.key.toLowerCase() === "r") {
       event.preventDefault();
-      transformPlacement(Presets.rotatePattern);
+      transformPlacement("rotate");
     } else if (state.dialogs.placement && event.key.toLowerCase() === "f") {
       event.preventDefault();
-      transformPlacement(Presets.flipPattern);
+      transformPlacement("flip");
+    } else if (plainKey && event.key.toLowerCase() === "t" && !document.activeElement?.closest("dialog")) {
+      event.preventDefault();
+      if (!event.repeat) toggleRun();
+    } else if (plainKey && event.key === "Tab" && !event.shiftKey && boardFocus) {
+      event.preventDefault();
+      focusBoard();
+      if (!event.repeat && !state.world.running && !manualJump && tabHoldTimer === null) {
+        tabHoldTimer = window.setTimeout(() => {
+          start();
+          runningFromTab = true;
+        }, TAB_HOLD_MS);
+      }
     } else if (event.code === "Space") {
       event.preventDefault();
       if (event.repeat) return;
@@ -1041,6 +1308,12 @@
   }
 
   function handleKeyUp(event) {
+    if (event.key === "F3") f3Down = false;
+    if (event.key === "Tab" && (tabHoldTimer !== null || runningFromTab)) {
+      event.preventDefault();
+      endTabHold(true);
+      return;
+    }
     if (event.code !== "Space" || !state.pointer.spaceDown) return;
     event.preventDefault();
     state.pointer.spaceDown = false;
@@ -1050,6 +1323,7 @@
   }
 
   elements.run.addEventListener("click", toggleRun);
+  elements.run.addEventListener("click", focusBoardAfterClick);
   elements.exportDeleteAllRecords.addEventListener("click", Dialog.exportAndDeleteAllRecords);
   elements.importAllRecords.addEventListener("click", () => elements.importAllRecordsInput.click());
   elements.importAllRecordsInput.addEventListener("change", async () => {
@@ -1064,6 +1338,19 @@
     if (!elements.importAllRecordsDialog.open) Dialog.resetAllRecordsImport();
   });
   elements.step.addEventListener("click", advance);
+  elements.step.addEventListener("click", focusBoardAfterClick);
+  elements.pruneGliders.addEventListener("click", focusBoardAfterClick);
+  elements.pruneGliders.addEventListener("change", () => {
+    state.world.pruneGliders = elements.pruneGliders.checked;
+    cycleTracker.reset();
+    if (state.world.pruneGliders && state.world.rule === Life.DEFAULT_RULE) {
+      state.world.cells = Tiles.pruneOutlyingGliders(state.world.cells) ?? Life.pruneOutlyingGliders(state.world.cells);
+    }
+    if (state.world.running && state.world.rule === Life.DEFAULT_RULE) {
+      state.world.cells = Tiles.prepare(state.world.cells);
+    }
+    render();
+  });
   elements.ruleForm.addEventListener("submit", applyRule);
   elements.ruleNotation.addEventListener("change", changeRuleNotation);
   elements.ruleInput.addEventListener("input", clearRuleError);
@@ -1105,8 +1392,8 @@
   elements.importLogicFunctionsForm.addEventListener("submit", Dialog.importLogicFunctionLibrary);
   elements.closeImportLogicFunctions.addEventListener("click", Dialog.closeLogicFunctionImport);
   elements.cancelImportLogicFunctions.addEventListener("click", Dialog.closeLogicFunctionImport);
-  elements.rotatePattern.addEventListener("click", () => transformPlacement(Presets.rotatePattern));
-  elements.flipPattern.addEventListener("click", () => transformPlacement(Presets.flipPattern));
+  elements.rotatePattern.addEventListener("click", () => transformPlacement("rotate"));
+  elements.flipPattern.addEventListener("click", () => transformPlacement("flip"));
   elements.savePattern.addEventListener("click", Dialog.openSavePatternDialog);
   elements.managePatterns.addEventListener("click", Dialog.openManagePatternsDialog);
   elements.savePatternForm.addEventListener("submit", Dialog.saveNewPattern);
@@ -1163,6 +1450,31 @@
     await importWorld(elements.importInput.files?.[0]);
     elements.importInput.value = "";
   });
+  elements.importGollyButton.addEventListener("click", () => elements.importGollyInput.click());
+  const stackDialog = document.querySelector("#lifeStackDialog");
+  const stackView = LifeStack.createDialog({
+    dialog: stackDialog,
+    form: document.querySelector("#lifeStackForm"),
+    closeButton: document.querySelector("#closeLifeStackButton"),
+    resetViewButton: document.querySelector("#resetLifeStackViewButton"),
+    canvas: document.querySelector("#lifeStackCanvas"),
+    status: document.querySelector("#lifeStackStatus"),
+    steps: document.querySelector("#lifeStackSteps"),
+    rotation: document.querySelector("#lifeStackRotation"),
+    elevation: document.querySelector("#lifeStackElevation"),
+  });
+  document.querySelector("#lifeStackButton").addEventListener("click", () => {
+    stop();
+    state.pointer.spaceDown = false;
+    updateCursorClasses();
+    const { cells, generation, rule, pruneGliders } = state.world;
+    stackView.open({ world: cells, generation, rule, pruneGliders });
+  });
+  elements.importGollyInput.addEventListener("change", () => {
+    const file = elements.importGollyInput.files?.[0];
+    elements.importGollyInput.value = "";
+    void importGollyPattern(file);
+  });
   function applySpeedInput(normalizeField = false) {
     if (!normalizeField && !SpeedControl.isValidInput(elements.speed.value)) return;
     const nextSpeed = SpeedControl.normalize(elements.speed.value, state.world.speed);
@@ -1175,6 +1487,25 @@
   elements.speed.addEventListener("input", () => applySpeedInput(false));
   elements.speed.addEventListener("change", () => applySpeedInput(true));
   elements.speed.addEventListener("blur", () => applySpeedInput(true));
+  function applyJumpSize() {
+    const input = elements.jumpSize;
+    const value = input.valueAsNumber;
+    const nextSize = Number.isFinite(value)
+      ? Math.min(Number(input.max), Math.max(Number(input.min), Math.round(value)))
+      : state.world.jumpSize;
+    input.value = String(nextSize);
+    if (nextSize === state.world.jumpSize) return;
+    state.world.jumpSize = nextSize;
+    state.world.jumpProgress = 0;
+    if (state.world.running) render();
+  }
+
+  elements.jumpSize.addEventListener("change", applyJumpSize);
+  elements.jumpSize.addEventListener("blur", applyJumpSize);
+  elements.canvas.addEventListener("blur", () => {
+    f3Down = false;
+    endTabHold();
+  });
   elements.canvas.addEventListener("pointerdown", handlePointerDown);
   elements.canvas.addEventListener("pointermove", handlePointerMove);
   elements.canvas.addEventListener("pointerup", (event) => releasePointer(event));
@@ -1184,12 +1515,16 @@
   document.addEventListener("keydown", handleKeyDown);
   document.addEventListener("keyup", handleKeyUp);
   window.addEventListener("blur", () => {
+    f3Down = false;
+    endTabHold();
     state.pointer.spaceDown = false;
     state.pointer.spaceDragged = false;
     updateCursorClasses();
   });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && state.world.running) stop({ message: "页面隐藏，已自动暂停" });
+    if (!document.hidden) return;
+    if (state.world.running || manualJump) stop({ message: "页面隐藏，已自动暂停" });
+    else endTabHold();
   });
 
   Dialog.initializePatternLibrary();
