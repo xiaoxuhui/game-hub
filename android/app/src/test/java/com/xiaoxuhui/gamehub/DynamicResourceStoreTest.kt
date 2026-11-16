@@ -88,6 +88,27 @@ class DynamicResourceStoreTest {
             assertEquals(old.identity,store.selection(old.id).previous)
         }
     }
+    @Test fun manuallyDownloadedLatestCanReplaceAQuarantinedActiveVersion() {
+        Fixture().use { f ->
+            val store=f.store(); val (v1,p1,z1)=f.release(); val old=v1.games.single(); store.acceptCatalog(p1); store.install(old,p1,z1); store.openSession(old.id,true).close()
+            store.blockFailedIdentity(old.id,old.identity); store.quarantineFailedIdentity(old.id,old.identity)
+            val (v2,p2,z2)=f.release(2,2); val latest=v2.games.single(); store.acceptCatalog(p2)
+            store.installLatest(latest,p2,z2)
+            store.openSession(old.id,true).use {assertEquals(latest.identity,it.game!!.identity)}
+            assertTrue(1 in store.selection(old.id).quarantine)
+        }
+    }
+    @Test fun interruptedManualRepairOfOtherVersionRestoresBackupOnRestart() {
+        Fixture().use { f ->
+            val store=f.store(); val (v1,p1,z1)=f.release(); val old=v1.games.single(); store.acceptCatalog(p1); store.install(old,p1,z1); store.openSession(old.id,true).close()
+            val (v2,p2,z2)=f.release(2,2); val latest=v2.games.single(); store.acceptCatalog(p2); store.install(latest,p2,z2); store.openSession(old.id,true).close(); store.restore(old.id,false)
+            val destination=File(f.root,"versions/${old.id}/${latest.identity}"); val backup=File(f.root,"reinstall-backups/${old.id}/${latest.identity}")
+            backup.parentFile!!.mkdirs(); assertTrue(destination.renameTo(backup)); destination.mkdirs(); File(destination,"index.html").writeText("interrupted")
+            val restarted=f.store(); assertEquals(old.identity,restarted.selection(old.id).active)
+            assertTrue(File(destination,"catalog.signed.json").isFile); assertFalse(backup.exists())
+            restarted.restore(old.id,false); restarted.openSession(old.id,true).use {assertEquals(latest.identity,it.game!!.identity)}
+        }
+    }
     @Test fun manualVersionRestorePreservesBothVersionsAcrossRestarts() {
         Fixture().use { f ->
             val store=f.store(); val (first,firstProof,firstZip)=f.release()
