@@ -183,7 +183,14 @@ export function lambdaManualRestoreHtml(source) {
     ["if(!workspace.restoreInitial()){renderMode();convert();}\n  workspace.persist();", "workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;"]
   ];
   let html=source;
-  for(const [before,after] of replacements){if(html.split(before).length!==2)throw new Error('Lambda manual-restore integration requires exact reviewed markers');html=html.replace(before,after);}
+  for(const [before,after] of replacements){
+    const variants=[[before,after]];
+    if(before==="let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null;") variants.push(["let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,functionController=null;","let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,functionController=null,autosaveReady=false;"]);
+    if(before==="return {expand:t=>L.expand(t,functions),persist,queueSave,restoreInitial};") variants.push(["return {expand:t=>L.expand(t,functions),encodingsFor:t=>L.encodingsFor(t,functions),persist,queueSave,restoreInitial};","return {expand:t=>L.expand(t,functions),encodingsFor:t=>L.encodingsFor(t,functions),persist,queueSave,prepareManualRestore};"]);
+    const matches=variants.filter(([marker])=>html.split(marker).length===2);
+    if(matches.length!==1)throw new Error('Lambda manual-restore integration requires exact reviewed marker: '+before);
+    html=html.replace(...matches[0]);
+  }
   const start="    function restoreInitial() {",end="    $('function-form').addEventListener";
   if(html.split(start).length!==2||html.split(end).length!==2)throw new Error('Lambda manual-restore handler markers');
   const from=html.indexOf(start),to=html.indexOf(end,from);
@@ -207,11 +214,22 @@ export function lambdaManualRestoreHtml(source) {
     ["$('clear-all').addEventListener", "$('import-state').addEventListener"],
     ["$('import-file').addEventListener", "window.addEventListener('pagehide'"]
   ];
+  // Newer workspaces share an explicit backup-and-replace helper between clear
+  // and default-load actions. Treat its write as explicit before inspecting the
+  // individual click handlers.
+  const helperStart=html.indexOf('    function replaceWithBackup(');
+  if(helperStart>=0){
+    const helperEnd=html.indexOf("$('clear-all').addEventListener",helperStart);
+    if(helperEnd<=helperStart)throw new Error('Lambda backup helper boundary changed');
+    const helper=html.slice(helperStart,helperEnd);
+    if(!helper.includes('persist();'))throw new Error('Lambda backup helper write missing');
+    html=html.slice(0,helperStart)+helper.replace(/persist\(\);/g,'persist(true);')+html.slice(helperEnd);
+  }
   for(const [start,end] of explicitHandlers){
     const from=html.indexOf(start),to=html.indexOf(end,from+start.length);
     if(from<0||to<=from)throw new Error('Lambda manual-restore explicit-action handler drift');
     const section=html.slice(from,to);
-    if(!section.includes('persist();'))throw new Error('Lambda manual-restore explicit-action write missing');
+    if(!section.includes('persist();') && !(start==="$('clear-all').addEventListener" && helperStart>=0 && section.includes('replaceWithBackup(empty)')))throw new Error('Lambda manual-restore explicit-action write missing');
     html=html.slice(0,from)+section.replace(/persist\(\);/g,'persist(true);')+html.slice(to);
   }
   return html;
