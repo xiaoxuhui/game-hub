@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "ec9851d5f54da1f2e4c7f3857306ea298ddc1901",
-      "directory": "examples/lambda-diagram-motion",
+      "revision": "228274bdaf39a1861bdba7f0d4dd0ab5f50141ed",
+      "directory": "examples/lambda-diagram-update",
       "version": "0.3.5",
-      "contentCode": 7,
+      "contentCode": 8,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "归约、回退和重置增加淡入过渡，滚轮、键盘和按钮缩放围绕焦点平滑过渡，触屏捏合直接跟随手指。可继续手动恢复之前的存档。"
+      "releaseNotes": "更新 Lambda 归约、编码与图示功能，保留手动恢复及旧版存档保护。"
     },
     {
       "id": "red-green-puzzle",
