@@ -552,10 +552,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "74b6679a3626ba55fb4c7b4859bfab348324f797",
+      "revision": "b3c60120c88bf894e2c7f27c7cbafee782ea00b4",
       "directory": "examples/tape-language-release",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "tape-language-lab-dynamic-v1",
       "files": [
@@ -566,7 +566,7 @@
         "src/machine.js",
         "style.css"
       ],
-      "releaseNotes": "支持 BF、P 双撇和图灵机的离线纸带实验。"
+      "releaseNotes": "新增 BF、P 双撇和图灵机之间的源码与初始纸带转换。"
     },
     {
       "id": "pixel-frame",
