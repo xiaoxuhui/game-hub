@@ -7,6 +7,8 @@ param(
     [switch]$Resume
 )
 $ErrorActionPreference='Stop'
+# Evidence and candidate JSON are UTF-8; Windows PowerShell 5.1 would otherwise decode them as ANSI.
+$PSDefaultParameterValues['Get-Content:Encoding']='utf8'
 $checkout='D:\aiden\game-hub-expanded-publisher-20261101'
 $evidenceRoot='D:\aiden\game-hub-expanded-evidence-20261101'
 if($TaskScope -ieq 'n23'){
@@ -51,7 +53,8 @@ try{
             node scripts/expanded-successor.mjs preflight $dir $ExpectedLegacySha $ExpectedExpandedSha
             if($LASTEXITCODE -ne 0){throw 'Expanded anonymous preflight failed before credentials'}
             $plan=Get-Content -LiteralPath (Join-Path $dir 'expanded-plan.json') -Raw | ConvertFrom-Json
-            $games=@(Get-Content -LiteralPath '.build\dynamic-candidate\games.unsigned.json' -Raw | ConvertFrom-Json)
+            $gamesRaw=Get-Content -LiteralPath '.build\dynamic-candidate\games.unsigned.json' -Raw | ConvertFrom-Json
+            $games=@($gamesRaw)
             if($plan.producerCommit -cne $Commit -or $plan.legacySha -cne $ExpectedLegacySha -or $plan.expandedSha -cne $ExpectedExpandedSha -or @($plan.games).Count -ne $games.Count){throw 'Candidate plan does not match exact production identity'}
             foreach($game in $games){$match=@($plan.games | Where-Object id -CEQ $game.id);$name="game-$($game.id)-$($game.contentCode)-$($game.archiveSha256.Substring(0,12)).zip";if($match.Count -ne 1 -or $match[0].assetName -cne $name -or $match[0].archiveSha256 -cne $game.archiveSha256 -or $match[0].archiveBytes -ne $game.archiveBytes){throw 'Candidate plan changed'}}
         }

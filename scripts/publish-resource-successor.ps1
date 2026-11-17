@@ -10,6 +10,8 @@ param(
     [switch]$OnlyTwoNew
 )
 $ErrorActionPreference='Stop'
+# Evidence and candidate JSON are UTF-8; Windows PowerShell 5.1 would otherwise decode them as ANSI.
+$PSDefaultParameterValues['Get-Content:Encoding']='utf8'
 $taskCheckout='D:\soft\.ci-tmp\game-hub-work\v030-final'
 $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-work\v030-evidence\v040-resource-update'
 if($TaskScope -ieq 'lambda-motion'){
@@ -126,7 +128,8 @@ try {
     $taskAdmissionMode=if($ResumeAfterUploads){'resume'}else{'preflight'}
     node scripts/resource-successor.mjs $taskAdmissionMode $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
     if($LASTEXITCODE -ne 0){throw 'Anonymous history/candidate admission failed before credentials'}
-    $taskUploadGames=@(Get-Content -LiteralPath '.build\dynamic-candidate\games.unsigned.json' -Raw | ConvertFrom-Json)
+    $taskUploadGamesRaw=Get-Content -LiteralPath '.build\dynamic-candidate\games.unsigned.json' -Raw | ConvertFrom-Json
+    $taskUploadGames=@($taskUploadGamesRaw)
     if($taskSelectedId){
         $taskSelection=Get-Content -LiteralPath (Join-Path $taskDirectory 'publication-selection.json') -Raw | ConvertFrom-Json
         if($taskSelectedId -eq 'two-new-games'){
