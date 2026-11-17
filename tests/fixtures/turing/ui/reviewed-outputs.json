@@ -25,9 +25,9 @@
     "sha256": "516078ac27069bc623dad4538a60e88c640573c85fd158e064fe801f4fc64c5c"
   },
   {
-    "path": "assets/main-CZju3U6O.js",
-    "bytes": 56313,
-    "sha256": "4cad23f089e7026e75ed53d6242268aaefb0234f1a7b854594344e42690af406"
+    "path": "assets/main-DkX1GBy6.js",
+    "bytes": 56563,
+    "sha256": "022d6472b214e61c3e65fd629db698df4c1634c889e8605e31259592d7ef86cf"
   },
   {
     "path": "assets/route-worker--cIr4Dp-.js",
@@ -56,12 +56,12 @@
   },
   {
     "path": "hub/turing-ui.js",
-    "bytes": 14694,
-    "sha256": "52dcb88b79cc100bc3e13cfbabebf08de2fa1d458dbf8839d029d715d71267e3"
+    "bytes": 17453,
+    "sha256": "70be4fd2638ecd361c47382648a22e67bfb0b33cd89447632e92d977ac1a638c"
   },
   {
     "path": "index.html",
     "bytes": 781,
-    "sha256": "cdd3dab3d2bd87618349ccbe0c7b411d4c1d2630f8c625a8069a75c5646a4a83"
+    "sha256": "98f0cc96bfa472eda9ada96e4e2324bbfc06b8b951a10ac0d40609367360f589"
   }
 ]

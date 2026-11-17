@@ -1,7 +1,7 @@
 import{readFileSync,writeFileSync,mkdirSync,lstatSync,readdirSync}from'node:fs';import{join,dirname}from'node:path';import{execFileSync}from'node:child_process';import{sha256}from'./resource-protocol.mjs';import{TURING_REVISION,TURING_INTEGRATION,turingLegacyRuntime,turingReaderProof}from'./turing-legacy-reader.mjs';import{turingFormatRuntime}from'./turing-compatibility.mjs';import{turingPreservationRuntime}from'./turing-preservation.mjs';import{turingUIRuntime,turingCompatibilityCSS}from'./turing-compatibility-ui.mjs';
 export const TURING_UI_INPUTS=Object.freeze({'index.html':'033ad43dfff25e047d695e7eca290f8409a1f212f16fa288143404c0fc4045ea','src/main.ts':'638f863dae9613c822e686f9a212afb1e177b9af6cc57b4c9113269738f0fbb9','src/campaign-main.ts':'b28d58467b37630d9eb30abc035859b0f6e6320e4405b7b74321df3c0cd3a5ee','src/styles.css':'173b1325b8faf5292e9bd309cc25d9f525d6fc655a4303af67c00369e9a7fff0'});
 export function turingBuildInputs(){const bytes=readFileSync(new URL('../tests/fixtures/turing/ui/build-inputs.json',import.meta.url));if(sha256(bytes)!=='d87f8df35acea6e090f831a3f9f90908379426dd8db088141488ea26a592b62a')throw Error('Frozen Turing build inputs changed');return JSON.parse(bytes);}
-export const TURING_REVIEWED_OUTPUTS_SHA='abdc3cbc3f1f0f2905cc05741ca30682bff08dca4022ee60a348849862f457ca';
+export const TURING_REVIEWED_OUTPUTS_SHA='36fb8a5204debe4dd96aa2872bdf1c7ef33d813dfcbdef84efcbe0cc4df03265';
 export function turingReviewedOutputs(){const bytes=readFileSync(new URL('../tests/fixtures/turing/ui/reviewed-outputs.json',import.meta.url));if(sha256(bytes)!==TURING_REVIEWED_OUTPUTS_SHA)throw Error('Reviewed Turing outputs changed');return JSON.parse(bytes);}
 const once=(text,before,after)=>{if(text.split(before).length!==2)throw Error('Reviewed Turing UI marker changed');return text.replace(before,after);};
 export function adaptTuringTexts(inputs){
@@ -13,6 +13,7 @@ export function adaptTuringTexts(inputs){
  main=once(main,'function collectProject(): ProjectData {\n  return {','function collectProject(): ProjectData {\n  return hubCompatibility.collect({');
  main=once(main,'    speed: Number(value("speed")) || 5,\n  };\n}','    speed: Number(value("speed")) || 5,\n  });\n}');
  main=once(main,'function fillProject(project: ProjectData | ExampleProject): void {','function fillProject(project: ProjectData | ExampleProject): boolean {\n  if (!hubCompatibility.beforeReplace(project)) return false;');
+ main=once(main,'stepLimit === null ? "10000" : String(stepLimit)','stepLimit === null ? String(hubCompatibility.displayLimit()) : String(stepLimit)');
  main=once(main,'  persistTargetSpeed(Number(value("speed")));\n}','  persistTargetSpeed(Number(value("speed")));\n  return true;\n}');
  main=once(main,'saveProject(localStorage, STORAGE_KEY, project)','hubCompatibility.save(project)');
  if(main.split('saveProject(localStorage, STORAGE_KEY, collectProject())').length!==3)throw Error('Reviewed Turing step-limit save markers changed');
@@ -20,7 +21,11 @@ export function adaptTuringTexts(inputs){
  main=once(main,'saveSpeedPreference(localStorage, speed)','hubCompatibility.speedSave(() => saveSpeedPreference(hubCompatibility.storage, speed))');
  main=once(main,'    fillProject({ ...project, speed: Number(value("speed")) });','    if (!fillProject({ ...project, speed: Number(value("speed")) })) return;');
  main=once(main,'  fillProject(example);','  if (!fillProject(example)) return;');
- main=once(main,'byId("clear").addEventListener("click", () => { pause(); byId<HTMLTextAreaElement>("rules").value = ""; });','byId("clear").addEventListener("click", () => { if (!hubCompatibility.protectDraftReplacement()) return; pause(); byId<HTMLTextAreaElement>("rules").value = ""; });');
+ main=once(main,'byId("clear").addEventListener("click", () => { pause(); byId<HTMLTextAreaElement>("rules").value = ""; });','byId("clear").addEventListener("click", () => { if (!hubCompatibility.protectDraftReplacement()) return; pause(); byId<HTMLTextAreaElement>("rules").value = ""; hubCompatibility.saveDraft(collectProject()); });');
+ main=once(main,'byId<HTMLTextAreaElement>("rules").value = editRuleSource(value("rules"), Number(row.dataset.index), replacement);','byId<HTMLTextAreaElement>("rules").value = editRuleSource(value("rules"), Number(row.dataset.index), replacement);\n    hubCompatibility.saveDraft(collectProject());');
+ main=once(main,'byId<HTMLTextAreaElement>("rules").value = editRuleSource(value("rules"), Number(row.dataset.index), null);','byId<HTMLTextAreaElement>("rules").value = editRuleSource(value("rules"), Number(row.dataset.index), null);\n    hubCompatibility.saveDraft(collectProject());');
+ main=once(main,'  renderRuleTable();\n});\nbyId("rules").addEventListener("input"','  hubCompatibility.saveDraft(collectProject());\n  renderRuleTable();\n});\nbyId("rules").addEventListener("input"');
+ main=once(main,'byId("rules").addEventListener("input", () => { ruleTablePage = 0; renderRuleTable(); });','byId("rules").addEventListener("input", () => { ruleTablePage = 0; renderRuleTable(); });\nfor (const field of ["input", "blankSymbol", "initialState", "acceptStates", "rejectStates", "haltStates", "rules"]) byId(field).addEventListener("input", () => hubCompatibility.saveDraft(collectProject()));');
  main=once(main,'byId("exportProject").addEventListener("click", () => download("turing-machine-project.json", JSON.stringify(collectProject(), null, 2), "application/json"));','byId("exportProject").addEventListener("click", () => hubCompatibility.compatibleExport());');
  const start=main.indexOf('byId("fileInput").addEventListener("change", async () => {'),end=main.indexOf('byId("exportLog").addEventListener',start);if(start<0||end<=start)throw Error('Reviewed Turing file handler changed');
  main=main.slice(0,start)+`byId("fileInput").addEventListener("change", async () => {
@@ -31,7 +36,7 @@ export function adaptTuringTexts(inputs){
  const tail='const savedProject = loadProject(localStorage, STORAGE_KEY) ?? defaultProject;\nfillProject({ ...savedProject, speed: loadSpeedPreference(localStorage) ?? savedProject.speed });\nbyId("exampleNote").textContent = examples.unary.description;\ncreateMachine();\nrenderRuleTable();';
  main=once(main,tail,`hubCompatibility.mount({ getProject: collectProject, applyProject: (project: ProjectData) => { if (!fillProject(project)) return false; createMachine(); return true; }, pause, download });
 void hubCompatibility.start((savedProject: ProjectData) => {
-  fillProject({ ...savedProject, speed: loadSpeedPreference(hubCompatibility.storage) ?? savedProject.speed });
+  fillProject({ ...savedProject, ...hubCompatibility.readDraft(), speed: loadSpeedPreference(hubCompatibility.storage) ?? savedProject.speed });
   byId("exampleNote").textContent = examples.unary.description;
   createMachine();
   renderRuleTable();

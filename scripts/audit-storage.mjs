@@ -10,7 +10,7 @@ export function expectedStorageKeys({resourceMode=false,integrations={}}={}){
  for(const [id,marker]of Object.entries(integrations))if(!resourceMode||!((id==='conway'&&marker===CONWAY_INTEGRATION)||(id==='eml'&&marker===EML_INTEGRATION)||(id==='turing'&&marker===TURING_INTEGRATION)))throw Error('Unreviewed storage integration or wrong audit mode');
  if(resourceMode&&integrations.conway===CONWAY_INTEGRATION)expected.conway.push(CONWAY_ARCHIVE_KEY);
  if(resourceMode&&integrations.eml===EML_INTEGRATION)expected.eml.push('eml-hub-preservation-v1');
- if(resourceMode&&integrations.turing===TURING_INTEGRATION)expected.turing.push('turing-machine-simulator.speed.v1','turing-hub-preservation-v1');
+ if(resourceMode&&integrations.turing===TURING_INTEGRATION)expected.turing.push('turing-machine-simulator.speed.v1','turing-hub-preservation-v1','turing-machine-simulator.editor-draft.v1');
  return expected;
 }
 export function auditStorageText(sources,options={}){
@@ -18,7 +18,7 @@ export function auditStorageText(sources,options={}){
  if(Object.keys(sources).sort().join()!==Object.keys(expected).sort().join())throw Error('Four audited source owners required');
  if(!expected.conway.includes(CONWAY_ARCHIVE_KEY)&&Object.values(sources).some(text=>text.includes(CONWAY_ARCHIVE_KEY)))throw Error('Resource-only archive key without reviewed resource integration');
  if(!expected.eml.includes('eml-hub-preservation-v1')&&Object.values(sources).some(text=>text.includes('eml-hub-preservation-v1')))throw Error('Resource-only EML key without reviewed resource integration');
- if(!expected.turing.includes('turing-hub-preservation-v1')&&Object.values(sources).some(text=>text.includes('turing-hub-preservation-v1')||text.includes('turing-machine-simulator.speed.v1')))throw Error('Resource-only Turing keys without reviewed resource integration');
+ if(!expected.turing.includes('turing-hub-preservation-v1')&&Object.values(sources).some(text=>text.includes('turing-hub-preservation-v1')||text.includes('turing-machine-simulator.speed.v1')||text.includes('turing-machine-simulator.editor-draft.v1')))throw Error('Resource-only Turing keys without reviewed resource integration');
  for(const [game,names]of Object.entries(expected)){
   const text=sources[game];
   if(/\b(?:localStorage|sessionStorage)\s*(?:\.\s*clear|\[\s*['"]clear['"]\s*\])\s*\(/.test(text))throw Error(`${game}: broad storage clear found`);

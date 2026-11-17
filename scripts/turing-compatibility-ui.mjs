@@ -1,7 +1,21 @@
+export function resolveTuringFiniteLimit(fieldValue, savedLimit) {
+ const text=String(fieldValue??'').trim(), number=/^\d+$/.test(text)?Number(text):NaN;
+ if(Number.isSafeInteger(number)&&number>=1&&number<=1_000_000)return number;
+ return Number.isSafeInteger(savedLimit)&&savedLimit>=1&&savedLimit<=1_000_000?savedLimit:10000;
+}
+export function createTuringEditorDraft(storage) {
+ const key='turing-machine-simulator.editor-draft.v1',fields=['input','blankSymbol','initialState','acceptStates','rejectStates','haltStates','rules'];
+ let observed=storage.getItem(key);
+ function parse(raw){if(raw===null)return null;const data=JSON.parse(raw);if(!data||data.version!==1||fields.some(field=>typeof data[field]!=='string'))throw Error('原有草稿无法识别，未覆盖。');return data;}
+ function load(base){const data=parse(observed);if(!data||(Object.hasOwn(data,'baseLegacy')&&data.baseLegacy!==base))return null;const result=Object.fromEntries(fields.map(field=>[field,data[field]]));if(data.maxSteps===null||Number.isSafeInteger(data.maxSteps)&&data.maxSteps>=1&&data.maxSteps<=1_000_000)result.maxSteps=data.maxSteps;if(Number.isSafeInteger(data.finiteMaxSteps)&&data.finiteMaxSteps>=1&&data.finiteMaxSteps<=1_000_000)result.finiteMaxSteps=data.finiteMaxSteps;return result;}
+ function save(project,base){if(storage.getItem(key)!==observed)throw Error('草稿已被其他页面修改，未覆盖。');const old=parse(observed);if(old&&Object.hasOwn(old,'baseLegacy')&&old.baseLegacy!==base)throw Error('旧草稿对应其他项目，未覆盖。');const settings={};if(project.maxSteps===null||Number.isSafeInteger(project.maxSteps)&&project.maxSteps>=1&&project.maxSteps<=1_000_000)settings.maxSteps=project.maxSteps;if(Number.isSafeInteger(project.finiteMaxSteps)&&project.finiteMaxSteps>=1&&project.finiteMaxSteps<=1_000_000)settings.finiteMaxSteps=project.finiteMaxSteps;const next={...old,version:1,...Object.fromEntries(fields.map(field=>[field,project[field]])),...settings,baseLegacy:base};const raw=JSON.stringify(next);storage.setItem(key,raw);if(storage.getItem(key)!==raw)throw Error('草稿写入核验失败。');observed=raw;}
+ function rebase(before,after,project){if(storage.getItem(key)!==observed)throw Error('草稿已被其他页面修改，未覆盖。');const old=parse(observed);if(!old||old.baseLegacy!==before)return;const updated=project?{...Object.fromEntries(fields.map(field=>[field,project[field]])),maxSteps:project.maxSteps,finiteMaxSteps:project.finiteMaxSteps}:{};const raw=JSON.stringify({...old,...updated,baseLegacy:after});storage.setItem(key,raw);if(storage.getItem(key)!==raw)throw Error('草稿写入核验失败。');observed=raw;}
+ return{load,save,rebase};
+}
 export function installTuringCompatibility(root,current,initialProject){
  const document=root.document,F=root.TuringHubFormat.create(current,root.TuringHubLegacy.codec),initial=JSON.stringify(initialProject);let storage;
  try{storage=root.localStorage;}catch{storage={getItem(){throw Error('浏览器存储不可用。');},setItem(){throw Error('浏览器存储不可用。');},removeItem(){throw Error('浏览器存储不可用。');}};}
- let cache=root.TuringHubPreservation.create(storage,F,initial),host=null,metadata={...initialProject},legacyLimit=null,readOnly=false,applying=false,busy=false,lastImportRaw=null,pendingImportRaw=null;const dialogs=new Set();
+ let cache=root.TuringHubPreservation.create(storage,F,initial),host=null,metadata={...initialProject},legacyLimit=null,readOnly=false,applying=false,busy=false,lastImportRaw=null,pendingImportRaw=null,draft=null;const dialogs=new Set();
  const bar=document.createElement('section');bar.id='hubTuringControls';bar.className='hub-turing-controls';bar.setAttribute('aria-busy','false');
  const status=document.createElement('p');status.id='hubTuringStatus';status.setAttribute('role','status');bar.append(status);document.querySelector('.topbar').after(bar);
  const button=(label,action,parent=bar,id)=>{const node=document.createElement('button');node.type='button';node.className='btn';node.textContent=label;if(id)node.id=id;node.addEventListener('click',()=>action());parent.append(node);return node;};
@@ -12,11 +26,13 @@ export function installTuringCompatibility(root,current,initialProject){
  function fullText(){return JSON.stringify(host.getProject(),null,2);}
  function download(name,text){host.download(name,text,'application/json');message('已请求导出文件，请在系统保存界面确认完成。');}
  function fullExport(){download('turing-full-project.json',fullText());}
- function chooseLimit(preferred=legacyLimit){const answer=root.prompt('Max在当前版本不限步数。为让旧版本读取兼容项目，请明确填写旧版有限步数上限（1–1000000）；该有限值不等价于Max。取消后仍可完整导出。',preferred===null||preferred===undefined?'':String(preferred));if(answer===null)return null;if(!/^\d+$/.test(answer.trim())||!Number.isSafeInteger(Number(answer))||Number(answer)<1||Number(answer)>1_000_000){message('旧版兼容步数必须为1–1000000整数，未采用默认值。');return null;}return Number(answer);}
- function limitFor(text,preferred=legacyLimit){const read=F.read(text);if(!read.ok)throw Error(read.error);if(read.state.maxSteps!==null)return read.state.maxSteps;if(preferred!==null&&preferred!==undefined){F.project(text,preferred);return preferred;}return chooseLimit(null);}
+ function saveDraft(project){try{if(!draft)draft=root.createTuringEditorDraft(storage);draft.save({...project,finiteMaxSteps:root.resolveTuringFiniteLimit(document.getElementById('maxSteps')?.value,legacyLimit)},storage.getItem(cache.oldKey));return true;}catch(error){message('草稿未保存：'+error.message+' 请先导出当前项目。');return false;}}
+ function readDraft(){if(readOnly)return null;try{if(!draft)draft=root.createTuringEditorDraft(storage);const result=draft.load(storage.getItem(cache.oldKey));if(result?.maxSteps===null&&result.finiteMaxSteps)legacyLimit=result.finiteMaxSteps;if(result)delete result.finiteMaxSteps;return result;}catch(error){message('原草稿未覆盖：'+error.message);return null;}}
+ function limitFor(text,preferred=null){const read=F.read(text);if(!read.ok)throw Error(read.error);if(read.state.maxSteps!==null)return read.state.maxSteps;if(preferred!==null&&preferred!==undefined){F.project(text,preferred);return preferred;}return root.resolveTuringFiniteLimit(document.getElementById('maxSteps')?.value,legacyLimit);}
  function save(project){
   if(readOnly)return'自动保存已暂停；请先完整导出，再从备份管理明确恢复。';
-  try{const text=JSON.stringify(project),limit=limitFor(text);if(limit===null){suspend('未选择旧版Max兼容上限，未写入项目缓存。');return status.textContent;}cache.save(text,limit);if(project.maxSteps===null)legacyLimit=limit;message(project.maxSteps===null?`完整Max项目已保护；旧版兼容视图上限为${limit}步，不代表Max。`:'完整项目及旧版兼容缓存已保存。');return null;}catch(error){suspend(error.message);return status.textContent;}
+  const candidate=JSON.stringify(project);if(!F.read(candidate).ok){if(saveDraft(project))message('编辑草稿已保存；规则完整后可应用。');return null;}
+  try{const text=JSON.stringify(project),limit=limitFor(text),before=storage.getItem(cache.oldKey);cache.save(text,limit);legacyLimit=project.maxSteps===null?limit:null;message(project.maxSteps===null?`完整Max项目已保护；旧版兼容视图上限为${limit}步，不代表Max。`:'完整项目及旧版兼容缓存已保存。');try{if(draft)draft.rebase(before,storage.getItem(cache.oldKey),{...project,finiteMaxSteps:limit});}catch(error){message('项目已保存，但草稿未更新：'+error.message);}return null;}catch(error){suspend(error.message);return status.textContent;}
  }
  function speedSave(write){if(readOnly)return'自动保存暂停，目标速度仅用于当前会话。';try{return write();}catch(error){message(error.message);return'目标速度保存失败；当前调速仍可用。';}}
  function protect(texts,reason){
@@ -46,8 +62,7 @@ export function installTuringCompatibility(root,current,initialProject){
    pendingImportRaw=text;try{if(host.applyProject(read.state)===false)legacyLimit=previousLimit;}finally{pendingImportRaw=null;}
   });
  }
- function compatibleExport(){const text=fullText(),read=F.read(text);if(!read.ok)throw Error('当前草稿不能形成兼容运行项目：'+read.error+' 请使用完整项目/草稿导出。');const limit=limitFor(text);if(limit===null){message('已取消兼容导出，未采用默认上限。');return;}if(read.state.maxSteps===null&&!root.confirm(`旧版只会按${limit}步的有限视图运行；完整Max仍保留供新版恢复。是否导出兼容项目？`))return;if(read.state.maxSteps===null)legacyLimit=limit;download('turing-machine-project.json',F.wrap(text,limit));}
- function setLimit(){const choice=chooseLimit();if(choice===null)return;const snapshot=cache.inspect();if(!['empty','legacy','current'].includes(snapshot.kind))throw Error('当前有旧编辑/未完成保存，请先在备份管理明确恢复。');legacyLimit=choice;readOnly=false;save(host.getProject());}
+ function compatibleExport(){const text=fullText(),read=F.read(text);if(!read.ok)throw Error('当前草稿不能形成兼容运行项目：'+read.error+' 请使用完整项目/草稿导出。');const limit=limitFor(text);if(read.state.maxSteps===null)legacyLimit=limit;download('turing-machine-project.json',F.wrap(text,limit));}
  async function restoreOption(option){
   if(!root.confirm('恢复将替换当前编辑内容；将先保护当前完整项目或草稿原文。继续？'))return;
   const limit=limitFor(option.fullText,option.legacyMaxSteps??null);if(limit===null){message('已取消恢复，未采用默认上限。');return;}
@@ -70,14 +85,14 @@ export function installTuringCompatibility(root,current,initialProject){
   }
   render();await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;removeDialog(node);resolve();};button('关闭备份管理',finish,node);node.addEventListener('cancel',event=>{event.preventDefault();finish();});node.showModal();});
  }
- button('完整项目/草稿导出',()=>run(fullExport),bar,'hubTuringFullExport');button('旧版兼容步数设置',()=>run(setLimit),bar,'hubTuringLimit');button('完整项目备份管理',()=>run(manage),bar,'hubTuringManage');
+ button('完整项目/草稿导出',()=>run(fullExport),bar,'hubTuringFullExport');button('完整项目备份管理',()=>run(manage),bar,'hubTuringManage');
  root.addEventListener('storage',event=>{if(event.storageArea===storage&&(event.key===cache.key||event.key===cache.oldKey||event.key===null)){cache.invalidate();suspend('检测到其它页面或旧版写入，未覆盖其内容；请先完整导出，再关闭其它实例并重新打开。');}});
  const exportButton=document.getElementById('exportProject');exportButton.textContent='旧版兼容导出';message('完整项目保护已就绪。');
- return{storage,mount(value){host=value;},collect,beforeReplace,protectDraftReplacement,save,speedSave,start,importFile,compatibleExport:()=>run(compatibleExport)};
+ return{storage,mount(value){host=value;},collect,beforeReplace,protectDraftReplacement,save,saveDraft,readDraft,speedSave,start,importFile,displayLimit:()=>root.resolveTuringFiniteLimit(legacyLimit===null?document.getElementById('maxSteps')?.value:legacyLimit,null),compatibleExport:()=>run(compatibleExport)};
 }
 
 export const turingCompatibilityCSS=`
 .hub-turing-controls{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 1rem;border:1px solid #9aa9c9;border-radius:.75rem;margin:.75rem 12px;min-width:0}.hub-turing-controls p{flex-basis:100%;margin:0;overflow-wrap:anywhere;font-size:.9rem}.hub-turing-controls button,.hub-turing-dialog button{max-width:100%;white-space:normal;overflow-wrap:anywhere}.hub-turing-dialog{max-width:min(42rem,94vw);max-height:85dvh;overflow:auto;border-radius:.75rem;padding:1rem}.hub-turing-dialog button{display:block;margin:.5rem 0;padding:.5rem}.hub-turing-dialog input{max-width:100%}.hub-turing-dialog::backdrop{background:#17233c99}
 @media(max-width:640px){.speed{flex:1 1 100%;margin-left:0;flex-wrap:wrap;justify-content:center;max-width:100%}.speed>span,.speed>strong{white-space:nowrap}.speed input[type="range"]{flex:1 1 8rem;min-width:5rem}.speed input[type="number"]{flex:0 0 76px}}
 `;
-export function turingUIRuntime(){return Buffer.from(`(function(root){'use strict';root.installTuringCompatibility=${installTuringCompatibility.toString()};})(globalThis);\n`);}
+export function turingUIRuntime(){return Buffer.from(`(function(root){'use strict';root.resolveTuringFiniteLimit=${resolveTuringFiniteLimit.toString()};root.createTuringEditorDraft=${createTuringEditorDraft.toString()};root.installTuringCompatibility=${installTuringCompatibility.toString()};})(globalThis);\n`);}
