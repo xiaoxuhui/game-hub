@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedPreviousSha,
     [Parameter(Mandatory=$true)][string]$NextSequence,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('n10','n12','n28')][string]$TaskScope='n10',
+    [ValidateSet('n10','n12','n28','turing-save-20261117')][string]$TaskScope='n10',
     [switch]$ResumeAfterUploads
 )
 $ErrorActionPreference='Stop'
@@ -17,6 +17,10 @@ $taskApi='https://api.github.com/repos/xiaoxuhui/game-hub'
 if($TaskScope -ieq 'n28'){
     $taskCheckout='D:\soft\.ci-tmp\game-hub-n28\work'
     $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n28\evidence\publication'
+}
+if($TaskScope -ieq 'turing-save-20261117'){
+    $taskCheckout=Split-Path -Parent $PSScriptRoot
+    $taskEvidenceRoot='D:\aiden\game-hub-turing-save-evidence-20261117'
 }
 $taskHeaders=@{Accept='application/vnd.github+json';'User-Agent'='game-hub-resource-successor';'X-GitHub-Api-Version'='2022-11-28'}
 $taskCredentialLines=$null; $taskCredential=$null; $taskEncrypted=$null; $taskDer=$null; $taskPem=$null
