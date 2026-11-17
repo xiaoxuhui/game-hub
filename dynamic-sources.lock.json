@@ -344,10 +344,10 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/compass-polygon-studio.git",
-      "revision": "094fa5d144a4d21b6cf8143aad778bd08b2a148c",
+      "revision": "29fd308f4a9bfc1fc7cb71977b9ba198278c3278",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "compass-polygon-studio-dynamic-v1",
       "files": [
@@ -358,7 +358,7 @@
         "style.css",
         "desmos.js"
       ],
-      "releaseNotes": "更新尺规作图说明与交互，新增公式导出。"
+      "releaseNotes": "更新尺规作图导出，支持 Desmos 几何构造与可拖动的参考点。"
     },
     {
       "id": "fourier-drawing-studio",
