@@ -64,9 +64,17 @@ export function publicDownloadUrl(asset){
   // catalog.signed.json is replaced by a new immutable asset ID. Bind the CDN cache key to that ID.
   url.searchParams.set('verified_asset_id',String(asset.id));return url;
 }
+// CDN edges occasionally reset an idle keep-alive socket; retry only connection
+// level failures, never a completed response, and never a timeout signal.
+async function fetchWithRetry(url){
+  for(let attempt=1;;attempt++){
+    try{return await fetch(url,{headers:{'User-Agent':'game-hub-resource-successor','Cache-Control':'no-cache'},signal:AbortSignal.timeout(60000)});}
+    catch(error){if(attempt>=3||/^(AbortError|TimeoutError)$/.test(String(error&&error.name)))throw error;await new Promise(resolve=>setTimeout(resolve,500*attempt));}
+  }
+}
 async function download(asset){
   const url=publicDownloadUrl(asset);
-  const response=await fetch(url,{headers:{'User-Agent':'game-hub-resource-successor','Cache-Control':'no-cache'},signal:AbortSignal.timeout(60000)});
+  const response=await fetchWithRetry(url);
   if(!response.ok)throw new Error(`Asset HTTP ${response.status}`);
   const chunks=[];let size=0;
   for await(const chunk of response.body){size+=chunk.length;if(size>LIMITS.archive)throw new Error('Asset byte limit');chunks.push(chunk);}
