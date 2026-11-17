@@ -202,6 +202,7 @@ try {
     node scripts/resource-successor.mjs payload $taskDirectory $ExpectedPreviousSha $NextSequence @taskSelectionArgs
     if($LASTEXITCODE -ne 0){throw 'Fresh complete asset-bound payload failed'}
     $taskEncrypted=[IO.File]::ReadAllBytes('D:\aiden\game-hub-resource-signing\resource-private-key.dpapi')
+    Add-Type -AssemblyName System.Security
     $taskDer=[Security.Cryptography.ProtectedData]::Unprotect($taskEncrypted,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
     $taskPem="-----BEGIN PRIVATE KEY-----`n"+[Convert]::ToBase64String($taskDer,[Base64FormattingOptions]::InsertLineBreaks)+"`n-----END PRIVATE KEY-----`n"
     $signed=Join-Path $taskDirectory 'catalog.signed.json'

@@ -76,6 +76,7 @@ try{
             ConvertTo-Json -InputObject @($uploads) -Depth 10 | Set-Content -LiteralPath (Join-Path $dir 'expanded-uploaded-resources.json') -Encoding utf8
             node scripts/expanded-successor.mjs payload $dir $ExpectedLegacySha $ExpectedExpandedSha
             if($LASTEXITCODE -ne 0){throw 'Fresh asset-bound expanded payload failed'}
+            Add-Type -AssemblyName System.Security
             $encrypted=[IO.File]::ReadAllBytes('D:\aiden\game-hub-resource-signing\resource-private-key.dpapi');$der=[Security.Cryptography.ProtectedData]::Unprotect($encrypted,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
             $pem="-----BEGIN PRIVATE KEY-----`n"+[Convert]::ToBase64String($der,[Base64FormattingOptions]::InsertLineBreaks)+"`n-----END PRIVATE KEY-----`n"
             $pem | node scripts/expanded-signer.mjs sign (Join-Path $dir 'expanded-payload.json') - (Join-Path $dir 'expanded.signed.json') (Join-Path $dir 'expanded-signing-snapshot.json') (Join-Path $dir 'legacy.signed.json') (Join-Path $dir 'previous-expanded.signed.json')
