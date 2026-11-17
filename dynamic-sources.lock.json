@@ -531,20 +531,27 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/sokoban-ai-lab.git",
-      "revision": "77ffbaf1d0cf02833f682a0a87c78ffff2448f52",
+      "revision": "afe7e217ef95efcbd363ee44b6c5548f7faa08b9",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "sokoban-ai-lab-dynamic-v1",
       "files": [
         "LICENSE",
         "app.js",
+        "box-intro.css",
+        "box-intro.html",
+        "box-intro.js",
+        "box-levels.js",
+        "box-portals.js",
+        "box-rooms.js",
         "engine.js",
         "index.html",
+        "route-input.js",
         "style.css"
       ],
-      "releaseNotes": "绘制地图、手动推箱子并观察强化学习。"
+      "releaseNotes": "新增套箱模式：入门、进入、空白、吞食、参照五章关卡，支持嵌套房间、传送点与路线输入；修复首页套箱入口此前指向缺失页面的问题。"
     },
     {
       "id": "tape-language-lab",
