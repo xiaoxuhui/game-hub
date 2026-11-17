@@ -3,7 +3,7 @@ export const LANGUAGES = Object.freeze({
   pdouble: { name: 'P′′ · P double prime', commands: 'λR(),', open: '(', close: ')' },
   tm: { name: 'TM · 图灵机' }
 });
-export const LIMITS = Object.freeze({ source: 200000, cells: 100000, output: 65536, input: 65536, functions: 256, functionDepth: 64, expansionWork: 500000 });
+export const LIMITS = Object.freeze({ source: 1000000, cells: 100000, output: 65536, input: 65536, functions: 256, functionDepth: 64, expansionOps: 200000, expansionWork: 500000 });
 export const MAX_SYMBOLS = 4294967296;
 export const CELL_BITS = [8, 16, 32];
 export function valueRange(modulus, signed = false) {
@@ -95,7 +95,7 @@ function compileTransitions(source, tmStates) {
 export function compile(source, language, { functionsEnabled = false, tmStates } = {}) {
   if (!Object.hasOwn(LANGUAGES, language)) throw new Error('不支持的语言。');
   const spec = LANGUAGES[language];
-  if (typeof source !== 'string' || source.length > LIMITS.source) throw new Error('代码最多 200,000 个字符。');
+  if (typeof source !== 'string' || source.length > LIMITS.source) throw new Error('代码最多 1,000,000 个字符。');
   if (language === 'tm') return compileTransitions(source, tmStates);
   if (typeof functionsEnabled !== 'boolean') throw new Error('函数扩展设置无效。');
   const main = [], definitions = new Map();
@@ -165,10 +165,10 @@ export function compile(source, language, { functionsEnabled = false, tmStates }
   let work = 0;
   function expand(units, context) {
     for (const unit of units) {
-      if (++work > LIMITS.expansionWork) throw new ProgramError('函数展开次数过多，请减少重复调用。', context?.callOffset ?? unit.offset);
+      if (functionsEnabled && ++work > LIMITS.expansionWork) throw new ProgramError('函数展开次数过多，请减少重复调用。', context?.callOffset ?? unit.offset);
       if (unit.name) expand(definitions.get(unit.name).units, { name: unit.name, callOffset: unit.offset, parent: context });
       else {
-        if (ops.length >= LIMITS.source) throw new ProgramError('函数展开过大：最多 200,000 条原始指令，请减少重复调用。', context?.callOffset ?? unit.offset);
+        if (functionsEnabled && ops.length >= LIMITS.expansionOps) throw new ProgramError('函数展开过大：最多 200,000 条原始指令，请减少重复调用。', context?.callOffset ?? unit.offset);
         const pc = ops.length;
         ops.push(unit.op); offsets.push(unit.offset); contexts.push(context);
         if (unit.op === spec.open) stack.push(pc);
@@ -281,13 +281,17 @@ function encodingAlphabet(symbols) {
   throw new Error('请为 0、1、2 各填一个不同的符号，符号内不能有空格。');
 }
 
-export function encodeProject(project, symbols = ['0', '1', '2']) {
+export function encodeText(text, symbols = ['0', '1', '2']) {
   const alphabet = encodingAlphabet(symbols);
   const separator = alphabet.some(symbol => [...symbol].length > 1) ? ' ' : '';
-  const bytes = new TextEncoder().encode(JSON.stringify(validateProject(project)));
+  const bytes = new TextEncoder().encode(text);
   const byteCodes = Array.from({ length: 256 }, (_, byte) =>
     Array.from(byte.toString(3).padStart(6, '0'), digit => alphabet[Number(digit)]).join(separator));
   return Array.from(bytes, byte => byteCodes[byte]).join(separator);
+}
+
+export function encodeProject(project, symbols) {
+  return encodeText(JSON.stringify(validateProject(project)), symbols);
 }
 
 export function decodeProject(code, symbols = ['0', '1', '2']) {
@@ -428,4 +432,271 @@ export class TapeMachine {
       return true;
     } catch (error) { this.error = error.message; return false; }
   }
+}
+
+const outcomeCodes = { halt: 1, accept: 2, reject: 3 };
+const bit = (value, index) => (value >>> index) & 1;
+const indices = count => Array.from({ length: count }, (_, index) => index);
+const widthOf = count => Math.max(1, Math.ceil(Math.log2(count)));
+
+function generatedProject(language, source, settings = {}) {
+  return validateProject({
+    format: 'tape-language-lab', version: 1, language, source, input: '', inputMode: 'text',
+    initialTape: '', inputPolicy: 'preset', speed: 'turbo', symbols: 2, ...settings
+  });
+}
+
+// Lower one numeric tape cell to a little-endian word. TM position -x*width
+// represents numeric cell x, so the original initial tape fits to the right of 0.
+function numericToTm(machine) {
+  const { language, modulus, program } = machine;
+  const width = widthOf(modulus), positions = indices(width);
+  const oneSided = language === 'pdouble';
+  const io = program.ops.findIndex(op => op === ',' || op === '.');
+  if (io !== -1) throw new ProgramError('跨语言转换支持纯纸带程序。此程序含输入或输出指令。', program.offsets[io]);
+  if ((1 - machine.minVisited) * width > LIMITS.cells) throw new Error('按位展开后的初始纸带超过 100,000 格。');
+  const rules = [];
+  let length = 0;
+  const stateOf = index => index >= program.ops.length ? 'halt' : `pc.${index}`;
+  function emit(state, offset, action) {
+    const atWordStart = oneSided && offset % width === 0;
+    for (const read of atWordStart ? ['0', '1', 'E0', 'E1'] : ['0', '1']) {
+      const edge = read.startsWith('E'), value = Number(read.at(-1));
+      const { next, write = value, direction = 'N' } = action(value, edge);
+      const rule = `${state},${read}->${next},${edge ? 'E' : ''}${write},${direction}`;
+      length += rule.length + 1;
+      if (length > LIMITS.source) throw new Error('生成的 TM 转移表超过代码长度上限。');
+      rules.push(rule);
+    }
+  }
+  function travel(label, position, distance, end, guardEdge = false) {
+    const direction = distance < 0 ? 'L' : 'R';
+    const step = Math.sign(distance);
+    for (const index of indices(Math.abs(distance))) {
+      const name = index === 0 ? label : `${label}.${index}`;
+      const next = index + 1 === Math.abs(distance) ? end : `${label}.${index + 1}`;
+      emit(name, position + step * index, (_, edge) => index === 0 && guardEdge && edge
+        ? { next: 'reject' } : { next, direction });
+    }
+  }
+  function finishWord(label, next) {
+    return positions.map(offset => {
+      if (offset === 0) return next;
+      const name = `${label}.${offset}`;
+      emit(name, offset, () => ({ next: offset === 1 ? next : `${label}.${offset - 1}`, direction: 'L' }));
+      return name;
+    });
+  }
+  function compare(label, expected, yes, no) {
+    const yesReturn = finishWord(`${label}.yes`, yes), noReturn = finishWord(`${label}.no`, no);
+    for (const offset of positions) {
+      const state = offset ? `${label}.${offset}` : label;
+      emit(state, offset, value => {
+        if (value !== bit(expected, offset)) return { next: noReturn[offset] };
+        if (offset + 1 === width) return { next: yesReturn[offset] };
+        return { next: `${label}.${offset + 1}`, direction: 'R' };
+      });
+    }
+  }
+  function update(label, operation, next) {
+    const complete = finishWord(`${label}.return`, next);
+    for (const offset of positions) {
+      emit(offset ? `${label}.${offset}` : label, offset, value => {
+        const write = operation === 'clear' ? 0 : 1 - value;
+        const carry = operation === 'clear' || value === (operation === '-' ? 0 : 1);
+        return carry && offset + 1 < width
+          ? { write, next: `${label}.${offset + 1}`, direction: 'R' }
+          : { write, next: complete[offset] };
+      });
+    }
+  }
+  program.ops.forEach((op, pc) => {
+    const state = stateOf(pc), next = stateOf(pc + 1);
+    if ('><R'.includes(op)) {
+      travel(state, 0, op === '<' ? width : -width, next, oneSided && op === 'R');
+    } else if ('[]()'.includes(op)) {
+      const jump = stateOf(program.jumps.get(pc) + 1);
+      compare(state, 0, '[('.includes(op) ? jump : next, '[('.includes(op) ? next : jump);
+    } else if (op === 'λ') {
+      const move = `${state}.move`;
+      travel(move, 0, width, next);
+      if (modulus === 2 ** width) {
+        update(state, '+', move);
+      } else {
+        compare(state, modulus - 1, `${state}.clear`, `${state}.inc`);
+        update(`${state}.clear`, 'clear', move);
+        update(`${state}.inc`, '+', move);
+      }
+    } else {
+      update(state, op, next);
+    }
+  });
+
+  const initial = [];
+  for (let index = 0; index >= machine.minVisited; index--) {
+    const value = machine.read(index);
+    for (const offset of positions) {
+      initial.push(`${oneSided && index === 0 && offset === 0 ? 'E' : ''}${bit(value, offset)}`);
+    }
+  }
+  return generatedProject('tm', rules.join('\n'), {
+    blankSymbol: '0', initialTape: initial.join(' '),
+    tmStates: { start: stateOf(0), halt: 'halt', accept: '', reject: oneSided ? 'reject' : '' }
+  });
+}
+
+class BinaryCode {
+  constructor(target) {
+    this.instructions = target === 'bf'
+      ? { left: '<', right: '>', on: '+', off: '-', open: '[', close: ']' }
+      : { left: 'λRλ', right: 'R', on: 'λR', off: 'λR', open: '(', close: ')' };
+    this.parts = [];
+    this.length = 0;
+    this.position = 0;
+  }
+  emit(code) {
+    this.length += code.length;
+    if (this.length > LIMITS.source) throw new Error('生成的目标源码超过代码长度上限。');
+    if (code) this.parts.push(code);
+  }
+  at(position) {
+    const distance = position - this.position;
+    this.emit((distance < 0 ? this.instructions.left : this.instructions.right).repeat(Math.abs(distance)));
+    this.position = position;
+  }
+  write(position, value) {
+    this.at(position);
+    this.emit(value ? this.instructions.on : this.instructions.off);
+  }
+  once(position, body) {
+    this.at(position);
+    this.emit(this.instructions.open + this.instructions.off);
+    body();
+    this.at(position);
+    this.emit(this.instructions.close);
+  }
+  transfer(from, to) {
+    this.once(from, () => this.write(to, 1));
+  }
+  // The flag in the destination block is zero, so this loop moves exactly once.
+  shift(flag, distance) {
+    this.at(flag);
+    this.emit(this.instructions.open + this.instructions.off);
+    this.at(flag + distance);
+    this.emit(this.instructions.close);
+    this.position = flag;
+  }
+  source() { return this.parts.join(''); }
+}
+
+// Each native block holds two source cells, at j and -j-1, plus local control
+// bits. Only the current block has live control bits. Blocks extend to the left
+// so the same encoding runs on BF's tape and P′′'s one-sided tape.
+function tmToBinary(machine, target) {
+  const symbols = [...machine.alphabet];
+  const symbolIds = new Map(symbols.map((symbol, id) => [symbol, id]));
+  const { program } = machine;
+  const states = [...program.transitions.keys()];
+  const stateIds = new Map(states.map((state, id) => [state, id]));
+  const stateWidth = widthOf(states.length), dataWidth = widthOf(symbols.length);
+  let allocated = 0;
+  const allocate = () => -allocated++;
+  const run = allocate(), origin = allocate(), side = allocate();
+  const left = allocate(), right = allocate(), goLeft = allocate(), goRight = allocate();
+  const outcome = indices(2).map(allocate);
+  const restore = allocate();
+  const flagSlots = indices(2).map(() => [allocate(), allocate()]);
+  const stateTests = indices(stateWidth).map(() => [allocate(), allocate()]);
+  const dataTests = indices(dataWidth).map(() => [allocate(), allocate()]);
+  const stateBits = stateTests.map(([position]) => position);
+  const nextBits = indices(stateWidth).map(allocate), dataBits = indices(dataWidth).map(allocate);
+  const positive = indices(dataWidth).map(allocate), negative = indices(dataWidth).map(allocate);
+  const block = allocated;
+  const code = new BinaryCode(target);
+
+  function branch(flag, depth, yes, no) {
+    const [one, zero] = flagSlots[depth];
+    code.once(flag, () => { code.write(one, 1); code.write(restore, 1); });
+    code.transfer(restore, flag);
+    if (no) code.write(zero, 1);
+    code.once(one, () => { if (no) code.write(zero, 0); yes(); });
+    if (no) code.once(zero, no);
+  }
+  function update(bits, from, to) {
+    bits.forEach((position, index) => {
+      if (bit(from, index) !== bit(to, index)) code.write(position, bit(to, index));
+    });
+  }
+  function dispatch(entries, tests, execute, index = 0) {
+    if (!entries.length) return;
+    if (index === tests.length) { execute(entries[0][0], entries[0][1]); return; }
+    const ones = [], zeros = [];
+    for (const entry of entries) (bit(entry[0], index) ? ones : zeros).push(entry);
+    const [test, zero] = tests[index];
+    if (zeros.length) code.write(zero, 1);
+    code.once(test, () => {
+      if (zeros.length) code.write(zero, 0);
+      dispatch(ones, tests, execute, index + 1);
+    });
+    if (zeros.length) code.once(zero, () => dispatch(zeros, tests, execute, index + 1));
+  }
+  function transferWord(from, to) {
+    from.forEach((position, index) => code.transfer(position, to[index]));
+  }
+  function prepareSymbol(from) {
+    from.forEach((position, index) => code.once(position, () => {
+      code.write(dataTests[index][0], 1);
+      code.write(dataBits[index], 1);
+    }));
+  }
+
+  code.write(origin, 1);
+  for (const [index, symbol] of machine.cells) {
+    const id = symbolIds.get(symbol), base = -index * block;
+    positive.forEach((position, digit) => { if (bit(id, digit)) code.write(base + position, 1); });
+  }
+  if (machine.done) {
+    update(outcome, 0, outcomeCodes[machine.tmStop] ?? 0);
+  } else {
+    update(stateBits, 0, stateIds.get(program.start));
+    code.write(run, 1);
+    code.emit(code.instructions.open + code.instructions.off);
+    branch(side, 0, () => prepareSymbol(negative), () => prepareSymbol(positive));
+    dispatch(states.map((state, id) => [id, program.transitions.get(state)]), stateTests, (_, transitions) => {
+      dispatch([...transitions].map(([read, index]) => [symbolIds.get(read), program.rules[index]]), dataTests, (read, rule) => {
+        update(dataBits, read, symbolIds.get(rule.write));
+        const next = stateIds.get(rule.nextState);
+        if (next !== undefined) { update(nextBits, 0, next); code.write(run, 1); }
+        else update(outcome, 0, outcomeCodes[program.terminalStates.get(rule.nextState)] ?? 0);
+        if (rule.direction === 'L') code.write(goLeft, 1);
+        if (rule.direction === 'R') code.write(goRight, 1);
+      });
+    });
+    transferWord(nextBits, stateBits);
+    branch(side, 0, () => transferWord(dataBits, negative), () => transferWord(dataBits, positive));
+    code.once(goLeft, () => branch(side, 0, () => code.write(left, 1),
+      () => branch(origin, 1, () => code.write(side, 1), () => code.write(right, 1))));
+    code.once(goRight, () => branch(side, 0,
+      () => branch(origin, 1, () => code.write(side, 0), () => code.write(right, 1)), () => code.write(left, 1)));
+    const controls = [run, side, ...outcome, ...stateBits];
+    for (const [flag, distance] of [[left, -block], [right, block]]) {
+      branch(flag, 0, () => transferWord(controls, controls.map(position => position + distance)));
+      code.shift(flag, distance);
+    }
+    code.at(run);
+    code.emit(code.instructions.close);
+  }
+  code.at(run);
+  return { project: generatedProject(target, code.source(), { cellBits: 8 }), layout: { symbols, block, positive, negative, side, outcome } };
+}
+
+export function convertProgram(project, target) {
+  const original = validateProject(project);
+  if (!['bf', 'pdouble', 'tm'].includes(target) || target === original.language) throw new Error('请选择另一种目标语言。');
+  const source = new TapeMachine(original);
+  const tm = original.language === 'tm' ? original : numericToTm(source);
+  if (target === 'tm') return { project: tm, wordWidth: widthOf(source.modulus) };
+  const result = tmToBinary(original.language === 'tm' ? source : new TapeMachine(tm), target);
+  if (original.language !== 'tm') result.wordWidth = widthOf(source.modulus);
+  return result;
 }

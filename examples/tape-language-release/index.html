@@ -40,26 +40,43 @@
           <small>状态名可以用点号，例如 <code>add.scan</code> 或 <code>clean.0.0</code>。停机、接受、拒绝都可留空。</small>
         </fieldset>
         <label class="sr-only" for="source">程序代码</label>
-        <div class="code-wrap"><div class="code-label"><span id="file-name">program.b</span><button id="insert-lambda" hidden title="在光标处插入 λ">插入 λ</button><span id="code-count">0 条指令</span></div><textarea id="source" maxlength="200000" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="editor-hint"></textarea><div class="editor-footer"><span id="editor-hint">仅执行 &gt; &lt; + - . , [ ]，其余字符忽略。</span><span>UTF-8</span></div></div>
+        <div class="code-wrap"><div class="code-label"><span id="file-name">program.b</span><button id="insert-lambda" hidden title="在光标处插入 λ">插入 λ</button><span id="code-count">0 条指令</span></div><textarea id="source" maxlength="1000000" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="editor-hint"></textarea><div class="editor-footer"><span id="editor-hint">仅执行 &gt; &lt; + - . , [ ]，其余字符忽略。</span><span>UTF-8</span></div></div>
         <div class="transport"><button id="run" class="primary"><span aria-hidden="true">▶</span> 运行</button><button id="pause" disabled><span aria-hidden="true">Ⅱ</span> 暂停</button><button id="step"><span aria-hidden="true">▷</span> 单步</button><button id="reset" class="reset"><span aria-hidden="true">↺</span> 重置</button><div class="speed-controls"><label class="speed-label" for="speed">速度<input id="speed" type="number" min="1" step="1" value="20000" inputmode="numeric" aria-describedby="speed-hint">步/秒</label><label class="speed-unlimited-label"><input id="speed-unlimited" type="checkbox" checked>不限速</label></div></div>
         <p id="speed-hint" class="speed-hint" role="status">填写每秒步数，按 Enter 或移开焦点生效。</p><section id="native-panel" class="native-panel" hidden aria-label="转换得到的原始代码"><p id="native-note"></p><label for="native-source">原始代码</label><textarea id="native-source" readonly spellcheck="false" rows="4"></textarea><div><button id="copy-native">复制代码</button><button id="use-native">替换当前代码</button></div></section>
         <details id="initial-settings" class="initial-settings"><summary>设置初始纸带<span>运行前准备数据</span></summary><div class="initial-fields"><label>初始纸带<input id="initial-tape" type="text" placeholder="例如 1 0 1 或 1,0,1" maxlength="700000" aria-describedby="initial-tape-hint"><small id="initial-tape-hint">用空格或逗号分隔数字，可以混用。</small></label></div></details>
         <details id="project-encoding" class="initial-settings">
-          <summary>BF / P′′ / TM 编码互通</summary>
+          <summary>BF / P′′ / TM 跨语言转换</summary>
           <div class="initial-fields">
+            <label for="conversion-target">目标语言<select id="conversion-target"></select></label>
+            <small>转换当前代码和初始纸带。支持纯纸带程序。</small>
             <div class="encoding-symbols tm-settings-grid" role="group" aria-label="数字对应的编码符号">
               <label>0 的符号<input id="encoding-zero" type="text" value="0" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
               <label>1 的符号<input id="encoding-one" type="text" value="1" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
               <label>2 的符号<input id="encoding-two" type="text" value="2" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
             </div>
-            <label>编码<textarea id="encoded-project" rows="4" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="encoding-hint"></textarea></label>
-            <small id="encoding-hint">解码时使用同一组符号。载入会切换到编码中的语言，替换该语言的草稿。</small>
             <div class="encoding-actions">
-              <button id="encode-project">编码当前实验</button>
-              <button id="copy-encoding">复制编码</button>
-              <button id="decode-project">解码并载入</button>
+              <button id="convert-program">生成目标源码</button>
             </div>
             <p id="encoding-status" role="status" hidden></p>
+            <div id="conversion-result" class="conversion-result" hidden>
+              <p id="conversion-settings"></p>
+              <label>目标源码<textarea id="converted-program" rows="5" readonly spellcheck="false"></textarea></label>
+              <label id="conversion-initial-label" hidden>目标初始纸带<textarea id="conversion-initial" rows="2" readonly spellcheck="false"></textarea></label>
+              <details open>
+                <summary>目标源码的自定义符号编码</summary>
+                <label>编码结果<textarea id="encoded-project" rows="4" readonly spellcheck="false"></textarea></label>
+                <button id="copy-encoding">复制编码</button>
+              </details>
+              <details>
+                <summary>纸带编码说明</summary>
+                <pre id="conversion-layout"></pre>
+              </details>
+              <div class="encoding-actions">
+                <button id="copy-converted-program">复制目标源码</button>
+                <button id="load-converted-program">载入目标编辑器</button>
+              </div>
+              <small>载入会替换目标语言的草稿。</small>
+            </div>
           </div>
         </details>
       </section>

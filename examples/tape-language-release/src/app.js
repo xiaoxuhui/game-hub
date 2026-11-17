@@ -1,8 +1,9 @@
-import { TapeMachine, LANGUAGES, DEFAULT_TM_STATES, LIMITS, compile, validateProject, cellModulus, valueRange, nativeCode, encodeProject, decodeProject } from './machine.js';
+import { TapeMachine, LANGUAGES, DEFAULT_TM_STATES, LIMITS, compile, validateProject, cellModulus, valueRange, nativeCode, encodeText, convertProgram } from './machine.js';
 import { EXAMPLES } from './examples.js';
 
 const $ = id => document.getElementById(id);
 const STORAGE = 'tape-language-lab.projects.v1';
+const conversionLanguages = { bf: 'BF', pdouble: 'P′′', tm: 'TM' };
 const defaults = language => ({
   format: 'tape-language-lab', version: 1, language, source: EXAMPLES[language][0].source,
   input: '', inputMode: 'text', inputPolicy: 'ask', initialTape: EXAMPLES[language][0].initialTape,
@@ -16,6 +17,7 @@ let follow = true, center = 0, outputMode = 'text', state = 'ready', syntaxError
 let saveIssue = '';
 let resumeAfterInput = 'step';
 let convertedCode = null;
+let crossConversion = null;
 let viewCenter = 0, tapeFrame = 0, tapeTime = 0, drag = null;
 let tapeCells = new Map();
 let instructionProgram = null, instructionPc = -1;
@@ -103,6 +105,10 @@ const tmCommands = [
 const tmOutcomes = { halt: '停机', accept: '接受', reject: '拒绝', 'no-rule': '无匹配规则' };
 function applyProject(value) {
   language = value.language;
+  const target = $('conversion-target'), previousTarget = target.value;
+  target.replaceChildren(...Object.entries(conversionLanguages)
+    .filter(([name]) => name !== language).map(([name, label]) => new Option(label, name)));
+  if ([...target.options].some(option => option.value === previousTarget)) target.value = previousTarget;
   $('source').value = value.source; $('input').value = value.input; $('initial-tape').value = value.initialTape;
   $('input-mode').value = value.inputMode; $('symbols').value = value.symbols ?? 2;
   $('cell-bits').value = String(value.cellBits ?? 8);
@@ -469,14 +475,14 @@ $('example').addEventListener('change', () => {
 });
 $('insert-lambda').addEventListener('click', () => {
   const editor = $('source');
-  if (editor.value.length >= 200000) { message('代码最多 200,000 个字符。', true); return; }
+  if (editor.value.length >= LIMITS.source) { message('代码最多 1,000,000 个字符。', true); return; }
   editor.setRangeText('λ', editor.selectionStart, editor.selectionEnd, 'end'); editor.focus(); editor.dispatchEvent(new Event('input', { bubbles: true }));
 });
 $('insert-function').addEventListener('click', () => {
   const template = language === 'bf' ? 'fn add3 { +++ }\n@add3\n' : 'fn inc { λR }\n@inc\n';
   const editor = $('source');
   const separator = editor.selectionStart && editor.value[editor.selectionStart - 1] !== '\n' ? '\n' : '';
-  if (editor.value.length - (editor.selectionEnd - editor.selectionStart) + separator.length + template.length > 200000) { message('代码最多 200,000 个字符。', true); return; }
+  if (editor.value.length - (editor.selectionEnd - editor.selectionStart) + separator.length + template.length > LIMITS.source) { message('代码最多 1,000,000 个字符。', true); return; }
   editor.setRangeText(separator + template, editor.selectionStart, editor.selectionEnd, 'end');
   $('functions-enabled').checked = true; editor.focus(); editor.dispatchEvent(new Event('input', { bubbles: true }));
 });
@@ -502,24 +508,53 @@ $('use-native').addEventListener('click', () => {
   createMachine(); persist(); message('已将编辑器替换为原始代码，函数扩展已关闭。');
 });
 const encodingSymbols = () => ['encoding-zero', 'encoding-one', 'encoding-two'].map(id => $(id).value.trim());
-const encodingField = $('encoded-project');
+function conversionTapeGuide(result) {
+  const { layout, wordWidth } = result;
+  const word = wordWidth ? `原数值纸带的 x 号格对应 TM 的 −x × ${wordWidth} 号起，共 ${wordWidth} 位，从低位到高位。${language === 'pdouble' ? 'E0、E1 标记 P′′ 的右边界。' : ''}` : '';
+  if (!layout) return word;
+  const { symbols, block, positive, negative, outcome } = layout;
+  const legend = symbols.map((symbol, id) => {
+    const digits = [...id.toString(2).padStart(positive.length, '0')].reverse().join('');
+    return `${symbol} = ${digits}`;
+  });
+  return [word, `每 ${block} 格为一块，从 0 向左排。第 j 块存 TM 的 j 号格和 −j−1 号格。`,
+    `相对块起点的位偏移（低位到高位）`, `j 号格 ${positive.join('、')}`, `−j−1 号格 ${negative.join('、')}`,
+    `停机时读写头所在块的结果位 ${outcome.join('、')}。00 无匹配规则，10 普通停机，01 接受，11 拒绝。`, ...legend]
+    .filter(Boolean).join('\n');
+}
 $('project-encoding').addEventListener('input', () => encodingStatus());
-$('encode-project').addEventListener('click', () => {
+$('convert-program').addEventListener('click', () => {
   try {
-    encodingField.value = encodeProject(project(), encodingSymbols());
-    encodingStatus(`已编码 ${LANGUAGES[language].name} 的代码和初始设置。`);
-  } catch (error) { encodingStatus(error.message, true); }
+    const target = $('conversion-target').value;
+    const result = convertProgram(project(), target);
+    const converted = result.project, targetLabel = conversionLanguages[target];
+    $('encoded-project').value = encodeText(converted.source, encodingSymbols());
+    $('converted-program').value = converted.source;
+    $('conversion-initial').value = converted.initialTape;
+    $('conversion-initial-label').hidden = target !== 'tm';
+    $('conversion-layout').textContent = conversionTapeGuide(result);
+    const settings = target === 'tm'
+      ? `初始状态 ${converted.tmStates.start} · 空白符号 ${converted.blankSymbol} · 停机 ${converted.tmStates.halt}${converted.tmStates.reject ? ` · 拒绝 ${converted.tmStates.reject}` : ''}`
+      : `${target === 'bf' ? '8 位单元' : '二元字母表'} · 从空白纸带运行，源码会写入初始内容`;
+    $('conversion-settings').textContent = `${conversionLanguages[language]} → ${targetLabel} · ${settings}`;
+    crossConversion = converted;
+    $('conversion-result').hidden = false;
+    encodingStatus(`已生成 ${targetLabel} 源码。`);
+  } catch (error) {
+    crossConversion = null;
+    $('conversion-result').hidden = true;
+    encodingStatus(error.message, true);
+  }
 });
-$('copy-encoding').addEventListener('click', async () => {
-  if (!encodingField.value.trim()) { encodingStatus('请先粘贴或生成编码。', true); return; }
-  encodingStatus(await copyField(encodingField) ? '已复制编码。' : '已选中编码，可手动复制。');
-});
-$('decode-project').addEventListener('click', () => {
-  try {
-    const decoded = decodeProject(encodingField.value, encodingSymbols());
-    loadProject(decoded);
-    encodingStatus(`已载入 ${LANGUAGES[decoded.language].name}，可运行或单步执行。`);
-  } catch (error) { encodingStatus(error.message, true); }
+for (const [button, field] of [['copy-encoding', 'encoded-project'], ['copy-converted-program', 'converted-program']]) {
+  $(button).addEventListener('click', async () => {
+    encodingStatus(await copyField($(field)) ? '已复制。' : '已选中结果，可手动复制。');
+  });
+}
+$('load-converted-program').addEventListener('click', () => {
+  if (!crossConversion) return;
+  loadProject(crossConversion);
+  encodingStatus(`已载入 ${conversionLanguages[crossConversion.language]}，可运行或单步执行。`);
 });
 const tapeViewport = $('tape-viewport');
 tapeViewport.addEventListener('pointerdown', event => {

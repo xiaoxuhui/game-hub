@@ -45,7 +45,10 @@
 }
 #cell-value, #tape-result { overflow-wrap: anywhere; }
 .encoding-symbols.tm-settings-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-#encoded-project {
+.conversion-result { display: grid; gap: 12px; }
+.conversion-result p { margin: 0; line-height: 1.6; }
+.conversion-result details > label { margin-top: 8px; }
+.conversion-result textarea {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -56,6 +59,8 @@
   resize: vertical;
   overflow-wrap: anywhere;
 }
+.conversion-result pre { font: 12px/1.65 var(--mono); overflow-wrap: anywhere; white-space: pre-wrap; max-height: 14em; overflow: auto; }
+#copy-encoding { margin-top: 8px; }
 .encoding-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .encoding-actions button { font-size: 11px; }
 #encoding-status { margin: 0; overflow-wrap: anywhere; }
