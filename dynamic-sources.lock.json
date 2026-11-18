@@ -510,10 +510,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/fixed-point-workshop.git",
-      "revision": "094cb223141f1388364c91b83c82340a9c1efc45",
+      "revision": "92ae288952b648a3abf47fa0d703124cc9121ef2",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "fixed-point-workshop-dynamic-v1",
       "files": [
@@ -523,7 +523,7 @@
         "index.html",
         "style.css"
       ],
-      "releaseNotes": "通过加法和移位搭建定点数电路，支持离线使用。"
+      "releaseNotes": "元件库可直接拖到画布指定位置放置；自由搭建的输入按 A、B、…、Z、AA 自动命名，不再限制数量。"
     },
     {
       "id": "sokoban-ai-lab",
