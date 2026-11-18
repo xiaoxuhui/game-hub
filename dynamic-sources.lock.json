@@ -510,10 +510,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/fixed-point-workshop.git",
-      "revision": "094cb223141f1388364c91b83c82340a9c1efc45",
+      "revision": "92ae288952b648a3abf47fa0d703124cc9121ef2",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "fixed-point-workshop-dynamic-v1",
       "files": [
@@ -523,7 +523,7 @@
         "index.html",
         "style.css"
       ],
-      "releaseNotes": "通过加法和移位搭建定点数电路，支持离线使用。"
+      "releaseNotes": "元件库可直接拖到画布指定位置放置；自由搭建的输入按 A、B、…、Z、AA 自动命名，不再限制数量。"
     },
     {
       "id": "sokoban-ai-lab",
@@ -531,27 +531,30 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/sokoban-ai-lab.git",
-      "revision": "afe7e217ef95efcbd363ee44b6c5548f7faa08b9",
+      "revision": "d7a51cfefefc3ff923dd7a99f9d348863f85f1c2",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "sokoban-ai-lab-dynamic-v1",
       "files": [
         "LICENSE",
         "app.js",
+        "box-clone-levels.js",
         "box-intro.css",
         "box-intro.html",
         "box-intro.js",
         "box-levels.js",
+        "box-open-levels.js",
         "box-portals.js",
         "box-rooms.js",
+        "box-transfer-levels.js",
         "engine.js",
         "index.html",
         "route-input.js",
         "style.css"
       ],
-      "releaseNotes": "新增套箱模式：入门、进入、空白、吞食、参照五章关卡，支持嵌套房间、传送点与路线输入；修复首页套箱入口此前指向缺失页面的问题。"
+      "releaseNotes": "套箱模式扩至十章：新增调换、居中、克隆、转移、开放五章关卡，支持复制体同步进出同一房间、从箱内走出按出口位置进入相邻箱子；补充各章节布局测试。"
     },
     {
       "id": "tape-language-lab",
