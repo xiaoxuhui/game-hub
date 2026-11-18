@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "turbowarp-life-lab",
+  "title": "生命规则实验室",
+  "version": "0.1.0",
+  "sourceProject": "dist/life-lab.sb3",
+  "sourceProjectSha256": "1b073272ba90c5af81435acce537563ae7b7387d5296bc17b51e84a8811426ea",
+  "packagerVersion": "3.14.0",
+  "entryPage": "index.html",
+  "bytes": 1898200,
+  "sha256": "bb9b56954ecbda9e44b61230794e4f9804a6b3b60043216bedd4c524a56c8ec8"
+}

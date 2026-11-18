@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="../../storage-isolation.js" data-game="mini-scratch"></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7555cd"><meta name="description" content="拼一拼积木，让创意动起来。一个轻巧的中文图形编程工作台。">
+  <title>灵感积木 · 创意编程工作台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%237555cd'/%3E%3Cpath d='M10 12h8v-3h7v3h6v8h-3v6h3v5H10v-8h3v-5h-3z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="灵感积木首页"><span class="brand-icon">✦</span><strong>灵感积木</strong><span class="brand-en">BLOCK LAB</span></a>
+    <span class="top-divider"></span><span class="top-caption">小小积木，大大想象</span>
+    <div class="top-actions"><button id="helpButton" class="top-button">? <span>使用指南</span></button><button id="exportButton" class="top-button">↓ <span>导出作品</span></button><button id="importButton" class="top-button">↑ <span>导入</span></button><input id="fileInput" type="file" accept=".json,application/json" hidden></div>
+  </header>
+  <main>
+    <section class="project-heading">
+      <div><div class="eyebrow">YOUR LITTLE CREATIVE SPACE</div><div class="title-row"><input id="projectName" aria-label="作品名称" maxlength="40" value="小狐狸画方形"><span class="edit-name" aria-hidden="true">✎</span><span class="version-badge">v0.5.0 简易版</span></div></div>
+      <div class="project-actions"><span id="saveStatus" class="save-status">● 已保存到本机</span><button id="newButton" class="button secondary">＋ 新作品</button></div>
+    </section>
+    <div class="workbench">
+      <aside class="library panel">
+        <div class="panel-heading"><h2>积木盒</h2><span class="small-label">拖一块，试试看</span></div>
+        <nav class="categories" aria-label="积木分类">
+          <button data-category="motion" class="category active"><i class="dot motion"></i>运动</button><button data-category="looks" class="category"><i class="dot looks"></i>外观</button><button data-category="sound" class="category"><i class="dot sound"></i>声音</button><button data-category="events" class="category"><i class="dot events"></i>事件</button><button data-category="control" class="category"><i class="dot control"></i>控制</button><button data-category="sensing" class="category"><i class="dot sensing"></i>检测</button><button data-category="operators" class="category"><i class="dot operators"></i>运算</button><button data-category="variables" class="category"><i class="dot variables"></i>变量</button><button data-category="custom" class="category"><i class="dot custom"></i>自制积木</button><button data-category="pen" class="category"><i class="dot pen"></i>画笔</button>
+        </nav>
+        <div class="palette-heading"><span id="categoryName">运动积木</span><span id="categoryIcon">↗</span></div>
+        <div id="categoryTools" class="category-tools"></div>
+        <div id="palette" class="palette"></div>
+        <div class="library-tip"><span class="tip-symbol">✧</span><p>拖拽或点击添加。<br>点参数旁的 ◇ 放入运算、<br>检测或变量的返回值。</p></div>
+        <div class="mini-legend"><span>① 选事件</span><span>② 加动作</span><span>③ 触发它</span></div>
+      </aside>
+      <section class="editor panel">
+        <div class="panel-heading"><div class="editor-tabs"><h2 class="selected-tab">⌘ 代码</h2><span>把想法拼出来</span></div><span id="blockCount" class="count-badge">0 块积木</span></div>
+        <div class="editor-toolbar"><span><i class="live-dot"></i><span id="runStatus" role="status">准备好开始创作</span></span><button id="clearButton" class="text-button">清空积木</button></div>
+        <div class="script-scroll"><div id="script" class="block-list root-list" data-target="root"></div><div class="editor-hint">每个事件独立成组，可删除 · 动作放在事件内才会执行</div></div>
+        <div class="editor-bottom"><span>✥ 拖入积木 · ↑↓ 调整顺序</span><button id="undoButton" class="text-button" disabled>↶ 撤销</button></div>
+      </section>
+      <section class="preview-column">
+        <div class="stage-panel panel">
+          <div class="stage-toolbar"><div class="stage-title"><span class="stage-label">舞台</span><span class="stage-size">480 × 360</span></div><div class="run-controls"><button id="runButton" class="run-button" aria-label="运行作品"><span>⚑</span> 运行</button><button id="stopButton" class="stop-button" aria-label="停止执行" disabled><span>■</span></button><span class="control-divider"></span><button id="resetButton" class="icon-button" aria-label="舞台复位" title="舞台复位">↺</button></div></div>
+          <div id="stage" class="stage meadow">
+            <svg id="stageSvg" viewBox="0 0 480 360" role="group" aria-label="角色舞台与绘画结果">
+              <defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="0.8" fill="currentColor" opacity=".14"/></pattern></defs>
+              <g class="meadow-art"><circle cx="400" cy="64" r="27" fill="#fff0b0"/><path d="M0 270Q90 190 200 267T480 240V360H0" fill="#c7ddbb"/><path d="M0 310Q155 230 330 310T480 282V360H0" fill="#a8c69a"/><path d="M55 83h65a16 16 0 0 0-20-20 22 22 0 0 0-42 8 6 6 0 0 0-3 12m232 35h46a12 12 0 0 0-15-15 16 16 0 0 0-31 7 4 4 0 0 0 0 8" fill="#fff" opacity=".8"/></g>
+              <g class="space-art" fill="#fff"><circle cx="50" cy="60" r="2"/><circle cx="390" cy="80" r="3"/><circle cx="300" cy="30" r="2"/><circle cx="80" cy="240" r="2"/><circle cx="410" cy="290" r="2"/><circle cx="160" cy="100" r="1.5"/><circle cx="340" cy="190" r="1.5"/><circle cx="350" cy="90" r="24" fill="#9a8acb"/><ellipse cx="350" cy="90" rx="43" ry="9" fill="none" stroke="#c1b2ee" stroke-width="4" transform="rotate(-25 350 90)"/></g>
+              <rect width="480" height="360" fill="url(#grid)"/><path class="axes" d="M240 0V360M0 180H480" fill="none" stroke="currentColor" stroke-dasharray="3 6" opacity=".12"/>
+              <image id="customBackdrop" width="480" height="360" preserveAspectRatio="xMidYMid slice" style="display:none"/>
+              <g id="drawing" fill="none" stroke="#a16be0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="sprite" transform="translate(240 180)" role="button" tabindex="0" aria-label="点击角色触发事件"></g>
+            </svg>
+            <div id="speech" class="speech" hidden></div><div class="stage-origin">x → &nbsp; y ↑</div><span id="stageBadge" class="stage-badge">青草地</span>
+          </div>
+          <div class="stage-footer"><span id="stageMessage">你的创意，即将在这里发生</span><span id="audioStatus" class="keyboard-hint">音量 80%</span></div>
+        </div>
+        <div class="sprite-panel panel">
+          <div class="sprite-info"><div id="spriteThumbnail" class="sprite-thumbnail"></div><div><h2 id="spriteName">小狐狸</h2><span class="small-label">当前角色</span></div><span class="sprite-check">✓</span></div>
+          <div class="coordinates"><div><span>X 坐标</span><strong id="xValue">0</strong></div><div><span>Y 坐标</span><strong id="yValue">0</strong></div><div><span>方向</span><strong id="angleValue">0°</strong></div><div><span>当前大小</span><strong id="sizeValue">100%</strong></div></div>
+          <div id="variableMonitor" class="variable-monitor" aria-label="变量运行值"></div>
+          <div id="listMonitor" class="list-monitor" aria-label="列表运行值"></div>
+          <div class="asset-pickers"><label>角色<select id="spriteSelect" aria-label="选择角色"><option value="fox">🦊 小狐狸</option><option value="rabbit">🐰 小兔子</option><option value="robot">🤖 小机器人</option></select></label><label>背景<select id="backdropSelect" aria-label="选择背景"><option value="meadow">🌱 青草地</option><option value="space">🪐 星空</option><option value="paper">▦ 方格纸</option></select></label></div>
+          <div class="custom-assets-actions"><button id="spriteAssets" class="button secondary">✎ 导入 / 绘制角色</button><button id="backdropAssets" class="button secondary">✎ 导入 / 绘制背景</button></div>
+        </div>
+      </section>
+    </div>
+    <section class="examples"><div class="examples-intro"><span class="example-spark">✦</span><div><h2>从一个小灵感开始</h2><p>载入示例，改一改，变成你的作品</p></div></div><button class="example-card" data-example="square"><span class="example-art square-art">□</span><span><strong>画个正方形</strong><small>认识循环的魔法</small></span><span class="example-arrow">↗</span></button><button class="example-card" data-example="flower"><span class="example-art flower-art">❋</span><span><strong>绽放的几何花</strong><small>让重复遇见重复</small></span><span class="example-arrow">↗</span></button><button class="example-card" data-example="hello"><span class="example-art hello-art">☏</span><span><strong>跟世界打招呼</strong><small>让角色动起来</small></span><span class="example-arrow">↗</span></button><button class="example-card" data-example="dance"><span class="example-art party-art">♫</span><span><strong>积木音乐派对</strong><small>空格跳舞 · 点击广播</small></span><span class="example-arrow">↗</span></button></section>
+    <footer class="page-footer"><span>每一个大创意，都从一小块开始。</span><span>本地创作 · 自动保存 · 尽情探索</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="expressionDialog" class="expression-dialog"><button id="closeExpression" class="dialog-close" aria-label="关闭返回值编辑">×</button><div class="eyebrow">VALUES THAT FIT TOGETHER</div><h2>把返回值放进参数</h2><label class="expression-target">放入位置<select id="expressionTarget" aria-label="放入位置"></select></label><div id="expressionTree"></div><p id="expressionPreview" class="expression-preview"></p><div class="expression-footer"><button id="clearExpression" class="button secondary">改回直接输入</button><button id="applyExpression" class="button primary">放入参数 ✓</button></div></dialog>
+  <dialog id="helpDialog"><button id="closeHelp" class="dialog-close" aria-label="关闭指南">×</button><div class="eyebrow">LET'S MAKE SOMETHING</div><h2>让第一个想法动起来</h2><ol><li><strong>选一块积木</strong><p>点击积木添加，或拖到代码区。拖进「重复执行」的内部，就能循环运行。</p></li><li><strong>试着改一改</strong><p>白色框修改参数，◇ 放入运算、检测或变量返回值。变量分类可新建变量和列表；列表支持末尾添加、替换、插入、删除、清空和取值，序号从1开始；自制积木先定义，再调用，可添加数字、文字、布尔参数；把参数名拖入定义内使用。角色和背景可导入或绘制，声音区可录音或导入音频。↑↓ 调整顺序，× 删除，撤销找回编辑。</p></li><li><strong>点击绿色旗子</strong><p>每个事件独立成组，可以删除和排序。添加事件后再选动作，会自动放入该事件。绿旗、按键、角色点击可以分别触发，不必先点绿旗。未连接事件的动作不会自动运行，每次新会话从舞台中心开始。事件与定义放最外层。试试“积木音乐派对”。红方块停止并停止声音，↺ 复位。方向 0° 朝右，右转 90° 朝下。</p></li></ol><p class="help-note">作品自动保存在当前浏览器。可导出 JSON 留存，或导入继续创作。示例会替换当前程序，可通过「撤销」恢复。</p><button id="startCreating" class="button primary">开始我的创作 ↗</button></dialog>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

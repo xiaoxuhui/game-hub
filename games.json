@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    {
+      "id": "abelian-sandpile",
+      "name": "阿贝尔沙滩",
+      "version": "0.1.2",
+      "contentCode": 2,
+      "entry": "index.html"
+    },
+    {
+      "id": "ai-racing-lab",
+      "name": "AI 赛车实验室",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "compass-polygon-studio",
+      "name": "尺规工坊",
+      "version": "1.0.0",
+      "contentCode": 3,
+      "entry": "index.html"
+    },
+    {
+      "id": "conway",
+      "name": "康威生命游戏",
+      "version": "0.17.0",
+      "contentCode": 4,
+      "entry": "index.html"
+    },
+    {
+      "id": "eml",
+      "name": "EML 计算台",
+      "version": "1.3.1",
+      "contentCode": 4,
+      "entry": "eml-workbench.html"
+    },
+    {
+      "id": "fixed-point-workshop",
+      "name": "定点数工坊",
+      "version": "1.0.0",
+      "contentCode": 2,
+      "entry": "index.html"
+    },
+    {
+      "id": "fourier-drawing-studio",
+      "name": "傅里叶画室",
+      "version": "0.1.0",
+      "contentCode": 2,
+      "entry": "index.html"
+    },
+    {
+      "id": "hex-cell-lab",
+      "name": "元胞实验室",
+      "version": "1.4.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "lambda-diagram-game",
+      "name": "Lambda 线路实验室",
+      "version": "0.3.5",
+      "contentCode": 9,
+      "entry": "lambda-lab.html"
+    },
+    {
+      "id": "langtons-ant",
+      "name": "兰顿蚂蚁",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "learning-machine",
+      "name": "学习小机器",
+      "version": "1.4.0",
+      "contentCode": 2,
+      "entry": "index.html"
+    },
+    {
+      "id": "light",
+      "name": "光学游戏",
+      "version": "1.2.1",
+      "contentCode": 2,
+      "entry": "index.html"
+    },
+    {
+      "id": "lights-out-matrix",
+      "name": "熄灯矩阵",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "logic-circuit",
+      "name": "逻辑工坊",
+      "version": "0.3.54",
+      "contentCode": 42,
+      "entry": "index.html"
+    },
+    {
+      "id": "memory-demo",
+      "name": "配对练习 · 示范",
+      "version": "1.0.1",
+      "contentCode": 2,
+      "entry": "index.html"
+    },
+    {
+      "id": "mini-scratch",
+      "name": "灵感积木",
+      "version": "0.5.0",
+      "contentCode": 7,
+      "entry": "index.html"
+    },
+    {
+      "id": "pixel-frame",
+      "name": "像素帧挑战",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "red-green-puzzle",
+      "name": "红绿变换",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "snake-speed",
+      "name": "贪吃蛇 · Python 编程版",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "sokoban-ai-lab",
+      "name": "推箱子实验室",
+      "version": "1.0.0",
+      "contentCode": 3,
+      "entry": "index.html"
+    },
+    {
+      "id": "tape-language-lab",
+      "name": "编程语言实验",
+      "version": "0.1.0",
+      "contentCode": 2,
+      "entry": "index.html"
+    },
+    {
+      "id": "traffic-planner",
+      "name": "路流 · 交通规划",
+      "version": "0.1.0",
+      "contentCode": 3,
+      "entry": "index.html"
+    },
+    {
+      "id": "turbowarp-graph-lab",
+      "name": "函数图形实验室",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "turbowarp-life-lab",
+      "name": "生命规则实验室",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "turbowarp-logic-lab",
+      "name": "逻辑小实验室",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "turbowarp-neural-network",
+      "name": "神经网络实验室",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "turbowarp-turing-lab",
+      "name": "图灵机实验室",
+      "version": "0.1.0",
+      "contentCode": 1,
+      "entry": "index.html"
+    },
+    {
+      "id": "turing",
+      "name": "图灵机实验台",
+      "version": "0.6.0",
+      "contentCode": 4,
+      "entry": "index.html"
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="../../storage-isolation.js" data-game="fixed-point-workshop"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="用加法和移位节点搭建有符号定点数电路。">
+  <meta name="theme-color" content="#202d29">
+  <title>定点数工坊</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="core.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div><h1>定点数工坊</h1><span class="wordmark">FIXED POINT WORKSHOP</span></div>
+    </div>
+    <nav class="mode-switch" aria-label="游戏模式">
+      <button type="button" id="challenge" aria-pressed="true">关卡挑战</button>
+      <button type="button" id="sandbox" aria-pressed="false">自由搭建</button>
+    </nav>
+    <button type="button" class="help" id="help" aria-label="玩法与定点格式"><span aria-hidden="true">?</span> <span>玩法说明</span></button>
+  </header>
+
+  <main class="workshop">
+    <aside class="toolbox" aria-labelledby="toolbox-title">
+      <div class="rail-title"><span class="rail-mark" aria-hidden="true">▦</span><h2 id="toolbox-title">元件库</h2></div>
+      <section class="shelf" aria-labelledby="operations-title">
+        <h3 id="operations-title">运算节点</h3>
+        <button class="part" data-part="add" type="button"><span class="part-icon operator">+</span><span><strong>加法</strong><small>A + B</small></span><span class="insert" aria-hidden="true">+</span></button>
+        <button class="part" data-part="left" type="button"><span class="part-icon operator">≪</span><span><strong>左移</strong><small>A &lt;&lt; N</small></span><span class="insert" aria-hidden="true">+</span></button>
+        <button class="part" data-part="right" type="button"><span class="part-icon operator">≫</span><span><strong>右移</strong><small>A &gt;&gt; N</small></span><span class="insert" aria-hidden="true">+</span></button>
+        <button class="part" data-part="sign" type="button" title="负数输出 −1，零输出 0，正数输出 +1"><span class="part-icon operator">±</span><span><strong>正负判断</strong><small>sign(A)</small></span><span class="insert" aria-hidden="true">+</span></button>
+        <button class="part" data-part="changeSign" type="button"><span class="part-icon operator">×</span><span><strong>改变符号</strong><small>A × S</small></span><span class="insert" aria-hidden="true">+</span></button>
+      </section>
+      <section class="shelf" aria-labelledby="signals-title">
+        <h3 id="signals-title">信号节点</h3>
+        <button class="part" data-part="input" type="button"><span class="part-icon source">↦</span><span><strong>输入</strong><small>IN</small></span><span class="insert" aria-hidden="true">+</span></button>
+        <button class="part" data-part="constant" type="button"><span class="part-icon constant">#</span><span><strong>常数</strong><small>CONST</small></span><span class="insert" aria-hidden="true">+</span></button>
+        <button class="part" data-part="output" type="button"><span class="part-icon sink">↤</span><span><strong>输出</strong><small>OUT</small></span><span class="insert" aria-hidden="true">+</span></button>
+        <button class="part" data-part="delay" type="button"><span class="part-icon delay">↷</span><span><strong>延迟线</strong><small>1 STEP</small></span><span class="insert" aria-hidden="true">+</span></button>
+      </section>
+      <section class="shelf" aria-labelledby="gates-title">
+        <h3 id="gates-title">我的逻辑门</h3>
+        <p id="gate-empty">在自由搭建中保存电路。</p>
+        <div id="gate-library"></div>
+      </section>
+      <div class="format-card">
+        <div class="format-title"><strong>定点格式</strong><span>9 BIT</span></div>
+        <div class="format-sample" aria-label="一位符号，四位整数，四位小数"><b>±</b><b>0000</b><span>.</span><b>0000</b></div>
+        <div class="format-labels"><span>符号</span><span>整数</span><span>小数</span></div>
+        <small>每格精度 0.0625</small>
+      </div>
+    </aside>
+
+    <section class="workspace" aria-labelledby="level-title">
+      <div class="workspace-heading">
+        <div class="lesson">
+          <div class="level-navigation" id="level-navigation">
+            <button type="button" id="prev" aria-label="上一关">‹</button>
+            <label for="levels" class="sr-only">选择关卡</label>
+            <select id="levels"></select>
+            <button type="button" id="next" aria-label="下一关">›</button>
+          </div>
+          <h2 id="level-title"></h2>
+          <p id="level-description"></p>
+        </div>
+        <div class="toolbar" aria-label="电路操作">
+          <button type="button" id="save-gate" title="将输出上游的电路封装成逻辑门" hidden>保存为逻辑门</button>
+          <button type="button" id="step" title="让所有延迟线同时采样一次">下一步</button>
+          <button type="button" id="undo" title="撤销（Ctrl+Z）" aria-label="撤销">↶</button>
+          <button type="button" id="redo" title="重做（Ctrl+Shift+Z）" aria-label="重做">↷</button>
+          <button type="button" id="delete" title="删除选中的节点或连线（Delete）" aria-label="删除选中项">×</button>
+          <button type="button" id="reset" class="reset" title="重置电路" aria-label="重置电路">⟳ <span>重置</span></button>
+        </div>
+      </div>
+
+      <div class="board-shell">
+        <div class="board-top">
+          <span><i class="live-dot"></i> 电路画布</span>
+          <span id="node-count"></span>
+        </div>
+        <div class="board-scroll" id="board-scroll" tabindex="0" aria-label="电路画布，空白处右键拖动视角">
+          <div id="stage">
+            <div id="plane">
+              <svg id="wires" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+              <div id="nodes"></div>
+            </div>
+          </div>
+        </div>
+        <div class="board-bottom">
+          <span id="board-hint" role="status">左键拖节点，右键拖空白处移动视角，滚轮缩放。</span>
+          <div class="zoom" aria-label="画布缩放">
+            <button type="button" id="zoom-out" aria-label="缩小">−</button><button type="button" id="zoom-fit" aria-label="显示全部元件" title="显示全部元件">100%</button><button type="button" id="zoom-in" aria-label="放大">+</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="inspector" aria-labelledby="inspector-title">
+      <div class="rail-title"><span class="rail-mark" aria-hidden="true">▤</span><h2 id="inspector-title">关卡检测</h2></div>
+      <div id="inspection-content"></div>
+    </aside>
+  </main>
+
+  <footer class="statusbar"><span><i class="live-dot"></i> 电路实时计算</span><span>符号 1 位 <b>·</b> 整数 4 位 <b>·</b> 小数 4 位</span><span id="save-status">电路保存在当前浏览器</span></footer>
+
+  <dialog id="help-dialog" aria-labelledby="help-title">
+    <div class="dialog-head"><h2 id="help-title">玩法说明</h2><button type="button" data-close="help-dialog" aria-label="关闭">×</button></div>
+    <ol>
+      <li>从元件库拖动输入或其他元件到画布放置，也可以点击添加。自由搭建的输入按 A、B、C、D、E 等字母顺序命名。</li>
+      <li>左键拖动节点，中键或滚轮缩放，空白处右键拖动视角。触屏可直接拖动空白处。元件可以放在画布任意位置。</li>
+      <li>点击或拖动右侧输出圆点，接到目标节点左侧的输入圆点。一个输出可以接到多个节点，每个输入只接收一条线。</li>
+      <li>右键点击元件或导线即可删除，右键点击输入圆点可断开该端口。也可以先选中，再按 Delete。</li>
+      <li>延迟线初始输出 0。每点一次“下一步”，所有延迟线同时采样各自输入，串联时信号每步前进一级。</li>
+      <li>在自由搭建中点击“保存为逻辑门”，选择一个输出并命名。这个输出用到的输入会变成新门的端口，可以从元件库再次放到画布。</li>
+      <li>点击输入节点的符号位切换正负，点击数字格切换 0 和 1。也可以点击下方十进制数值直接填写。选中右侧样例可恢复预设输入，点击“检测电路”验证本关全部样例。</li>
+    </ol>
+    <div class="dialog-rules"><strong>运算规则</strong><p>所有端口使用 1 位符号、4 位整数和 4 位小数，范围为 −15.9375 至 +15.9375。左右移的 N 都必须是非负整数。右移丢弃移出的小数位，运算超出范围时会提示溢出。</p><p>正负判断对负数、零和正数分别输出 −1、0 和 +1。将该结果接到「改变符号」的 S 端，A 接待处理的数值。</p></div>
+  </dialog>
+
+  <dialog id="value-dialog" aria-labelledby="value-title">
+    <form id="value-form">
+      <div class="dialog-head"><h2 id="value-title">编辑数值</h2><button type="button" data-close="value-dialog" aria-label="关闭">×</button></div>
+      <label for="value-input">十进制数值</label>
+      <input id="value-input" type="text" inputmode="decimal" maxlength="40" autocomplete="off" required>
+      <div id="value-error" role="alert">范围 ±15.9375，步长 0.0625</div>
+      <button type="submit" class="primary">应用数值</button>
+    </form>
+  </dialog>
+  <dialog id="gate-dialog" aria-labelledby="gate-title">
+    <form id="gate-form">
+      <div class="dialog-head"><h2 id="gate-title">保存为逻辑门</h2><button type="button" data-close="gate-dialog" aria-label="关闭">×</button></div>
+      <label for="gate-name">逻辑门名称</label>
+      <input id="gate-name" type="text" maxlength="24" autocomplete="off" required autofocus>
+      <label for="gate-output">要封装的输出</label>
+      <select id="gate-output" required></select>
+      <p id="gate-error" role="alert"></p>
+      <button type="submit" class="primary">保存逻辑门</button>
+    </form>
+  </dialog>
+</body>
+</html>

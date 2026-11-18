@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="../../storage-isolation.js" data-game="sokoban-ai-lab"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="套箱模式的入门、进入、空白、吞食、参照、调换、居中、克隆、转移和开放关卡。">
+  <meta name="theme-color" content="#111715">
+  <title>套箱模式 · 入门</title>
+  <link rel="stylesheet" href="style.css?v=48">
+  <link rel="stylesheet" href="box-intro.css?v=19">
+  <script src="box-rooms.js?v=9" defer></script>
+  <script src="box-levels.js?v=15" defer></script>
+  <script src="box-clone-levels.js?v=1" defer></script>
+  <script src="box-transfer-levels.js?v=1" defer></script>
+  <script src="box-open-levels.js?v=1" defer></script>
+  <script src="box-portals.js?v=4" defer></script>
+  <script src="route-input.js?v=2" defer></script>
+  <script src="box-intro.js?v=30" defer></script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">▦</span>套箱模式</div>
+      <a class="outline docs top-link" href="./">返回推箱子实验室</a>
+    </div>
+  </header>
+  <main class="intro-main">
+    <div class="intro-heading">
+      <h1 id="intro-chapter-title">入门</h1>
+      <label class="intro-chapter">章节 <select id="intro-chapter"><option value="0">入门</option><option value="1">进入</option><option value="2">空白</option><option value="3">吞食</option><option value="4">参照</option><option value="5">调换</option><option value="6">居中</option><option value="7">克隆</option><option value="8">转移</option><option value="9">开放</option></select></label>
+    </div>
+    <nav class="modes intro-levels" id="intro-levels" aria-label="选择关卡"></nav>
+    <section class="panel intro-panel" aria-labelledby="intro-title">
+      <div class="panel-heading intro-panel-heading">
+        <div>
+          <h2 id="intro-title"></h2>
+          <p id="intro-hint" class="secondary"></p>
+          <div class="intro-room-info">
+            <p id="intro-room" class="secondary" hidden></p>
+            <button class="outline docs" id="intro-view-parent" type="button" hidden>查看外层</button>
+            <button class="outline docs" id="intro-display-mode" type="button" hidden>图形显示</button>
+          </div>
+        </div>
+        <p class="move-count intro-count" id="intro-count"></p>
+      </div>
+      <div class="intro-stage intro-scene" id="intro-stage">
+        <canvas class="intro-surround" aria-hidden="true" hidden></canvas>
+        <div id="intro-board" class="intro-board" role="group" aria-label="棋盘"></div>
+        <div id="intro-text-maps" class="intro-text-maps" role="group" aria-label="字符棋盘" hidden></div>
+        <canvas class="intro-recursive-view" id="intro-recursive-view" aria-hidden="true" hidden></canvas>
+        <canvas class="intro-box-motion" id="intro-box-motion" aria-hidden="true" hidden></canvas>
+      </div>
+      <div class="intro-controls">
+        <div class="tools-group">
+          <button class="outline" id="intro-undo" aria-keyshortcuts="Z" type="button" disabled>撤销 <kbd>Z</kbd></button>
+          <button class="outline" id="intro-redo" aria-keyshortcuts="X" type="button" disabled>重做 <kbd>X</kbd></button>
+          <button class="outline" id="intro-reset" aria-keyshortcuts="R" type="button">重开</button>
+          <button class="outline" id="intro-return" aria-keyshortcuts="Escape" type="button" hidden>回到玩家</button>
+          <button class="outline" id="intro-zoom" type="button" hidden>暂停缩放</button>
+        </div>
+        <div class="dpad" aria-label="移动">
+          <button type="button" data-move="3" aria-label="向左">←</button>
+          <button type="button" data-move="0" aria-label="向上">↑</button>
+          <button type="button" data-move="2" aria-label="向下">↓</button>
+          <button type="button" data-move="1" aria-label="向右">→</button>
+        </div>
+      </div>
+      <details id="route-input" class="route-input"></details>
+      <div class="intro-result">
+        <p id="intro-status" class="map-note" role="status"></p>
+        <div class="tools-group">
+          <button class="outline docs" id="intro-convert" type="button">转成传送门地图</button>
+          <button class="primary" id="intro-next" type="button" hidden>下一关 →</button>
+        </div>
+      </div>
+    </section>
+    <p class="intro-keyboard secondary">方向键或 WASD 移动 · Z 撤销 · X 重做 · R 重开</p>
+  </main>
+</body>
+</html>

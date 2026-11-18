@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "turbowarp-turing-lab",
+  "title": "图灵机实验室",
+  "version": "0.1.0",
+  "sourceProject": "dist/turing-lab.sb3",
+  "sourceProjectSha256": "5c405cf90d8c6cce9c2eb2ccea53735a830f4dc31251576ca8514a14949500ec",
+  "packagerVersion": "3.14.0",
+  "entryPage": "index.html",
+  "bytes": 2008884,
+  "sha256": "66309cd81201c0710442de9762c4c9016b094ab5a95207f561e1620ea612fd00"
+}

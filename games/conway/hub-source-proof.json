@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "integration": "conway-v2-world-archive-v1",
+  "repository": "https://github.com/xiaoxuhui/conway-life-game.git",
+  "revision": "5b4fd48929eee5c14138c673fd5122e7db2e07a3",
+  "inputs": {
+    "scripts/app.js": "5d61e7c88bed7bceefeccf778c0cf769770eacc6955534027095a725c29bcb7c",
+    "index.html": "53bdbe8360c487888ebd6cc4b3d7a21455bdfa8be649a57abf3a3c50504f9054",
+    "styles/main.css": "f6c8de07282c5e7fa8698c1e63fe50b732d6d89242f8af2df96562aa64dbc377",
+    "scripts/life-engine.js": "ab9c0b9feca40d3e6e942ba46aeb597bac0185418e49317b60f585ffabd9833e"
+  },
+  "outputs": {
+    "scripts/app.js": "4ceceb5c5bfe1ec70a9519941bc2e5b7309a05d9865d00bffc6117eda56a6de7",
+    "index.html": "be214a7b585c1b9dfc07f3ede997889c8e1bd627d3666d6d6e602a06f460bb05",
+    "styles/main.css": "9388986451900b73217e40d70782b1adbcc1f14df316dfbcaa72203fcbb2bf11",
+    "scripts/hub-world-archive.js": "c0b4a54b0db2071c022bcfafb9e97b47fd39fdc3b1ba30fc1fd53bded43a400b",
+    "scripts/hub-world-archive-ui.js": "d90c5ec205f929e8b3ae96d9f924f08dc44ac98bdd6c8523a41cf9090def2b17",
+    "scripts/life-engine.js": "e9e17ca75577112e126baa0844eb0ed763e7121c3a64eb103aa4dab62e7888b3"
+  },
+  "adapters": {
+    "conway-resource-integration.mjs": "40f779dfe3817ac419115e9ace27a13fdd463b897832e155586de33c5a11fc0e",
+    "conway-compatibility.mjs": "61ae1fff325bd24b501e31a5dbe87d1df758d4610193369faf23579060d34755",
+    "conway-world-archive.mjs": "67ae4a2174c63e817e862bf64e8ceac7447ccc5ca97f2371a3ba92b83b1f3c6d",
+    "conway-archive-ui.mjs": "458a47d0165fcd44e72d9131a1e687cac256cb5189d25d6b1356ca2001494774",
+    "resource-protocol.mjs": "abc58bf6a8dd054467c3ec56eb340c1182540092b0ee16ad978fc16d997b4568"
+  }
+}

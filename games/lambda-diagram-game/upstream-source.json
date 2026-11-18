@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+  "revision": "eb4430ef402050b8f146962466664bdeb14c7153",
+  "upstreamHtmlSha256": "5827d3cdd55a44f98b58b85c8db7bd05389b4aae1e982f88ffdd8d442d046fc8",
+  "integration": {
+    "id": "lambda-content4-storage-c5-manual-restore-v1",
+    "inputSha256": "5827d3cdd55a44f98b58b85c8db7bd05389b4aae1e982f88ffdd8d442d046fc8",
+    "outputSha256": "aff46b1e1ad38822a547f5144c80923c779bb27658ffd3a9e07e0fc2f378f722",
+    "adapterSha256": "00328f53d367a30757a2cb93718a3f3b36981b42b739527b85e85f781bdd8602",
+    "integration": "lambda-content4-storage-c5-manual-restore-v1",
+    "browserAdapterSha256": "fd16b413becc175b45bc111dfb4712c847eed58f6592804314f02494d0506057",
+    "storageAdapterSha256": "20051d83516780956100b308ba78248feaf2e1ec4eb913d231f296f336513d5a",
+    "legacyReaderFixtureSha256": "f31d9324bc34860b4a868d3b6c6fd8008ddad3a48f6284b9261ed218fbcf37cd"
+  }
+}

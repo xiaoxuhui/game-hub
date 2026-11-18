@@ -1,0 +1,92 @@
+.intro-main { max-width: 720px; padding-bottom: 22px; }
+.intro-heading { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 12px; padding: 32px 0 14px; }
+.intro-heading h1 { margin: 0; font-size: clamp(29px, 6vw, 44px); line-height: 1.05; }
+.intro-chapter { color: var(--muted); font-size: 13px; }
+.intro-levels { flex-wrap: wrap; margin-bottom: 12px; }
+.intro-levels button { white-space: nowrap; }
+.intro-levels button[data-challenge="true"] { box-shadow: inset 0 -2px #fa9977; }
+.intro-levels button[data-complete="true"]::after { content: " ✓"; color: var(--green); }
+.intro-panel-heading { align-items: start; min-height: 49px; margin-bottom: 12px; }
+.intro-hint, .intro-count, .intro-result p { margin: 0; }
+#intro-hint { line-height: 1.5; }
+.intro-count { margin-top: 4px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.intro-room-info { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.intro-room-info:has(#intro-room:not([hidden])) { min-height: 34px; }
+.intro-room-info p { margin: 0; }
+.intro-scene { position: relative; isolation: isolate; container-type: size; display: grid; place-items: center; overflow: hidden; background: var(--surround-color, #cbcbce); }
+.intro-stage { height: clamp(265px, 70vw, 478px); padding: 18px; border: 1px solid var(--line); border-radius: 12px; }
+@media (prefers-reduced-motion: no-preference) {
+  .intro-stage { transition: background-color 150ms linear; }
+}
+.intro-stage.can-look-out { cursor: pointer; }
+.intro-stage .intro-board { cursor: default; }
+/* Paint continuous terrain beneath the grid, including across adjacent wall cells. */
+.intro-board { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); width: 100%; max-width: calc(440px * var(--columns) / var(--longest-side)); user-select: none; overflow: hidden; border-radius: 8px; background-color: var(--room-floor, #535257); background-size: 100% 100%; background-repeat: no-repeat; image-rendering: pixelated; }
+.intro-scene > :is(.intro-board, .intro-surround) { --scene-side: min(100cqw, 100cqh, 440px); }
+.intro-scene.with-surround > :is(.intro-board, .intro-surround) { --scene-side: min(85cqw, 85cqh, 396px); }
+.intro-scene > .intro-board { position: relative; z-index: 1; width: calc(var(--scene-side) * var(--columns) / var(--longest-side)); }
+.intro-scene > .intro-ghost { position: absolute; max-width: none; opacity: 0; pointer-events: none; z-index: 2; }
+.intro-surround { position: absolute; pointer-events: none; opacity: .65; inset: 0; width: 100%; height: 100%; }
+.intro-recursive-view { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; }
+.intro-box-motion { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; pointer-events: none; }
+.intro-board .cell > :is(.crate, .room-box) { visibility: var(--box-visibility, visible); }
+.intro-stage:has(.intro-board :focus-visible) > .intro-recursive-view { pointer-events: none; opacity: 0; }
+.intro-stage.text-view { background: #17151c; }
+.intro-stage.text-view .intro-surround { visibility: hidden; }
+.intro-text-maps { --text-cell: min(27px, calc(100cqw / var(--text-columns, 20)), calc(100cqh / var(--text-rows, 16))); display: flex; align-items: flex-start; justify-content: center; gap: calc(var(--text-cell) * .6); max-width: 100%; min-width: 0; }
+.intro-text-room { display: grid; grid-template-columns: auto; justify-items: center; row-gap: .35em; padding: 0; min-width: 0; flex-shrink: 0; border: 0; background: transparent; color: var(--text-room-color); font: 600 var(--text-cell)/1.55 "Courier New", monospace; text-align: left; }
+.intro-text-room:hover { background: transparent; }
+.intro-text-lines { white-space: pre; }
+.intro-text-lines span { display: inline-block; width: var(--text-cell); }
+.intro-text-room [data-glyph="p"] { color: #ef8edb; }
+.intro-text-room [data-glyph="b"] { color: #ffdc72; }
+.intro-text-room [data-glyph="2"] { color: #8eafff; }
+.intro-text-room :is([data-glyph="_"], [data-glyph="="]) { color: #f7f0e5; }
+.intro-text-room [data-clone] { outline: 1px dashed currentColor; outline-offset: -2px; }
+.intro-board .cell { aspect-ratio: 1; border: 0; background: transparent; }
+.intro-board .cell.wall { border-radius: 0; background: transparent; box-shadow: none; }
+.intro-board .cell > .goal, .intro-board .cell > .intro-player-goal { width: 76%; height: 76%; border: 3px solid #dedbdf; border-radius: 2px; background: transparent; }
+.intro-board .goal::after { content: none; }
+.intro-board .cell:has(> .player, > .intro-player-goal)::before,
+.intro-board .cell:has(> .player, > .intro-player-goal)::after {
+  content: ""; position: absolute; z-index: 1; top: 44%; width: 12%; height: 12%; border-radius: 50%; background: #dedbdf;
+}
+.intro-board .cell::before { left: 23%; }
+.intro-board .cell::after { right: 23%; }
+.intro-board .cell:has(> .player)::before, .intro-board .cell:has(> .player)::after { background: #5b102f; }
+.intro-board .cell > .crate, .intro-board .cell > .player { width: 87%; height: 87%; }
+.intro-board .crate { background: #ffb63a; border-color: #ffcf74; box-shadow: inset 0 -3px #bd791a, 0 2px 4px #211510a6; }
+.intro-board .crate.placed { background: #ffcf73; border-color: #ffe2a2; }
+.blue-crates .crate { background: #38bce8; border-color: #94ddf8; box-shadow: inset 0 -3px #237fa4, 0 2px 4px #211510a6; }
+.blue-crates .crate.placed { background: #71daff; border-color: #dbf7ff; }
+.empty-chapter .crate { background: #add444; border-color: #d8ef8d; box-shadow: inset 0 -3px #7a9b29, 0 2px 4px #211510a6; }
+.empty-chapter .crate.placed { background: #d2f261; border-color: #edffae; }
+.eat-chapter .crate { background: #ffdc72; border-color: #ffedaf; box-shadow: inset 0 -3px #bd9b43, 0 2px 4px #211510a6; }
+.eat-chapter .crate.placed { background: #fff492; border-color: #fffbc8; }
+.intro-board .crate::before, .intro-board .crate::after { content: none; }
+.intro-board .player { background: #cf197a; border-color: #ff79bd; border-radius: 4px; box-shadow: inset 0 -3px #941555, 0 2px 4px #211020a6; }
+.intro-board .player::before, .intro-board .player::after { content: none; }
+.empty-chapter .player { background: #db562f; border-color: #f48b6b; box-shadow: inset 0 -3px #a3381e, 0 2px 4px #211020a6; }
+.empty-chapter .cell:has(> .player)::before, .empty-chapter .cell:has(> .player)::after { background: #682716; }
+.eat-chapter .player { background: #d260bd; border-color: #f5a1dc; box-shadow: inset 0 -3px #9b407d, 0 2px 4px #211020a6; }
+.eat-chapter .cell:has(> .player)::before, .eat-chapter .cell:has(> .player)::after { background: #672651; }
+.reference-chapter .player { background: #c53d3a; border-color: #f37e76; box-shadow: inset 0 -3px #832926, 0 2px 4px #211020a6; }
+.reference-chapter .cell:has(> .player)::before, .reference-chapter .cell:has(> .player)::after { background: #651914; }
+.intro-board .room-box { position: absolute; width: 87%; height: 87%; padding: 2px; border-radius: 4px; background: var(--box-color); border: 1px solid #d2e1fa; display: grid; place-items: center; }
+.intro-board .room-box canvas { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.intro-board .room-box.room-on-goal { outline: 2px solid #f5dfa7; outline-offset: 1px; }
+.intro-board .room-box.room-clone { border: 2px dashed #e9f3ff; }
+.clone-chapter .crate { background: #468cfa; border-color: #91bdff; box-shadow: inset 0 -3px #2656a5, 0 2px 4px #141c36a6; }
+.clone-chapter .crate.placed { background: #83b5ff; border-color: #e0eeff; }
+.clone-chapter .player { background: #be2850; border-color: #f57b94; box-shadow: inset 0 -3px #7d1632, 0 2px 4px #211020a6; }
+.intro-board .cell:has(> .room-box) { z-index: 1; }
+.intro-controls, .intro-result { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.intro-controls .tools-group { flex-wrap: wrap; }
+.intro-controls .outline { padding: 8px; font-size: 12px; white-space: nowrap; }
+.intro-result { min-height: 36px; }
+.intro-keyboard { margin-top: 12px; }
+@media (max-width: 420px) {
+  .intro-heading { padding-top: 21px; }
+  .intro-stage { padding: 9px; }
+  .intro-controls .dpad button { min-width: 31px; }
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "turbowarp-logic-lab",
+  "title": "逻辑小实验室",
+  "version": "0.1.0",
+  "sourceProject": "dist/logic-lab.sb3",
+  "sourceProjectSha256": "6e05bbe2bae252ca7e2b8a72bb93e568f0f1454ff6071bc19564039628e2c537",
+  "sourceRevision": "c1d639d6d5230b95b8a5103a53278df962304886",
+  "packagerVersion": "3.14.0",
+  "entryPage": "index.html",
+  "bytes": 1882880,
+  "sha256": "d36cdeb0d3004905443bcf4baf9704f44d63ed60d1cfc9425440a0d17309fd63"
+}

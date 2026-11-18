@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="../../storage-isolation.js" data-game="tape-language-lab"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>编程语言实验 · 纸带上的小宇宙</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="编程语言实验首页"><span class="brand-mark" aria-hidden="true">[<i>λ</i>]</span><span>编程语言实验<small>TAPE LANGUAGE LAB</small></span></a>
+      <div class="file-actions"><span id="save-state" role="status">草稿保存在本机</span><button id="export" class="quiet">导出实验</button><button id="import" class="quiet">导入</button><input id="file" type="file" accept="application/json,.json" hidden></div>
+    </header>
+    <section class="intro">
+      <div><p class="eyebrow">一条纸带，几条指令，无限种可能。</p><h1>看看程序，如何一步步发生<span>。</span></h1><p>用 BF、P′′ 或 TM 图灵机在无限纸带上编程，观察每一步如何改变纸带。</p></div>
+      <span class="scope-label"><span aria-hidden="true">↔</span> 只探索纸带类语言</span>
+    </section>
+    <div class="language-bar"><div class="language-tabs" role="group" aria-label="选择编程语言"><button id="lang-bf" data-language="bf" aria-pressed="true">BF</button><button id="lang-pdouble" data-language="pdouble" aria-pressed="false">P′′ <small>P double prime</small></button><button id="lang-tm" data-language="tm" aria-pressed="false">TM <small>图灵机</small></button></div><p id="language-summary">8 位单元 · 双向无限纸带</p></div>
+    <div class="cell-settings" aria-label="纸带单元范围设置"><label id="cell-bits-label" for="cell-bits">BF 单元大小<select id="cell-bits"><option value="8">8 位</option><option value="16">16 位</option><option value="32">32 位</option></select></label><label id="signed-cells-label"><input id="signed-cells" type="checkbox">有符号数（允许负数）</label><label id="symbols-label" for="symbols" hidden>纸带字母表大小<input id="symbols" type="number" min="2" max="4294967296" step="1" value="2"></label><label id="tm-blank-label" for="tm-blank" hidden>空白符号<input id="tm-blank" type="text" value="0" spellcheck="false" autocapitalize="off" autocomplete="off"></label><span id="cell-range">有效范围：0～255</span><details id="tm-alphabet" hidden><summary id="tm-alphabet-count">字母表</summary><code id="tm-alphabet-symbols"></code></details></div>
+    <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+    <div class="workspace">
+      <section class="panel editor-panel" aria-labelledby="editor-title">
+        <div class="panel-heading"><h2 id="editor-title"><span class="section-number">01</span>代码工作台</h2><label class="example-picker"><span class="sr-only">载入示例</span><select id="example"><option value="">选择一个示例…</option></select></label></div>
+        <div class="example-caption"><span id="example-note">从示例开始，或写下自己的第一条指令。</span></div>
+        <div id="function-controls" class="function-controls"><label><input id="functions-enabled" type="checkbox">启用函数扩展</label><button id="insert-function" class="quiet">插入函数</button><button id="convert-native" class="quiet">转换为原始代码</button></div>
+        <details id="function-help" class="function-help"><summary>函数怎么写？</summary><p><code>fn 名称 { 指令 }</code> 定义函数，<code>@名称</code> 调用。支持中文名称、重复调用和函数间调用；函数共用纸带和指针，以纸带传递数据，不支持递归。</p><p>转换会把每次调用替换成函数体。原始 P′′ 没有输入指令，含 <code>,</code> 的程序无法转换成纯原始 P′′。</p></details>
+        <details id="tm-help" class="function-help" hidden><summary>规则怎么写？</summary><p><code>当前状态,读入 -&gt; 下一状态,写入,移动</code></p><p>每行一条规则，字段可混用空格、逗号和中文逗号。例如 <code>q0,1 -&gt; q0,1,R</code> 表示在 q0 读到 1 时写回 1，右移一格并留在 q0。L、R、N 分别表示左移、右移、停在原格。读写符号可由多个字符组成，例如 <code>红蓝</code> 或 <code>A01</code>，每个符号占一格。</p></details>
+        <fieldset id="tm-settings" class="tm-settings" hidden>
+          <legend>状态设置</legend>
+          <div class="tm-settings-grid">
+            <label>初始状态<input id="tm-start" type="text" value="q0" autocapitalize="off" spellcheck="false"></label>
+            <label>停机状态<input id="tm-halt" type="text" value="halt" autocapitalize="off" spellcheck="false"></label>
+            <label>接受状态<input id="tm-accept" type="text" value="accept" autocapitalize="off" spellcheck="false"></label>
+            <label>拒绝状态<input id="tm-reject" type="text" value="reject" autocapitalize="off" spellcheck="false"></label>
+          </div>
+          <small>状态名可以用点号，例如 <code>add.scan</code> 或 <code>clean.0.0</code>。停机、接受、拒绝都可留空。</small>
+        </fieldset>
+        <label class="sr-only" for="source">程序代码</label>
+        <div class="code-wrap"><div class="code-label"><span id="file-name">program.b</span><button id="insert-lambda" hidden title="在光标处插入 λ">插入 λ</button><span id="code-count">0 条指令</span></div><textarea id="source" maxlength="1000000" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="editor-hint"></textarea><div class="editor-footer"><span id="editor-hint">仅执行 &gt; &lt; + - . , [ ]，其余字符忽略。</span><span>UTF-8</span></div></div>
+        <div class="transport"><button id="run" class="primary"><span aria-hidden="true">▶</span> 运行</button><button id="pause" disabled><span aria-hidden="true">Ⅱ</span> 暂停</button><button id="step"><span aria-hidden="true">▷</span> 单步</button><button id="reset" class="reset"><span aria-hidden="true">↺</span> 重置</button><div class="speed-controls"><label class="speed-label" for="speed">速度<input id="speed" type="number" min="1" step="1" value="20000" inputmode="numeric" aria-describedby="speed-hint">步/秒</label><label class="speed-unlimited-label"><input id="speed-unlimited" type="checkbox" checked>不限速</label></div></div>
+        <p id="speed-hint" class="speed-hint" role="status">填写每秒步数，按 Enter 或移开焦点生效。</p><section id="native-panel" class="native-panel" hidden aria-label="转换得到的原始代码"><p id="native-note"></p><label for="native-source">原始代码</label><textarea id="native-source" readonly spellcheck="false" rows="4"></textarea><div><button id="copy-native">复制代码</button><button id="use-native">替换当前代码</button></div></section>
+        <details id="initial-settings" class="initial-settings"><summary>设置初始纸带<span>运行前准备数据</span></summary><div class="initial-fields"><label>初始纸带<input id="initial-tape" type="text" placeholder="例如 1 0 1 或 1,0,1" maxlength="700000" aria-describedby="initial-tape-hint"><small id="initial-tape-hint">用空格或逗号分隔数字，可以混用。</small></label></div></details>
+        <details id="project-encoding" class="initial-settings">
+          <summary>BF / P′′ / TM 跨语言转换</summary>
+          <div class="initial-fields">
+            <label for="conversion-target">目标语言<select id="conversion-target"></select></label>
+            <small>转换当前代码和初始纸带。支持纯纸带程序。</small>
+            <div class="encoding-symbols tm-settings-grid" role="group" aria-label="数字对应的编码符号">
+              <label>0 的符号<input id="encoding-zero" type="text" value="0" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+              <label>1 的符号<input id="encoding-one" type="text" value="1" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+              <label>2 的符号<input id="encoding-two" type="text" value="2" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+            </div>
+            <div class="encoding-actions">
+              <button id="convert-program">生成目标源码</button>
+            </div>
+            <p id="encoding-status" role="status" hidden></p>
+            <div id="conversion-result" class="conversion-result" hidden>
+              <p id="conversion-settings"></p>
+              <label>目标源码<textarea id="converted-program" rows="5" readonly spellcheck="false"></textarea></label>
+              <label id="conversion-initial-label" hidden>目标初始纸带<textarea id="conversion-initial" rows="2" readonly spellcheck="false"></textarea></label>
+              <details open>
+                <summary>目标源码的自定义符号编码</summary>
+                <label>编码结果<textarea id="encoded-project" rows="4" readonly spellcheck="false"></textarea></label>
+                <button id="copy-encoding">复制编码</button>
+              </details>
+              <details>
+                <summary>纸带编码说明</summary>
+                <pre id="conversion-layout"></pre>
+              </details>
+              <div class="encoding-actions">
+                <button id="copy-converted-program">复制目标源码</button>
+                <button id="load-converted-program">载入目标编辑器</button>
+              </div>
+              <small>载入会替换目标语言的草稿。</small>
+            </div>
+          </div>
+        </details>
+      </section>
+      <div class="machine-column">
+        <section class="panel tape-panel" aria-labelledby="tape-title">
+          <div class="panel-heading"><h2 id="tape-title"><span class="section-number">02</span>纸带观察窗</h2><span id="status" class="status" role="status">准备就绪</span></div>
+          <div class="stats"><div><span>指针位置</span><strong id="pointer">0</strong></div><div><span>当前格值</span><strong id="cell-value">0</strong></div><div><span>已执行</span><strong id="steps">0<small> 步</small></strong></div></div>
+          <p id="tm-state-row" class="tm-state-row" hidden>当前状态 <strong id="tm-state">q0</strong></p>
+          <div class="tape-toolbar"><span id="tape-direction">← 向两侧按需延伸 →</span><button id="follow" class="quiet" aria-pressed="true">◎ 跟随指针</button></div>
+          <div id="tape-viewport" class="tape-viewport" tabindex="0" role="group" aria-label="纸带窗口，可按住左键拖动或用左右方向键平移" aria-describedby="tape-drag-hint"><div id="tape" class="tape" aria-label="纸带单元"></div></div>
+          <div class="tape-navigation"><span id="tape-drag-hint">按住左键拖动 · 触屏左右滑动</span><span id="tape-range">当前窗口</span></div>
+          <div class="execution"><div class="execution-caption"><span id="instruction-heading">展开后的代码 · 蓝色标记执行位置</span><span id="source-location">第 1 行 · 第 1 列</span></div><p id="function-context" class="function-context" hidden>主程序</p><div id="instruction" tabindex="0" role="region" aria-label="展开后的完整代码，蓝色标记下一条执行指令"><div id="instruction-content"><pre id="instruction-code"></pre><span id="instruction-cursor" aria-hidden="true" hidden></span></div></div><p id="instruction-help">载入程序后，点“单步”看第一条指令。</p></div>
+        </section>
+        <section class="panel io-panel" aria-labelledby="io-title">
+          <div class="panel-heading"><h2 id="io-title"><span class="section-number">03</span><span id="io-name">输入与输出</span></h2><span id="io-count" class="muted">0 字节输出</span></div>
+          <div id="input-policy-row" class="input-policy-row"><label for="input-policy">输入方式</label><select id="input-policy"><option value="ask">遇到输入时询问</option><option value="preset">使用预先输入</option></select></div>
+          <p id="ask-input-note" class="ask-input-note">执行到 , 时询问，多个十进制数字用逗号分隔。</p>
+          <div id="preset-input" class="io-input" hidden><label for="input">预先输入 <small>供 , 指令读取</small></label><label class="sr-only" for="input-mode">输入编码</label><select id="input-mode"><option value="text">UTF-8 文本</option><option value="hex">十六进制字节</option><option value="decimal">十进制数字</option></select><textarea id="input" maxlength="300000" placeholder="在这里输入程序要读取的内容…" spellcheck="false" aria-describedby="input-format-hint"></textarea><small id="input-format-hint" class="input-format-hint"></small></div>
+          <p id="io-progress" class="io-note">等待输入指令。</p>
+          <div id="bf-io"><div class="output-header"><label for="output">输出</label><div role="group" aria-label="输出显示格式"><button id="output-text" class="quiet selected" aria-pressed="true">文本</button><button id="output-hex" class="quiet" aria-pressed="false">HEX</button><button id="output-decimal" class="quiet" aria-pressed="false" title="按十进制显示完整单元数值，支持32位及有符号负数，空格分隔">十进制</button></div></div><pre id="output" tabindex="0" aria-label="程序输出"><span class="placeholder">运行程序，等待第一声问候。</span></pre></div>
+          <div id="pdouble-result" hidden><p id="tape-result-intro">P′′ 的计算结果留在纸带上。</p><p id="pdouble-result-note" class="muted">原始 P′′ 没有输入输出指令；本实验增加 , 输入扩展，将数字写入当前格。</p><pre id="tape-result" tabindex="0" aria-label="非零纸带格"></pre></div>
+        </section>
+      </div>
+    </div>
+    <section class="reference" aria-labelledby="reference-title"><div><h2 id="reference-title">随手查指令</h2><p id="reference-subtitle">八个符号，完成整个程序。</p></div><dl id="commands"></dl></section>
+    <footer><span>纸带按需生长。<span id="model-note">BF：8 位回绕，允许负地址。</span></span><details><summary>运行约定与参考</summary><p>连续运行没有累计步数上限，可随时手动暂停。TM 运行时按需扩展纸带。BF 和 P′′ 最多记录 100,000 个非零格，输入与输出最多各记录 65,536 项。修改代码或初始数据会重置运行；自动保存与导出保存的是代码和初始设置。</p><p>默认执行到 , 时暂停询问输入，多个数字用逗号分隔、依次读取。队列用完再次询问；选择“结束输入”后写入 0。也可切回预先输入。P′′ 的 , 是本实验的输入扩展，数值必须小于字母表大小。P′′ 仍向左无限，0 号格为右边界。</p><p>参考：<a href="https://brainfuck.org/brainfuck.html" target="_blank" rel="noreferrer">BF 指令说明</a> · <a href="https://www.cs.unibo.it/~martini/PP/bohm-jac.pdf" target="_blank" rel="noreferrer">Böhm 与 Jacopini 论文 §3</a>。</p></details><span class="version">v0.1.0 · 本地实验</span></footer>
+  </main>
+  <dialog id="input-dialog" aria-labelledby="input-dialog-title" aria-describedby="input-dialog-hint">
+    <form id="input-form">
+      <h2 id="input-dialog-title">等待输入</h2>
+      <p id="input-dialog-hint">多个十进制数字用逗号分隔。</p>
+      <label for="input-request">输入数字</label>
+      <textarea id="input-request" maxlength="300000" placeholder="例如 3,72,255" spellcheck="false" autofocus></textarea>
+      <p id="input-error" role="alert"></p>
+      <div class="input-dialog-actions"><button id="input-cancel" type="button">暂停</button><button id="input-end" type="button">结束输入</button><button id="input-submit" class="primary" type="submit">输入并继续</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

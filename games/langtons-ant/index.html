@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="../../storage-isolation.js" data-game="langtons-ant"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>兰顿蚂蚁</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>兰顿蚂蚁</h1>
+        <div class="sub">白格右转，黑格左转，翻色后前进。支持触摸编辑与本地自动存档。</div>
+      </div>
+      <div class="toolbar">
+        <button id="play" class="primary" type="button">开始</button>
+        <button id="step" type="button">单步</button>
+        <button id="reset" type="button">重置</button>
+      </div>
+    </header>
+
+    <div class="shell">
+      <aside>
+        <div class="stats">
+          <div class="stat">
+            <span class="label">步数</span>
+            <strong id="steps">0</strong>
+          </div>
+          <div class="stat">
+            <span class="label">黑色格子</span>
+            <strong id="blackCells">0</strong>
+          </div>
+          <div class="stat">
+            <span class="label">位置</span>
+            <strong id="position">0, 0</strong>
+          </div>
+          <div class="stat">
+            <span class="label">方向</span>
+            <strong id="direction">上</strong>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="row">
+            <label for="speed">速度（每秒）<span id="speedLabel">60</span></label>
+            <input id="speed" type="range" min="1" max="5000" value="60">
+          </div>
+          <div class="row">
+            <label for="cellSize">网格大小：<span id="zoomLabel">10</span> 像素</label>
+            <input id="cellSize" type="range" min="3" max="28" value="10">
+          </div>
+          <label class="check">
+            <input id="follow" type="checkbox" checked>
+            自动跟随蚂蚁
+          </label>
+          <label class="check">
+            <input id="grid" type="checkbox" checked>
+            显示网格线
+          </label>
+        </div>
+
+        <div class="group">
+          <div class="row">
+            <label for="seedCount">随机填充格子数量</label>
+            <input id="seedCount" type="number" min="0" max="2000" value="120">
+          </div>
+          <div class="toolbar">
+            <button id="randomize" type="button">随机填充</button>
+            <button id="clear" type="button">清空格子</button>
+            <button id="center" type="button">回到中心</button>
+          </div>
+        </div>
+
+        <div class="group hint">
+          在画布上拖动以绘制、擦除或平移；编辑会暂停演化。鼠标右键擦除，中键或 Shift+左键平移。保留缩放滑块。<p id="saveStatus" role="status">自动存档已开启</p><span class="version">v0.1.0 · MIT</span>
+        </div>
+      </aside>
+
+      <main>
+        <div class="modes" role="group" aria-label="操作模式">
+          <button type="button" data-mode="paint" aria-pressed="true">绘制</button>
+          <button type="button" data-mode="erase" aria-pressed="false">擦除</button>
+          <button type="button" data-mode="pan" aria-pressed="false">平移</button>
+        </div>
+        <canvas id="world" tabindex="0" aria-label="兰顿蚂蚁工作区"></canvas>
+        <div class="badge">拖动操作画布 · 缩放与更多设置在控制区</div>
+      </main>
+    </div>
+  </div>
+
+  <script src="src/core.js"></script>
+  <script src="src/storage.js"></script>
+  <script src="src/interaction.js"></script>
+  <script src="src/renderer.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>

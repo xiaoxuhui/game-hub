@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "red-green-puzzle",
+  "repository": "https://github.com/xiaoxuhui/turing-machine-simulator.git",
+  "revision": "592027dbc5cab9cb83f91b904f4f23a9e3cbe24b",
+  "entryPage": "index.html",
+  "maxSize": 10,
+  "buildKind": "reviewed-host-adaptation",
+  "changes": [
+    "Extract unchanged Gray domain rules; validate 1..10 before allocation",
+    "Restore valid local parameters and truthful clipboard fallback",
+    "Use local ES module entry and preserve full MIT"
+  ],
+  "inputs": [
+    {
+      "path": "doc/red-green-puzzle.html",
+      "bytes": 10727,
+      "sha256": "9ff81f454bf07ba20bfe3e37615b082f049b509ea5ba8d5d2b881c380151d60d"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "app.js",
+      "bytes": 3327,
+      "sha256": "52270af6603fcaa9d6290e3d587a37517e62c6b66e806ca92f8c6d2c0435ee59"
+    },
+    {
+      "path": "core.js",
+      "bytes": 1486,
+      "sha256": "b6103520dca3c91f8af2d596e47e028da4d6421c2500ffbc32c68a3fa778a477"
+    },
+    {
+      "path": "index.html",
+      "bytes": 6831,
+      "sha256": "8693ed2f6643c39049eb8a457a0fb6b512da7a106503ec2955580489f420b558"
+    }
+  ]
+}

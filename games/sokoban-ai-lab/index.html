@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="../../storage-isolation.js" data-game="sokoban-ai-lab"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="绘制自定义地图，手动试玩，观察 AI 通过强化学习掌握推箱子。">
+  <meta name="theme-color" content="#111715">
+  <title>推箱子实验室</title>
+  <link rel="stylesheet" href="style.css?v=48">
+  <script src="engine.js?v=45" defer></script>
+  <script src="route-input.js?v=2" defer></script>
+  <script src="app.js?v=49" defer></script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">▦</span>推箱子实验室</div>
+      <div class="top-links">
+        <a class="outline docs top-link" href="box-intro.html">套箱模式</a>
+        <button class="outline docs" id="help" type="button"><span aria-hidden="true">ⓘ</span> 使用说明</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span></span>SOKOBAN LAB</div>
+      <h1>推箱子<span>实验室</span></h1>
+      <p>画一张地图，亲自挑战，再看看 AI 如何学会推箱子。</p>
+    </section>
+
+    <div class="workspace" id="workspace">
+      <section class="panel map-panel" aria-labelledby="map-title">
+        <div class="panel-heading">
+          <div>
+            <h2 id="map-title">关卡工作台</h2>
+            <div class="secondary" id="map-info"></div>
+          </div>
+          <div class="modes" aria-label="地图模式">
+            <button id="edit-mode" aria-pressed="true" type="button">编辑地图</button>
+            <button id="play-mode" aria-pressed="false" type="button">手动试玩</button>
+            <button id="watch-mode" aria-pressed="false" type="button">观战 AI</button>
+          </div>
+        </div>
+
+        <div class="level-controls">
+          <label for="current-level">当前关卡</label>
+          <select id="current-level"></select>
+          <button class="outline" id="prev-level" type="button" aria-label="上一关" title="上一关">‹</button>
+          <button class="outline" id="next-level" type="button" aria-label="下一关" title="下一关">›</button>
+          <button class="outline" id="manage-level" type="button">管理存档</button>
+        </div>
+
+        <div class="map-toolbar" id="edit-tools">
+          <div class="rule-controls">
+            <label for="gameplay">玩法 <select id="gameplay">
+              <option value="classic">经典推箱子</option>
+              <option value="powered">方块推推推 · 有电源</option>
+              <option value="direct">方块推推推 · 无电源</option>
+            </select></label>
+            <label class="rule-toggle"><input id="chain-push" type="checkbox"> <span id="chain-push-label">允许连推多个箱子</span></label>
+          </div>
+          <div class="brushes" role="group" aria-label="绘图工具">
+            <button type="button" data-brush="#" data-classic aria-pressed="true"><i class="sample wall"></i>墙</button>
+            <button type="button" data-brush="." aria-pressed="false"><i class="sample goal"></i>目标</button>
+            <button type="button" data-brush="$" aria-pressed="false"><i class="sample crate"></i>箱子</button>
+            <button type="button" data-brush="@" data-classic aria-pressed="false"><i class="sample player"></i>玩家</button>
+            <button type="button" data-brush="finish" data-classic aria-pressed="false"><i class="sample finish-mark"></i>玩家终点</button>
+            <button type="button" data-brush="portal" data-classic aria-pressed="false"><i class="sample portal-sample"></i>传送门</button>
+            <button type="button" data-brush="pusher" aria-pressed="false" hidden><i class="sample device pusher-device" aria-hidden="true">→</i>拉推头</button>
+            <button type="button" data-brush="power" aria-pressed="false" hidden><i class="sample device power-device" aria-hidden="true">→</i>电源</button>
+            <button type="button" data-brush=" " aria-pressed="false"><i class="sample eraser"></i>橡皮</button>
+          </div>
+          <div class="device-tools" id="device-direction-label" hidden>
+            <label for="device-direction">装置朝向</label>
+            <select id="device-direction">
+              <option value="0">↑ 上</option><option value="1" selected>→ 右</option>
+              <option value="2">↓ 下</option><option value="3">← 左</option>
+            </select>
+          </div>
+          <div class="secondary" id="device-rotate-help" hidden>点击装置顺时针旋转 · Ctrl + 点击逆时针旋转</div>
+          <button class="outline" id="undo-edit" type="button" aria-keyshortcuts="Z" disabled>↶ 撤销编辑 <kbd>Z</kbd></button>
+          <div class="secondary" id="finish-status"></div>
+          <div class="portal-tools">
+            <label id="portal-direction-label" hidden>连接方向 <select id="portal-direction"><option value="two-way">双向</option><option value="one-way">单向</option></select></label>
+            <span id="portal-help" role="status" hidden></span>
+            <button class="plain" id="portal-cancel" type="button" hidden>取消选边</button>
+          </div>
+        </div>
+        <div class="map-toolbar play-tools" id="play-tools" hidden>
+          <div class="move-count" id="move-count"></div>
+          <div class="tools-group"><button class="plain" id="undo" type="button" aria-keyshortcuts="Z">↶ 撤销 <kbd>Z</kbd></button><button class="plain" id="reset-play" type="button">↻ 重开</button></div>
+        </div>
+        <div class="map-toolbar watch-tools" id="watch-tools" hidden>
+          <span id="watch-progress" class="move-count"></span>
+          <div class="watch-actions">
+            <label for="watch-speed">速度</label>
+            <select id="watch-speed">
+              <option value="180">1×</option><option value="60">3×</option><option value="20">9×</option><option value="0">极速</option>
+            </select>
+            <button class="outline" id="watch-run" type="button">开始训练</button>
+          </div>
+        </div>
+
+        <div class="map-toolbar tools-group replay-tools" id="replay-tools" role="group" aria-label="AI 路线回放" hidden>
+          <button class="outline" id="replay-prev" type="button">上一步</button>
+          <button class="outline" id="replay-next" type="button">下一步</button>
+          <button class="outline" id="replay-toggle" type="button">自动播放</button>
+          <div class="move-count" id="replay-progress" role="status"></div>
+        </div>
+
+        <div class="stage board" id="board" role="group" aria-label="无限推箱子地图" aria-describedby="pan-help">
+          <div id="grid" class="grid"></div>
+          <canvas class="portal-arrows" id="portal-arrows" aria-hidden="true" hidden></canvas>
+        </div>
+        <div class="viewport-tools">
+          <span id="pan-help">按住右键拖动地图</span>
+          <label class="rule-toggle" id="portal-arrows-option" hidden><input id="show-portal-arrows" type="checkbox" checked> 传送门箭头</label>
+          <label class="rule-toggle" id="ai-follow-option" hidden><input id="ai-follow" type="checkbox" checked> 跟随 AI</label>
+          <label class="rule-toggle" id="click-follow-option" hidden><input id="click-follow" type="checkbox"> 跟随点击</label>
+          <button class="plain" id="center-map" type="button">回到起点</button>
+        </div>
+
+        <details id="route-input" class="route-input"></details>
+        <div class="map-footer">
+          <div class="map-note" id="map-note" role="status"></div>
+          <div class="tools-group record-tools" id="record-tools" hidden>
+            <button class="plain" id="cancel-demo" type="button">取消</button>
+            <button class="primary" id="save-demo" type="button" disabled>保存示范</button>
+          </div>
+          <div class="tools-group" id="map-actions">
+            <button class="plain" id="levels" type="button">添加示例</button>
+            <button class="plain" id="new-map" type="button">新建关卡</button>
+            <button class="plain" id="map-code" type="button">导入 / 导出</button>
+          </div>
+          <div class="dpad" id="dpad" aria-label="试玩方向键" hidden>
+            <button data-dir="3" aria-label="向左" type="button">←</button><button data-dir="0" aria-label="向上" type="button">↑</button>
+            <button data-dir="2" aria-label="向下" type="button">↓</button><button data-dir="1" aria-label="向右" type="button">→</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel train-panel" id="train-panel" aria-labelledby="train-title">
+        <div class="panel-heading">
+          <div><h2 id="train-title">AI 训练</h2><div class="secondary">Q-learning · 浏览器本地运行</div></div>
+          <div class="status-pill" id="train-status" role="status"><span></span><b>待训练</b></div>
+        </div>
+
+        <div class="stats">
+          <div><span>训练回合</span><strong id="episodes">0</strong></div>
+          <div><span>近 100 局独立胜率</span><strong id="rate">—</strong></div>
+          <div><span id="best-label">最佳推箱次数</span><strong id="best">—</strong></div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-title"><h3>学习曲线</h3><span><i></i>独立胜率</span></div>
+          <div class="chart-area">
+            <div class="y-labels" aria-hidden="true"><span>100%</span><span>50%</span><span>0%</span></div>
+            <div class="plot">
+              <canvas id="chart" role="img" aria-label="训练胜率曲线"></canvas>
+              <p id="chart-empty">开始训练后显示胜率</p>
+            </div>
+            <div class="x-labels" aria-hidden="true"><span id="chart-start">0</span><span id="chart-end">回合</span></div>
+          </div>
+        </div>
+
+        <div class="demo-controls">
+          <div class="demo-copy"><h3>训练示范</h3><p id="demo-summary"></p></div>
+          <div class="tools-group">
+            <button class="outline demo-button" id="record-demo" type="button">示范几步</button>
+            <button class="plain" id="delete-demo" type="button" hidden>移除</button>
+          </div>
+        </div>
+        <div class="training-options">
+          <label for="budget">每批回合数</label>
+          <select id="budget">
+            <option value="100">100 回合</option><option value="500" selected>500 回合</option>
+            <option value="2000">2,000 回合</option><option value="5000">5,000 回合</option>
+            <option value="10000">10,000 回合</option><option value="20000">20,000 回合</option>
+            <option value="next-record">直到最佳路线更新</option>
+          </select>
+        </div>
+        <div class="training-options" id="unlimited-training-option" hidden>
+          <label class="rule-toggle"><input id="unlimited-training" type="checkbox" checked> 单局不限操作次数</label>
+        </div>
+        <div class="train-actions">
+          <button class="primary" id="train" type="button"><span aria-hidden="true">▶</span><b>开始训练</b></button>
+          <button class="outline square" id="clear-training" type="button" title="清除训练" aria-label="清除训练" disabled>↻</button>
+        </div>
+        <div class="replay-actions">
+          <button class="outline" id="replay" type="button" disabled>回放最佳通关</button>
+          <button class="outline" id="replay-single" type="button" disabled>单步查看</button>
+        </div>
+        <div class="partial-controls" id="partial-controls" hidden>
+          <label for="partial-route" id="partial-summary"></label>
+          <select id="partial-route"></select>
+          <div class="tools-group">
+            <button class="outline" id="play-partial" type="button">播放所选</button>
+            <button class="outline" id="play-sequence" type="button">按序播放</button>
+          </div>
+        </div>
+        <div class="training-note" id="training-note">训练完成后，可以回放 AI 找到的最佳路线。</div>
+      </section>
+    </div>
+
+    <footer><span>覆盖所有箱子目标，有旗时还要走到旗子处。</span><span><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 移动</span></footer>
+  </main>
+
+  <dialog id="dialog" aria-labelledby="dialog-title">
+    <form method="dialog" class="dialog-inner">
+      <div class="dialog-heading"><h2 id="dialog-title"></h2><button class="plain" value="cancel" formnovalidate aria-label="关闭">✕</button></div>
+      <div id="dialog-body"></div>
+      <p id="dialog-error" role="alert" hidden></p>
+      <div id="dialog-actions" class="dialog-actions"></div>
+    </form>
+  </dialog>
+</body>
+</html>

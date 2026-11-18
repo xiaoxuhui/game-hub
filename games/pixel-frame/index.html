@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="../../storage-isolation.js" data-game="pixel-frame"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="在无限像素画布上绘制与编辑逐帧动画。">
+  <title>像素帧 · 像素画与动画编辑器</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="lambda/core.js"></script>
+  <script defer src="lambda/tromp.js"></script>
+  <script defer src="editor.js"></script>
+  <script defer src="challenge.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><strong>像素帧</strong><span class="wordmark">PIXEL FRAME</span></div>
+    <label class="project-label"><span data-icon="file"></span><input id="project-name" aria-label="项目名称" maxlength="80" spellcheck="false"></label>
+    <nav class="file-actions" aria-label="项目操作">
+      <button id="new" title="新建项目" data-icon="plus">新建</button>
+      <button id="open" title="打开项目" data-icon="folder">打开</button>
+      <button id="video" title="导入视频为可编辑的像素帧" data-icon="film">导入视频</button>
+      <button id="save" class="primary" data-icon="download">保存项目</button>
+    </nav>
+    <input id="project-file" type="file" accept=".json,application/json" hidden>
+  </header>
+
+  <main class="workspace">
+    <nav class="tools" aria-label="绘画和编辑工具">
+      <button data-tool="draw" data-icon="pencil" aria-label="铅笔（B）" title="铅笔 · B"></button>
+      <button data-tool="line" data-icon="line" aria-label="横竖直线（L）" title="横竖直线 · L"></button>
+      <button data-tool="erase" data-icon="eraser" aria-label="橡皮（E）" title="橡皮 · E"></button>
+      <button data-tool="select" data-icon="select" aria-label="矩形框选（M）" title="矩形框选 · M / Shift + 左键"></button>
+      <button data-tool="pick" data-icon="dropper" aria-label="吸管（I）" title="吸管 · I · 可取底稿颜色"></button>
+      <button data-tool="pan" data-icon="hand" aria-label="移动画布（H）" title="移动画布 · H / 中键拖动"></button>
+      <hr>
+      <button id="undo" data-icon="undo" aria-label="撤销" title="撤销 · Ctrl + Z"></button>
+      <button id="redo" data-icon="redo" aria-label="重做" title="重做 · Ctrl + Shift + Z"></button>
+      <button id="keys" class="help" data-icon="help" aria-label="快捷键" title="快捷键"></button>
+    </nav>
+
+    <section class="editor" aria-label="像素画布工作区">
+      <div class="panel-header editor-header">
+        <h1><span data-icon="grid"></span>无限画布</h1>
+        <div class="view-controls">
+          <button id="fit-view" data-icon="fit" title="用当前帧最外侧的像素确定取景范围">重置视角</button>
+          <button id="release-view" class="icon-button" data-icon="close" aria-label="解除取景" title="解除取景" hidden></button>
+          <button id="grid" class="icon-button" data-icon="grid" aria-label="网格" title="网格"></button>
+          <button id="onion" class="icon-button" data-icon="layers" aria-label="洋葱皮" title="洋葱皮 · 显示上一帧"></button>
+          <span class="divider"></span>
+          <button id="zoom-out" class="icon-button" data-icon="minus" aria-label="缩小"></button>
+          <button id="zoom-reset" title="将当前帧居中">100%</button>
+          <button id="zoom-in" class="icon-button" data-icon="plus" aria-label="放大"></button>
+        </div>
+      </div>
+      <div class="stage" id="stage">
+        <canvas id="board" tabindex="0" aria-label="像素画布，左键绘制，右键擦除，Shift 加左键框选"></canvas>
+        <div class="stage-frame" id="stage-frame"></div>
+        <button id="hide-tromp-guide" class="guide-label" data-icon="close" title="隐藏底稿" hidden>Tromp 描图底稿</button>
+        <div class="selection-actions" id="selection-actions" hidden>
+          <span id="selection-size"></span>
+          <button id="cut" data-icon="scissors" title="Ctrl + X">剪切</button>
+          <button id="copy" data-icon="copy" title="Ctrl + C">复制</button>
+          <button id="paste" data-icon="clipboard" title="Ctrl + V">粘贴</button>
+          <button id="delete" data-icon="trash" title="Delete">删除</button>
+        </div>
+        <div id="notice" role="status" hidden></div>
+      </div>
+      <div class="statusbar"><span id="coords">X 0 &nbsp; Y 0</span><span id="pixel-count"></span><span id="lambda-term" hidden></span><span class="canvas-tips">滚轮缩放 <b>·</b> 中键拖动 <b>·</b> Shift + 左键框选</span></div>
+    </section>
+
+    <aside class="inspector" aria-label="颜色和帧属性">
+      <section class="inspector-section colors">
+        <h2><span data-icon="palette"></span>颜色</h2>
+        <div id="sv" class="color-field" title="点击或拖动选择饱和度和明度"><span id="color-point"></span></div>
+        <input type="range" id="hue" min="0" max="359" value="0" aria-label="色相">
+        <div class="hex-row"><input type="color" id="color-swatch" aria-label="系统颜色选择器"><label class="hex-label"><span>HEX</span><input id="hex" aria-label="HEX 颜色" maxlength="7" spellcheck="false"></label></div>
+        <div class="color-modes" role="group" aria-label="颜色模式">
+          <button data-mode="HSV">HSV</button><button data-mode="RGB">RGB</button><button data-mode="CMYK">CMYK</button>
+        </div>
+        <div id="channels" class="channels"></div>
+      </section>
+      <section class="inspector-section palette-section">
+        <div class="section-title"><h2>调色板</h2><button id="add-color" class="icon-button" title="把当前颜色加入调色板" aria-label="添加当前颜色" data-icon="plus"></button></div>
+        <div id="palette" class="palette"></div>
+      </section>
+      <section class="inspector-section frame-settings">
+        <div class="section-title"><h2>帧属性</h2><span class="badge" id="frame-number"></span></div>
+        <label class="duration-label" for="duration">帧时长</label>
+        <div class="duration-field"><input id="duration" type="number" min="1" max="3600000" step="any"><span>ms</span></div>
+        <button id="unify-duration" class="wide frame-duration-button" data-icon="clock">当前时长应用到全部帧</button>
+        <button id="from-previous" class="wide" data-icon="copy">用上一帧替换画面</button>
+      </section>
+    </aside>
+  </main>
+
+  <section class="timeline" aria-label="动画时间轴">
+    <header class="panel-header timeline-header">
+      <h2><span data-icon="film"></span>时间轴 <span class="frame-total" id="frame-total"></span></h2>
+      <div class="transport">
+        <button id="prev" class="icon-button" data-icon="prev" aria-label="上一帧" title="上一帧 · ←"></button>
+        <button id="play" class="icon-button play" data-icon="play" aria-label="播放" title="播放 / 暂停 · 空格"></button>
+        <button id="next" class="icon-button" data-icon="next" aria-label="下一帧" title="下一帧 · →"></button>
+        <select id="playback-mode" aria-label="播放方式" title="播放方式">
+          <option value="repeat">重复播放</option>
+          <option value="once">单次播放</option>
+          <option value="ping-pong">往返循环</option>
+        </select>
+        <output id="timecode"></output>
+      </div>
+      <div class="frame-actions">
+        <button id="lambda" class="tinted" data-icon="lambda" title="从第 1 帧生成 Tromp 归约动画">生成帧</button>
+        <button id="add-frame" data-icon="plus">空白帧</button>
+        <button id="duplicate" class="tinted" data-icon="copy" title="复制当前帧到下一帧">复制到下一帧</button>
+        <button id="remove-frame" class="icon-button" data-icon="trash" aria-label="删除当前帧" title="删除当前帧"></button>
+      </div>
+    </header>
+    <div id="frames" class="frames"></div>
+  </section>
+
+  <dialog id="help-dialog">
+    <form method="dialog"><button class="icon-button close-dialog" data-icon="close" aria-label="关闭"></button></form>
+    <h2>快捷键</h2>
+    <dl class="shortcuts">
+      <dt>绘画 / 擦除</dt><dd>左键 / 右键</dd>
+      <dt>横竖直线</dt><dd>L 后用左键拖动</dd>
+      <dt>框选</dt><dd>Shift + 左键拖动</dd>
+      <dt>平移 / 缩放</dt><dd>中键拖动 / 滚轮</dd>
+      <dt>复制 / 剪切 / 粘贴</dt><dd>Ctrl + C / X / V</dd>
+      <dt>删除 / 取消选区</dt><dd>Delete / Esc</dd>
+      <dt>撤销 / 重做</dt><dd>Ctrl + Z / Ctrl + Shift + Z</dd>
+      <dt>播放与暂停 / 逐帧切换</dt><dd>空格 / ← →</dd>
+    </dl>
+  </dialog>
+  <dialog id="lambda-dialog">
+    <form id="lambda-form">
+      <h2><span data-icon="lambda"></span>Tromp 归约动画</h2>
+      <p class="dialog-hint">手绘或生成第 1 帧的 Tromp 图。每次 β 归约生成一帧，沿用原图的线路颜色。读取范围优先使用框选，其次是可见底稿，否则读取整帧。</p>
+      <p class="dialog-hint">可用同色标记变量竖线和它的绑定横线。相接的两条绑定横线用不同颜色，交叉格可以沿用横线的颜色。</p>
+      <label class="free-variables"><input id="lambda-free" type="checkbox" aria-describedby="free-variable-hint">识别自由变量</label>
+      <p class="dialog-hint" id="free-variable-hint">没有绑定横线的变量向上伸出。线头高度相同表示同一个自由变量，高度不同表示不同变量。</p>
+      <div class="tromp-guide">
+        <label class="input-label">描图底稿表达式
+          <textarea id="tromp-source" rows="2" maxlength="1600" spellcheck="false">(λf.λx.f (f x)) (λy.y)</textarea>
+        </label>
+        <p class="dialog-hint">显示底稿供描画，生成底稿会写入第 1 帧。未连接的线条之间至少留 1 个空格。</p>
+        <div class="guide-controls">
+          <button id="show-tromp-guide" type="button" data-icon="layers">显示底稿</button>
+          <button id="draw-tromp-guide" class="tinted" type="button" data-icon="pencil">生成底稿</button>
+        </div>
+      </div>
+      <div class="import-options">
+        <label class="input-label">归约步数<input id="lambda-limit" type="number" min="1" step="1" placeholder="留空自动（512 节点）"></label>
+        <label class="input-label">生成帧时长（ms）<input id="lambda-duration" type="number" min="1" max="3600000" step="any" value="350" required></label>
+      </div>
+      <p id="lambda-status" role="status"></p>
+      <div class="dialog-actions">
+        <button id="close-lambda" type="button">关闭</button>
+        <button id="generate-lambda-frames" class="primary" type="submit" data-icon="lambda">生成后续帧</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="video-dialog">
+    <form id="video-form">
+      <h2>导入视频</h2>
+      <label class="input-label">本地视频<input id="video-file" type="file" accept="video/*" required></label>
+      <div class="import-options">
+        <label class="input-label">最大边长（像素）<input id="video-size" type="number" min="8" max="128" value="48" required></label>
+        <label class="input-label">每秒取样帧数<input id="video-fps" type="number" min="1" max="30" value="12" required></label>
+      </div>
+      <p class="dialog-hint">取样帧会插入当前帧之后，可单独编辑画面和时长。单次最多 300 帧。</p>
+      <p id="video-status" role="status"></p>
+      <div class="dialog-actions"><button id="cancel-video" type="button">取消</button><button id="import-video" class="primary" type="submit">导入为像素帧</button></div>
+    </form>
+  </dialog>
+</body>
+</html>
