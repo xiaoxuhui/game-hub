@@ -9,6 +9,6 @@ try {
     $process=Start-Process -FilePath $node -ArgumentList @('"'+(Join-Path $root 'server.mjs')+'"') -WorkingDirectory $root -WindowStyle Hidden -PassThru
     for($i=0;$i -lt 50;$i++){Start-Sleep -Milliseconds 200;try{$response=Invoke-RestMethod -Uri $endpoint -TimeoutSec 1;if($response.app -eq 'game-hub-local-web' -and $response.installationId -eq $config.installationId){$running=$true;break}}catch{};if($process.HasExited){break}}
   }
-  if(-not $running){throw '本地服务未启动，可能有端口被其他程序占用。'}
+  if(-not $running){throw 'The local game hub could not start. A required port may already be in use.'}
   Start-Process 'http://127.0.0.1:18427/'
-}catch{Add-Type -AssemblyName PresentationFramework;[System.Windows.MessageBox]::Show($_.Exception.Message,'游戏大厅')|Out-Null}
+}catch{Add-Type -AssemblyName PresentationFramework;[System.Windows.MessageBox]::Show($_.Exception.Message,'Game Hub')|Out-Null}
