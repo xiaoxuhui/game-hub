@@ -56,6 +56,10 @@ test('compact lobby uses four fixed source icons and clickable cards', () => {
 
 test('CI builds pinned sources and checks APK without a publish step', () => {
   const workflow = text('.github/workflows/android-check.yml');
+  const releaseWorkflow = text('.github/workflows/android-release-candidate.yml');
+  for (const config of [workflow, releaseWorkflow]) {
+    assert.match(config, /versionCode='12' versionName='0(?:\\+\.)5(?:\\+\.)4'/);
+  }
   assert.match(workflow, /pnpm run bundle/);
   assert.match(workflow, /pnpm run verify:bundle/);
   assert.match(workflow, /assembleDebug/);
