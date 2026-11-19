@@ -1,0 +1,2 @@
+const path=require('node:path'),run=require('./scan-process-guard.cjs');
+module.exports=async function cross(helper){const result=await run(process.execPath,[path.join(__dirname,helper)],{env:process.env},300000);if(result.output)console.log(result.output.trim());if(result.timedOut||result.code!==0){console.error(result.timedOut?'跨游戏隔离检查超时':'跨游戏隔离检查失败');process.exitCode=1}else console.log('PASS cross-game isolation')};

@@ -1,0 +1,2 @@
+const assert=require('node:assert/strict'),run=require('./scan-process-guard.cjs');
+(async()=>{const first=await run(process.execPath,['-e','while(true){}'],{env:process.env},1200);assert.equal(first.timedOut,true,'infinite loop times out');const second=await run(process.execPath,['-e','console.log("next game")'],{env:process.env},5000);assert.equal(second.code,0,'next job continues');assert.match(second.output,/next game/);console.log('PASS infinite-loop timeout and next job')})().catch(e=>{console.error(e);process.exitCode=1});
