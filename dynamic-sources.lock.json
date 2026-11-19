@@ -135,10 +135,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "d37ca6bde74cfdfa35b5820cdec1be8dbe7282dd",
+      "revision": "5c03d31c8112e0e66159167fff27bb05b4001625",
       "directory": "dist",
-      "version": "0.3.54",
-      "contentCode": 42,
+      "version": "0.3.55",
+      "contentCode": 43,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -173,7 +173,7 @@
         "src/wireworld-worker.js",
         "styles.css"
       ],
-      "releaseNotes": "0.3.54：新增 Conway 生命游戏电路模拟、Golly RLE 往返导出与有界图灵机默认存档；保留骨牌/电线世界、真实闭环与存储器。"
+      "releaseNotes": "0.3.55：Conway 生命电路模式修复——保留自定义闸门信号方向，组合逻辑电路在输入变化时同步刷新并自动匹配输出探针，清除过期输出，各玩法统一显示下一拍动作；存档与关卡保持兼容。"
     },
     {
       "id": "traffic-planner",
@@ -531,21 +531,24 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/sokoban-ai-lab.git",
-      "revision": "d7a51cfefefc3ff923dd7a99f9d348863f85f1c2",
+      "revision": "12e8beab2db28da9b1a9d1cd580d36f011eb14fa",
       "directory": "dist",
-      "version": "1.0.0",
-      "contentCode": 3,
+      "version": "1.0.1",
+      "contentCode": 4,
       "entryPage": "index.html",
       "storageContract": "sokoban-ai-lab-dynamic-v1",
       "files": [
         "LICENSE",
         "app.js",
         "box-clone-levels.js",
+        "box-cycle-levels.js",
+        "box-flip-levels.js",
         "box-intro.css",
         "box-intro.html",
         "box-intro.js",
         "box-levels.js",
         "box-open-levels.js",
+        "box-player-levels.js",
         "box-portals.js",
         "box-rooms.js",
         "box-transfer-levels.js",
@@ -554,7 +557,7 @@
         "route-input.js",
         "style.css"
       ],
-      "releaseNotes": "套箱模式扩至十章：新增调换、居中、克隆、转移、开放五章关卡，支持复制体同步进出同一房间、从箱内走出按出口位置进入相邻箱子；补充各章节布局测试。"
+      "releaseNotes": "1.0.1：套箱模式新增循环、翻转、玩家三章——循环链整链前移、镜像箱左右出入口相反、玩家自身可被吞入并携带内部地图；新增多玩家同步/切换控制与当前玩家选择；原有章节与存档保持兼容。"
     },
     {
       "id": "tape-language-lab",
