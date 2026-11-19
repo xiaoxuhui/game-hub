@@ -49,9 +49,11 @@ class GameHangUpgradeTest {
             }
             assertTrue("old or new game must load", ready)
             if (mode == "seed") {
+                assertEquals("true", js("(()=>{const s=LightStorage.createStore();s.load();s.replace({schema:'light-game/save',version:1,stars:{'level-1':2},boards:{},snapshots:[]});return s.persist()})()"))
                 assertEquals("\"saved-before-upgrade\"", js("localStorage.setItem('v054-upgrade-sentinel','saved-before-upgrade');localStorage.getItem('v054-upgrade-sentinel')"))
                 Thread.sleep(1_500)
             } else {
+                assertEquals("2", js("(()=>{const s=LightStorage.createStore();return s.load().stars['level-1']})()"))
                 assertEquals("\"saved-before-upgrade\"", js("localStorage.getItem('v054-upgrade-sentinel')"))
                 js("localStorage.removeItem('v054-upgrade-sentinel')")
             }
