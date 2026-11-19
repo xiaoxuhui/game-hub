@@ -12,7 +12,7 @@ const signed=[...first.games,...second.games.filter(g=>g.available)],manifest=JS
 if(signed.length!==manifest.games.length||new Set(signed.map(g=>g.id)).size!==signed.length)throw Error('游戏目录数量或身份不符');
 mkdirSync(out,{recursive:true});mkdirSync(join(out,'games'));mkdirSync(join(out,'icons'));mkdirSync(join(out,'proof'));
 const storage=readFileSync(join(root,'pages-web/storage-isolation.js')),worker=readFileSync(join(root,'pages-web/worker-storage.js'),'utf8'),proofs=[];
-writeFileSync(join(out,'storage-isolation.js'),storage);writeFileSync(join(out,'client.js'),readFileSync(join(root,'pages-web/client.js')));writeFileSync(join(out,'style.css'),readFileSync(join(root,'local-web/style.css')));writeFileSync(join(out,'.nojekyll'),'');
+writeFileSync(join(out,'storage-isolation.js'),storage);writeFileSync(join(out,'client.js'),readFileSync(join(root,'pages-web/client.js')));writeFileSync(join(out,'style.css'),Buffer.concat([readFileSync(join(root,'local-web/style.css')),Buffer.from('\n'),readFileSync(join(root,'pages-web/recovery.css'))]));writeFileSync(join(out,'.nojekyll'),'');
 let html=readFileSync(join(root,'local-web/index.html'),'utf8').replace('本机网页版','网页版');writeFileSync(join(out,'index.html'),html);
 cpSync(join(source,'icons'),join(out,'icons'),{recursive:true});for(const n of ['v1','v2'])writeFileSync(join(out,'proof',n+'.signed.json'),readFileSync(join(source,'catalogs',n+'.signed.json')));
 for(const item of manifest.games){const g=signed.find(x=>x.id===item.id);if(!g||g.contentCode!==item.contentCode||g.archiveSha256!==item.archiveSha256||g.entryPage!==item.entry||JSON.stringify(g.files.map(x=>x.path))!==JSON.stringify(item.files))throw Error(item.id+': 资源身份不符');const dest=join(out,'games',item.id);mkdirSync(dest,{recursive:true});
