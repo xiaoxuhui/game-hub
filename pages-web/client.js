@@ -6,11 +6,11 @@ message.id='recovery-status';message.setAttribute('role','status');message.hidde
 const LIMIT=30000;let current=null,lastBeat=0,retried=false,failed=false;
 function notice(text){message.textContent=text;message.hidden=!text;}
 function reload(text){lastBeat=Date.now();failed=false;notice(text);frame.src=current.url;}
-function open(g){const url=new URL(`./games/${g.id}/${g.entry}`,location.href);url.searchParams.set('hub','recovery-20261119');current={id:g.id,url:url.href};retried=false;$('lobby').hidden=true;$('player').hidden=false;$('title').textContent=g.name;$('new-tab').href=current.url;reload('');}
-function close(){current=null;frame.src='about:blank';notice('');$('player').hidden=true;$('lobby').hidden=false;}
+function open(g){const url=new URL(`./games/${g.id}/${g.entry}`,location.href);url.searchParams.set('hub','recovery-20261119');current={id:g.id,name:g.name,url:url.href};retried=false;$('status').textContent='已加载在线游戏';$('lobby').hidden=true;$('player').hidden=false;$('title').textContent=g.name;$('new-tab').href=current.url;reload('');}
+function close(reason){current=null;frame.src='about:blank';notice('');$('player').hidden=true;$('lobby').hidden=false;if(typeof reason==='string')$('status').textContent=reason;}
 restart.onclick=()=>{if(current){retried=false;reload('正在重新开始，已保存的数据会保留。');}};
 window.addEventListener('message',event=>{if(!current||event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='game-hub-heartbeat'||event.data.game!==current.id)return;lastBeat=Date.now();failed=false;notice('');});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&current)lastBeat=Date.now();});
-setInterval(()=>{if(!current||document.hidden||failed||Date.now()-lastBeat<LIMIT)return;if(!retried){retried=true;reload('游戏暂时没有响应，正在重新开始。');}else{failed=true;notice('游戏仍无响应。请点击“重新开始”重试；已保存的数据不会删除。');}},1000);
+setInterval(()=>{if(!current||document.hidden||failed||Date.now()-lastBeat<LIMIT)return;if(!retried){retried=true;reload('游戏暂时没有响应，正在重新开始。');}else{const name=current.name;close(`${name} 连续无响应，已跳过。已保存的数据保留；你可以选择其他游戏或稍后重试。`);}},1000);
 $('back').onclick=close;$('search').addEventListener('input',render);
 try{const r=await fetch('./games.json',{cache:'no-store'});if(!r.ok)throw Error('游戏目录不可用');games=(await r.json()).games;$('count').textContent=`${games.length} 款游戏`;$('status').textContent='已加载在线游戏';render();}catch(e){$('status').textContent='无法读取游戏：'+e.message;}
