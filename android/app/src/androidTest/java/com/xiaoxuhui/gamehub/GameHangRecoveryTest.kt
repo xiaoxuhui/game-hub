@@ -2,6 +2,7 @@ package com.xiaoxuhui.gamehub
 
 import android.view.View
 import android.view.ViewGroup
+import android.app.AlertDialog
 import android.webkit.WebView
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
@@ -52,6 +53,53 @@ class GameHangRecoveryTest {
                 val lobby = MainActivity::class.java.getDeclaredField("lobby").apply { isAccessible = true }.get(activity) as View
                 assertNotEquals("game should remain open after resume", View.VISIBLE, lobby.visibility)
             }
+        }
+    }
+
+    @Test fun javascriptDialogsPauseWatchdogAndPromptReturnsInput() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val card = find(activity.window.decorView) { it is TextView && it.text.toString() == "光学游戏" }!!
+                assertTrue((card.parent as View).performClick())
+            }
+            val readyDeadline = System.currentTimeMillis() + 30_000
+            var ready = false
+            while (!ready && System.currentTimeMillis() < readyDeadline) {
+                scenario.onActivity { activity -> ready = MainActivity::class.java.getDeclaredField("gamePageReady").apply { isAccessible = true }.getBoolean(activity) }
+                if (!ready) Thread.sleep(200)
+            }
+            assertTrue("game ready", ready)
+            val promptDone = CountDownLatch(1)
+            var promptValue: String? = null
+            scenario.onActivity { activity ->
+                val view = find(activity.window.decorView) { it is WebView } as WebView
+                view.evaluateJavascript("prompt('test prompt','initial')") { promptValue = it; promptDone.countDown() }
+            }
+            var dialog: AlertDialog? = null
+            val dialogDeadline = System.currentTimeMillis() + 10_000
+            while (dialog == null && System.currentTimeMillis() < dialogDeadline) {
+                scenario.onActivity { activity ->
+                    @Suppress("UNCHECKED_CAST")
+                    val dialogs = MainActivity::class.java.getDeclaredField("gameDialogs").apply { isAccessible = true }.get(activity) as Set<AlertDialog>
+                    dialog = dialogs.firstOrNull()
+                }
+                if (dialog == null) Thread.sleep(100)
+            }
+            assertNotNull("prompt shown", dialog)
+            scenario.onActivity { activity ->
+                val liveness = MainActivity::class.java.getDeclaredField("gameLiveness").apply { isAccessible = true }.get(activity) as GameLiveness
+                liveness.progress(android.os.SystemClock.uptimeMillis() - 31_000)
+            }
+            Thread.sleep(4_000)
+            scenario.onActivity { activity ->
+                assertTrue(dialog!!.isShowing)
+                assertNotNull(find(activity.window.decorView) { it is WebView })
+                val input = find(dialog!!.window!!.decorView) { it is android.widget.EditText } as android.widget.EditText
+                input.setText("kept")
+                dialog!!.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+            }
+            assertTrue("prompt callback", promptDone.await(5, TimeUnit.SECONDS))
+            assertEquals("\"kept\"", promptValue)
         }
     }
 

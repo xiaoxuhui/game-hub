@@ -22,6 +22,7 @@ import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.JsResult
+import android.webkit.JsPromptResult
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -31,6 +32,7 @@ import android.webkit.WebViewClient
 import android.webkit.RenderProcessGoneDetail
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -895,6 +897,34 @@ class MainActivity : ComponentActivity() {
                         .setMessage(message)
                         .setPositiveButton("确定") { _, _ -> completed = true; if (view === webView && !loadFailed && activityStarted) result.confirm() else result.cancel() }
                         .setNegativeButton("取消") { _, _ -> completed = true; result.cancel() }.create()
+                    gameDialogs.add(dialog)
+                    dialog.setOnDismissListener { gameDialogs.remove(dialog); if (!completed) result.cancel() }
+                    dialog.show()
+                    return true
+                }
+
+                override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
+                    if (view !== webView || loadFailed || !activityStarted) { result.cancel(); return true }
+                    var completed = false
+                    val dialog = AlertDialog.Builder(this@MainActivity)
+                        .setMessage(message)
+                        .setPositiveButton("确定") { _, _ -> completed = true; if (view === webView && !loadFailed && activityStarted) result.confirm() else result.cancel() }
+                        .create()
+                    gameDialogs.add(dialog)
+                    dialog.setOnDismissListener { gameDialogs.remove(dialog); if (!completed) result.cancel() }
+                    dialog.show()
+                    return true
+                }
+
+                override fun onJsPrompt(view: WebView, url: String, message: String, defaultValue: String?, result: JsPromptResult): Boolean {
+                    if (view !== webView || loadFailed || !activityStarted) { result.cancel(); return true }
+                    var completed = false
+                    val input = EditText(this@MainActivity).apply { setText(defaultValue ?: "") }
+                    val dialog = AlertDialog.Builder(this@MainActivity)
+                        .setMessage(message).setView(input)
+                        .setPositiveButton("确定") { _, _ -> completed = true; if (view === webView && !loadFailed && activityStarted) result.confirm(input.text.toString()) else result.cancel() }
+                        .setNegativeButton("取消") { _, _ -> completed = true; result.cancel() }
+                        .create()
                     gameDialogs.add(dialog)
                     dialog.setOnDismissListener { gameDialogs.remove(dialog); if (!completed) result.cancel() }
                     dialog.show()
