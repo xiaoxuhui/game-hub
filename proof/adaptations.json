@@ -4,127 +4,127 @@
     "v1": "10",
     "v2": "71"
   },
-  "storageScriptSha256": "4dad8a229f2f8be55c435a8f1f4c2094f94e0e0a8154de01ad6e387f569dd695",
+  "storageScriptSha256": "2cc5604aa0de9edb95b70db57864596035ea427bfa290d5a66e9e396c928d0eb",
   "adapted": [
     {
       "id": "abelian-sandpile",
       "path": "index.html",
       "sourceSha256": "43bdf7989421dcc8a3473e4015a4df98342c638db40a24225f6f4a5ca91b644c",
-      "adaptedSha256": "ae4a7bf70030aa365a95d29cd650d1b9100f5b0cc1509481eb39bad75457a0e9"
+      "adaptedSha256": "04a3bd9bfc342f23597275f5a17bac19d87e65679054f1d2efc18695e848197e"
     },
     {
       "id": "ai-racing-lab",
       "path": "index.html",
       "sourceSha256": "e48f6ecb013226933a919777f1ad8af4836fe2629b0c6e4f8e3c9b7da991fce1",
-      "adaptedSha256": "8609cdcd531835c6037b1c4e8c816b003e52a64b10e777d4e3517bd1d8ad4452"
+      "adaptedSha256": "951591578683f0e3faee5972bf159ca2753b010445b06a97628cafb53469c1f8"
     },
     {
       "id": "compass-polygon-studio",
       "path": "index.html",
       "sourceSha256": "34f34df7346163340ba527f0a01be94892123938421e62e429ae332dca140607",
-      "adaptedSha256": "705c5b40dbd358e3f964589fe2451cbb38b8b5dc0df74a65b91b853c2cc03936"
+      "adaptedSha256": "b8c02340cc2fc7a1391d9086e13cafce0c46f12d387ce5c6ac9369b20637d808"
     },
     {
       "id": "conway",
       "path": "index.html",
       "sourceSha256": "be214a7b585c1b9dfc07f3ede997889c8e1bd627d3666d6d6e602a06f460bb05",
-      "adaptedSha256": "9b4ea51dba728dd7aa944a2e63dd04dff617c8539a3d101a9f39fc79d3444651"
+      "adaptedSha256": "bfd31f9c3f635e0a2131828ec9073d5f3b39134d359860c10bbaeb218e478fc5"
     },
     {
       "id": "eml",
       "path": "eml-workbench.html",
       "sourceSha256": "a4ed3cdb120e6105eb256450c47cebd5d77090d15e30e6e6f80c8bb5a5743642",
-      "adaptedSha256": "ed827c88979fc3018c75cde76644ede30a6bdd73f947005d7ae37d26bfd214f1"
+      "adaptedSha256": "e7f146e11f3ea406006105d74bce0058a54a9aa89d69ee7638c412fa3bfbba17"
     },
     {
       "id": "fixed-point-workshop",
       "path": "index.html",
       "sourceSha256": "7365d2e06c8bafcf64e1a05546cb8eb6f53ee4bef5a50baa892bebc1e4754236",
-      "adaptedSha256": "791738dfa0ef8b71bc36eafaf2097278cc4e85b82f80843fb0609f653ea4e725"
+      "adaptedSha256": "ecc49b28207fa888bafbcfdf2a2a99a6ab26ee8caf14392b274628ee08fab3e6"
     },
     {
       "id": "fourier-drawing-studio",
       "path": "index.html",
       "sourceSha256": "767e720b16680cf439205e384b97e9eac9a6d9c6feb2b1a2e8e559936eaaa463",
-      "adaptedSha256": "f463ec8967e42d89d9a40487521d182f30a5982deffff25677af19298010a8ef"
+      "adaptedSha256": "83b31ca00678311eaeb3b36fba16221b6e95349b92219912be3347b9c207a8a3"
     },
     {
       "id": "hex-cell-lab",
       "path": "index.html",
       "sourceSha256": "e7334a45d4c439359577a58ef5cb4ef0fbcf04c03c56e9fdd7b2abd9aa8759ac",
-      "adaptedSha256": "2e7676332d95732d86d371c01627f43e67d4ee242a650561472e7467ed67df1f"
+      "adaptedSha256": "0b67fbdbe671dd4922b7ce56f1884db907559ad5bd691fb2ad826c3a4cf6da50"
     },
     {
       "id": "lambda-diagram-game",
       "path": "lambda-lab.html",
       "sourceSha256": "aff46b1e1ad38822a547f5144c80923c779bb27658ffd3a9e07e0fc2f378f722",
-      "adaptedSha256": "35abe0aeed475bca8d81cfab759e5f50f282c4b4049119bd07735d5121d33755"
+      "adaptedSha256": "6cd10c9f798244e3dd74c37f57ebd1eb9a52ad9a08f81a685f50cf06fd6ee1ec"
     },
     {
       "id": "langtons-ant",
       "path": "index.html",
       "sourceSha256": "d6a36f2ca63bbc302aa354ab107d85de2cdb37597886a4d757b963d342805756",
-      "adaptedSha256": "cae6a5c7594f10e4c6ae389315ef0f79824e3cc1aea3d92068f3162504cda212"
+      "adaptedSha256": "eee5835a22dbf65bbdf1743b08d7372f4f8468bfae20af6bf9c10fca7b456842"
     },
     {
       "id": "learning-machine",
       "path": "index.html",
       "sourceSha256": "672294df95474e57052a0903423c4ab1dfce2a1c6f0984a5ac8f05da0a74dade",
-      "adaptedSha256": "25dd23ec4d58cc1d8d38c618731f92acf81ff2f938dafeb0dc6320353951d7e0"
+      "adaptedSha256": "1be77fd3c07d7b717834abe3cc11fba671734f6e9c81937e8edfaf8a30832dbf"
     },
     {
       "id": "light",
       "path": "index.html",
       "sourceSha256": "14a78b2e55fa1336e90544f28e5d9265fb990933dde23fb72f74b904c058f344",
-      "adaptedSha256": "42de07f6919a699b5bcea49bc9eae9e9d519e6e62ccbb7479367d346b1545be4"
+      "adaptedSha256": "fff25f2b5a34b7322d573e66bc99fb365e71df28ceb5a658950e2a31c2ee9f69"
     },
     {
       "id": "lights-out-matrix",
       "path": "index.html",
       "sourceSha256": "514304faabcff0b7fd01723f3aa529acc04732feb77afc7a40579babc57b8651",
-      "adaptedSha256": "04c4c52a4005a3527449500018074bef4adddeeafc073332a8226744b3b9e4e6"
+      "adaptedSha256": "76dda72cd101d0d1bb630ee5f51f1bb582a376eccb3badea0aa9225dd09820b2"
     },
     {
       "id": "logic-circuit",
       "path": "index.html",
       "sourceSha256": "60a8bc6fed17b202124e1364ddd27c5ea39179cddb45e4fcbbe013fd71153468",
-      "adaptedSha256": "beba3ed1148776b924e5d460380f81b98eefa77b50e6f602e678c87e0316dd2e"
+      "adaptedSha256": "36b84609bd867133af250f63dea958df5a04e6c28f323f4c7ca65257ca0f63ca"
     },
     {
       "id": "memory-demo",
       "path": "index.html",
       "sourceSha256": "f62c5152bc5c749469b29a3156cda041406b9fd9372fe8a213e89bbe9d280bc5",
-      "adaptedSha256": "8e744b27544f055cad33cc2a666cccbb9994d155e52158a6ff4992b0963cafe9"
+      "adaptedSha256": "777707bcaed9fc38eecc571f280b68d8495f6ba5dd7481914941c6d54e20ad88"
     },
     {
       "id": "mini-scratch",
       "path": "index.html",
       "sourceSha256": "84bc2b4577ee1cb6cb1db50f3cdd13bcf1e4e2767c00c89f8f484ac39ebbb99b",
-      "adaptedSha256": "6a2590ea8564c0248a7a0db11c875e228f3a0e6d249fa14d25b81af81716f4fa"
+      "adaptedSha256": "08873d9481a1b832c1e2b7990874c1469ff569fb4756496ca3e2abd75f57d5f0"
     },
     {
       "id": "mini-scratch",
       "path": "play.html",
       "sourceSha256": "b2e9f00b653ba13464c1bed90707ec0b570c51a352ca0706dddfee4ee6849d30",
-      "adaptedSha256": "13225209405a1462e2c531c8107f8bd48d16edc4b80855b29654ea1ee29e7d11"
+      "adaptedSha256": "98182dc7c8f646cbf7f7c1d00380f66685a94b829406f95f3d0ef813ed725c14"
     },
     {
       "id": "pixel-frame",
       "path": "index.html",
       "sourceSha256": "149879fce381727043a0c92ce8ca304bf1ef40f0ce8b58a96bfe98deaf7bdf97",
-      "adaptedSha256": "2282063b613fcc988e5492f6e6db923dbcddcff79faeadc0db6edf7599e181a4"
+      "adaptedSha256": "41189c3c5dcd8324fff7851c9b537f9ce413f1d4807423a6290567ae37660013"
     },
     {
       "id": "red-green-puzzle",
       "path": "index.html",
       "sourceSha256": "8693ed2f6643c39049eb8a457a0fb6b512da7a106503ec2955580489f420b558",
-      "adaptedSha256": "a14570d85b37da2e13405f8751ef48b217b9410fa9e10b4e141c3cef1d79dca3"
+      "adaptedSha256": "1cef88f8f67560204442cc33660db7d7ccc79659067889d4eac8b4d7a51998f9"
     },
     {
       "id": "snake-speed",
       "path": "index.html",
       "sourceSha256": "58531d4160aead1a440f3590b1ff36b9ec46546f9b643cc1b81ec26d9604718d",
-      "adaptedSha256": "2b64c571c97670e3cf30ed215b81df7909256812a1684239706e1ba7ae360f34"
+      "adaptedSha256": "d680a6ce26495e56729174d9444711cda9d109d17d50af51498f67c242755ed2"
     },
     {
       "id": "snake-speed",
@@ -136,67 +136,67 @@
       "id": "sokoban-ai-lab",
       "path": "box-intro.html",
       "sourceSha256": "31ba04907e821280c649459e12470664c00532adc26edcb751dc37fe26af969f",
-      "adaptedSha256": "18a0a506023e47babbe3cfb004d3266880043ba8c9594207c46d34eae3e90931"
+      "adaptedSha256": "26febc778e23e6df56abcbabde11a93152f61f98a01db92da93a062c2752ea46"
     },
     {
       "id": "sokoban-ai-lab",
       "path": "index.html",
       "sourceSha256": "d2ce49133714e39e4b14f1fc53b18ce7390a07673d06564877323a47152ab9eb",
-      "adaptedSha256": "6d66d22df1fafc5d3f272bbd1f4e25e5724ca99ff3aaf92504c7dbd73d8dbdd2"
+      "adaptedSha256": "ce159a0fb00ff7def434f888f98422b195cccf2ad4ca78ec95f431a67bacf741"
     },
     {
       "id": "tape-language-lab",
       "path": "index.html",
       "sourceSha256": "af48f585280503cf173316e2a4034bf9f1fac1dfde7fae01b2e803696a426a55",
-      "adaptedSha256": "285253ef0d29fc2bc32d33dc73714c31922b354c972ce480d477125005745a38"
+      "adaptedSha256": "d5f2de93805978b1fcee01a1356c276aa4eb6b7e3f610876963cfa5a19c48f73"
     },
     {
       "id": "traffic-planner",
       "path": "index.html",
       "sourceSha256": "4504ebf7443e84b2a5b1ecf28c5a2fc4e07504a3bff814d72c18806d9ac20759",
-      "adaptedSha256": "302c71f3c6a414d891f335b535f915f5567e1f3ae45a286488042de4d12ab8ca"
+      "adaptedSha256": "0f136045da409995c72d37f52a79db8856840e4601430fa726353b32012cc9ab"
     },
     {
       "id": "turbowarp-graph-lab",
       "path": "index.html",
       "sourceSha256": "e91f9c641ed42630512ad69bbd2478af8838e123616e9b7464d92385e0966204",
-      "adaptedSha256": "3267ae05c14530c3c83beb4077519f2f1fc797849328391bf7f7fa1cd9197e39"
+      "adaptedSha256": "552cac238515277ba4e79d099015ea4e2af6c45d254ec00407320221982fbb44"
     },
     {
       "id": "turbowarp-life-lab",
       "path": "index.html",
       "sourceSha256": "bb9b56954ecbda9e44b61230794e4f9804a6b3b60043216bedd4c524a56c8ec8",
-      "adaptedSha256": "bdd5788259967bb846eb098b0d730c9a2055eed1ecdeda55c17f834dab14ad14"
+      "adaptedSha256": "4bdccb56e99da20cbcc3ce035596a61c4ae85a608b94e2906adb6a0d51e0fe9c"
     },
     {
       "id": "turbowarp-logic-lab",
       "path": "index.html",
       "sourceSha256": "d36cdeb0d3004905443bcf4baf9704f44d63ed60d1cfc9425440a0d17309fd63",
-      "adaptedSha256": "70b8b29d0ebfedf78148d7b327d3eb6ff3d78642f4e51a3173c5af4bf473e711"
+      "adaptedSha256": "b09ada62bacf490ac0b03fb81c86ab1eb96c47b192161cdbd6d4c641ff7f3008"
     },
     {
       "id": "turbowarp-neural-network",
       "path": "index.html",
       "sourceSha256": "8a275983d47d6f654cb84d088dd6ce8a81395427df3ca2c9a204dfd210656d75",
-      "adaptedSha256": "07f8bc4cf49452c97a3e46f025d300bcd99c34d672fc3488c8ff489e93407f3b"
+      "adaptedSha256": "0437e9c0f862689f165af07a5d01394458c5dfd412fb1ed1c2b959345d32f20c"
     },
     {
       "id": "turbowarp-turing-lab",
       "path": "index.html",
       "sourceSha256": "66309cd81201c0710442de9762c4c9016b094ab5a95207f561e1620ea612fd00",
-      "adaptedSha256": "61a496af38b3f0445b533906b2df177bf94144955f2c3cd5d359f33f06bd875e"
+      "adaptedSha256": "e4a0849f6bee9e80ebe74b780d36f165f7eabf208b6fffd9015da4902dd4dc4f"
     },
     {
       "id": "turing",
       "path": "campaign.html",
       "sourceSha256": "580783008329239cd5129a210ead5b9437e004ed919505860192719761f18c19",
-      "adaptedSha256": "6ef5f4846c8492d33c77b631b7b2153b34d7d2d23c9ec5c4392059a6772fa8d3"
+      "adaptedSha256": "5c40c1c5dea17e0512a66d54cbc2d80ca30376fb79779f5a6f6c128207a9899a"
     },
     {
       "id": "turing",
       "path": "index.html",
       "sourceSha256": "98f0cc96bfa472eda9ada96e4e2324bbfc06b8b951a10ac0d40609367360f589",
-      "adaptedSha256": "9a1d1a81ecfb45fb5d87c82180e3e6746cf831fc17909e7faf001c0f7ed54160"
+      "adaptedSha256": "d7adcf0e0a17850430b240673623ce7f7aae0718a18b2e2744a63bd19e906061"
     }
   ]
 }

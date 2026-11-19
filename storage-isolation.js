@@ -2,6 +2,7 @@
   'use strict';
   const script=document.currentScript, game=script&&script.dataset.game;
   if(!/^[a-z][a-z0-9-]{0,31}$/.test(game||''))throw Error('Game storage identity unavailable');
+  if(window.parent!==window){const beat=()=>window.parent.postMessage({type:'game-hub-heartbeat',game},location.origin);beat();setInterval(beat,2000);}
   const prefix='game-hub-pages.v1.'+game+'.';
   function scoped(native){
     const keys=()=>{const a=[];for(let i=0;i<native.length;i++){const k=native.key(i);if(k!==null&&k.startsWith(prefix))a.push(k.slice(prefix.length));}return a;};
