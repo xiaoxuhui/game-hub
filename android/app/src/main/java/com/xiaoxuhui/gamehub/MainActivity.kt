@@ -12,6 +12,9 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
@@ -25,6 +28,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.webkit.RenderProcessGoneDetail
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.FrameLayout
@@ -41,6 +45,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
+import androidx.webkit.WebViewCompat
+import androidx.webkit.WebViewFeature
 import org.json.JSONObject
 import java.io.File
 
@@ -67,6 +73,42 @@ class MainActivity : ComponentActivity() {
     private var overlay: View? = null
     private var currentGame: Game? = null
     private var loadFailed = false
+    private val gameLiveness = GameLiveness(30_000)
+    private val watchdogHandler = Handler(Looper.getMainLooper())
+    private var gamePageReady = false
+    private var probePending = false
+    private var probeSerial = 0L
+    private val watchdogTick = object : Runnable {
+        override fun run() {
+            if (!activityStarted || currentGame == null || isDestroyed || loadFailed) return
+            val now = SystemClock.uptimeMillis()
+            if (gameDialogs.isNotEmpty() || filePathCallback != null || exports.busy) {
+                gameLiveness.progress(now)
+                probePending = false
+                probeSerial++
+            } else if (gameLiveness.expired(now)) {
+                skipUnresponsiveGame(true)
+                return
+            } else {
+                val view = webView
+                if (gamePageReady && view != null && !probePending) {
+                    probePending = true
+                    val serial = ++probeSerial
+                    try {
+                        view.evaluateJavascript("1") {
+                            if (serial == probeSerial && view === webView && activityStarted && currentGame != null) {
+                                probePending = false
+                                gameLiveness.progress(SystemClock.uptimeMillis())
+                            }
+                        }
+                    } catch (error: RuntimeException) {
+                        Log.w("GameHub", "Game liveness probe failed", error)
+                    }
+                }
+            }
+            watchdogHandler.postDelayed(this, 2_000)
+        }
+    }
     private var games: List<Game> = emptyList()
     private var assetPaths: Set<String> = emptySet()
     private var bundleCommit = ""
@@ -163,6 +205,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         activityStarted = true
+        if (currentGame != null && !loadFailed) startGameWatchdog()
         exports.attach { exports.consumeResult()?.let { toast(it) }; refreshUpdatePresence() }
         if (::updateSummary.isInitialized) {
             updates.subscribe(updateListener)
@@ -181,6 +224,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         activityStarted = false
+        stopGameWatchdog()
         exports.detach()
         gameDialogs.toList().forEach { it.dismiss() }
         updateDialogs.toList().forEach { it.dismiss() }
@@ -733,6 +777,8 @@ class MainActivity : ComponentActivity() {
         updates.presence(activityStarted, false, false)
         clearWebView()
         currentGame = game
+        gamePageReady = false
+        if (activityStarted) startGameWatchdog()
         showLoading("正在校验${game.name}资源…")
         Thread {
             val prepared = runCatching {
@@ -768,6 +814,8 @@ class MainActivity : ComponentActivity() {
     private fun restoreDynamicGame(id:String,state:Bundle) {
         val serial=++navigationSerial
         currentGame=Game(id,id,"","","index.html")
+        gamePageReady = false
+        if (activityStarted) startGameWatchdog()
         showLoading("正在恢复游戏…")
         Thread {
             val prepared=runCatching {
@@ -867,6 +915,10 @@ class MainActivity : ComponentActivity() {
     private fun gameClient(game: Game, resolver: GameContentResolver): WebViewClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             if (view === webView && resolver.allowed(Uri.parse(url)) && AssetAccessPolicy.pageAllowed(game.id, Uri.parse(url).path, resolver.allowedPaths)) {
+                gamePageReady = false
+                gameLiveness.progress(SystemClock.uptimeMillis())
+                probeSerial++
+                probePending = false
                 loadFailed = false
                 showLoading("正在打开${game.name}…")
             }
@@ -900,12 +952,18 @@ class MainActivity : ComponentActivity() {
                 }
                 if (game.id == "turing" && Uri.parse(url).path?.endsWith("/campaign.html") == true) {
                     view.evaluateJavascript(CAMPAIGN_MOBILE_FIT_JS) {
-                        if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) hideOverlay()
+                        if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) { markGamePageReady(); hideOverlay() }
                     }
                 } else {
+                    markGamePageReady()
                     hideOverlay()
                 }
             }
+        }
+
+        override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
+            if (view === webView) skipUnresponsiveGame(false)
+            return true
         }
 
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
@@ -937,6 +995,7 @@ class MainActivity : ComponentActivity() {
             setBackgroundColor(BACKGROUND)
             addView(ProgressBar(this@MainActivity))
             addView(label(message, 16f, Color.WHITE, false).apply { setPadding(0, dp(18), 0, 0) })
+            addView(Button(this@MainActivity).apply { text = "返回大厅"; isAllCaps = false; setOnClickListener { showLobby() } })
         }
         overlay = panel
         root.addView(panel, FrameLayout.LayoutParams(-1, -1))
@@ -947,6 +1006,7 @@ class MainActivity : ComponentActivity() {
 
     private fun showError(message: String, failedIdentity: String?) {
         if (loadFailed && webView == null) return
+        stopGameWatchdog()
         val failedGame = currentGame?.id
         if (failedGame != null && failedIdentity != null) resourceRuntime?.storeFor(failedGame)?.blockFailedIdentity(failedGame, failedIdentity)
         navigationSerial++
@@ -988,6 +1048,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showLobby() {
+        stopGameWatchdog()
         navigationSerial++
         hideOverlay()
         clearWebView()
@@ -1006,8 +1067,8 @@ class MainActivity : ComponentActivity() {
         filePathCallback = null
         previousView?.let { view ->
             root.removeView(view)
-            view.stopLoading()
-            view.destroy()
+            runCatching { view.stopLoading() }.onFailure { Log.w("GameHub", "Stopping game WebView failed", it) }
+            runCatching { view.destroy() }.onFailure { Log.w("GameHub", "Destroying game WebView failed", it) }
         }
         resourceRuntime?.unbind(gameResolver)
         gameResolver = null
@@ -1023,9 +1084,42 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        stopGameWatchdog()
         navigationSerial++
         clearWebView()
         super.onDestroy()
+    }
+
+    private fun markGamePageReady() {
+        gamePageReady = true
+        gameLiveness.progress(SystemClock.uptimeMillis())
+    }
+
+    private fun startGameWatchdog() {
+        watchdogHandler.removeCallbacks(watchdogTick)
+        probeSerial++
+        probePending = false
+        gameLiveness.start(SystemClock.uptimeMillis())
+        watchdogHandler.postDelayed(watchdogTick, 2_000)
+    }
+
+    private fun stopGameWatchdog() {
+        watchdogHandler.removeCallbacks(watchdogTick)
+        probeSerial++
+        probePending = false
+        gameLiveness.stop()
+    }
+
+    private fun skipUnresponsiveGame(terminateRenderer: Boolean) {
+        val name = currentGame?.name ?: return
+        val view = webView
+        if (terminateRenderer && view != null && WebViewFeature.isFeatureSupported(WebViewFeature.GET_WEB_VIEW_RENDERER) &&
+            WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_TERMINATE)) {
+            runCatching { WebViewCompat.getWebViewRenderProcess(view)?.terminate() }
+                .onFailure { Log.w("GameHub", "Could not terminate unresponsive renderer", it) }
+        }
+        showLobby()
+        toast("${name}无响应，已跳过；已保存的数据保留")
     }
 
     private fun gameUrl(game: Game) = "https://${AssetAccessPolicy.hostFor(game.id)}/assets/games/${game.id}/${game.entry}"
