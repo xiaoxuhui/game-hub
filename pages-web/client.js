@@ -6,7 +6,7 @@ message.id='recovery-status';message.setAttribute('role','status');message.hidde
 const LIMIT=30000;let current=null,lastBeat=0,retried=false,failed=false;
 function notice(text){message.textContent=text;message.hidden=!text;}
 function reload(text){lastBeat=Date.now();failed=false;notice(text);frame.src=current.url;}
-function open(g){current={id:g.id,url:new URL(`./games/${g.id}/${g.entry}`,location.href).href};retried=false;$('lobby').hidden=true;$('player').hidden=false;$('title').textContent=g.name;$('new-tab').href=current.url;reload('');}
+function open(g){const url=new URL(`./games/${g.id}/${g.entry}`,location.href);url.searchParams.set('hub','recovery-20261119');current={id:g.id,url:url.href};retried=false;$('lobby').hidden=true;$('player').hidden=false;$('title').textContent=g.name;$('new-tab').href=current.url;reload('');}
 function close(){current=null;frame.src='about:blank';notice('');$('player').hidden=true;$('lobby').hidden=false;}
 restart.onclick=()=>{if(current){retried=false;reload('正在重新开始，已保存的数据会保留。');}};
 window.addEventListener('message',event=>{if(!current||event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='game-hub-heartbeat'||event.data.game!==current.id)return;lastBeat=Date.now();failed=false;notice('');});
