@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
+import androidx.lifecycle.Lifecycle
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
@@ -15,6 +16,43 @@ class GameHangRecoveryTest {
         if (predicate(view)) return view
         if (view is ViewGroup) for (index in 0 until view.childCount) find(view.getChildAt(index), predicate)?.let { return it }
         return null
+    }
+
+    @Test fun earlyReturnCancelsOldOpenAndKeepsOtherGamesAvailable() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val card = find(activity.window.decorView) { it is TextView && it.text.toString() == "光学游戏" }!!
+                assertTrue((card.parent as View).performClick())
+                val back = find(activity.window.decorView) { it is android.widget.Button && it.text.toString() == "返回大厅" }!!
+                assertTrue(back.performClick())
+            }
+            Thread.sleep(3_000)
+            scenario.onActivity { activity ->
+                val lobby = MainActivity::class.java.getDeclaredField("lobby").apply { isAccessible = true }.get(activity) as View
+                assertEquals(View.VISIBLE, lobby.visibility)
+                assertNull(find(activity.window.decorView) { it is WebView })
+                assertNotNull(find(activity.window.decorView) { it is TextView && it.text.toString() == "康威生命游戏" })
+            }
+        }
+    }
+
+    @Test fun backgroundAndResumeDoesNotTreatElapsedTimeAsHang() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val card = find(activity.window.decorView) { it is TextView && it.text.toString() == "光学游戏" }!!
+                assertTrue((card.parent as View).performClick())
+                val liveness = MainActivity::class.java.getDeclaredField("gameLiveness").apply { isAccessible = true }.get(activity) as GameLiveness
+                liveness.progress(android.os.SystemClock.uptimeMillis() - 31_000)
+            }
+            scenario.moveToState(Lifecycle.State.CREATED)
+            Thread.sleep(3_000)
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            Thread.sleep(4_000)
+            scenario.onActivity { activity ->
+                val lobby = MainActivity::class.java.getDeclaredField("lobby").apply { isAccessible = true }.get(activity) as View
+                assertNotEquals("game should remain open after resume", View.VISIBLE, lobby.visibility)
+            }
+        }
     }
 
     @Test fun infiniteLoopIsSkippedOtherGameOpensAndSavedDataSurvives() {
