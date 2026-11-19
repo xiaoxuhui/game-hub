@@ -1,5 +1,7 @@
 # 游戏大厅
 
+**[下载 v0.5.4 安卓大厅](https://github.com/xiaoxuhui/game-hub/releases/download/v0.5.4/game-hub-v0.5.4.apk)** · [发行说明](https://github.com/xiaoxuhui/game-hub/releases/tag/v0.5.4) · [网页版大厅](https://xiaoxuhui.github.io/game-hub/)。v0.5.4 可在单个游戏持续无响应时尝试返回大厅，保留已保存数据；模拟器验证通过，真机验收待进行。
+
 **2026-10-21 路流已接入：0.1.0 / 资源 #1，v2目录序列26。** 空白地图修路、随机出口、指定行驶路线、红绿灯和立交跨线，内置六份可编辑案例。大厅「立即检查」→「游戏目录」→「路流 · 交通规划」安装，无需重装APK。[来源仓库](https://github.com/xiaoxuhui/traffic-planner)、[发行与验收](doc/evidence/n24-traffic-planner-release.md)。
 
 **2026-10-16 灵感积木更新：0.5.0 / 资源 #7，v2目录序列14。** 变量分类加入列表，支持末尾添加、替换、插入、删除、清空及列表项/长度取值。可编辑数字、文字、布尔初始项，运行列表分页显示；独立v5保存并保护旧槽与备份。来源70/70、大厅85/85、两仓库CI与重复生产通过，全部14代目录/15份累计资源匿名验签通过。大厅检查更新后重新打开激活，无需更换APK。见[N21发行记录](doc/evidence/n21-lists-release.md)。
