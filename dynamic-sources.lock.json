@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "e11edee273a8c66763262c6d9a6732c7c88709de",
-      "directory": "examples/lambda-diagram-038-20261121",
+      "revision": "b4aa5fdb78e9501e7ad51604b53854ce0a10ab7d",
+      "directory": "examples/lambda-preserve-20261121",
       "version": "0.3.8",
-      "contentCode": 14,
+      "contentCode": 15,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "修复函数内部调用被提前展开：按需模式每次只展开一层，保留内部函数名；兼容已有存档，支持四种归约组合、回退和保存。关闭开关仍全部展开，保留运行前备份、卡死恢复及30秒保护。"
+      "releaseNotes": "保护已有本机存档：写入前保存独立副本，可导出原始存档和保存前备份；保留 Lambda 0.3.8 的函数展开和计算功能。"
     },
     {
       "id": "red-green-puzzle",

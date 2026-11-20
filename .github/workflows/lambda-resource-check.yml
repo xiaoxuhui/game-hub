@@ -5,6 +5,10 @@ on:
       - 'examples/lambda-diagram-game/**'
       - 'examples/lambda-diagram-update-20261121/**'
       - 'examples/lambda-diagram-038-20261121/**'
+      - 'examples/lambda-preserve-20261121/**'
+      - 'scripts/lambda-preserve-sessions.mjs'
+      - 'scripts/lambda-no-loss-regression.cjs'
+      - 'tests/lambda-preserve-sessions.test.mjs'
       - 'scripts/lambda-037-protection.mjs'
       - 'tests/lambda-v5-storage.test.mjs'
       - 'examples/lambda-diagram-omega-20261120/**'
@@ -47,6 +51,13 @@ jobs:
         env:
           LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-038-20261121/lambda-lab.html
       - run: node scripts/lambda-hall-browser.cjs
+      - run: node scripts/lambda-no-loss-regression.cjs
+        env:
+          LAMBDA_TEST_HTML: examples/lambda-preserve-20261121/lambda-lab.html
+      - run: node scripts/lambda-no-loss-regression.cjs
+        env:
+          LAMBDA_TEST_HTML: examples/lambda-preserve-20261121/lambda-lab.html
+          LAMBDA_MOBILE: '1'
       - run: node scripts/lambda-experiment-build.cjs
       - run: node scripts/lambda-prerun-backup-experiment.cjs
       - run: node scripts/lambda-prerun-actions-experiment.cjs

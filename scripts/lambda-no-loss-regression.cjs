@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),http=require('node:http'),fs=require(
 const file=process.env.LAMBDA_TEST_HTML||'examples/lambda-diagram-038-20261121/lambda-lab.html';
 const html=fs.readFileSync(file),old=fs.readFileSync('examples/lambda-diagram-038-20261121/lambda-lab.html');let active=old;
 const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/html; charset=utf-8'}).end(active));
-(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'}:{})});
  try{const context=await browser.newContext({acceptDownloads:true,...(process.env.LAMBDA_MOBILE?{viewport:{width:390,height:844},isMobile:true,hasTouch:true}:{})}),page=await context.newPage(),url=`http://127.0.0.1:${server.address().port}/`;
   await page.goto(url);await page.locator('#expression').fill('(λoriginal.original) preserved');await page.waitForTimeout(900);
   const saved=await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4'));assert.ok(saved&&JSON.parse(saved).draft.includes('preserved'));
