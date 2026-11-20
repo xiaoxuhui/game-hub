@@ -3,6 +3,12 @@ on:
   push:
     paths:
       - 'examples/lambda-diagram-game/**'
+      - 'examples/lambda-diagram-omega-20261120/**'
+      - 'scripts/lambda-omega-protection.mjs'
+      - 'scripts/lambda-long-history-guard.inc.js'
+      - 'scripts/lambda-*-experiment.cjs'
+      - 'scripts/lambda-*-test.cjs'
+      - 'tests/lambda-omega-*.test.mjs'
       - 'scripts/lambda-storage-integration.mjs'
       - 'scripts/lambda-storage-c5-integration.mjs'
       - 'scripts/lambda-hall-browser.cjs'
@@ -18,7 +24,7 @@ permissions:
   contents: read
 jobs:
   compatibility:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +37,13 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tests/lambda-manual-restore.browser.cjs
       - run: node scripts/lambda-hall-browser.cjs
+      - run: node scripts/lambda-experiment-build.cjs
+      - run: node scripts/lambda-prerun-backup-experiment.cjs
+      - run: node scripts/lambda-prerun-actions-experiment.cjs
+      - run: node scripts/lambda-raw-import-experiment.cjs
+      - run: node scripts/lambda-long-start-protection-test.cjs
+      - run: node scripts/lambda-omega-long-import-test.cjs
+      - run: node scripts/lambda-backup-management-test.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
