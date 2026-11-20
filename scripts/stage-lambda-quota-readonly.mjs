@@ -1,0 +1,12 @@
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { quotaReadonly } from './lambda-quota-readonly.mjs';
+const base='examples/lambda-039-recovery-20261121/', target='examples/lambda-quota-readonly-20261121/';
+const hash=x=>createHash('sha256').update(x).digest('hex');
+const input=readFileSync(base+'lambda-lab.html'), output=Buffer.from(quotaReadonly(input.toString('utf8')));
+const proof=JSON.parse(readFileSync(base+'upstream-source.json','utf8'));
+proof.hallQuotaReadonly={id:'lambda-quota-readonly-v1',sourceCommit:'24ec1f29f7dbb1338cc81bb73f0edfaaf112a652',inputSha256:hash(input),outputSha256:hash(output),adapterSha256:hash(readFileSync('scripts/lambda-quota-readonly.mjs'))};
+mkdirSync(target,{recursive:true});
+writeFileSync(target+'lambda-lab.html',output);
+writeFileSync(target+'upstream-source.json',JSON.stringify(proof,null,2)+'\n');
+copyFileSync(base+'LICENSE',target+'LICENSE');

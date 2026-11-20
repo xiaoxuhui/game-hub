@@ -17,7 +17,7 @@ const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/
   assert.equal(JSON.parse(archiveText).type,'raw-local-storage');await archiveDialog.getByRole('button',{name:'关闭'}).click();
   const beforeQuota=await page.evaluate(()=>{localStorage.setItem('lambda-lab-test-sentinel','quota-preserve');return localStorage.getItem('lambda-lab-hub-v4')});
   await page.addInitScript(()=>{const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k.startsWith('lambda-hub-session-archive-v1.'))throw new DOMException('simulated quota','QuotaExceededError');return set.call(this,k,v)}});
-  await page.reload();await page.getByText('Lambda存档需要处理').waitFor({timeout:10000});assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4')),beforeQuota);
+  await page.reload();await page.getByText(/Lambda存档需要处理|本机存储空间不足/).waitFor({timeout:10000});assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4')),beforeQuota);
   assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-test-sentinel')),'quota-preserve');
   console.log('PASS: sessions are archived, raw data can be exported and quota failure preserves current storage');await context.close();
  }finally{await browser.close();server.close()}
