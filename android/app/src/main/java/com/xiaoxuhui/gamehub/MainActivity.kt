@@ -1157,7 +1157,12 @@ class MainActivity : ComponentActivity() {
         }
         showLobby()
         toast("${name}无响应，已跳过；已保存的数据保留")
-        if (rescueLambda) exportLambdaRunBackup()
+        if (rescueLambda) {
+            val expectedNavigation = navigationSerial
+            watchdogHandler.postDelayed({
+                if (activityStarted && !isDestroyed && currentGame == null && navigationSerial == expectedNavigation) exportLambdaRunBackup()
+            }, if (terminateRenderer) 1500 else 0)
+        }
     }
 
     private fun exportLambdaRunBackup() {
@@ -1171,7 +1176,7 @@ class MainActivity : ComponentActivity() {
             lambdaRescuePending = false
             if (isDestroyed || !activityStarted || currentGame != null || navigationSerial != expectedNavigation) return@read
             when (result) {
-                is LambdaRescueReader.Result.Unavailable -> toast(result.reason)
+                is LambdaRescueReader.Result.Unavailable -> { Log.w("GameHub", "Lambda rescue unavailable: ${result.reason}"); toast(result.reason) }
                 is LambdaRescueReader.Result.Found -> {
                     val export = DocumentExport("lambda-before-run.json", result.content)
                     if (exports.busy || !exports.offer(export)) { toast("请先完成当前保存，再导出运行前备份"); return@read }
