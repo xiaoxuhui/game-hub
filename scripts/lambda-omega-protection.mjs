@@ -9,7 +9,8 @@ export function protectLambdaOmega(source) {
  replace('const DEFAULT_MS=1000;', 'const DEFAULT_MS=30000;');
  replace('<option value="1000" selected>1 秒</option>', '<option value="1000">1 秒</option>');
  replace('<option value="30000">30 秒</option>', '<option value="30000" selected>30 秒</option>');
- replace('state.growthWindowMs=s.view.growthWindowMs??Guard.DEFAULT_MS;', 'state.growthWindowMs=s.view.growthWindowMs===1000?Guard.DEFAULT_MS:(s.view.growthWindowMs??Guard.DEFAULT_MS);');
+ replace('state.growthWindowMs=s.view.growthWindowMs??Guard.DEFAULT_MS;', "state.growthWindowMs=s.view.growthWindowMs===1000&&!(()=>{try{return window.localStorage.getItem('lambda-hub-growth-window-explicit-v1')}catch{return null}})()?Guard.DEFAULT_MS:(s.view.growthWindowMs??Guard.DEFAULT_MS);");
+ replace("$('growth-window').addEventListener('change',()=>{state.growthWindowMs=Number($('growth-window').value);", "$('growth-window').addEventListener('change',()=>{try{window.localStorage.setItem('lambda-hub-growth-window-explicit-v1','1')}catch{}state.growthWindowMs=Number($('growth-window').value);");
  // Repeated or growing expressions can occur during useful work: observe for
  // thirty seconds before allowing this heuristic to stop an active run.
  replace('let repeatedTerm=null,runGuard=null;', 'let repeatedTerm=null,runGuard=null,runStartedAt=0;');

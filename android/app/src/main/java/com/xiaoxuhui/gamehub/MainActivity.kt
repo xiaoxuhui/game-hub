@@ -1136,7 +1136,13 @@ class MainActivity : ComponentActivity() {
         gameLiveness.progress(SystemClock.uptimeMillis())
         if (!gameEntryAnnounced) {
             gameEntryAnnounced = true
-            toast("成功进入${currentGame?.name ?: "游戏"}")
+            val dialog = AlertDialog.Builder(this)
+                .setMessage("成功进入${currentGame?.name ?: "游戏"}")
+                .setPositiveButton("确定", null)
+                .create()
+            gameDialogs.add(dialog)
+            dialog.setOnDismissListener { gameDialogs.remove(dialog) }
+            dialog.show()
         }
     }
 
