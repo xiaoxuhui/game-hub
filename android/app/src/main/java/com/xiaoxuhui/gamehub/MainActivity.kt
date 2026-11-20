@@ -1167,7 +1167,7 @@ class MainActivity : ComponentActivity() {
         }
         lambdaRescuePending = true
         val expectedNavigation = navigationSerial
-        LambdaRescueReader.read(this) { result ->
+        try { LambdaRescueReader.read(this) { result ->
             lambdaRescuePending = false
             if (isDestroyed || !activityStarted || currentGame != null || navigationSerial != expectedNavigation) return@read
             when (result) {
@@ -1183,6 +1183,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        } } catch (error: Exception) {
+            lambdaRescuePending = false
+            toast("无法读取运行前备份，原存档保持不变")
         }
     }
 
