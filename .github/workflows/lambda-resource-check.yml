@@ -4,6 +4,7 @@ on:
     paths:
       - 'examples/lambda-diagram-game/**'
       - 'examples/lambda-diagram-update-20261121/**'
+      - 'examples/lambda-diagram-038-20261121/**'
       - 'scripts/lambda-037-protection.mjs'
       - 'tests/lambda-v5-storage.test.mjs'
       - 'examples/lambda-diagram-omega-20261120/**'
@@ -41,10 +42,10 @@ jobs:
       - run: node tests/lambda-manual-restore.browser.cjs
       - run: node tests/lambda-manual-restore.browser.cjs
         env:
-          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-update-20261121/lambda-lab.html
+          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-038-20261121/lambda-lab.html
       - run: node scripts/lambda-30-second-regression.cjs
         env:
-          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-update-20261121/lambda-lab.html
+          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-038-20261121/lambda-lab.html
       - run: node scripts/lambda-hall-browser.cjs
       - run: node scripts/lambda-experiment-build.cjs
       - run: node scripts/lambda-prerun-backup-experiment.cjs
