@@ -9,6 +9,7 @@ if(!process.argv[2]||site===root||existsSync(out))throw Error('需要干净的�
 const git=args=>execFileSync('git',['-c','core.autocrlf=false','-C',site,...args],{encoding:'utf8'});
 if(git(['rev-parse','HEAD']).trim()!==baseline||git(['status','--porcelain=v1','--untracked-files=all']).trim())throw Error('线上基线不是预期干净提交');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),paths=git(['ls-files','-z']).split('\0').filter(Boolean),proof=JSON.parse(readFileSync(join(site,'proof/adaptations.json')));
+for(const row of git(['ls-files','--stage','-z']).split('\0').filter(Boolean)){const match=/^\d+ ([a-f0-9]{40}) 0\t([\s\S]+)$/.exec(row);if(!match)throw Error('无法验证 Git 基线条目');const bytes=readFileSync(join(site,match[2])),blob=createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');if(blob!==match[1])throw Error('工作区字节与 Git 提交不同：'+match[2]+'；请使用 core.autocrlf=false 的独立检出');}
 if(hash(readFileSync(join(site,'storage-isolation.js')))!==proof.storageScriptSha256)throw Error('原存储适配摘要不符');
 for(const item of proof.adapted){const path=resolve(site,'games',item.id,item.path),rel=relative(join(site,'games'),path);if(!rel||rel.startsWith('..')||isAbsolute(rel)||hash(readFileSync(path))!==item.adaptedSha256)throw Error('原适配文件摘要不符：'+item.id+'/'+item.path)}
 mkdirSync(out,{recursive:true});for(const path of paths){const input=resolve(site,path),rel=relative(site,input);if(!rel||rel.startsWith('..')||isAbsolute(rel)||!lstatSync(input).isFile()||lstatSync(input).isSymbolicLink())throw Error('不安全的资源路径：'+path);const target=join(out,path);mkdirSync(dirname(target),{recursive:true});copyFileSync(input,target);}
@@ -20,7 +21,7 @@ mkdirSync(out,{recursive:true});for(const path of paths){const input=resolve(sit
 {
  const id='compass-polygon-studio',path='app.js',target=join(out,'games',id,path),bytes=readFileSync(target),sourceSha=hash(bytes),original=bytes.toString('utf8'),anchor='generate(5);',setIndex='function setIndex(value,animate=false)',end='render(animate);}',adapt=readFileSync(join(root,'pages-web/adaptations/compass.inc.js'),'utf8');
  if(sourceSha!=='db0a52b1231e71b5ad42a950921d6aa102f562ddef4ee5d0ecea821b4b994edc'||[anchor,setIndex,end].some(s=>original.split(s).length!==2)||proof.adapted.some(item=>item.id===id&&item.path===path))throw Error('尺规工坊基线不符');
- const updated=original.replace(setIndex,'let hubSaveState=()=>{};'+setIndex).replace(end,'render(animate);hubSaveState();}').replace(anchor,anchor+'\n'+adapt);writeFileSync(target,updated);proof.adapted.push({id,path,sourceSha256:sourceSha,adaptedSha256:hash(Buffer.from(updated))});writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
+ const updated=original.replace(setIndex,'let hubSaveState=()=>{};'+setIndex).replace(end,'render(animate);hubSaveState();}').replace(anchor,anchor+'\n'+adapt.trimEnd());writeFileSync(target,updated);proof.adapted.push({id,path,sourceSha256:sourceSha,adaptedSha256:hash(Buffer.from(updated))});writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
 }
 {
  const id='learning-machine',path='src/app.js',target=join(out,'games',id,path),bytes=readFileSync(target),sourceSha=hash(bytes),original=bytes.toString('utf8'),anchor='  render();\n})();',adapt=readFileSync(join(root,'pages-web/adaptations/learning.inc.js'),'utf8');
@@ -30,7 +31,7 @@ mkdirSync(out,{recursive:true});for(const path of paths){const input=resolve(sit
 }
 {
  const id='fourier-drawing-studio',path='app.js',target=join(out,'games',id,path),bytes=readFileSync(target),sourceSha=hash(bytes),original=bytes.toString('utf8'),anchor="loadShape(preset('heart'),'爱心');setCount(40);resize();requestAnimationFrame(animate);",adapt=readFileSync(join(root,'pages-web/adaptations/fourier.inc.js'),'utf8');
- if(sourceSha!=='ccea8c1100f53daa29cdbbbe91f7e06d9b1a4b0b32f596becdfdf642c64cb53a'||original.split(anchor).length!==2||proof.adapted.some(item=>item.id===id&&item.path===path))throw Error('傅里叶画室基线不符');const updated=original.replace(anchor,anchor+'\n'+adapt);writeFileSync(target,updated);proof.adapted.push({id,path,sourceSha256:sourceSha,adaptedSha256:hash(Buffer.from(updated))});writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
+ if(sourceSha!=='ccea8c1100f53daa29cdbbbe91f7e06d9b1a4b0b32f596becdfdf642c64cb53a'||original.split(anchor).length!==2||proof.adapted.some(item=>item.id===id&&item.path===path))throw Error('傅里叶画室基线不符');const updated=original.replace(anchor,anchor+'\n'+adapt.trimEnd());writeFileSync(target,updated);proof.adapted.push({id,path,sourceSha256:sourceSha,adaptedSha256:hash(Buffer.from(updated))});writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
 }
 {
  const id='lambda-diagram-game',path='lambda-lab.html',target=join(out,'games',id,path),original=readFileSync(target,'utf8'),entry=proof.adapted.find(item=>item.id===id&&item.path===path);
