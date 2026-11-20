@@ -86,17 +86,23 @@ export function protectLambdaOmega(source) {
       const candidates=[],seen=new Set();let longCount=0;
       for(const key of keys.slice(0,128)){
         const raw=archive.storage[key];if(typeof raw!=='string'||seen.has(raw))continue;
-        try{const state=S.decodeStartingState(raw);const parsed=JSON.parse(raw);
-          if((parsed.session?.steps??0)>256||(parsed.checkpoint?.session?.steps??0)>256){longCount++;continue;}
-          seen.add(raw);candidates.push({key,raw,draft:String(state.draft||'').replace(/[\\r\\n]+/g,' ').slice(0,60)});
+        try{const state=S.decodeStartingState(raw);const parsed=JSON.parse(raw);let importText=raw,compacted=false;
+          if((parsed.session?.steps??0)>256||(parsed.checkpoint?.session?.steps??0)>256){
+            const session=parsed.session,choiceFree=!session?.paths&&(!session?.choices||session.choices.length===0);
+            const result=choiceFree&&!(parsed.checkpoint?.session?.steps>256)&&state.session.original?root.LambdaTrace.step(state.session.original,null):null;
+            if(!result||JSON.stringify(result.term)!==JSON.stringify(state.session.original)){longCount++;continue;}
+            const compact={...parsed,session:{...session,original:state.session.original,steps:0,halt:''}};delete compact.session.paths;delete compact.session.choices;
+            importText=JSON.stringify(compact);S.decodeStartingState(importText);compacted=true;
+          }
+          seen.add(raw);candidates.push({key,raw,importText,compacted,draft:String(state.draft||'').replace(/[\\r\\n]+/g,' ').slice(0,60)});
         }catch{}
       }
       if(!candidates.length)throw new C.LambdaError(longCount?'恢复文件中的历史太长，暂不能安全导入；原始文件保持不变。':'已检查前 128 个相关存储项，未找到可识别的存档；原始文件保持不变。');
-      const options=candidates.map((c,i)=>(i+1)+'. '+c.key+' · '+c.draft).join('\\n');
+      const options=candidates.map((c,i)=>(i+1)+'. '+c.key+' · '+c.draft+(c.compacted?' · 自循环历史保留原文件，本次恢复当前表达式和设置':'')).join('\\n');
       const choice=root.prompt('请选择要恢复的存档编号。原始恢复文件不会被修改。'+(longCount?' 部分超长历史暂不可导入。':'')+(keys.length>128?' 仅显示前 128 个相关存储项，其他数据保留在原文件。':'')+'\\n'+options,'1');
       if(choice===null)return null;const n=Number(choice);
       if(!Number.isInteger(n)||n<1||n>candidates.length)throw new C.LambdaError('存档编号无效，未修改当前内容。');
-      return candidates[n-1].raw;
+      const selected=candidates[n-1];if(selected.compacted)localStorage.saveRunBackup(selected.raw);return selected.importText;
     }
     $('import-file').addEventListener('change',async()=>{`);
  replace("try{if(file.size>S.MAX_BYTES)throw new C.LambdaError('存档文件超过 2 MiB 上限。');const snapshot=await replaySave(await file.text());", "try{if(file.size>8*1024*1024)throw new C.LambdaError('恢复文件超过 8 MiB 上限。');const selected=selectRecoverySnapshot(await file.text());if(selected===null)return;if(new TextEncoder().encode(selected).length>S.MAX_BYTES)throw new C.LambdaError('所选存档超过 2 MiB 上限。');const snapshot=await replaySave(selected);");
