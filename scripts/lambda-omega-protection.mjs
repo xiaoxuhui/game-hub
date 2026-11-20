@@ -32,7 +32,7 @@ export function protectLambdaOmega(source) {
       let archive;try{archive=JSON.parse(text)}catch{return text}
       if(!archive||archive.type!=='raw-local-storage'||archive.game!=='lambda-diagram-game')return text;
       if(!archive.storage||typeof archive.storage!=='object'||Array.isArray(archive.storage))throw new C.LambdaError('原始恢复文件格式不正确。');
-      const keys=Object.keys(archive.storage).filter(key=>/^lambda-lab-(hub-)?(before-run-v1\\.|previous-v[24]$|checkpoint-previous-v[24]$|hub-v[34]$|hub-checkpoint-v[34]$|v[12]$|checkpoint-v2$)/.test(key));
+      const keys=Object.keys(archive.storage).filter(key=>/^lambda-lab-(hub-)?(before-run-v1\\.|previous-v[24]$|checkpoint-previous-v[24]$|legacy-v[34]$|hub-v[34]$|hub-checkpoint-v[34]$|v[12]$|checkpoint-v2$)/.test(key));
       const candidates=[],seen=new Set();let longCount=0;
       for(const key of keys.slice(0,128)){
         const raw=archive.storage[key];if(typeof raw!=='string'||seen.has(raw))continue;
@@ -41,9 +41,9 @@ export function protectLambdaOmega(source) {
           seen.add(raw);candidates.push({key,raw,draft:String(state.draft||'').replace(/[\\r\\n]+/g,' ').slice(0,60)});
         }catch{}
       }
-      if(!candidates.length)throw new C.LambdaError(longCount?'恢复文件中的历史太长，暂不能安全导入；原始文件保持不变。':'恢复文件没有可识别的存档；原始文件保持不变。');
+      if(!candidates.length)throw new C.LambdaError(longCount?'恢复文件中的历史太长，暂不能安全导入；原始文件保持不变。':'已检查前 128 个相关存储项，未找到可识别的存档；原始文件保持不变。');
       const options=candidates.map((c,i)=>(i+1)+'. '+c.key+' · '+c.draft).join('\\n');
-      const choice=root.prompt('请选择要恢复的存档编号。原始恢复文件不会被修改。'+(longCount?' 部分超长历史暂不可导入。':'')+'\\n'+options,'1');
+      const choice=root.prompt('请选择要恢复的存档编号。原始恢复文件不会被修改。'+(longCount?' 部分超长历史暂不可导入。':'')+(keys.length>128?' 仅显示前 128 个相关存储项，其他数据保留在原文件。':'')+'\\n'+options,'1');
       if(choice===null)return null;const n=Number(choice);
       if(!Number.isInteger(n)||n<1||n>candidates.length)throw new C.LambdaError('存档编号无效，未修改当前内容。');
       return candidates[n-1].raw;
