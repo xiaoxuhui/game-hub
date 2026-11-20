@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),{chromium}=require('playwright');
-const html=fs.readFileSync('.build/lambda-30s-experiment.html');
+const html=fs.readFileSync('examples/lambda-diagram-30s-20261120/lambda-lab.html');
 const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/html; charset=utf-8'}).end(html));
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
  try{const page=await browser.newPage({acceptDownloads:true});await page.goto(`http://127.0.0.1:${server.address().port}/`);

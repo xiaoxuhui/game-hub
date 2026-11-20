@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),{chromium}=require('playwright');
-const html=fs.readFileSync('.build/lambda-30s-experiment.html');
+const html=fs.readFileSync('examples/lambda-diagram-30s-20261120/lambda-lab.html');
 const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/html; charset=utf-8'}).end(html));
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
  try{const ctx=await browser.newContext(),page=await ctx.newPage();await page.goto(`http://127.0.0.1:${server.address().port}/`);
@@ -11,6 +11,12 @@ const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/
   assert.equal(await page.locator('#expression').inputValue(),'(λx.x x) (λx.x x)');
   const bounded=await page.evaluate(text=>{const snapshot=JSON.parse(text);snapshot.session.steps=50000000;const now=performance.now.bind(performance);let calls=0;performance.now=()=>calls++?now()+31000:now();try{LambdaSnapshot.decode(JSON.stringify(snapshot));return false}catch(error){return /超过30秒/.test(String(error.message))}finally{performance.now=now}},saved);
   assert.equal(bounded,true);assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4')),saved);
+  await page.evaluate(()=>localStorage.setItem('lambda-hub-long-start-pending-v1',JSON.stringify({prefix:'',token:'simulated-interrupted-start'})));
+  await page.reload({waitUntil:'load',timeout:30000});assert.equal(await page.locator('#lambda-long-history-choice').isVisible(),true);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4')),saved);
+  const downloadEvent=page.waitForEvent('download');await page.getByRole('dialog').getByRole('button',{name:'导出原始存档'}).click();
+  const stream=await (await downloadEvent).createReadStream();let exported='';for await(const chunk of stream)exported+=chunk;
+  assert.equal(JSON.parse(exported).storage['lambda-lab-hub-v4'],saved);
   console.log('PASS: 300-step current save preserved on startup, no forced fallback, oversized replay stops without modifying it');await ctx.close();
  }finally{await browser.close();server.close()}
 })().catch(e=>{console.error(e.stack);server.close();process.exitCode=1});
