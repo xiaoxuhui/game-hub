@@ -1,5 +1,7 @@
 # 游戏大厅
 
+**2026-11-21 Lambda 更新：0.3.7 / 资源 #13。** 新增外部组合子编译器和独立按需展开函数开关，支持四种归约顺序与方向组合、v5 历史存档及逐个点和 λ 的示例写法。保留运行前备份与卡死恢复，新旧签名目录均已发布并核验。大厅检查更新、下载后重新进入游戏生效，无需重装 APK。见[发布记录](doc/evidence/lambda-0.3.7-resource-release.md)。
+
 **[下载 v0.5.4 安卓大厅](https://github.com/xiaoxuhui/game-hub/releases/download/v0.5.4/game-hub-v0.5.4.apk)** · [发行说明](https://github.com/xiaoxuhui/game-hub/releases/tag/v0.5.4) · [网页版大厅](https://xiaoxuhui.github.io/game-hub/)。v0.5.4 可在单个游戏持续无响应时尝试返回大厅，保留已保存数据；模拟器验证通过，真机验收待进行。
 
 **2026-10-21 路流已接入：0.1.0 / 资源 #1，v2目录序列26。** 空白地图修路、随机出口、指定行驶路线、红绿灯和立交跨线，内置六份可编辑案例。大厅「立即检查」→「游戏目录」→「路流 · 交通规划」安装，无需重装APK。[来源仓库](https://github.com/xiaoxuhui/traffic-planner)、[发行与验收](doc/evidence/n24-traffic-planner-release.md)。
