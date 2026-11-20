@@ -7,11 +7,15 @@ on:
       - 'examples/lambda-diagram-038-20261121/**'
       - 'examples/lambda-preserve-20261121/**'
       - 'examples/lambda-roundtrip-20261121/**'
+      - 'examples/lambda-recovery-20261121/**'
       - 'scripts/lambda-preserve-sessions.mjs'
       - 'scripts/lambda-no-loss-regression.cjs'
       - 'scripts/lambda-export-roundtrip.mjs'
       - 'scripts/lambda-export-roundtrip-regression.cjs'
       - 'tests/lambda-export-roundtrip.test.mjs'
+      - 'scripts/lambda-large-archive.mjs'
+      - 'scripts/lambda-large-archive-regression.cjs'
+      - 'tests/lambda-large-archive.test.mjs'
       - 'tests/lambda-preserve-sessions.test.mjs'
       - 'scripts/lambda-037-protection.mjs'
       - 'tests/lambda-v5-storage.test.mjs'
@@ -57,14 +61,17 @@ jobs:
       - run: node scripts/lambda-hall-browser.cjs
       - run: node scripts/lambda-no-loss-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-roundtrip-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-no-loss-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-roundtrip-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
           LAMBDA_MOBILE: '1'
       - run: node scripts/lambda-export-roundtrip-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-roundtrip-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
+      - run: node scripts/lambda-large-archive-regression.cjs
+        env:
+          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-experiment-build.cjs
       - run: node scripts/lambda-prerun-backup-experiment.cjs
       - run: node scripts/lambda-prerun-actions-experiment.cjs

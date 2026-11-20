@@ -58,8 +58,8 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "b74d82995db5d72815ebda1134f37d39f90103ee",
-      "directory": "examples/lambda-roundtrip-20261121",
+      "revision": "dd98bbf5ceaaa162b4e9808941bc8228eec52bc9",
+      "directory": "examples/lambda-recovery-20261121",
       "version": "0.3.8",
       "contentCode": 16,
       "entryPage": "lambda-lab.html",
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "修复全量存档导入时无法选择旧会话的问题，保留保存前独立备份及 Lambda 0.3.8 的计算功能。"
+      "releaseNotes": "修复全量备份无法选择旧会话和较大备份无法导入的问题，保留保存前独立备份及 Lambda 0.3.8 的计算功能。"
     },
     {
       "id": "red-green-puzzle",
