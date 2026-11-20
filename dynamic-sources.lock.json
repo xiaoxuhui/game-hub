@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "8201a963268dcf8adb03d8d5dab698d4c1eb4c5d",
-      "directory": "examples/lambda-diagram-30s-20261120",
-      "version": "0.3.6",
-      "contentCode": 12,
+      "revision": "682d0232631dd3ddab505eab5bb5566ac5754fbb",
+      "directory": "examples/lambda-diagram-update-20261121",
+      "version": "0.3.7",
+      "contentCode": 13,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "运行保护默认观察30秒，长历史不再因超过256步立即隔离；保护原始存档并允许恢复，启动中断后可导出原始存档。"
+      "releaseNotes": "外部组合子编译，常见小写 s/c/w；独立按需展开函数开关，支持正规序、应用序及左右方向，剩余函数不再误停。v5 保留定义和历史，兼容镜像保留当前值。示例逐个写点与λ，保留30秒保护、运行前备份及卡死恢复。"
     },
     {
       "id": "red-green-puzzle",
