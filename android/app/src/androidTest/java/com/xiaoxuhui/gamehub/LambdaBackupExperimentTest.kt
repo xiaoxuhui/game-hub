@@ -8,6 +8,7 @@ import android.webkit.WebViewClient
 import androidx.test.platform.app.InstrumentationRegistry
 import org.json.JSONObject
 import org.junit.Assert.*
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.util.concurrent.CountDownLatch
@@ -23,6 +24,7 @@ class LambdaBackupExperimentTest {
         waitFor(latch); return value
     }
     @Test fun omegaExportsSavedPreRunStateThroughActualBridgeScript() {
+        assumeTrue("Experimental Lambda fixture not generated", inst.context.assets.list("")?.contains("lambda-experiment.html") == true)
         val fixture = inst.context.assets.open("lambda-experiment.html").use { it.readBytes() }
         val ready = CountDownLatch(1); val exported = CountDownLatch(1); var content = ""
         val bridge = object {

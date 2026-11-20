@@ -9,3 +9,9 @@
 - 当前测试仅 Chrome：Ω 正常循环发起下载、第二次运行保留第一份快照、模拟配额失败不启动运行；没有真机或 Android WebView 测试。
 
 验证输出：`PASS: automatic export requested; repeat preserves previous backup; quota failure blocks run without deleting data`。
+
+## Android WebView 实验补充（提交 2734f77 后审阅）
+
+在独立 Android 34 模拟器通过 `adb shell am instrument` 运行 `LambdaBackupExperimentTest`，结果 `OK (1 test)`。测试使用真实 WebView 和大厅现有下载脚本，但以测试桥接收导出内容；没有打开系统文件选择器，也没有验证真实文件写入、用户取消、完全卡死后导出或物理设备。Gradle 的 `connectedDebugAndroidTest` 在离线模式缺少 UTP 插件，故构建两个 APK 后由 ADB 直接运行同一仪器测试。
+
+测试依赖生成的实验 HTML，而非正式资源；未生成夹具时应明确跳过，避免污染通用设备测试。实验文件不包含在正式 APK 中，仍未满足发布条件。
