@@ -79,6 +79,7 @@ class MainActivity : ComponentActivity() {
     private val gameLiveness = GameLiveness(30_000)
     private val watchdogHandler = Handler(Looper.getMainLooper())
     private var gamePageReady = false
+    private var gameEntryAnnounced = false
     private var probePending = false
     private var probeSerial = 0L
     private val watchdogTick = object : Runnable {
@@ -786,6 +787,7 @@ class MainActivity : ComponentActivity() {
         clearWebView()
         currentGame = game
         gamePageReady = false
+        gameEntryAnnounced = false
         if (activityStarted) startGameWatchdog()
         showLoading("正在校验${game.name}资源…")
         Thread {
@@ -991,8 +993,11 @@ class MainActivity : ComponentActivity() {
                         if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) { markGamePageReady(); hideOverlay() }
                     }
                 } else {
-                    markGamePageReady()
-                    hideOverlay()
+                    // A finished network load alone does not prove the renderer
+                    // can answer JavaScript; keep the watchdog active until it can.
+                    view.evaluateJavascript("1") {
+                        if (view === webView && view.url == url && currentGame?.id == game.id && !loadFailed) { markGamePageReady(); hideOverlay() }
+                    }
                 }
             }
         }
@@ -1129,6 +1134,10 @@ class MainActivity : ComponentActivity() {
     private fun markGamePageReady() {
         gamePageReady = true
         gameLiveness.progress(SystemClock.uptimeMillis())
+        if (!gameEntryAnnounced) {
+            gameEntryAnnounced = true
+            toast("成功进入${currentGame?.name ?: "游戏"}")
+        }
     }
 
     private fun startGameWatchdog() {
