@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {protectLambdaOmega} from '../scripts/lambda-omega-protection.mjs';
 import {inspectResources} from '../scripts/resource-bundle.mjs';
+import {dynamicSources,packDynamic} from '../scripts/dynamic-resources.mjs';
 const root=new URL('../',import.meta.url),read=path=>readFileSync(new URL(path,root)),hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 test('staged Lambda protection is reproducible from the pinned existing resource',()=>{
  const input=read('examples/lambda-diagram-update-20261120/lambda-lab.html'),output=read('examples/lambda-diagram-omega-20261120/lambda-lab.html');
@@ -15,4 +16,12 @@ test('staged Lambda protection is reproducible from the pinned existing resource
  assert.equal(metadata.hallProtection.historyGuardSha256,hash(read('scripts/lambda-long-history-guard.inc.js')));
  assert.deepEqual(read('examples/lambda-diagram-omega-20261120/LICENSE'),read('examples/lambda-diagram-update-20261120/LICENSE'));
  inspectResources(['lambda-lab.html','LICENSE','upstream-source.json'].map(path=>({path,data:read('examples/lambda-diagram-omega-20261120/'+path)})),'lambda-diagram-game');
+});
+test('pinned Lambda content 11 packs deterministically with its complete manifest',()=>{
+ const source=dynamicSources(read('dynamic-sources.lock.json')).sources.find(item=>item.id==='lambda-diagram-game');
+ assert.equal(source.revision,'037eb829516709e0a7d369c5718259496fefa2fb');assert.equal(source.contentCode,11);
+ const entries=source.files.map(path=>({path,data:read(`${source.directory}/${path}`)}));
+ const first=packDynamic(source,entries),second=packDynamic(source,entries);
+ assert.deepEqual(first.archive,second.archive);assert.equal(first.game.archiveSha256,hash(first.archive));
+ assert.equal(first.game.files.length,3);assert.equal(first.game.storageContract,'lambda-diagram-game-dynamic-v1');
 });
