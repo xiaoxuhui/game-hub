@@ -1,3 +1,5 @@
+import {readFileSync} from 'node:fs';
+const longHistoryGuard=readFileSync(new URL('./lambda-long-history-guard.inc.js',import.meta.url),'utf8');
 /** Apply only to the pinned, reviewed Lambda resource. */
 export function protectLambdaOmega(source) {
  let html=source;
@@ -7,17 +9,60 @@ export function protectLambdaOmega(source) {
  replace('function render(duration=0,undone=null) {','function render(duration=0,undone=null,suppressSave=false) {');
  replace('    renderDiagram(redex,duration,undone);\n    save();','    renderDiagram(redex,duration,undone);\n    if(!suppressSave)save();');
  replace('state.autoFit=true; render(); save(); return true;','state.autoFit=true; render(0,null,initial); if(!initial)save(); return true;');
- replace('workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;','workspace.prepareManualRestore();renderMode();convert({initial:true});lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;');
+ replace('workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;','workspace.prepareManualRestore();renderMode();if(!workspace.restoreProtected())convert({initial:true});lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;');
+ replace('    const raw=backing||unavailable;\n    const c5=C5.createLambdaC5Storage(raw,S,OldS,{eventTarget:backing?root:null});',longHistoryGuard+'\n    const c5=C5.createLambdaC5Storage(raw,S,OldS,{eventTarget:backing?mappedEvents:null});');
+ replace('    function startup(){\n      if(!backing)return;', `    function startup(){
+      if(!backing)return;
+      if(choice.safe&&!choice.overflow){
+        if(raw.getItem('lambda-lab-hub-v4')!==null)choice.recovery=true;
+        else {
+          const pointer=choice.previous.getItem('lambda-lab-hub-before-run-latest-v1')||normalRaw.getItem('lambda-lab-hub-before-run-latest-v1');
+          const text=pointer&&pointer.startsWith('lambda-lab-hub-before-run-v1.')?(choice.previous.getItem(pointer)||normalRaw.getItem(pointer)):null;
+          if(text)try{
+            const item=JSON.parse(text);
+            if((item.session?.steps??0)<=256&&(item.checkpoint?.session?.steps??0)<=256){
+              const snapshot=S.decode(text,{compact:true});c5.setItem('lambda-lab-hub-v4',S.encode(snapshot));
+              if(snapshot.checkpointText)c5.setItem('lambda-lab-hub-checkpoint-v4',snapshot.checkpointText);
+              choice.recovery=true;
+            }
+          }catch(error){console.warn('运行前备份未能恢复，原始存档仍保留',error);}
+        }
+      }`);
+ replace('    try{startup();}catch(error){\n      conflictBlocked=true;', '    try{startup();}catch(error){\n      choice.recovery=false;conflictBlocked=true;');
+ replace('    root.addEventListener(\'storage\',event=>{\n      if(!backing||(event.key!==null&&!C5.LAMBDA_C5_STORAGE_KEYS.includes(event.key)))return;', `    root.addEventListener('storage',event=>{
+      const changed=choice.safe&&event.key?.startsWith(choice.prefix)?event.key.slice(choice.prefix.length):event.key;
+      if(!backing||(changed!==null&&!C5.LAMBDA_C5_STORAGE_KEYS.includes(changed)))return;`);
+ replace("    root.addEventListener('storage',event=>{", `    if(choice.safe){
+      const section=document.createElement('section');section.id='lambda-long-history';section.setAttribute('role','status');
+      section.textContent=choice.recovery?'已从运行前备份恢复。较长的原始历史仍保留。':'上次历史过长，原始存档保持不变。请先导出原始存档，或导入备份选择要恢复的状态。';
+      const exportButton=document.createElement('button');exportButton.type='button';exportButton.textContent='导出原始存档';
+      exportButton.addEventListener('click',()=>{try{
+        const storage=Object.create(null),keys=[...C5.LAMBDA_C5_STORAGE_KEYS,'lambda-lab-hub-previous-v4','lambda-lab-hub-checkpoint-previous-v4','lambda-lab-hub-before-run-latest-v1'];
+        const pointer=choice.previous.getItem('lambda-lab-hub-before-run-latest-v1');if(pointer)keys.push(pointer);
+        for(const key of keys){const value=choice.previous.getItem(key);if(value!==null)storage[key]=value;}
+        root.LambdaDownload.save('lambda-recovery-raw.json',JSON.stringify({schemaVersion:1,type:'raw-local-storage',game:'lambda-diagram-game',storage}),'application/json');
+      }catch(error){section.append(document.createTextNode(' 导出失败：'+String(error.message||error)));}});
+      section.append(' ',exportButton);document.body.prepend(section);
+      if(!choice.recovery){
+        const dialog=document.createElement('dialog');dialog.id='lambda-long-history-choice';
+        const text=document.createElement('p');text.textContent=section.textContent;
+        const exportCopy=document.createElement('button');exportCopy.type='button';exportCopy.textContent='导出原始存档';exportCopy.onclick=()=>exportButton.click();
+        const importCopy=document.createElement('button');importCopy.type='button';importCopy.textContent='导入备份并选择恢复';importCopy.onclick=()=>{dialog.close();document.getElementById('import-file').click()};
+        const later=document.createElement('button');later.type='button';later.textContent='保留原始存档，稍后处理';later.onclick=()=>dialog.close();
+        dialog.append(text,exportCopy,importCopy,later);document.body.append(dialog);if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+      }
+    }
+    root.addEventListener('storage',event=>{`);
  replace('    const adapter={getItem(key){', `    const adapter={saveRunBackup(text){
       assertUnblocked();S.decodeStartingState(text);
       const random=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
       const key='lambda-lab-hub-before-run-v1.'+Date.now()+'-'+random;
-      if(raw.getItem(key)!==null)throw Error('运行前备份名称冲突');
-      raw.setItem(key,text);if(raw.getItem(key)!==text)throw Error('运行前备份核验失败');
-      raw.setItem('lambda-lab-hub-before-run-latest-v1',key);
-      if(raw.getItem('lambda-lab-hub-before-run-latest-v1')!==key)throw Error('运行前备份索引核验失败');
+      if(normalRaw.getItem(key)!==null)throw Error('运行前备份名称冲突');
+      normalRaw.setItem(key,text);if(normalRaw.getItem(key)!==text)throw Error('运行前备份核验失败');
+      normalRaw.setItem('lambda-lab-hub-before-run-latest-v1',key);
+      if(normalRaw.getItem('lambda-lab-hub-before-run-latest-v1')!==key)throw Error('运行前备份索引核验失败');
       return key;
-    },getRunBackup(){const key=raw.getItem('lambda-lab-hub-before-run-latest-v1');return key===null?null:raw.getItem(key);},getItem(key){`);
+    },getRunBackup(){const key=normalRaw.getItem('lambda-lab-hub-before-run-latest-v1');return key===null?null:normalRaw.getItem(key);},protectedRecovery(){return !!choice.recovery;},getItem(key){`);
  replace('    function prepareManualRestore() {', `    function backupBeforeRun(){
       try{localStorage.saveRunBackup(S.encodeBackup(captured(),checkpoint));return true;}
       catch(error){feedback('运行前备份失败，尚未开始运行：'+String(error.message||error),true);return false;}
@@ -26,13 +71,18 @@ export function protectLambdaOmega(source) {
       try{const text=localStorage.getRunBackup();if(!text)throw Error('没有运行前备份');root.LambdaDownload.save('lambda-before-run.json',text,'application/json');feedback('检测到循环，已请求导出运行前存档；请在系统窗口选择保存位置。');}
       catch(error){feedback('自动导出未能启动，运行前备份仍在本机：'+String(error.message||error),true);}
     }
+    function restoreProtected(){
+      if(!localStorage.protectedRecovery())return false;
+      try{const text=localStorage.getItem(AUTO);if(!text)return false;apply(S.decode(text,{compact:true}));return true;}
+      catch(error){feedback('原运行前备份仍保留，自动恢复失败：'+String(error.message||error),true);return false;}
+    }
     function prepareManualRestore() {`);
- replace('persist,queueSave,prepareManualRestore,\n      beginSession:', 'persist,queueSave,prepareManualRestore,backupBeforeRun,exportBeforeRun,\n      beginSession:');
+ replace('persist,queueSave,prepareManualRestore,\n      beginSession:', 'persist,queueSave,prepareManualRestore,backupBeforeRun,exportBeforeRun,restoreProtected,\n      beginSession:');
  replace("    $('import-file').addEventListener('change',async()=>{", `    function selectRecoverySnapshot(text){
       let archive;try{archive=JSON.parse(text)}catch{return text}
       if(!archive||archive.type!=='raw-local-storage'||archive.game!=='lambda-diagram-game')return text;
       if(!archive.storage||typeof archive.storage!=='object'||Array.isArray(archive.storage))throw new C.LambdaError('原始恢复文件格式不正确。');
-      const keys=Object.keys(archive.storage).filter(key=>/^lambda-lab-(hub-)?(before-run-v1\\.|previous-v[24]$|checkpoint-previous-v[24]$|legacy-v[34]$|hub-v[34]$|hub-checkpoint-v[34]$|v[12]$|checkpoint-v2$)/.test(key));
+      const keys=Object.keys(archive.storage).filter(key=>/^(lambda-hub-safe-workspace-v1\\.\\d+\\.)?lambda-lab-(hub-)?(before-run-v1\\.|previous-v[24]$|checkpoint-previous-v[24]$|legacy-v[34]$|hub-v[34]$|hub-checkpoint-v[34]$|v[12]$|checkpoint-v2$)/.test(key));
       const candidates=[],seen=new Set();let longCount=0;
       for(const key of keys.slice(0,128)){
         const raw=archive.storage[key];if(typeof raw!=='string'||seen.has(raw))continue;
