@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "3e7858043bbb3822be94522a5ac6a06ac4c7e7a7",
-      "directory": "examples/lambda-diagram-omega-20261120",
+      "revision": "8201a963268dcf8adb03d8d5dab698d4c1eb4c5d",
+      "directory": "examples/lambda-diagram-30s-20261120",
       "version": "0.3.6",
-      "contentCode": 11,
+      "contentCode": 12,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "执行前保留独立快照；检测到循环时请求导出。长历史不再自动同步重放，保留原始存档并提供恢复选择；新版大厅可在卡住后尝试导出备份。"
+      "releaseNotes": "运行保护默认观察30秒，长历史不再因超过256步立即隔离；保护原始存档并允许恢复，启动中断后可导出原始存档。"
     },
     {
       "id": "red-green-puzzle",
