@@ -7,6 +7,10 @@ on:
       - 'examples/lambda-diagram-038-20261121/**'
       - 'examples/lambda-diagram-039-20261121/**'
       - 'examples/lambda-039-recovery-20261121/**'
+      - 'examples/lambda-quota-readonly-20261121/**'
+      - 'scripts/lambda-quota-readonly.mjs'
+      - 'scripts/lambda-quota-open-regression.cjs'
+      - 'tests/lambda-quota-readonly.test.mjs'
       - 'tests/lambda-039-recovery.test.mjs'
       - 'examples/lambda-preserve-20261121/**'
       - 'examples/lambda-roundtrip-20261121/**'
@@ -74,7 +78,10 @@ jobs:
           LAMBDA_TEST_HTML: examples/lambda-039-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-large-archive-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-039-recovery-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-quota-readonly-20261121/lambda-lab.html
+      - run: node scripts/lambda-quota-open-regression.cjs
+        env:
+          LAMBDA_TEST_HTML: examples/lambda-quota-readonly-20261121/lambda-lab.html
       - run: node scripts/lambda-experiment-build.cjs
       - run: node scripts/lambda-prerun-backup-experiment.cjs
       - run: node scripts/lambda-prerun-actions-experiment.cjs
