@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import java.io.ByteArrayInputStream
@@ -43,6 +44,10 @@ internal object LambdaRescueReader {
             cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE
         }
         view.webViewClient = object : WebViewClient() {
+            override fun onRenderProcessGone(webView: WebView, detail: RenderProcessGoneDetail): Boolean {
+                finish(Result.Unavailable("备份检查进程已停止，原存档保持不变"))
+                return true
+            }
             override fun shouldInterceptRequest(webView: WebView, request: WebResourceRequest): WebResourceResponse {
                 if (!request.isForMainFrame || request.url.toString() != url) return GameContentResolver.blocked()
                 responseServed.set(true)
@@ -58,8 +63,11 @@ internal object LambdaRescueReader {
                     if (finished) return@evaluateJavascript
                     val parsed = runCatching { JSONObject(value) }.getOrNull()
                     val content = parsed?.optString("content")
-                    if (parsed?.optString("status") == "ok" && content != null && content.toByteArray(Charsets.UTF_8).size <= MAX_BYTES &&
-                        runCatching { JSONObject(content) }.isSuccess) finish(Result.Found(content))
+                    val valid = content != null && content.toByteArray(Charsets.UTF_8).size <= MAX_BYTES && runCatching {
+                        val archive = JSONObject(content)
+                        archive.optInt("version") in 2..4 && archive.opt("draft") is String && archive.opt("session") is JSONObject
+                    }.getOrDefault(false)
+                    if (parsed?.optString("status") == "ok" && valid) finish(Result.Found(content!!))
                     else finish(Result.Unavailable(parsed?.optString("reason")?.takeIf { it.isNotBlank() } ?: "未找到可读取的运行前备份"))
                 }
             }

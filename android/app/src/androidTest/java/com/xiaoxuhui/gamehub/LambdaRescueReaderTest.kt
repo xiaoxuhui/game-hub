@@ -41,7 +41,7 @@ class LambdaRescueReaderTest {
                 loadUrl(url)
             }
         }
-        val key = "lambda-lab-hub-before-run-v1.test"; val backup = "{\"version\":2,\"draft\":\"saved-before-run\"}"
+        val key = "lambda-lab-hub-before-run-v1.test"; val backup = "{\"version\":2,\"draft\":\"saved-before-run\",\"session\":{\"steps\":0}}"
         try {
             waitFor(ready)
             js(view, "localStorage.setItem('$key',${org.json.JSONObject.quote(backup)});localStorage.setItem('lambda-lab-hub-before-run-latest-v1','$key');true")
@@ -50,6 +50,8 @@ class LambdaRescueReaderTest {
             js(view, "localStorage.setItem('lambda-lab-hub-before-run-latest-v1','not-a-backup-key');true")
             assertTrue(read(id) is LambdaRescueReader.Result.Unavailable)
             assertEquals(org.json.JSONObject.quote(backup), js(view, "localStorage.getItem('$key')"))
+            js(view, "localStorage.setItem('$key','{}');localStorage.setItem('lambda-lab-hub-before-run-latest-v1','$key');true")
+            assertTrue(read(id) is LambdaRescueReader.Result.Unavailable)
         } finally {
             js(view, "localStorage.removeItem('$key');localStorage.removeItem('lambda-lab-hub-before-run-latest-v1');true")
             inst.runOnMainSync { view.destroy() }
