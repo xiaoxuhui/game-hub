@@ -4933,8 +4933,17 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
     const unavailable={getItem(){return null;},setItem(){throw new Error('浏览器存储不可用');},removeItem(){throw new Error('浏览器存储不可用');}};
     let backing;
     try{backing=root.localStorage;}catch{backing=null;}
-    const raw=backing||unavailable;
-    const c5=C5.createLambdaC5Storage(raw,S,OldS,{eventTarget:backing?root:null});
+    // Never synchronously replay a long stored session during compatibility checks.
+    // Open a separate namespace and keep every original key untouched.
+    const guardedKeys=['lambda-lab-hub-v4','lambda-lab-hub-checkpoint-v4','lambda-lab-hub-v3','lambda-lab-hub-checkpoint-v3','lambda-lab-v2','lambda-lab-checkpoint-v2','lambda-lab-hub-legacy-v4','lambda-lab-v1','lambda-lab-hub-journal-v4','lambda-lab-hub-journal-v3'];
+    const prefixBase='lambda-hub-safe-workspace-v1.';
+    function scope(source,prefix){return {getItem:key=>source.getItem(prefix+key),setItem:(key,value)=>source.setItem(prefix+key,value),removeItem:key=>source.removeItem(prefix+key)}}
+    function tooLong(source){for(const key of guardedKeys){const text=source.getItem(key);if(text===null)continue;try{const pending=[JSON.parse(text)];let seen=0;while(pending.length){if(++seen>100000)return true;const item=pending.pop();if(!item||typeof item!=='object')continue;if((item.session?.steps??0)>256)return true;for(const value of Object.values(item)){if(value&&typeof value==='object')pending.push(value);else if(typeof value==='string'&&(value[0]==='{'||value[0]==='[')){try{pending.push(JSON.parse(value))}catch{}}}}}catch{/* Existing C5 conflict handling keeps invalid data. */}}return false}
+    function selectWorkspace(source){if(!tooLong(source))return {storage:source,safe:false,prefix:'',previous:null};let previous=source;for(let i=0;i<16;i++){const prefix=prefixBase+i+'.',storage=scope(source,prefix);if(!tooLong(storage))return {storage,safe:true,prefix,previous};previous=storage;}return {storage:unavailable,safe:true,prefix:'',previous,overflow:true}}
+    const normalRaw=backing||unavailable,choice=selectWorkspace(normalRaw),raw=choice.storage;
+    const mappedEvents=choice.safe?{addEventListener(type,listener){root.addEventListener(type,event=>{if(event.key===null)listener({key:null});else if(event.key.startsWith(choice.prefix))listener({key:event.key.slice(choice.prefix.length),oldValue:event.oldValue,newValue:event.newValue})})}}:root;
+
+    const c5=C5.createLambdaC5Storage(raw,S,OldS,{eventTarget:backing?mappedEvents:null});
     const safeExport=(reason,snapshot)=>{
       const payload=JSON.stringify({schemaVersion:1,game:'lambda-diagram-game',reason,exportedAt:new Date().toISOString(),storage:snapshot},null,2);
       try{root.LambdaDownload.save('lambda-lab-storage-recovery.json',payload,'application/json');return true;}
@@ -4994,6 +5003,21 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
     }
     function startup(){
       if(!backing)return;
+      if(choice.safe&&!choice.overflow){
+        if(raw.getItem('lambda-lab-hub-v4')!==null)choice.recovery=true;
+        else {
+          const pointer=choice.previous.getItem('lambda-lab-hub-before-run-latest-v1')||normalRaw.getItem('lambda-lab-hub-before-run-latest-v1');
+          const text=pointer&&pointer.startsWith('lambda-lab-hub-before-run-v1.')?(choice.previous.getItem(pointer)||normalRaw.getItem(pointer)):null;
+          if(text)try{
+            const item=JSON.parse(text);
+            if((item.session?.steps??0)<=256&&(item.checkpoint?.session?.steps??0)<=256){
+              const snapshot=S.decode(text,{compact:true});c5.setItem('lambda-lab-hub-v4',S.encode(snapshot));
+              if(snapshot.checkpointText)c5.setItem('lambda-lab-hub-checkpoint-v4',snapshot.checkpointText);
+              choice.recovery=true;
+            }
+          }catch(error){console.warn('运行前备份未能恢复，原始存档仍保留',error);}
+        }
+      }
       let inspection=C5.inspectLambdaC5Storage(raw,S,OldS);
       for(const kind of ['current','checkpoint']){
         const group=inspection[kind];
@@ -5009,14 +5033,35 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       if(needsReview(inspection.current)||needsReview(inspection.checkpoint))updateReview();
     }
     try{startup();}catch(error){
-      conflictBlocked=true;
+      choice.recovery=false;conflictBlocked=true;
       const snapshot=(()=>{try{return C5.captureLambdaC5Snapshot(raw);}catch{return null;}})();
       const node=show('Lambda存档需要处理','自动恢复已停止，原始数据未清空。详细原因：'+String(error?.message||error));
       button('导出全部原始存档',()=>{const result=safeExport('startup-error',snapshot);dialogStatus.textContent=result===true?'已请求下载原始数据导出文件。':'导出失败：'+String(result);});
       button('关闭并保留原始数据',()=>{dialogStatus.textContent='页面已停在此处；原始存档保持不变。'});
     }
+    if(choice.safe){
+      const section=document.createElement('section');section.id='lambda-long-history';section.setAttribute('role','status');
+      section.textContent=choice.recovery?'已从运行前备份恢复。较长的原始历史仍保留。':'上次历史过长，原始存档保持不变。请先导出原始存档，或导入备份选择要恢复的状态。';
+      const exportButton=document.createElement('button');exportButton.type='button';exportButton.textContent='导出原始存档';
+      exportButton.addEventListener('click',()=>{try{
+        const storage=Object.create(null),keys=[...C5.LAMBDA_C5_STORAGE_KEYS,'lambda-lab-hub-previous-v4','lambda-lab-hub-checkpoint-previous-v4','lambda-lab-hub-before-run-latest-v1'];
+        const pointer=choice.previous.getItem('lambda-lab-hub-before-run-latest-v1');if(pointer)keys.push(pointer);
+        for(const key of keys){const value=choice.previous.getItem(key);if(value!==null)storage[key]=value;}
+        root.LambdaDownload.save('lambda-recovery-raw.json',JSON.stringify({schemaVersion:1,type:'raw-local-storage',game:'lambda-diagram-game',storage}),'application/json');
+      }catch(error){section.append(document.createTextNode(' 导出失败：'+String(error.message||error)));}});
+      section.append(' ',exportButton);document.body.prepend(section);
+      if(!choice.recovery){
+        const dialog=document.createElement('dialog');dialog.id='lambda-long-history-choice';
+        const text=document.createElement('p');text.textContent=section.textContent;
+        const exportCopy=document.createElement('button');exportCopy.type='button';exportCopy.textContent='导出原始存档';exportCopy.onclick=()=>exportButton.click();
+        const importCopy=document.createElement('button');importCopy.type='button';importCopy.textContent='导入备份并选择恢复';importCopy.onclick=()=>{dialog.close();document.getElementById('import-file').click()};
+        const later=document.createElement('button');later.type='button';later.textContent='保留原始存档，稍后处理';later.onclick=()=>dialog.close();
+        dialog.append(text,exportCopy,importCopy,later);document.body.append(dialog);if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+      }
+    }
     root.addEventListener('storage',event=>{
-      if(!backing||(event.key!==null&&!C5.LAMBDA_C5_STORAGE_KEYS.includes(event.key)))return;
+      const changed=choice.safe&&event.key?.startsWith(choice.prefix)?event.key.slice(choice.prefix.length):event.key;
+      if(!backing||(changed!==null&&!C5.LAMBDA_C5_STORAGE_KEYS.includes(changed)))return;
       conflictBlocked=true;
       const snapshot=c5.exportObserved();
       const node=show('另一个页面修改了Lambda存档','为避免覆盖其他页面的进度，本页面已停止写入。请导出本页观察到的全部存档原文后重新打开游戏。');
@@ -5030,12 +5075,12 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       assertUnblocked();S.decodeStartingState(text);
       const random=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
       const key='lambda-lab-hub-before-run-v1.'+Date.now()+'-'+random;
-      if(raw.getItem(key)!==null)throw Error('运行前备份名称冲突');
-      raw.setItem(key,text);if(raw.getItem(key)!==text)throw Error('运行前备份核验失败');
-      raw.setItem('lambda-lab-hub-before-run-latest-v1',key);
-      if(raw.getItem('lambda-lab-hub-before-run-latest-v1')!==key)throw Error('运行前备份索引核验失败');
+      if(normalRaw.getItem(key)!==null)throw Error('运行前备份名称冲突');
+      normalRaw.setItem(key,text);if(normalRaw.getItem(key)!==text)throw Error('运行前备份核验失败');
+      normalRaw.setItem('lambda-lab-hub-before-run-latest-v1',key);
+      if(normalRaw.getItem('lambda-lab-hub-before-run-latest-v1')!==key)throw Error('运行前备份索引核验失败');
       return key;
-    },getRunBackup(){const key=raw.getItem('lambda-lab-hub-before-run-latest-v1');return key===null?null:raw.getItem(key);},getItem(key){assertUnblocked();return backups.has(key)?raw.getItem(backups.get(key)):c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return backups.has(key)?raw.removeItem(backups.get(key)):c5.removeItem(mapped.get(key)||key);},setItem(key,value){
+    },getRunBackup(){const key=normalRaw.getItem('lambda-lab-hub-before-run-latest-v1');return key===null?null:normalRaw.getItem(key);},protectedRecovery(){return !!choice.recovery;},getItem(key){assertUnblocked();return backups.has(key)?raw.getItem(backups.get(key)):c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return backups.has(key)?raw.removeItem(backups.get(key)):c5.removeItem(mapped.get(key)||key);},setItem(key,value){
       assertUnblocked();
       try{if(backups.has(key)){S.decodeStartingState(value);return raw.setItem(backups.get(key),value);}return c5.setItem(mapped.get(key)||key,value);}catch(error){
         if(error?.name==='QuotaExceededError'||/quota|storage full|配额/i.test(String(error?.message||''))){
@@ -5173,6 +5218,11 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       try{const text=localStorage.getRunBackup();if(!text)throw Error('没有运行前备份');root.LambdaDownload.save('lambda-before-run.json',text,'application/json');feedback('检测到循环，已请求导出运行前存档；请在系统窗口选择保存位置。');}
       catch(error){feedback('自动导出未能启动，运行前备份仍在本机：'+String(error.message||error),true);}
     }
+    function restoreProtected(){
+      if(!localStorage.protectedRecovery())return false;
+      try{const text=localStorage.getItem(AUTO);if(!text)return false;apply(S.decode(text,{compact:true}));return true;}
+      catch(error){feedback('原运行前备份仍保留，自动恢复失败：'+String(error.message||error),true);return false;}
+    }
     function prepareManualRestore() {
       let text=null;
       try {
@@ -5253,21 +5303,27 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       let archive;try{archive=JSON.parse(text)}catch{return text}
       if(!archive||archive.type!=='raw-local-storage'||archive.game!=='lambda-diagram-game')return text;
       if(!archive.storage||typeof archive.storage!=='object'||Array.isArray(archive.storage))throw new C.LambdaError('原始恢复文件格式不正确。');
-      const keys=Object.keys(archive.storage).filter(key=>/^lambda-lab-(hub-)?(before-run-v1\.|previous-v[24]$|checkpoint-previous-v[24]$|legacy-v[34]$|hub-v[34]$|hub-checkpoint-v[34]$|v[12]$|checkpoint-v2$)/.test(key));
+      const keys=Object.keys(archive.storage).filter(key=>/^(lambda-hub-safe-workspace-v1\.\d+\.)?lambda-lab-(hub-)?(before-run-v1\.|previous-v[24]$|checkpoint-previous-v[24]$|legacy-v[34]$|hub-v[34]$|hub-checkpoint-v[34]$|v[12]$|checkpoint-v2$)/.test(key));
       const candidates=[],seen=new Set();let longCount=0;
       for(const key of keys.slice(0,128)){
         const raw=archive.storage[key];if(typeof raw!=='string'||seen.has(raw))continue;
-        try{const state=S.decodeStartingState(raw);const parsed=JSON.parse(raw);
-          if((parsed.session?.steps??0)>256||(parsed.checkpoint?.session?.steps??0)>256){longCount++;continue;}
-          seen.add(raw);candidates.push({key,raw,draft:String(state.draft||'').replace(/[\r\n]+/g,' ').slice(0,60)});
+        try{const state=S.decodeStartingState(raw);const parsed=JSON.parse(raw);let importText=raw,compacted=false;
+          if((parsed.session?.steps??0)>256||(parsed.checkpoint?.session?.steps??0)>256){
+            const session=parsed.session,choiceFree=!session?.paths&&(!session?.choices||session.choices.length===0);
+            const result=choiceFree&&!(parsed.checkpoint?.session?.steps>256)&&state.session.original?root.LambdaTrace.step(state.session.original,null):null;
+            if(!result||JSON.stringify(result.term)!==JSON.stringify(state.session.original)){longCount++;continue;}
+            const compact={...parsed,session:{...session,original:state.session.original,steps:0,halt:''}};delete compact.session.paths;delete compact.session.choices;
+            importText=JSON.stringify(compact);S.decodeStartingState(importText);compacted=true;
+          }
+          seen.add(raw);candidates.push({key,raw,importText,compacted,draft:String(state.draft||'').replace(/[\r\n]+/g,' ').slice(0,60)});
         }catch{}
       }
       if(!candidates.length)throw new C.LambdaError(longCount?'恢复文件中的历史太长，暂不能安全导入；原始文件保持不变。':'已检查前 128 个相关存储项，未找到可识别的存档；原始文件保持不变。');
-      const options=candidates.map((c,i)=>(i+1)+'. '+c.key+' · '+c.draft).join('\n');
+      const options=candidates.map((c,i)=>(i+1)+'. '+c.key+' · '+c.draft+(c.compacted?' · 自循环历史保留原文件，本次恢复当前表达式和设置':'')).join('\n');
       const choice=root.prompt('请选择要恢复的存档编号。原始恢复文件不会被修改。'+(longCount?' 部分超长历史暂不可导入。':'')+(keys.length>128?' 仅显示前 128 个相关存储项，其他数据保留在原文件。':'')+'\n'+options,'1');
       if(choice===null)return null;const n=Number(choice);
       if(!Number.isInteger(n)||n<1||n>candidates.length)throw new C.LambdaError('存档编号无效，未修改当前内容。');
-      return candidates[n-1].raw;
+      const selected=candidates[n-1];if(selected.compacted)localStorage.saveRunBackup(selected.raw);return selected.importText;
     }
     $('import-file').addEventListener('change',async()=>{
       const file=$('import-file').files[0];$('import-file').value='';if(!file)return;
@@ -5281,7 +5337,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       catch(e){if(e.name==='AbortError')feedback('已取消重放，当前状态保留。');else{storageStatus(false);feedback(`导入失败：${e.message}。当前现场未改变。`,true);}}
     });
     window.addEventListener('pagehide',()=>{if(autosaveReady)persist();});
-    return {expand:t=>L.expand(t,functions),encodingsFor:t=>L.encodingsFor(t,functions),persist,queueSave,prepareManualRestore,backupBeforeRun,exportBeforeRun,
+    return {expand:t=>L.expand(t,functions),encodingsFor:t=>L.encodingsFor(t,functions),persist,queueSave,prepareManualRestore,backupBeforeRun,exportBeforeRun,restoreProtected,
       beginSession:()=>{recoveredDraft=null;recoveredSession=null;}};
   }
   root.LambdaWorkspace={init};
@@ -6282,7 +6338,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       const after=end<input.value.length&&!/[\s.)\],]/.test(input.value[end])?' ':'';
       insert(before+C.formatName(name)+after);
     }});
-  workspace.prepareManualRestore();renderMode();convert({initial:true});lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;
+  workspace.prepareManualRestore();renderMode();if(!workspace.restoreProtected())convert({initial:true});lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;
 })();
 
 </script>

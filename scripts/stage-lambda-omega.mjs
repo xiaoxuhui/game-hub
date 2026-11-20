@@ -13,7 +13,7 @@ for(const name of ['lambda-lab.html','LICENSE','upstream-source.json']){
 }
 if(hash(original)!==proof.integration.outputSha256)throw Error('Pinned source proof differs');
 const output=Buffer.from(protectLambdaOmega(original.toString('utf8')));
-const metadata={...proof,hallProtection:{id:'lambda-omega-recovery-v1',sourceCommit:revision,inputSha256:hash(original),outputSha256:hash(output),adapterSha256:hash(readFileSync('scripts/lambda-omega-protection.mjs'))}};
+const metadata={...proof,hallProtection:{id:'lambda-omega-recovery-v1',sourceCommit:revision,inputSha256:hash(original),outputSha256:hash(output),adapterSha256:hash(readFileSync('scripts/lambda-omega-protection.mjs')),historyGuardSha256:hash(readFileSync('scripts/lambda-long-history-guard.inc.js'))}};
 const entries=[{path:'lambda-lab.html',data:output},{path:'LICENSE',data:license},{path:'upstream-source.json',data:Buffer.from(JSON.stringify(metadata,null,2)+'\n')}];
 inspectResources(entries,'lambda-diagram-game');mkdirSync(target);
 for(const entry of entries)writeFileSync(`${target}/${entry.path}`,entry.data,{flag:'wx'});

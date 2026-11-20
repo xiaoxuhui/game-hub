@@ -12,6 +12,7 @@ test('staged Lambda protection is reproducible from the pinned existing resource
  assert.equal(metadata.hallProtection.sourceCommit,'b51cef1135d736c3b7e9cb777497e605552a5d25');
  assert.equal(metadata.hallProtection.inputSha256,hash(input));assert.equal(metadata.hallProtection.outputSha256,hash(output));
  assert.equal(metadata.hallProtection.adapterSha256,hash(read('scripts/lambda-omega-protection.mjs')));
+ assert.equal(metadata.hallProtection.historyGuardSha256,hash(read('scripts/lambda-long-history-guard.inc.js')));
  assert.deepEqual(read('examples/lambda-diagram-omega-20261120/LICENSE'),read('examples/lambda-diagram-update-20261120/LICENSE'));
  inspectResources(['lambda-lab.html','LICENSE','upstream-source.json'].map(path=>({path,data:read('examples/lambda-diagram-omega-20261120/'+path)})),'lambda-diagram-game');
 });
