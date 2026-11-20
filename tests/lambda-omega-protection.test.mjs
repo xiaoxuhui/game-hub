@@ -4,11 +4,13 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {protectLambdaOmega} from '../scripts/lambda-omega-protection.mjs';
 
-test('reviewed Omega transform matches the independently exercised prototype',()=>{
+test('Omega transform generates a guarded prototype and preserves the reviewed base',()=>{
  execFileSync(process.execPath,['scripts/lambda-experiment-build.cjs'],{cwd:new URL('..',import.meta.url)});
  const source=readFileSync(new URL('../examples/lambda-diagram-update-20261120/lambda-lab.html',import.meta.url),'utf8');
  const expected=readFileSync(new URL('../.build/lambda-android-experiment.html',import.meta.url),'utf8');
  assert.equal(protectLambdaOmega(source),expected);
+ assert.match(expected,/function backupBeforeRun\(\)/);
+ assert.match(expected,/lambda-lab-hub-before-run-latest-v1/);
 });
 
 test('refuses an unexpected or already transformed resource',()=>{

@@ -28,6 +28,28 @@ export function protectLambdaOmega(source) {
     }
     function prepareManualRestore() {`);
  replace('persist,queueSave,prepareManualRestore,\n      beginSession:', 'persist,queueSave,prepareManualRestore,backupBeforeRun,exportBeforeRun,\n      beginSession:');
+ replace("    $('import-file').addEventListener('change',async()=>{", `    function selectRecoverySnapshot(text){
+      let archive;try{archive=JSON.parse(text)}catch{return text}
+      if(!archive||archive.type!=='raw-local-storage'||archive.game!=='lambda-diagram-game')return text;
+      if(!archive.storage||typeof archive.storage!=='object'||Array.isArray(archive.storage))throw new C.LambdaError('原始恢复文件格式不正确。');
+      const keys=Object.keys(archive.storage).filter(key=>/^lambda-lab-(hub-)?(before-run-v1\\.|previous-v[24]$|checkpoint-previous-v[24]$|hub-v[34]$|hub-checkpoint-v[34]$|v[12]$|checkpoint-v2$)/.test(key));
+      const candidates=[],seen=new Set();let longCount=0;
+      for(const key of keys.slice(0,128)){
+        const raw=archive.storage[key];if(typeof raw!=='string'||seen.has(raw))continue;
+        try{const state=S.decodeStartingState(raw);const parsed=JSON.parse(raw);
+          if((parsed.session?.steps??0)>256||(parsed.checkpoint?.session?.steps??0)>256){longCount++;continue;}
+          seen.add(raw);candidates.push({key,raw,draft:String(state.draft||'').replace(/[\\r\\n]+/g,' ').slice(0,60)});
+        }catch{}
+      }
+      if(!candidates.length)throw new C.LambdaError(longCount?'恢复文件中的历史太长，暂不能安全导入；原始文件保持不变。':'恢复文件没有可识别的存档；原始文件保持不变。');
+      const options=candidates.map((c,i)=>(i+1)+'. '+c.key+' · '+c.draft).join('\\n');
+      const choice=root.prompt('请选择要恢复的存档编号。原始恢复文件不会被修改。'+(longCount?' 部分超长历史暂不可导入。':'')+'\\n'+options,'1');
+      if(choice===null)return null;const n=Number(choice);
+      if(!Number.isInteger(n)||n<1||n>candidates.length)throw new C.LambdaError('存档编号无效，未修改当前内容。');
+      return candidates[n-1].raw;
+    }
+    $('import-file').addEventListener('change',async()=>{`);
+ replace("try{if(file.size>S.MAX_BYTES)throw new C.LambdaError('存档文件超过 2 MiB 上限。');const snapshot=await replaySave(await file.text());", "try{if(file.size>8*1024*1024)throw new C.LambdaError('恢复文件超过 8 MiB 上限。');const selected=selectRecoverySnapshot(await file.text());if(selected===null)return;if(new TextEncoder().encode(selected).length>S.MAX_BYTES)throw new C.LambdaError('所选存档超过 2 MiB 上限。');const snapshot=await replaySave(selected);");
  replace('    const interpreter=window.LambdaMeta.isProgram(state.original);','    if(!workspace.backupBeforeRun())return;\n    const interpreter=window.LambdaMeta.isProgram(state.original);');
  replace('  function advance(path=null,display=true) {\n    if(!state.term||state.dirty||rewindJob) return false;', '  function advance(path=null,display=true) {\n    if(!state.term||state.dirty||rewindJob) return false;\n    if(!state.running&&!workspace.backupBeforeRun())return false;');
  replace("        stop();state.halt=growth?'检测到递归展开无限增长，自动运行已停止。可以回退、单步或调整归约顺序。':'检测到重复归约循环，自动运行已停止。可以回退、单步或调整归约顺序。';", "        stop();state.halt=growth?'检测到递归展开无限增长，自动运行已停止。可以回退、单步或调整归约顺序。':'检测到重复归约循环，自动运行已停止。可以回退、单步或调整归约顺序。';workspace.exportBeforeRun();");
