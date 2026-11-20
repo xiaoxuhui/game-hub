@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
     private var overlay: View? = null
     private var currentGame: Game? = null
     private var loadFailed = false
+    private var lambdaRescuePending = false
     private val gameLiveness = GameLiveness(30_000)
     private val watchdogHandler = Handler(Looper.getMainLooper())
     private var gamePageReady = false
@@ -307,6 +308,11 @@ class MainActivity : ComponentActivity() {
             setOnClickListener { showUpdateDetails() }
         }
         column.addView(updateSummary, LinearLayout.LayoutParams(-1, -2))
+        column.addView(label("导出 Lambda 运行前备份", 12f, 0xFF8AB7FF.toInt(), true).apply {
+            minHeight = dp(44); gravity = Gravity.CENTER_VERTICAL; setPadding(dp(6), 0, dp(6), 0)
+            isClickable = true; isFocusable = true
+            setOnClickListener { exportLambdaRunBackup() }
+        }, LinearLayout.LayoutParams(-1, -2))
         for (rowIndex in 0..1) {
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -1141,6 +1147,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun skipUnresponsiveGame(terminateRenderer: Boolean) {
+        val rescueLambda = currentGame?.id == "lambda-diagram-game"
         val name = currentGame?.name ?: return
         val view = webView
         if (terminateRenderer && view != null && WebViewFeature.isFeatureSupported(WebViewFeature.GET_WEB_VIEW_RENDERER) &&
@@ -1150,6 +1157,33 @@ class MainActivity : ComponentActivity() {
         }
         showLobby()
         toast("${name}无响应，已跳过；已保存的数据保留")
+        if (rescueLambda) exportLambdaRunBackup()
+    }
+
+    private fun exportLambdaRunBackup() {
+        if (lambdaRescuePending || exports.busy || currentGame != null || !activityStarted || isDestroyed) {
+            toast("请先返回大厅并完成当前保存，再导出运行前备份")
+            return
+        }
+        lambdaRescuePending = true
+        val expectedNavigation = navigationSerial
+        LambdaRescueReader.read(this) { result ->
+            lambdaRescuePending = false
+            if (isDestroyed || !activityStarted || currentGame != null || navigationSerial != expectedNavigation) return@read
+            when (result) {
+                is LambdaRescueReader.Result.Unavailable -> toast(result.reason)
+                is LambdaRescueReader.Result.Found -> {
+                    val export = DocumentExport("lambda-before-run.json", result.content)
+                    if (exports.busy || !exports.offer(export)) { toast("请先完成当前保存，再导出运行前备份"); return@read }
+                    refreshUpdatePresence()
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("application/json").putExtra(Intent.EXTRA_TITLE, export.name)
+                    runCatching { saveLauncher.launch(intent) }.onFailure {
+                        exports.cancelled(); refreshUpdatePresence(); toast("无法打开保存窗口，原存档保持不变")
+                    }
+                }
+            }
+        }
     }
 
     private fun gameUrl(game: Game) = "https://${AssetAccessPolicy.hostFor(game.id)}/assets/games/${game.id}/${game.entry}"
