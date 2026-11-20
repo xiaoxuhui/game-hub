@@ -17,8 +17,8 @@
     "id": "lambda-omega-recovery-v1",
     "sourceCommit": "b51cef1135d736c3b7e9cb777497e605552a5d25",
     "inputSha256": "dccb75aefd4a668ec06c3ebebbcc5ba7a23217f63f12ecbf44446f86fbb72483",
-    "outputSha256": "72b692d2c3f91233e78e76c23145dab881ee90b627beb19a2bead99b308336b1",
-    "adapterSha256": "8bb2a4a2d187d7f3adab8a7645071f5ebe4c7ac9e06efd26765caa0f2aa3fb2c",
+    "outputSha256": "7962abd9d11638bb88bb324773af112c8f68d3463873c03a1a58e22c92fb0c0d",
+    "adapterSha256": "4c537ccab4ae04865bcbff3314397ffe77921c84ae47c637f102fdbe16b96f89",
     "historyGuardSha256": "97a23f62783e9f7a3a03311c7630ccffbc44804ccf81bc967b7ec62dce286e8e"
   }
 }

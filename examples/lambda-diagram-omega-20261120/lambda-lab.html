@@ -5080,7 +5080,12 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       normalRaw.setItem('lambda-lab-hub-before-run-latest-v1',key);
       if(normalRaw.getItem('lambda-lab-hub-before-run-latest-v1')!==key)throw Error('运行前备份索引核验失败');
       return key;
-    },getRunBackup(){const key=normalRaw.getItem('lambda-lab-hub-before-run-latest-v1');return key===null?null:normalRaw.getItem(key);},protectedRecovery(){return !!choice.recovery;},getItem(key){assertUnblocked();return backups.has(key)?raw.getItem(backups.get(key)):c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return backups.has(key)?raw.removeItem(backups.get(key)):c5.removeItem(mapped.get(key)||key);},setItem(key,value){
+    },getRunBackup(){const key=normalRaw.getItem('lambda-lab-hub-before-run-latest-v1');return key===null?null:normalRaw.getItem(key);},
+    latestRunBackupKey(){return normalRaw.getItem('lambda-lab-hub-before-run-latest-v1');},
+    listRunBackups(){const keys=[];for(let i=0;i<(normalRaw.length||0);i++){const key=normalRaw.key(i);if(/^lambda-lab-hub-before-run-v1\.\d+-[0-9a-f]{24}$/.test(key))keys.push(key);}return keys.sort().reverse();},
+    readRunBackup(key){if(!/^lambda-lab-hub-before-run-v1\.\d+-[0-9a-f]{24}$/.test(key))throw Error('备份标识无效');return normalRaw.getItem(key);},
+    removeRunBackup(key,expected){assertUnblocked();if(!/^lambda-lab-hub-before-run-v1\.\d+-[0-9a-f]{24}$/.test(key))throw Error('备份标识无效');if(normalRaw.getItem('lambda-lab-hub-before-run-latest-v1')===key)throw Error('最新运行前备份受保护');if(normalRaw.getItem(key)!==expected)throw Error('备份已变化，请刷新列表');normalRaw.removeItem(key);},
+    protectedRecovery(){return !!choice.recovery;},getItem(key){assertUnblocked();return backups.has(key)?raw.getItem(backups.get(key)):c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return backups.has(key)?raw.removeItem(backups.get(key)):c5.removeItem(mapped.get(key)||key);},setItem(key,value){
       assertUnblocked();
       try{if(backups.has(key)){S.decodeStartingState(value);return raw.setItem(backups.get(key),value);}return c5.setItem(mapped.get(key)||key,value);}catch(error){
         if(error?.name==='QuotaExceededError'||/quota|storage full|配额/i.test(String(error?.message||''))){
@@ -5104,6 +5109,23 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
     let replayController=null,recoveredDraft=null,recoveredSession=null,storageLocked=true;
     const restoreDialog=$('restore-progress');
     let lastAuto=null,lastCaptured=null;
+    const manage=document.createElement('button');manage.type='button';manage.className='button';manage.textContent='管理运行前备份';document.getElementById('export-state').after(manage);
+    manage.addEventListener('click',()=>{
+      const dialog=document.createElement('dialog');dialog.id='lambda-run-backups';
+      const title=document.createElement('h2');title.textContent='运行前备份';
+      const note=document.createElement('p');note.textContent='这些是自动保存的运行前快照。原存档不会自动删除；最新备份受保护。可逐项导出，确认后删除不再需要的旧备份。';
+      const list=document.createElement('div'),close=document.createElement('button');close.type='button';close.textContent='关闭';
+      close.onclick=()=>{if(typeof dialog.close==='function')dialog.close();dialog.remove()};
+      function renderBackups(){
+        list.replaceChildren();const keys=localStorage.listRunBackups();const latest=localStorage.latestRunBackupKey();
+        if(!keys.length){list.textContent='暂无运行前备份';return;}
+        for(const key of keys){const row=document.createElement('p'),name=document.createElement('span');const time=Number(key.split('.').pop().split('-')[0]);name.textContent=(Number.isFinite(time)?new Date(time).toLocaleString():key)+(key===latest?'（最新，受保护）':'');row.append(name,' ');
+          const download=document.createElement('button');download.type='button';download.textContent='导出';download.onclick=()=>{try{const text=localStorage.readRunBackup(key);if(text===null)throw Error('备份不存在');root.LambdaDownload.save('lambda-before-run-'+time+'.json',text,'application/json');}catch(error){note.textContent='导出失败：'+String(error.message||error)}};row.append(download);
+          if(key!==latest){const remove=document.createElement('button');remove.type='button';remove.textContent='删除此旧备份';remove.onclick=()=>{if(!root.confirm('将删除所选的自动运行前备份，不影响当前存档。请先确认已导出需要保留的内容。继续删除吗？'))return;try{const text=localStorage.readRunBackup(key);if(text===null)throw Error('备份不存在');localStorage.removeRunBackup(key,text);renderBackups()}catch(error){note.textContent='未删除：'+String(error.message||error)}};row.append(' ',remove)}list.append(row);
+        }
+      }
+      dialog.append(title,note,list,close);document.body.append(dialog);renderBackups();if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+    });
     const signature=snapshot=>{const {savedAt,...state}=snapshot;return JSON.stringify(state);};
     function cancelReplay(){replayController?.abort();}
     $('cancel-restore').addEventListener('click',cancelReplay);
@@ -5212,7 +5234,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
     }
     function backupBeforeRun(){
       try{localStorage.saveRunBackup(S.encodeBackup(captured(),checkpoint));return true;}
-      catch(error){feedback('运行前备份失败，尚未开始运行：'+String(error.message||error),true);return false;}
+      catch(error){feedback('运行前备份失败，尚未开始运行；可在「管理运行前备份」导出并清理不需要的旧备份：'+String(error.message||error),true);return false;}
     }
     function exportBeforeRun(){
       try{const text=localStorage.getRunBackup();if(!text)throw Error('没有运行前备份');root.LambdaDownload.save('lambda-before-run.json',text,'application/json');feedback('检测到循环，已请求导出运行前存档；请在系统窗口选择保存位置。');}
