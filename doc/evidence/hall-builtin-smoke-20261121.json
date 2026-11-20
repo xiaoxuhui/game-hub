@@ -1,0 +1,46 @@
+[
+  {
+    "id": "eml",
+    "view": {
+      "title": "EML 计算台",
+      "text": "符号计算工作台\n\nEML\n\nEML(x, y) = ex - ln(y)\n\n保存列表\n导入列表\n清空非初始值\n导出完整列表\n完整备份\n函数应用\nEML\n(\nx\n",
+      "controls": 22
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "light",
+    "view": {
+      "title": "光的游戏 · Light Game",
+      "text": "关卡\n第一束光\n\n第 0 章 · 教学\n\n★★★\n下一关\n\n这一关不用放任何元件：光会一直朝一个方向走到目标。看懂了就进下一关。\n\n已通关 ★★★ · 点右上角",
+      "controls": 10
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "conway",
+    "view": {
+      "title": "康威生命游戏",
+      "text": "CELLULAR AUTOMATON · B3/S23\n\n康威生命游戏\n\n在一张没有边界的画布上，观察简单规则如何长出复杂世界。\n\n已暂停\n代数\n0\n生命\n0\n",
+      "controls": 90
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "turing",
+    "view": {
+      "title": "图灵机实验台",
+      "text": "TM\n图灵机实验台\n进入关卡\n旧版兼容导出\n导入项目\n导出记录\n\n完整项目及旧版兼容缓存已保存。\n\n完整项目/草稿导出\n完整项目备份管理\n运行状态\n就绪\n当前状",
+      "controls": 116
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  }
+]

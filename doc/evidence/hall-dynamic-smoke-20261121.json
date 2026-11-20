@@ -1,0 +1,266 @@
+[
+  {
+    "id": "memory-demo",
+    "view": {
+      "title": "配对练习 · 示范",
+      "text": "配对练习 示范游戏\n\n翻开两张牌，找齐三对。进度自动保存在本设备。\n\n键盘：用 Tab 或方向键选牌，Enter 或空格翻牌。\n\n已找到 0/3 对 · 0 步",
+      "controls": 9
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "abelian-sandpile",
+    "view": {
+      "title": "阿贝尔沙滩 · 一粒沙的连锁反应",
+      "text": "阿贝尔沙滩\nABELIAN SANDPILE\n本地网页版 0.1.2\n\n一粒沙，一场连锁反应\n\n让简单规则，\n长出复杂图案。\n\n达到 4 粒时崩塌，\n向上下左右",
+      "controls": 39
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "lambda-diagram-game",
+    "view": {
+      "title": "Lambda 线路实验室",
+      "text": "λ\nLambda\n线路实验室\n玩法与语法 ?\n\nLAMBDA CALCULUS / PLAYGROUND\n\n写一段 λ，看函数如何流动。\n\n从表达式到 Trom",
+      "controls": 87
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "red-green-puzzle",
+    "view": {
+      "title": "红绿变换",
+      "text": "红绿变换通关生成器\n\n输入数字数量，自动生成从全红 0 到全绿 1 的合法变化流程。\n\n数量\n生成流程\n复制文本\n规则复述\n\n每一行表示一个时间点，横向的一串格",
+      "controls": 3
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "mini-scratch",
+    "view": {
+      "title": "灵感积木 · 创意编程工作台",
+      "text": "✦\n灵感积木\n?\n↓\n↑\nYOUR LITTLE CREATIVE SPACE\nv0.5.0 简易版\n＋ 新作品\n积木盒\n运动\n外观\n声音\n事件\n控制\n检测\n运",
+      "controls": 104
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "logic-circuit",
+    "view": {
+      "title": "逻辑工坊 · NAND LAB",
+      "text": "⊼\n逻辑工坊\nNAND LAB / 001\n?\n全部导出\n备份\n全部导入\n封装为逻辑门\n元件库\n全部删除并导出\n◇ 默认存档\n▦ 我的世界模式\n▰ 多米诺骨牌模",
+      "controls": 155
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "traffic-planner",
+    "view": {
+      "title": "路流 FLOW — 交通规划沙盒",
+      "text": "路流 FLOW\n交通规划沙盒\n玩法指南\n?\n保存方案\n道路模式\n地铁模式\n两个工作台分别自动保存\n选择 / 查看\n绘制道路\n道路方向\n红绿灯\n车辆入口\n车辆出口",
+      "controls": 67
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "hex-cell-lab",
+    "view": {
+      "title": "元胞实验室 · CELL LAB",
+      "text": "元胞实验室\n↓ 导出\n↑ 导入\nA PLAYGROUND FOR EMERGENCE\n简单规则，无限可能。\n\n种下一颗元胞，看看它们会创造什么。\n\n等待生长\n7",
+      "controls": 38
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "langtons-ant",
+    "view": {
+      "title": "兰顿蚂蚁",
+      "text": "兰顿蚂蚁\n白格右转，黑格左转，翻色后前进。支持触摸编辑与本地自动存档。\n开始\n单步\n重置\n步数\n0\n黑色格子\n0\n位置\n0, 0\n方向\n上\n速度（每秒）60\n网",
+      "controls": 15
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "turbowarp-neural-network",
+    "view": {
+      "title": "神经网络实验室",
+      "text": "样本数\n3\n训练轮次\n2400\n均方误差\n0.004464\n2\n4.1081\n最近样本\n1 → 2\n状态\n预测完成；测试不会修改训练结果\n进度已自动保存在本机",
+      "controls": 3
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "lights-out-matrix",
+    "view": {
+      "title": "熄灯矩阵 · Lights Out",
+      "text": "数学实验室\nGF(2) · 模 2 运算\n\nLIGHTS OUT / 01\n\n把亮灯，化成解。\n\n设定灯光，用模 2 高斯消元找到一组全灭方案。\n\n棋盘边长 n",
+      "controls": 42
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "turbowarp-logic-lab",
+    "view": {
+      "title": "逻辑小实验室",
+      "text": "状态\n搭建：点空格放置；点输入开关切换 0/1\n进度已自动保存在本机",
+      "controls": 3
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "learning-machine",
+    "view": {
+      "title": "学习小机器 · 数字学习实验室",
+      "text": "学习小机器\nLEARNING MACHINE\n数字学习实验室\nEXPERIMENT 001\n把规律，教给它。\n\n你来举例，它来学习。给小机器一点提示，看看它能不",
+      "controls": 25
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "compass-polygon-studio",
+    "view": {
+      "title": "尺规工坊 · 正多边形",
+      "text": "尺规工坊\nEUCLIDEAN CONSTRUCTIONS\n作图原理 ↗\n一条半径，开始一场几何探索\n把一个圆，\n变成正多边形。\n\n给定圆心 O 和半径 OA。输",
+      "controls": 91
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "fourier-drawing-studio",
+    "view": {
+      "title": "傅里叶画室 · 旋转圆与参数矩阵",
+      "text": "◉\n傅里叶画室\n 一条线，无数种可能\nA LITTLE MATH. A LOT OF WONDER.\n让圆圈，画出你的想象。\n\n画一个图形，看看旋转的圆如何把它",
+      "controls": 62
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "ai-racing-lab",
+    "view": {
+      "title": "APEX · AI 赛车训练场",
+      "text": "A\nAPEX\nAI 赛车实验室\nVISION → Q-LEARNING → ACTION\n先看见，再学会驾驶。\n\n探测路边，观察出口方位，从每一次尝试中学习。\n",
+      "controls": 65
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "turbowarp-life-lab",
+    "view": {
+      "title": "生命规则实验室",
+      "text": "代数\n0\n规则\nS23/B3/C2\n活细胞\n5\n正在恢复作品…",
+      "controls": 3
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "turbowarp-turing-lab",
+    "view": {
+      "title": "图灵机实验室",
+      "text": "当前状态\nq0\n步数\n0\n读写头\n0\n空白\n_\n初始\nq0\n停机\nh\n规则表（下方按钮编辑）\n1\nq0,1->q0,1,R\n2\nq0,_->h,1,N\nleng",
+      "controls": 3
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "snake-speed",
+    "view": {
+      "title": "贪吃蛇 · Python 自动控制",
+      "text": "贪吃蛇\nPython 编程版 · v6\n用 Python，指挥小蛇。\n\n左上角出发，初始只有一格。点击「运行 Python」，程序会自己走，全程无需按键。\n\n✦",
+      "controls": 19
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "sokoban-ai-lab",
+    "view": {
+      "title": "推箱子实验室",
+      "text": "▦\n推箱子实验室\n套箱模式\nⓘ 使用说明\nSOKOBAN LAB\n推箱子实验室\n\n画一张地图，亲自挑战，再看看 AI 如何学会推箱子。\n\n关卡工作台\n无限地图 ",
+      "controls": 206
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "turbowarp-graph-lab",
+    "view": {
+      "title": "函数图形实验室",
+      "text": "提示\n正在编译并绘图…",
+      "controls": 2
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "fixed-point-workshop",
+    "view": {
+      "title": "定点数工坊",
+      "text": "定点数工坊\nFIXED POINT WORKSHOP\n关卡挑战\n自由搭建\n?\n玩法说明\n▦\n元件库\n运算节点\n+\n加法\n≪\n左移\n≫\n右移\n±\n正负判断\n×\n改",
+      "controls": 67
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "tape-language-lab",
+    "view": {
+      "title": "编程语言实验 · 纸带上的小宇宙",
+      "text": "[\nλ\n]\n编程语言实验\nTAPE LANGUAGE LAB\n导出实验\n导入\n\n一条纸带，几条指令，无限种可能。\n\n看看程序，如何一步步发生。\n\n用 BF、P′",
+      "controls": 45
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  },
+  {
+    "id": "pixel-frame",
+    "view": {
+      "title": "像素帧 · 像素画与动画编辑器",
+      "text": "像素帧\n新建\n打开\n导入视频\n保存项目\n像素挑战\n无限画布\n重置视角\n57%\nFRAME 01 / 04\nX 1 Y -1\n498 像素\n颜色\nHEX\nHSV\n",
+      "controls": 135
+    },
+    "missing": [],
+    "errors": [],
+    "external": []
+  }
+]
