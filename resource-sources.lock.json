@@ -83,6 +83,7 @@
       "displayName": "光学游戏",
       "repository": "https://github.com/xiaoxuhui/light_game.git",
       "revision": "85163534ccae2b023928c877e002581a8f35f0cb",
+        "resourceIntegration": "light-stars-persist-v1",
       "version": "1.2.1",
       "buildKind": "static",
       "entryPage": "index.html",

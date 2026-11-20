@@ -14,10 +14,10 @@
       "releaseNotes": "EML 函数结构与树形交互更新，继续保护旧版可读存档。"
     },
     "light": {
-      "contentCode": 2,
+      "contentCode": 3,
       "sourceRevision": "85163534ccae2b023928c877e002581a8f35f0cb",
       "storageContract": "light-baseline-v1",
-      "releaseNotes": "正式版本 1.2.1 的兼容资源更新，固定上游 85163534ccae2b023928c877e002581a8f35f0cb；沿用原存档格式与存储合同，完整MIT许可随包。"
+      "releaseNotes": "修复通关星数显示后未及时保存的问题；沿用原存档格式与存储合同，完整 MIT 许可随包。"
     },
     "turing": {
       "contentCode": 4,
