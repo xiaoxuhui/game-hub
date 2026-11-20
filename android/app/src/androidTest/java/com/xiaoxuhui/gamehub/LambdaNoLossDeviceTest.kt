@@ -4,6 +4,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.webkit.JavascriptInterface
 import androidx.test.platform.app.InstrumentationRegistry
 import org.json.JSONObject
 import org.junit.Assert.*
@@ -13,6 +14,7 @@ import java.io.ByteArrayInputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.UUID
 
 class LambdaNoLossDeviceTest {
     private val inst = InstrumentationRegistry.getInstrumentation()
@@ -25,14 +27,21 @@ class LambdaNoLossDeviceTest {
         assumeTrue("requires independently staged old and new Lambda resources", assets.containsAll(setOf("lambda-noloss-old.html", "lambda-noloss-new.html")))
         val old=inst.context.assets.open("lambda-noloss-old.html").use{it.readBytes()}
         val updated=inst.context.assets.open("lambda-noloss-new.html").use{it.readBytes()}
-        val url="https://${AssetAccessPolicy.hostFor("lambda-no-loss-fixture")}/runtime/test";val useNew=AtomicBoolean(false)
+        val fixtureId="lambda-noloss-"+UUID.randomUUID().toString().replace("-", "").take(12)
+        val url="https://${AssetAccessPolicy.hostFor(fixtureId)}/runtime/test";val useNew=AtomicBoolean(false)
+        val exported=CountDownLatch(1);var exportText=""
+        val bridge=object{@JavascriptInterface fun saveFile(name:String,text:String):Boolean{if(name=="lambda-all-local-storage.json"){exportText=text;exported.countDown()};return true}}
         var ready=CountDownLatch(1);lateinit var view:WebView
         inst.runOnMainSync{view=WebView(inst.targetContext).apply{
             settings.javaScriptEnabled=true;settings.domStorageEnabled=true;settings.blockNetworkLoads=true
+            addJavascriptInterface(bridge,"FakeBridge")
             webViewClient=object:WebViewClient(){
                 override fun shouldInterceptRequest(v:WebView,r:WebResourceRequest):WebResourceResponse =
                     if(r.url.toString()==url)WebResourceResponse("text/html","UTF-8",200,"OK",mapOf("Cache-Control" to "no-store"),ByteArrayInputStream(if(useNew.get())updated else old)) else GameContentResolver.blocked()
-                override fun onPageFinished(v:WebView,u:String){ready.countDown()}
+                override fun onPageFinished(v:WebView,u:String){
+                    val field=MainActivity::class.java.getDeclaredField("EXPORT_BRIDGE_JS").apply{isAccessible=true}
+                    v.evaluateJavascript((field.get(null) as String).replace("__BRIDGE__","FakeBridge")){ready.countDown()}
+                }
             };loadUrl(url)
         }}
         try{
@@ -46,6 +55,10 @@ class LambdaNoLossDeviceTest {
             val found=js(view,"Object.keys(localStorage).filter(k=>k.startsWith('lambda-hub-session-archive-v1.')).some(k=>Object.values(JSON.parse(localStorage.getItem(k)).storage).includes(${JSONObject.quote(raw)}))")
             assertEquals("earlier session lost", "true", found)
             assertEquals("true",js(view,"!![...document.querySelectorAll('button')].find(b=>b.textContent==='导出所有本机存档')"))
+            js(view,"[...document.querySelectorAll('button')].find(b=>b.textContent==='导出所有本机存档').click();true")
+            waitFor(exported);val storage=JSONObject(exportText).getJSONObject("storage")
+            val keys=storage.keys();var archiveFound=false;while(keys.hasNext())if(keys.next().startsWith("lambda-hub-session-archive-v1."))archiveFound=true
+            assertTrue("Android export omitted the preserved archive",archiveFound)
         }finally{inst.runOnMainSync{view.destroy()}}
     }
 }
