@@ -5,6 +5,7 @@ on:
       - 'examples/lambda-diagram-game/**'
       - 'examples/lambda-diagram-update-20261121/**'
       - 'examples/lambda-diagram-038-20261121/**'
+      - 'examples/lambda-diagram-039-20261121/**'
       - 'examples/lambda-preserve-20261121/**'
       - 'examples/lambda-roundtrip-20261121/**'
       - 'examples/lambda-recovery-20261121/**'
@@ -54,10 +55,10 @@ jobs:
       - run: node tests/lambda-manual-restore.browser.cjs
       - run: node tests/lambda-manual-restore.browser.cjs
         env:
-          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-038-20261121/lambda-lab.html
+          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-039-20261121/lambda-lab.html
       - run: node scripts/lambda-30-second-regression.cjs
         env:
-          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-038-20261121/lambda-lab.html
+          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-039-20261121/lambda-lab.html
       - run: node scripts/lambda-hall-browser.cjs
       - run: node scripts/lambda-no-loss-regression.cjs
         env:

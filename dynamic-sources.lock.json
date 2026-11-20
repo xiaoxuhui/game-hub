@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "dd98bbf5ceaaa162b4e9808941bc8228eec52bc9",
-      "directory": "examples/lambda-recovery-20261121",
-      "version": "0.3.8",
-      "contentCode": 16,
+      "revision": "aa2eb72798935dcfedd3728a0a49ec9ca9b07213",
+      "directory": "examples/lambda-diagram-039-20261121",
+      "version": "0.3.9",
+      "contentCode": 17,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "修复全量备份无法选择旧会话和较大备份无法导入的问题，保留保存前独立备份及 Lambda 0.3.8 的计算功能。"
+      "releaseNotes": "函数展开加入逐线动画：原线路平滑展开为内部结构，其余线路随布局移动缩放，回退反向收回。保留逐层展开、四种归约组合、保存前备份与全量存档导入导出修复。"
     },
     {
       "id": "red-green-puzzle",
