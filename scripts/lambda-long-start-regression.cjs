@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),{chromium}=require('playwright');
-const html=fs.readFileSync('examples/lambda-diagram-30s-20261120/lambda-lab.html');
+const html=fs.readFileSync(process.env.LAMBDA_HALL_HTML_PATH||'examples/lambda-diagram-30s-20261120/lambda-lab.html');
 const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/html; charset=utf-8'}).end(html));
-(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,...(process.platform==='win32'&&fs.existsSync('C:/Program Files/Google/Chrome/Application/chrome.exe')?{executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'}:{})});
  try{const ctx=await browser.newContext(),page=await ctx.newPage();await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await page.locator('#expression').fill('(λx.x x) (λx.x x)');await page.locator('#convert').click();await page.locator('#step').click();await page.waitForTimeout(500);
   const saved=await page.evaluate(()=>{for(const key of ['lambda-lab-hub-v4','lambda-lab-hub-v3']){const value=JSON.parse(localStorage.getItem(key));value.session.steps=300;delete value.session.paths;delete value.session.choices;localStorage.setItem(key,JSON.stringify(value));}return localStorage.getItem('lambda-lab-hub-v4')});

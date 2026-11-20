@@ -9,7 +9,7 @@ const html = readFileSync(new URL('../examples/lambda-diagram-game/lambda-lab.ht
 
 test('startup prepares a manual restore candidate without applying or replacing the saved session', () => {
   const fixedInput = execFileSync('git', ['show', 'ff17bc5306ad9c85f545db96ab74b15a090b98f2:examples/lambda-diagram-game/lambda-lab.html'], { maxBuffer: 2_000_000 }).toString('utf8');
-  assert.equal(refreshLambdaC5ModuleHtml(lambdaManualRestoreHtml(fixedInput)), html, 'committed resource must be the reproducible adaptation of its fixed input and reviewed C5 module');
+  assert.equal(refreshLambdaC5ModuleHtml(lambdaManualRestoreHtml(fixedInput)), refreshLambdaC5ModuleHtml(html), 'historical page keeps its fixed adaptation while both copies use the reviewed current storage module');
   const start = html.indexOf('function prepareManualRestore()');
   const end = html.indexOf("\n    $('function-form').addEventListener", start);
   assert.ok(start >= 0 && end > start);

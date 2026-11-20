@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),{chromium}=require('playwright');
-const html=fs.readFileSync('examples/lambda-diagram-30s-20261120/lambda-lab.html');
+const html=fs.readFileSync(process.env.LAMBDA_HALL_HTML_PATH||'examples/lambda-diagram-30s-20261120/lambda-lab.html');
 const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/html; charset=utf-8'}).end(html));
-(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,...(process.platform==='win32'&&fs.existsSync('C:/Program Files/Google/Chrome/Application/chrome.exe')?{executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'}:{})});
  try{const page=await browser.newPage({acceptDownloads:true});await page.goto(`http://127.0.0.1:${server.address().port}/`);
   assert.equal(await page.locator('#growth-window').inputValue(),'30000');
   assert.equal(await page.evaluate(()=>LambdaRunGuard.DEFAULT_MS),30000);

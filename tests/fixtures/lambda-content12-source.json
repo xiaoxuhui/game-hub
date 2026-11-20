@@ -1,0 +1,19 @@
+{
+  "id": "lambda-diagram-game",
+  "displayName": "Lambda 线路实验室",
+  "iconKind": "logic",
+  "available": true,
+  "repository": "https://github.com/xiaoxuhui/game-hub.git",
+  "revision": "8201a963268dcf8adb03d8d5dab698d4c1eb4c5d",
+  "directory": "examples/lambda-diagram-30s-20261120",
+  "version": "0.3.6",
+  "contentCode": 12,
+  "entryPage": "lambda-lab.html",
+  "storageContract": "lambda-diagram-game-dynamic-v1",
+  "files": [
+    "lambda-lab.html",
+    "LICENSE",
+    "upstream-source.json"
+  ],
+  "releaseNotes": "运行保护默认观察30秒，长历史不再因超过256步立即隔离；保护原始存档并允许恢复，启动中断后可导出原始存档。"
+}

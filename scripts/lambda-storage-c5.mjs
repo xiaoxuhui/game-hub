@@ -46,7 +46,7 @@ function oldCanonical(text, OldS) {
 
 export function lambdaC5Projection(text, CurrentS, OldS) {
   const full = CurrentS.decode(text);
-  const projected = JSON.parse(CurrentS.encode(full));
+  const projected = CurrentS.legacyMirror ? CurrentS.legacyMirror(full) : JSON.parse(CurrentS.encode(full));
   projected.completed = projected.completed.filter(id => id <= 5);
   if (projected.level > 4) {
     projected.mode = 'free';
