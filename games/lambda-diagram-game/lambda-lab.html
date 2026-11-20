@@ -3206,7 +3206,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
   function init(api) {
     const cancel=document.createElement('button');cancel.id='function-cancel';cancel.type='button';cancel.className='button';cancel.textContent='取消编辑';cancel.hidden=true;
     $('function-add').before(cancel);
-    let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,functionController=null,autosaveReady=false;
+    let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,functionController=null,autosaveReady=false,autosaveBlocked=false;
     function abortFunctionCompile(){functionController?.abort();functionController=null;}
     const feedback=(message,error=false)=>{$('save-feedback').hidden=false;$('save-feedback').textContent=message;$('save-feedback').classList.toggle('error',error);};
     function captured() {return {...api.capture(),version:2,savedAt:new Date().toISOString(),functions,functionDraft:{name:$('function-name').value,source:$('function-source').value,...(editing===null?{}:{editing})}};}
@@ -3224,10 +3224,10 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
     }
     function persist(explicit=false) {
       if(explicit===true)autosaveReady=true;
-      if(saveTimer){clearTimeout(saveTimer);saveTimer=null;}if(restoring||(!autosaveReady&&explicit!==true))return;
+      if(saveTimer){clearTimeout(saveTimer);saveTimer=null;}if(autosaveBlocked||restoring||(!autosaveReady&&explicit!==true))return;
       try{localStorage.setItem(AUTO,S.encode(captured()));storageStatus(true);}catch{storageStatus(false);}
     }
-    function queueSave(){autosaveReady=true;if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=null;persist();},180);}}
+    function queueSave(){if(autosaveBlocked)return;autosaveReady=true;if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=null;persist();},180);}}
     function renderLibrary() {
       $('function-count').textContent=`${functions.length} 个函数`;const list=$('function-list');list.replaceChildren();
       if(!functions.length){const p=document.createElement('p');p.className='function-empty';p.textContent='还没有自定义函数，先保存一个试试。';list.append(p);}
@@ -3254,6 +3254,19 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       try {functions=snapshot.functions;renderLibrary();api.apply(snapshot);$('function-name').value=snapshot.functionDraft.name;$('function-source').value=snapshot.functionDraft.source;editing=snapshot.functionDraft.editing??null;renderEditMode();$('function-error').hidden=true;}
       finally{restoring=false;}
     }
+    function restoreLatest() {
+      try {
+        const text=localStorage.getItem(AUTO);
+        if(text===null)return false;
+        const snapshot=decode(text);
+        apply(snapshot);autosaveReady=true;storageStatus(true);return true;
+      }catch(error){
+        autosaveBlocked=true;
+        feedback('最近现场无法读取，原始数据已保留，自动保存已暂停。请先导出备份：'+String(error?.message||error),true);
+        storageStatus(false);return false;
+      }
+    }
+
     function prepareManualRestore() {
       try {
         // Keep the local session available, but never replace the fresh page on startup.
@@ -3337,7 +3350,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       catch(e){feedback(`导入失败：${e.message}。当前现场未改变。`,true);}
     });
     window.addEventListener('pagehide',()=>{if(saveTimer){clearTimeout(saveTimer);persist();}});
-    return {expand:t=>L.expand(t,functions),encodingsFor:t=>L.encodingsFor(t,functions),persist,queueSave,prepareManualRestore};
+    return {expand:t=>L.expand(t,functions),encodingsFor:t=>L.encodingsFor(t,functions),persist,queueSave,prepareManualRestore,restoreLatest};
   }
   root.LambdaWorkspace={init};
 })(typeof globalThis!=='undefined'?globalThis:window);
@@ -4244,7 +4257,7 @@ return {captureLambdaC5Snapshot,inspectLambdaC5Storage,resolveLambdaC5Storage,cr
       const after=end<input.value.length&&/[A-Za-z0-9_']/.test(input.value[end])?' ':'';
       insert(before+name+after);
     }});
-  workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;
+  workspace.prepareManualRestore();if(!workspace.restoreLatest()){renderMode();convert();}lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;
 })();
 
 </script>

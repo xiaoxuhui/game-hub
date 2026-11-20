@@ -26,6 +26,8 @@
   /** 存档仓库。localStorage 不可用时自动降级为内存存档，游戏照常可玩。 */
   const store = storage.createStore();
 
+  const hubLevelKey="game-hub-web-latest-level-v1"; let hubLevelWritable=true;
+  function hubLevelWarning(text){let node=document.getElementById("hub-save-warning");if(!node){node=document.createElement("p");node.id="hub-save-warning";node.setAttribute("role","alert");document.body.prepend(node)}node.textContent=text;}
   const ERASER = "__eraser";
 
   /** 撤销栈上限。每个快照只是布局数组的浅拷贝，100 步既够用又不会无限吃内存。 */
@@ -821,6 +823,7 @@
     if (!level) return;
 
     state.levelId = id;
+    if(hubLevelWritable)try{localStorage.setItem(hubLevelKey,id)}catch{hubLevelWritable=false;hubLevelWarning("无法保存当前关卡，请导出工作台备份。");}
     // 回到某关时接着上次的布局继续 —— 自动存档的意义就在这儿
     state.placement = clonePlacement(storage.getBoard(store.data, id));
     state.selectedType = null;
@@ -1045,7 +1048,8 @@
   state.stars = store.data.stars;
 
   resize();
-  selectLevel(levels.LEVELS[0].id);
+  let hubLevel=levels.LEVELS[0].id;try{const saved=localStorage.getItem(hubLevelKey);if(saved!==null){if(!levels.getLevel(saved)){hubLevelWritable=false;hubLevelWarning("最近关卡无法恢复，原记录已保留。");}else hubLevel=saved;}}catch{hubLevelWritable=false;hubLevelWarning("无法读取当前关卡，请导出工作台备份。");}
+  selectLevel(hubLevel);
   start();
 
   globalThis.__lightGame = {

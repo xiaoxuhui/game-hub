@@ -4,7 +4,7 @@
     "v1": "10",
     "v2": "71"
   },
-  "storageScriptSha256": "2cc5604aa0de9edb95b70db57864596035ea427bfa290d5a66e9e396c928d0eb",
+  "storageScriptSha256": "5c6ae87b7987de41fc048e55a7788452a596d03768b3c0122ba822fece6297b7",
   "adapted": [
     {
       "id": "abelian-sandpile",
@@ -58,7 +58,7 @@
       "id": "lambda-diagram-game",
       "path": "lambda-lab.html",
       "sourceSha256": "aff46b1e1ad38822a547f5144c80923c779bb27658ffd3a9e07e0fc2f378f722",
-      "adaptedSha256": "6cd10c9f798244e3dd74c37f57ebd1eb9a52ad9a08f81a685f50cf06fd6ee1ec"
+      "adaptedSha256": "963bc8eaff7176efea54a509129f68ce15e470e0c7068fa1db2f64f560deaf4e"
     },
     {
       "id": "langtons-ant",
@@ -70,7 +70,7 @@
       "id": "learning-machine",
       "path": "index.html",
       "sourceSha256": "672294df95474e57052a0903423c4ab1dfce2a1c6f0984a5ac8f05da0a74dade",
-      "adaptedSha256": "1be77fd3c07d7b717834abe3cc11fba671734f6e9c81937e8edfaf8a30832dbf"
+      "adaptedSha256": "3cdca22efa31f43ef62fcce630276474e77bd348a415287d03cf98bdbc12a891"
     },
     {
       "id": "light",
@@ -82,7 +82,7 @@
       "id": "lights-out-matrix",
       "path": "index.html",
       "sourceSha256": "514304faabcff0b7fd01723f3aa529acc04732feb77afc7a40579babc57b8651",
-      "adaptedSha256": "76dda72cd101d0d1bb630ee5f51f1bb582a376eccb3badea0aa9225dd09820b2"
+      "adaptedSha256": "8d9b01b58248c30f7928c839feed1de883d48468822c2a6bdc34a9bb52fad4ca"
     },
     {
       "id": "logic-circuit",
@@ -197,6 +197,36 @@
       "path": "index.html",
       "sourceSha256": "98f0cc96bfa472eda9ada96e4e2324bbfc06b8b951a10ac0d40609367360f589",
       "adaptedSha256": "d7adcf0e0a17850430b240673623ce7f7aae0718a18b2e2744a63bd19e906061"
+    },
+    {
+      "id": "compass-polygon-studio",
+      "path": "app.js",
+      "sourceSha256": "db0a52b1231e71b5ad42a950921d6aa102f562ddef4ee5d0ecea821b4b994edc",
+      "adaptedSha256": "5192aa39e5119a9c9ce06f5ceda270239822c883cd9ceed2847294c155c5ac63"
+    },
+    {
+      "id": "learning-machine",
+      "path": "src/app.js",
+      "sourceSha256": "f8ed7a1b82b11b75fb2f3b2ba03c276c873b8ca902e702d6c7870e619c5db9cb",
+      "adaptedSha256": "aaa97575f935825f73b0784e93ddce992a748032ae6991962bdefede084cbeb1"
+    },
+    {
+      "id": "fourier-drawing-studio",
+      "path": "app.js",
+      "sourceSha256": "ccea8c1100f53daa29cdbbbe91f7e06d9b1a4b0b32f596becdfdf642c64cb53a",
+      "adaptedSha256": "69ac7a5ade78d0c4d202188a058ea18fab611efd37a5f9a7a914f7b57a30fa67"
+    },
+    {
+      "id": "conway",
+      "path": "scripts/app.js",
+      "sourceSha256": "4ceceb5c5bfe1ec70a9519941bc2e5b7309a05d9865d00bffc6117eda56a6de7",
+      "adaptedSha256": "d884151cef29a85b289a7631fa5072a982b8f2391b283573a09705f0ef02d7b4"
+    },
+    {
+      "id": "light",
+      "path": "scripts/app.js",
+      "sourceSha256": "50900439da27dad2faaef1ffabaa2e8c5461bf0c5aadf80f40014a40564e312b",
+      "adaptedSha256": "4618302ab2269992cc33609de6df03eadc0ef92b32a0cf498a47a240fcf2d277"
     }
   ]
 }

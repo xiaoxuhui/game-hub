@@ -1,0 +1,1621 @@
+{
+  "schemaVersion": 1,
+  "baseline": "bfb8b33b91ba1f436bab4eee979d0ae22e7098b9",
+  "files": [
+    {
+      "path": ".nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "client.js",
+      "bytes": 4275,
+      "sha256": "6ff2886dff8587594ae052b83113f3f3ea263e46bbaaf7a44aa446266ec5d1ea"
+    },
+    {
+      "path": "games.json",
+      "bytes": 4438,
+      "sha256": "74c306dcafc693add90588902a8a5ff8be74ff788e6ac00e58cd603509521508"
+    },
+    {
+      "path": "games/abelian-sandpile/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/abelian-sandpile/index.html",
+      "bytes": 8831,
+      "sha256": "04a3bd9bfc342f23597275f5a17bac19d87e65679054f1d2efc18695e848197e"
+    },
+    {
+      "path": "games/abelian-sandpile/src/app.js",
+      "bytes": 12173,
+      "sha256": "3bb89425876812e6d7431eb081fd1a97bc1846fdc133e9b31fac0ef96c874027"
+    },
+    {
+      "path": "games/abelian-sandpile/src/controller.js",
+      "bytes": 7025,
+      "sha256": "48c2ac512b08f97533657fcb34532c9fe006ea852e877dedae3b031519965ab1"
+    },
+    {
+      "path": "games/abelian-sandpile/src/domain/challenge.js",
+      "bytes": 6107,
+      "sha256": "fb6579f81ff70cbc6cabc2bf42518ec697b97ae6377a13746d1eba076cf32718"
+    },
+    {
+      "path": "games/abelian-sandpile/src/domain/lesson.js",
+      "bytes": 1658,
+      "sha256": "f88ce8caff2d517327c7bbd781ea7d3aa65e457c800aeb8cf9806399dfced957"
+    },
+    {
+      "path": "games/abelian-sandpile/src/domain/levels.js",
+      "bytes": 15686,
+      "sha256": "38ea5b0e5b0fa464406d5771dda66e020e8817aa9c878afaee4ac6ad7d9b87a3"
+    },
+    {
+      "path": "games/abelian-sandpile/src/domain/sandpile.js",
+      "bytes": 6616,
+      "sha256": "4000e592e117764789f9e3e1f2e718c3dbc762f74674cad5ad0c4aaec440cf2d"
+    },
+    {
+      "path": "games/abelian-sandpile/src/project-config.js",
+      "bytes": 202,
+      "sha256": "5c86a80b44d66e92815dd721e8640d330afcbdf678527b457770824b2ef1e761"
+    },
+    {
+      "path": "games/abelian-sandpile/src/renderer.js",
+      "bytes": 2394,
+      "sha256": "5077623f054eb7a982ccb194b438d456ceb5ff6ed1d0ce9d8faaf2a8c38ae836"
+    },
+    {
+      "path": "games/abelian-sandpile/src/storage/persistence.js",
+      "bytes": 3970,
+      "sha256": "32ba18569ecfbe90ea55787573effec0aae14c71d4449f4a9c91ef94ef8dd70f"
+    },
+    {
+      "path": "games/abelian-sandpile/src/styles.css",
+      "bytes": 8136,
+      "sha256": "2ad2da3272cf1bb42421bdf890d85f560f4119ffbe108685ac8e52f4ceb42c60"
+    },
+    {
+      "path": "games/abelian-sandpile/src/teaching.js",
+      "bytes": 3808,
+      "sha256": "783f014b9cd260a43621e4fe224528291c3c98aefafc23cb61dbef3ffc83bdaa"
+    },
+    {
+      "path": "games/abelian-sandpile/upstream-source.json",
+      "bytes": 4549,
+      "sha256": "41b84e879f3318c326844823010ac960f36cb048319cda8d3b8f910f77072ecb"
+    },
+    {
+      "path": "games/ai-racing-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/ai-racing-lab/app.js",
+      "bytes": 47088,
+      "sha256": "0a93a8b4032b4b9babd30a368cfa6c3a422e08cbfdf05285847701bd701f1e3c"
+    },
+    {
+      "path": "games/ai-racing-lab/editor.css",
+      "bytes": 2712,
+      "sha256": "37dd8a45d3045798cf6f5536fa627527df349c69832f538291e8805fdf6f526e"
+    },
+    {
+      "path": "games/ai-racing-lab/engine.js",
+      "bytes": 9364,
+      "sha256": "f5f7145f6f96a584c2e3568f48a8462bf9bc8b152354843e108915d473d8a9c2"
+    },
+    {
+      "path": "games/ai-racing-lab/fleet.js",
+      "bytes": 10287,
+      "sha256": "2d27993fba61cbb39641d4dc6ddcc8fe9897f4781e693af0c4cfb0823a6fe6a4"
+    },
+    {
+      "path": "games/ai-racing-lab/index.html",
+      "bytes": 21143,
+      "sha256": "951591578683f0e3faee5972bf159ca2753b010445b06a97628cafb53469c1f8"
+    },
+    {
+      "path": "games/ai-racing-lab/memory.js",
+      "bytes": 1151,
+      "sha256": "750556161a5586c450c69fde315ac14d7df51d793f2797c7dba121ed65ce8757"
+    },
+    {
+      "path": "games/ai-racing-lab/style.css",
+      "bytes": 15804,
+      "sha256": "3b174f38d0478eddede329be005e88f5da97b172ff4f91031e06dde78c05b984"
+    },
+    {
+      "path": "games/ai-racing-lab/vision.css",
+      "bytes": 7078,
+      "sha256": "3b200d51e58008d681e3f173095147caa0b2296f94be5b99b088b6acfcf42b6f"
+    },
+    {
+      "path": "games/ai-racing-lab/vision.js",
+      "bytes": 12098,
+      "sha256": "1e3e5caa00fb831be4da88336c6c6c82971b0a63f8a10b1678d8698b76e56fa6"
+    },
+    {
+      "path": "games/compass-polygon-studio/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/compass-polygon-studio/app.js",
+      "bytes": 17308,
+      "sha256": "5192aa39e5119a9c9ce06f5ceda270239822c883cd9ceed2847294c155c5ac63"
+    },
+    {
+      "path": "games/compass-polygon-studio/desmos.js",
+      "bytes": 4487,
+      "sha256": "9dae2cfd4622e4e810ac174e44734163451aa594ed3d84a781b273c6d680c1fc"
+    },
+    {
+      "path": "games/compass-polygon-studio/geometry.js",
+      "bytes": 15227,
+      "sha256": "3242872243b5538731c614b3eac1c0caef62cc5f4f89bd13fb7e469946a29033"
+    },
+    {
+      "path": "games/compass-polygon-studio/index.html",
+      "bytes": 10074,
+      "sha256": "b8c02340cc2fc7a1391d9086e13cafce0c46f12d387ce5c6ac9369b20637d808"
+    },
+    {
+      "path": "games/compass-polygon-studio/style.css",
+      "bytes": 16630,
+      "sha256": "3b3e0f42939bf6d781dd95c06036e058be3949673f5bb02b458e9eda4b663166"
+    },
+    {
+      "path": "games/conway/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/conway/hub-source-proof.json",
+      "bytes": 1698,
+      "sha256": "be8a53c5028d6fdf405f156bf28f18228aaf7e2008a1e644ff64deea2fa37004"
+    },
+    {
+      "path": "games/conway/index.html",
+      "bytes": 28104,
+      "sha256": "bfd31f9c3f635e0a2131828ec9073d5f3b39134d359860c10bbaeb218e478fc5"
+    },
+    {
+      "path": "games/conway/scripts/app.js",
+      "bytes": 68625,
+      "sha256": "d884151cef29a85b289a7631fa5072a982b8f2391b283573a09705f0ef02d7b4"
+    },
+    {
+      "path": "games/conway/scripts/dialogs.js",
+      "bytes": 48043,
+      "sha256": "598142d2423c091a66f696ef3de338782e49ef74350ce2b216b105978c63f93e"
+    },
+    {
+      "path": "games/conway/scripts/file-backup.js",
+      "bytes": 4040,
+      "sha256": "0862b59e5caa52af10b199fe9a54e7edda7d0c38bc44a4edade0ef8cfc053768"
+    },
+    {
+      "path": "games/conway/scripts/golly-import.js",
+      "bytes": 11169,
+      "sha256": "58fa9e727a4999c81b0d34ae43afaada0e1a6178ac9043aa77666c92146cacd4"
+    },
+    {
+      "path": "games/conway/scripts/hub-world-archive-ui.js",
+      "bytes": 8252,
+      "sha256": "d90c5ec205f929e8b3ae96d9f924f08dc44ac98bdd6c8523a41cf9090def2b17"
+    },
+    {
+      "path": "games/conway/scripts/hub-world-archive.js",
+      "bytes": 10484,
+      "sha256": "c0b4a54b0db2071c022bcfafb9e97b47fd39fdc3b1ba30fc1fd53bded43a400b"
+    },
+    {
+      "path": "games/conway/scripts/life-engine.js",
+      "bytes": 22904,
+      "sha256": "e9e17ca75577112e126baa0844eb0ed763e7121c3a64eb103aa4dab62e7888b3"
+    },
+    {
+      "path": "games/conway/scripts/life-stack-renderer.js",
+      "bytes": 7073,
+      "sha256": "0182097282410406810975dab9f0917d1c4c54e9cc661e93b4b3f2d0b659657e"
+    },
+    {
+      "path": "games/conway/scripts/life-stack.js",
+      "bytes": 10618,
+      "sha256": "4e53f8248cc656180e4f815cbdf8b60ea1bb3fb67c78b6dbaf557df767d7ec87"
+    },
+    {
+      "path": "games/conway/scripts/life-tiles.js",
+      "bytes": 16209,
+      "sha256": "e8ef8ca93e17fe28ce36ffe4e25ec41d13d1554c8b35558e8380faa43e71ff27"
+    },
+    {
+      "path": "games/conway/scripts/logic-code.js",
+      "bytes": 23669,
+      "sha256": "d21ade7e905770786d2eac884cb04f67b76e77b8e8a234511518e08952e85ea4"
+    },
+    {
+      "path": "games/conway/scripts/logic-compile.js",
+      "bytes": 47540,
+      "sha256": "4b92f4ff31a53184ed76e0c8c3d8ca75d49aaa41b154fcb81043561b3b362c2c"
+    },
+    {
+      "path": "games/conway/scripts/logic-expand.js",
+      "bytes": 6179,
+      "sha256": "86ed2f6169e4c6ed1176f03e789afb3d57ff672986fdec2ddbb6956409fcedcc"
+    },
+    {
+      "path": "games/conway/scripts/logic-function-library.js",
+      "bytes": 11280,
+      "sha256": "358bf696dcbdd0cf7cfc95ef9259c6df1ecf54bdff9da14befdecba6be05fa66"
+    },
+    {
+      "path": "games/conway/scripts/logic-inputs.js",
+      "bytes": 26847,
+      "sha256": "9530c16d57ce623a8f652ea9077009ce1aedcfffde7b807eab021a23235ebfb3"
+    },
+    {
+      "path": "games/conway/scripts/logic-layout.js",
+      "bytes": 2862,
+      "sha256": "91cfeafdcee4601e26176de6f64d3e6218b97229bb9368876379997044a3e005"
+    },
+    {
+      "path": "games/conway/scripts/logic-parse.js",
+      "bytes": 10373,
+      "sha256": "2d99622d25d2488c047342593a8d582c144079482646d6c8efa40c5b0006910b"
+    },
+    {
+      "path": "games/conway/scripts/logic-safety.js",
+      "bytes": 10788,
+      "sha256": "cf1ec623cf79afde2d2bbac7ca684cfd1c1c1b12ad030d8a1a563096112babff"
+    },
+    {
+      "path": "games/conway/scripts/pattern-library.js",
+      "bytes": 13177,
+      "sha256": "fbe924083f53efa4772d6bca815f13323ceb1e62eb002663f259bbc4a02687da"
+    },
+    {
+      "path": "games/conway/scripts/presets.js",
+      "bytes": 22716,
+      "sha256": "85ec6112ef879d31252d614389637e5eadfdbf66db7afa2051de1f95655bd3fb"
+    },
+    {
+      "path": "games/conway/scripts/record-import.js",
+      "bytes": 4317,
+      "sha256": "5336b9abde16095798d540d5f8d1ac7a2de84a05d34baf27128b5913f72b5818"
+    },
+    {
+      "path": "games/conway/scripts/renderer.js",
+      "bytes": 16050,
+      "sha256": "3eca56bf41de77b804bf5311cc3388be5ec3eb0c7b5ff71ca099bffe68d967d0"
+    },
+    {
+      "path": "games/conway/scripts/speed-control.js",
+      "bytes": 1819,
+      "sha256": "ff2ee252aaef3752d9fcd5139d362ba180cbb3b26bdfac3d897be49435c0b3c6"
+    },
+    {
+      "path": "games/conway/styles/main.css",
+      "bytes": 20388,
+      "sha256": "9388986451900b73217e40d70782b1adbcc1f14df316dfbcaa72203fcbb2bf11"
+    },
+    {
+      "path": "games/eml/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/eml/eml-workbench.html",
+      "bytes": 222148,
+      "sha256": "e7f146e11f3ea406006105d74bce0058a54a9aa89d69ee7638c412fa3bfbba17"
+    },
+    {
+      "path": "games/eml/hub-source-proof.json",
+      "bytes": 19646,
+      "sha256": "39a676e71af06744fab9d84518894a26883e76795300e351d5ce453164270853"
+    },
+    {
+      "path": "games/eml/hub/eml-format.js",
+      "bytes": 7254,
+      "sha256": "2127bdc900707cf6ddfa7db3391e4bed268d367e5e4b6bb3b88c9e73f0177731"
+    },
+    {
+      "path": "games/eml/hub/eml-legacy-reader.js",
+      "bytes": 25997,
+      "sha256": "f4831267f94c4414eaf7d0fce4d1682a4b34a4d58755711b1ea49a2fc13e52db"
+    },
+    {
+      "path": "games/eml/hub/eml-preservation.js",
+      "bytes": 13865,
+      "sha256": "b93779b15692956a661d3fd4321de31eb14f8f50ad99eb399cf08907c17c53c1"
+    },
+    {
+      "path": "games/eml/hub/eml-ui.js",
+      "bytes": 13296,
+      "sha256": "61997f94e0fdcb45a81bf54993ea1dedfdb94a18106df5a8ec13a129eb3d8fe0"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_AMS-Regular.woff2",
+      "bytes": 28076,
+      "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Caligraphic-Bold.woff2",
+      "bytes": 6912,
+      "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Caligraphic-Regular.woff2",
+      "bytes": 6908,
+      "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Fraktur-Bold.woff2",
+      "bytes": 11348,
+      "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Fraktur-Regular.woff2",
+      "bytes": 11316,
+      "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Main-Bold.woff2",
+      "bytes": 25324,
+      "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Main-BoldItalic.woff2",
+      "bytes": 16780,
+      "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Main-Italic.woff2",
+      "bytes": 16988,
+      "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Main-Regular.woff2",
+      "bytes": 26272,
+      "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Math-BoldItalic.woff2",
+      "bytes": 16400,
+      "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Math-Italic.woff2",
+      "bytes": 16440,
+      "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_SansSerif-Bold.woff2",
+      "bytes": 12216,
+      "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_SansSerif-Italic.woff2",
+      "bytes": 12028,
+      "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_SansSerif-Regular.woff2",
+      "bytes": 10344,
+      "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Script-Regular.woff2",
+      "bytes": 9644,
+      "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Size1-Regular.woff2",
+      "bytes": 5468,
+      "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Size2-Regular.woff2",
+      "bytes": 5208,
+      "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Size3-Regular.woff2",
+      "bytes": 3624,
+      "sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Size4-Regular.woff2",
+      "bytes": 4928,
+      "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+    },
+    {
+      "path": "games/eml/katex/fonts/KaTeX_Typewriter-Regular.woff2",
+      "bytes": 13568,
+      "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+    },
+    {
+      "path": "games/eml/katex/katex.js",
+      "bytes": 271963,
+      "sha256": "2137463f72df91421fa3367bc2e1d2ad1e588fc1bbcc48f6f1fd6098554aa62c"
+    },
+    {
+      "path": "games/eml/katex/katex.min.css",
+      "bytes": 21218,
+      "sha256": "0c7351312859d2b8a4ac4d8851f97ca238083948d3305f2842212cc3d89d8757"
+    },
+    {
+      "path": "games/eml/licenses/katex-0.16.21.MIT.txt",
+      "bytes": 1107,
+      "sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    },
+    {
+      "path": "games/eml/licenses/katex-fonts.MIT.txt",
+      "bytes": 1079,
+      "sha256": "a7bd44abd8419bf78185be51f34216356af1adb0806ce39d6a9ca0940bd49b70"
+    },
+    {
+      "path": "games/fixed-point-workshop/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/fixed-point-workshop/app.js",
+      "bytes": 39758,
+      "sha256": "4ab250d747539b28f3bbfaae889f1d06198394f31711afe78536d0956af83f86"
+    },
+    {
+      "path": "games/fixed-point-workshop/core.js",
+      "bytes": 8206,
+      "sha256": "8eff21deef7ce5ec84ad468d40a0390df9b61848112ab75f85eab7b901f92e9d"
+    },
+    {
+      "path": "games/fixed-point-workshop/index.html",
+      "bytes": 10402,
+      "sha256": "ecc49b28207fa888bafbcfdf2a2a99a6ab26ee8caf14392b274628ee08fab3e6"
+    },
+    {
+      "path": "games/fixed-point-workshop/style.css",
+      "bytes": 18890,
+      "sha256": "1b4c18a073d17bbdde0fc1d87a092eb7a875dbf904d8d66d4ab74f8a03f49528"
+    },
+    {
+      "path": "games/fourier-drawing-studio/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/fourier-drawing-studio/app.js",
+      "bytes": 29682,
+      "sha256": "69ac7a5ade78d0c4d202188a058ea18fab611efd37a5f9a7a914f7b57a30fa67"
+    },
+    {
+      "path": "games/fourier-drawing-studio/contours.js",
+      "bytes": 3234,
+      "sha256": "b182d2c7e2fa7b662000f6a4f8f3882ec79038f95bf4c8a4a0ad4d4837711186"
+    },
+    {
+      "path": "games/fourier-drawing-studio/fourier.js",
+      "bytes": 7986,
+      "sha256": "c9a7f62f20c5bc6dde073139430b733e78d4cfe45e53ba35894641636e351d41"
+    },
+    {
+      "path": "games/fourier-drawing-studio/index.html",
+      "bytes": 16406,
+      "sha256": "83b31ca00678311eaeb3b36fba16221b6e95349b92219912be3347b9c207a8a3"
+    },
+    {
+      "path": "games/fourier-drawing-studio/style.css",
+      "bytes": 25339,
+      "sha256": "db3c42e729cab8a22301daf7ad052f185c4f7085c395ec6507006a1005428b39"
+    },
+    {
+      "path": "games/hex-cell-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/hex-cell-lab/index.html",
+      "bytes": 11254,
+      "sha256": "0b67fbdbe671dd4922b7ce56f1884db907559ad5bd691fb2ad826c3a4cf6da50"
+    },
+    {
+      "path": "games/hex-cell-lab/src/app.js",
+      "bytes": 17305,
+      "sha256": "af6f9fe995e4f11d819c0cd864f0e493a23a0471e85a0cd168aedd4632ed88c5"
+    },
+    {
+      "path": "games/hex-cell-lab/src/core.js",
+      "bytes": 5840,
+      "sha256": "267c39ee747f6dc402ea2d1ad7ce104136f30a960567ff33bbedc35b312c0b10"
+    },
+    {
+      "path": "games/hex-cell-lab/src/expression.js",
+      "bytes": 5224,
+      "sha256": "7443befffdc4e25fe3c624129a765cd2e291ee2158166ec44e07e595ddc11c41"
+    },
+    {
+      "path": "games/hex-cell-lab/src/presets.js",
+      "bytes": 1532,
+      "sha256": "c7ca83e681119fb9f67df97860d6c15fa117b718dce8a5402a2a6d2c0f4a70ca"
+    },
+    {
+      "path": "games/hex-cell-lab/styles/main.css",
+      "bytes": 13576,
+      "sha256": "ebc28cf4725003955a9e3a634bfff42e778a27347424319a48e3e8623c1a6d84"
+    },
+    {
+      "path": "games/hex-cell-lab/upstream-source.json",
+      "bytes": 3711,
+      "sha256": "ea267e5a36f2a1476a8bd24f28f2fc8b2728d0c835a777e0d75d482864553903"
+    },
+    {
+      "path": "games/hex-cell-lab/vendor/jsep-1.4.0/LICENSE",
+      "bytes": 1093,
+      "sha256": "4a4cffde4afd302689cd6aad9b05463a798d3dbe4cb2488bda45af1977affe33"
+    },
+    {
+      "path": "games/hex-cell-lab/vendor/jsep-1.4.0/dist/iife/jsep.iife.js",
+      "bytes": 29241,
+      "sha256": "d1f2976f2a18c7bddf13b11da1d18e11cc16c46ce79bae7a2db223acac853514"
+    },
+    {
+      "path": "games/lambda-diagram-game/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/lambda-diagram-game/lambda-lab.html",
+      "bytes": 328613,
+      "sha256": "963bc8eaff7176efea54a509129f68ce15e470e0c7068fa1db2f64f560deaf4e"
+    },
+    {
+      "path": "games/lambda-diagram-game/upstream-source.json",
+      "bytes": 952,
+      "sha256": "828580505717284f853f3ec5f3c07751285875a6ac83e8420d38a0afa13fb5b4"
+    },
+    {
+      "path": "games/langtons-ant/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/langtons-ant/index.html",
+      "bytes": 3750,
+      "sha256": "eee5835a22dbf65bbdf1743b08d7372f4f8468bfae20af6bf9c10fca7b456842"
+    },
+    {
+      "path": "games/langtons-ant/src/app.js",
+      "bytes": 8033,
+      "sha256": "c46fcc2ab961ec500d42b95fd183ba206297764b13501a4a8f9deabd2a91f5fe"
+    },
+    {
+      "path": "games/langtons-ant/src/core.js",
+      "bytes": 1427,
+      "sha256": "306f18ea1fad7c167eea844aa080cf0c7c16e2ed86d18ec424c2367dcba5a3dd"
+    },
+    {
+      "path": "games/langtons-ant/src/interaction.js",
+      "bytes": 597,
+      "sha256": "8bfe8ed01b65b967ba2e928872df5914329635b9afcddebb32d0dd75bed6d437"
+    },
+    {
+      "path": "games/langtons-ant/src/renderer.js",
+      "bytes": 1982,
+      "sha256": "4d31b48c5d9e66b202c99cacdc7f641ca11b5e1a7ae96c62ecb3f9caf4845ea2"
+    },
+    {
+      "path": "games/langtons-ant/src/storage.js",
+      "bytes": 2440,
+      "sha256": "b241429c570541de8ee6116ea11abcff75024644efa66765ccb488ab1ed458cb"
+    },
+    {
+      "path": "games/langtons-ant/styles.css",
+      "bytes": 6882,
+      "sha256": "df54cd736823666604de05778e3ba74fe344bc8538bbf35c9f7a83475f313522"
+    },
+    {
+      "path": "games/learning-machine/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/learning-machine/index.html",
+      "bytes": 12724,
+      "sha256": "3cdca22efa31f43ef62fcce630276474e77bd348a415287d03cf98bdbc12a891"
+    },
+    {
+      "path": "games/learning-machine/src/app.js",
+      "bytes": 25888,
+      "sha256": "aaa97575f935825f73b0784e93ddce992a748032ae6991962bdefede084cbeb1"
+    },
+    {
+      "path": "games/learning-machine/src/icon.svg",
+      "bytes": 330,
+      "sha256": "5ab94f470806aebed2db397529ba9a2cd5aed26a62b6d183367a03ed2b85457a"
+    },
+    {
+      "path": "games/learning-machine/src/model.js",
+      "bytes": 15939,
+      "sha256": "c614b8397ff3da434cddf447c6650a8a4aa0187fa9a5e25fe3297b70c2e6e2a7"
+    },
+    {
+      "path": "games/learning-machine/src/styles.css",
+      "bytes": 25402,
+      "sha256": "e7ff52162e721bdc239ccf1d7cc9957b9c45b1da75d38206084b6b2e13fcf2fe"
+    },
+    {
+      "path": "games/learning-machine/src/visuals.js",
+      "bytes": 9365,
+      "sha256": "cd330940cca903f59595e92fe58ebe94923050a3b3643e6f388c827cfc9666f5"
+    },
+    {
+      "path": "games/light/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/light/index.html",
+      "bytes": 3620,
+      "sha256": "fff25f2b5a34b7322d573e66bc99fb365e71df28ceb5a658950e2a31c2ee9f69"
+    },
+    {
+      "path": "games/light/scripts/app.js",
+      "bytes": 32069,
+      "sha256": "4618302ab2269992cc33609de6df03eadc0ef92b32a0cf498a47a240fcf2d277"
+    },
+    {
+      "path": "games/light/scripts/levels.js",
+      "bytes": 21309,
+      "sha256": "3752f90d97e743f197f266eded44bb73e90ebc171b78963a3d58549c72d42fc7"
+    },
+    {
+      "path": "games/light/scripts/light-core.js",
+      "bytes": 11327,
+      "sha256": "71e8992db1e79ddb0f34bf101f60b60acd2e1d8cd1d2426ed21b7ffc5eef6f80"
+    },
+    {
+      "path": "games/light/scripts/light-engine.js",
+      "bytes": 7234,
+      "sha256": "96374b9174c5d6674157251e2a0394d6f0ea5f3c568ab69a2af580d41ec11f0f"
+    },
+    {
+      "path": "games/light/scripts/renderer.js",
+      "bytes": 14985,
+      "sha256": "dd93a2a0a3184e472934e268651b59156fea443ba37dccd279d0b7e755aa232a"
+    },
+    {
+      "path": "games/light/scripts/storage.js",
+      "bytes": 14755,
+      "sha256": "d1ca8a8a08cdd8773c97cb709674d55895e6d597542897b87825c68bc2e3b89e"
+    },
+    {
+      "path": "games/light/styles/main.css",
+      "bytes": 9229,
+      "sha256": "ed89d9eadf9eb42fdb536f6fe1cf3366226b5aed77397d81279bf645b4ab51b4"
+    },
+    {
+      "path": "games/lights-out-matrix/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/lights-out-matrix/index.html",
+      "bytes": 52398,
+      "sha256": "8d9b01b58248c30f7928c839feed1de883d48468822c2a6bdc34a9bb52fad4ca"
+    },
+    {
+      "path": "games/lights-out-matrix/upstream-source.json",
+      "bytes": 531,
+      "sha256": "713b455746ceb4e16c3a4b546aa6f75ec1d0017c7a0489235286e116a7a96ea3"
+    },
+    {
+      "path": "games/logic-circuit/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/logic-circuit/index.html",
+      "bytes": 34704,
+      "sha256": "36b84609bd867133af250f63dea958df5a04e6c28f323f4c7ca65257ca0f63ca"
+    },
+    {
+      "path": "games/logic-circuit/src/app.js",
+      "bytes": 115873,
+      "sha256": "000b7374727df3366811aad746b894106b12f61d5206d524f734f927859b8e8b"
+    },
+    {
+      "path": "games/logic-circuit/src/conway-exchange.js",
+      "bytes": 11062,
+      "sha256": "ca0090e8f6d4547790b835339dc039fc627716292f01c5114285114c57b17518"
+    },
+    {
+      "path": "games/logic-circuit/src/conway-life-view.js",
+      "bytes": 8262,
+      "sha256": "4d3adb16b17bd1fc9f2053c90fc1ac38a3776448c57ba9f4d78836769f513045"
+    },
+    {
+      "path": "games/logic-circuit/src/conway-life-worker.js",
+      "bytes": 3274,
+      "sha256": "236778372b6986bcad7739928a457d72438b57955432f241b42c5465782b3927"
+    },
+    {
+      "path": "games/logic-circuit/src/conway-life.js",
+      "bytes": 7520,
+      "sha256": "90c49861e71f59f8bb381519df99cba4a9fb0e605153977cd4428fdd728adee8"
+    },
+    {
+      "path": "games/logic-circuit/src/core.js",
+      "bytes": 61632,
+      "sha256": "a4f61b222a8ceaaf0d06e70f64cd3f0df594d1489061cd639ebaab440ea969c8"
+    },
+    {
+      "path": "games/logic-circuit/src/domino-model.js",
+      "bytes": 58061,
+      "sha256": "f97a3c24a5e3dbedbfd886d799c4d4460941cf7ffff861964ba2697ed3106bb9"
+    },
+    {
+      "path": "games/logic-circuit/src/domino-view.js",
+      "bytes": 16271,
+      "sha256": "cb5786890893458f7cb30263e5f46c69e0041ff241c0cb7000bf0b4fc72cb3b3"
+    },
+    {
+      "path": "games/logic-circuit/src/expanded.js",
+      "bytes": 28160,
+      "sha256": "ef07a1b82af17824fd0bdef9fe1f6293c4c18ae98b767a126994a4c84888c7bd"
+    },
+    {
+      "path": "games/logic-circuit/src/golly-export.js",
+      "bytes": 21624,
+      "sha256": "dd807c58a532859d2c639454ef1cc99a0f4c14408dc2325a94f29987c007bdbf"
+    },
+    {
+      "path": "games/logic-circuit/src/golly-timed.js",
+      "bytes": 10592,
+      "sha256": "a54cd62807252fc9d459ac7e679d80003b7088006012c0cbd89b8a2db46305b1"
+    },
+    {
+      "path": "games/logic-circuit/src/minecraft-model.js",
+      "bytes": 65747,
+      "sha256": "7d663e34c3b4312083a2ea064a498b45adde604eb4bb1e7f20f70c45c11b029e"
+    },
+    {
+      "path": "games/logic-circuit/src/minecraft-redstone.js",
+      "bytes": 9972,
+      "sha256": "5bffde45b7bdce5732c1502d572e7d1686e052ba6c22ecc4ac40e9f7abee6bb9"
+    },
+    {
+      "path": "games/logic-circuit/src/minecraft-view.js",
+      "bytes": 32053,
+      "sha256": "c0df73b7fcc81d5ab96423451c5783265a5483794539e415089711714604a93f"
+    },
+    {
+      "path": "games/logic-circuit/src/presets.js",
+      "bytes": 16942,
+      "sha256": "f435a9c86cf1d21bd90d4682d548e30ceb683c3b02fed938d73b52b5c52b804d"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/THREE-LICENSE.txt",
+      "bytes": 1081,
+      "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/conway/logic-expand.js",
+      "bytes": 7357,
+      "sha256": "1e37947625a6e2d6f5b5ca6dc25e66d6104e35ce97baef44ae80ac493298532a"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/conway/logic-function-library.js",
+      "bytes": 12468,
+      "sha256": "2e76474e6fb53ee52628e62bd1b32078a305969d36380f42943696d49c6048a5"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/conway/logic-parse.js",
+      "bytes": 11550,
+      "sha256": "c689bae2ab3c2e6499cab7cfd55ec1a78742e585481faf1335929d4035445935"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/life-tiles.js",
+      "bytes": 55298,
+      "sha256": "f7d8626f6fe28ae5192fb46fd0a94ef1e5631e918aa30c9416e00292f0450f7f"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/life-timed-tiles.js",
+      "bytes": 27566,
+      "sha256": "6cb65694dc2e6a41356e42db67a38031ec5ba3913fc1a569770a0414076c6a1b"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/three.min.js",
+      "bytes": 669884,
+      "sha256": "170c6789f43217c96b3170f4b42fafe135de7f7cd48497a4218f9757ee1d49fa"
+    },
+    {
+      "path": "games/logic-circuit/src/vendor/three.provenance.json",
+      "bytes": 332,
+      "sha256": "25469667df31f9eb5be4f32c6656679e0e91e57cb5fa5b4c899a5e02f7807ec8"
+    },
+    {
+      "path": "games/logic-circuit/src/wireworld-compile.js",
+      "bytes": 22727,
+      "sha256": "e98f9b6ce86c552f7b7c596f62a81b9f014bba1e4790ca02409b68d3a632dfe2"
+    },
+    {
+      "path": "games/logic-circuit/src/wireworld-model.js",
+      "bytes": 12010,
+      "sha256": "3d32bcf4fa2d9438084215b486ee2b0d0fd24dce75ccc91cb98ab5ca1af4a304"
+    },
+    {
+      "path": "games/logic-circuit/src/wireworld-view.js",
+      "bytes": 19680,
+      "sha256": "0fb989563cea12d148d64e89e9185fad1f45439bd808300097b69e56c30158df"
+    },
+    {
+      "path": "games/logic-circuit/src/wireworld-worker.js",
+      "bytes": 259,
+      "sha256": "47da99aa598416bac5b4b6a4017143c329275e5c5e88e9ef91ee00a4ab2323f6"
+    },
+    {
+      "path": "games/logic-circuit/styles.css",
+      "bytes": 37461,
+      "sha256": "78116244f0dcf5d013ea74ebd5baee4e4d27f8b71d7ff31bb212a1ce37603c63"
+    },
+    {
+      "path": "games/memory-demo/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/memory-demo/app.js",
+      "bytes": 3739,
+      "sha256": "87fc6fcd09d131d5bc9274f1924cc6f3c1731bb013f1a16e018de5b0c5038734"
+    },
+    {
+      "path": "games/memory-demo/core.js",
+      "bytes": 2550,
+      "sha256": "cb22b3116f8735b4813ca89eadc2553e00203cb4aa53381fd5c44a19223946eb"
+    },
+    {
+      "path": "games/memory-demo/index.html",
+      "bytes": 955,
+      "sha256": "777707bcaed9fc38eecc571f280b68d8495f6ba5dd7481914941c6d54e20ad88"
+    },
+    {
+      "path": "games/memory-demo/style.css",
+      "bytes": 814,
+      "sha256": "dae57971b2860008725be78e54a655c7a19f6fe52620ea9977bf385ebb80cfa4"
+    },
+    {
+      "path": "games/mini-scratch/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/mini-scratch/index.html",
+      "bytes": 12380,
+      "sha256": "08873d9481a1b832c1e2b7990874c1469ff569fb4756496ca3e2abd75f57d5f0"
+    },
+    {
+      "path": "games/mini-scratch/play.html",
+      "bytes": 155766,
+      "sha256": "98182dc7c8f646cbf7f7c1d00380f66685a94b829406f95f3d0ef813ed725c14"
+    },
+    {
+      "path": "games/mini-scratch/src/app.js",
+      "bytes": 13872,
+      "sha256": "a33b98ba79d0d5a88fbfc5ea31305bd0cd7eea1197d90ad5e4266777473b3dec"
+    },
+    {
+      "path": "games/mini-scratch/src/asset-editor.js",
+      "bytes": 11206,
+      "sha256": "cfd6c31393e273fe0f91ae80975560d6a10c41d38bb5d94f0bf26f644e243ce3"
+    },
+    {
+      "path": "games/mini-scratch/src/assets.js",
+      "bytes": 2858,
+      "sha256": "2cebcbff461b4d598818ec45914841fa745589814ebd043fe24a02098b465e79"
+    },
+    {
+      "path": "games/mini-scratch/src/audio.js",
+      "bytes": 2698,
+      "sha256": "d047a1d1a3e4bc59790a2cbf987bb6227fcb9f24a25faf9ac751a6f228f13232"
+    },
+    {
+      "path": "games/mini-scratch/src/blocks.js",
+      "bytes": 7920,
+      "sha256": "bcb8bba0c7755f7accd342fa14f736b867f964c046096cce521353f3ec6e22f3"
+    },
+    {
+      "path": "games/mini-scratch/src/core.js",
+      "bytes": 320,
+      "sha256": "73755eeb3c77a111c95fabdaa714fa0e64162fefba3fb6995d5420b12b81a3cb"
+    },
+    {
+      "path": "games/mini-scratch/src/editor.js",
+      "bytes": 25040,
+      "sha256": "fc7cbf34ec21bad971117f15c63212fa0c39beff84f06350c4198a6f6d863a1b"
+    },
+    {
+      "path": "games/mini-scratch/src/events.js",
+      "bytes": 721,
+      "sha256": "653291794469c74e2ad506b64288c326f3c24d93a4439f2bceb4b07af6a1d7cc"
+    },
+    {
+      "path": "games/mini-scratch/src/expressions.js",
+      "bytes": 3782,
+      "sha256": "e75d4411c2c0cebe86a5bf4c1abc192867128cf1f508cf20a5d46eae3a73baba"
+    },
+    {
+      "path": "games/mini-scratch/src/list-ui.js",
+      "bytes": 7756,
+      "sha256": "c800aebc22747ee67cc781d1765728ee2535a259515480b0d6d122604a48ee44"
+    },
+    {
+      "path": "games/mini-scratch/src/lists.js",
+      "bytes": 2309,
+      "sha256": "e58af6d42516aabd76396c806bbb075dfdd34fe30adc2336190065f209dcf3c2"
+    },
+    {
+      "path": "games/mini-scratch/src/persistence.js",
+      "bytes": 1549,
+      "sha256": "98191c1b2b764dbd1b51321bad1c322978f2d080a061361e7469b83656409d47"
+    },
+    {
+      "path": "games/mini-scratch/src/procedures.js",
+      "bytes": 3905,
+      "sha256": "81d26a61944c8f8237c1227c1c688687a67bc8559600052b16c28f9c968cacd7"
+    },
+    {
+      "path": "games/mini-scratch/src/project.js",
+      "bytes": 8849,
+      "sha256": "1d5739e136ec8f4e1f2c790c052391b4a8c379889114079809786c03c9947691"
+    },
+    {
+      "path": "games/mini-scratch/src/recorder.js",
+      "bytes": 2337,
+      "sha256": "d0ac5a42daf67229b6271da8a2949ed7aa10277482a993fcb6023e769b433154"
+    },
+    {
+      "path": "games/mini-scratch/src/runtime.js",
+      "bytes": 9781,
+      "sha256": "8ed3b53d0fad5440fce102e1ef03a98b4686008c1c276eb990c1d29361c5c7de"
+    },
+    {
+      "path": "games/mini-scratch/src/sprites.js",
+      "bytes": 1850,
+      "sha256": "f534d58c66ce786a1bf2ba5283c8d8e9f284a454e6fb9858c6f25a67f19159a7"
+    },
+    {
+      "path": "games/mini-scratch/src/style.css",
+      "bytes": 34854,
+      "sha256": "1590820cb76d0b0dde53d09c65c1aa231b4e9b9f4fd7882734224d1ad8e15013"
+    },
+    {
+      "path": "games/pixel-frame/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/pixel-frame/challenge.js",
+      "bytes": 2689,
+      "sha256": "2bde83a64918316c1501abffc36aadcff8d3aa451679ea5949f7ef7173887d6a"
+    },
+    {
+      "path": "games/pixel-frame/editor.js",
+      "bytes": 62287,
+      "sha256": "89ce14365d7c847f546d86f11165f66fa8821e197003c05aa444ff99cf6667a5"
+    },
+    {
+      "path": "games/pixel-frame/index.html",
+      "bytes": 11951,
+      "sha256": "41189c3c5dcd8324fff7851c9b537f9ce413f1d4807423a6290567ae37660013"
+    },
+    {
+      "path": "games/pixel-frame/lambda/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/pixel-frame/lambda/core.js",
+      "bytes": 16668,
+      "sha256": "199bee38511ea624b24e160ff472f6c8809eea1b543179a0ef1508f6986ca0ca"
+    },
+    {
+      "path": "games/pixel-frame/lambda/tromp.js",
+      "bytes": 16882,
+      "sha256": "a5854611989f1924a7d1f79420dd0297a6052d5d1b140fbcb48541388e047728"
+    },
+    {
+      "path": "games/pixel-frame/style.css",
+      "bytes": 13501,
+      "sha256": "edac413b546bf21fbf9ba7f24246b1ec692503dcec065e6c9fbc7e283b76e186"
+    },
+    {
+      "path": "games/red-green-puzzle/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/red-green-puzzle/app.js",
+      "bytes": 3327,
+      "sha256": "52270af6603fcaa9d6290e3d587a37517e62c6b66e806ca92f8c6d2c0435ee59"
+    },
+    {
+      "path": "games/red-green-puzzle/core.js",
+      "bytes": 1486,
+      "sha256": "b6103520dca3c91f8af2d596e47e028da4d6421c2500ffbc32c68a3fa778a477"
+    },
+    {
+      "path": "games/red-green-puzzle/index.html",
+      "bytes": 6927,
+      "sha256": "1cef88f8f67560204442cc33660db7d7ccc79659067889d4eac8b4d7a51998f9"
+    },
+    {
+      "path": "games/red-green-puzzle/upstream-source.json",
+      "bytes": 1408,
+      "sha256": "b8918cdcacfb378543e63643d0bf07a15592fa478b86c6c880c94f08a0783ee9"
+    },
+    {
+      "path": "games/snake-speed/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/snake-speed/game.js",
+      "bytes": 15552,
+      "sha256": "fe520a93bdacf4fd663928d7ebdba09269e9a3b7a99fb65a2bf9fbdfdefed43e"
+    },
+    {
+      "path": "games/snake-speed/index.html",
+      "bytes": 17311,
+      "sha256": "d680a6ce26495e56729174d9444711cda9d109d17d50af51498f67c242755ed2"
+    },
+    {
+      "path": "games/snake-speed/pyodide/LICENSE.txt",
+      "bytes": 16725,
+      "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
+    },
+    {
+      "path": "games/snake-speed/pyodide/PYTHON-LICENSE.txt",
+      "bytes": 13804,
+      "sha256": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231"
+    },
+    {
+      "path": "games/snake-speed/pyodide/pydoc_data-1.0.0-py2.py3-none-any.whl",
+      "bytes": 162996,
+      "sha256": "1f9ad22a0cb2a2d6ef8ca2ca171dd4264b747d82fc4abd51b7c59631eb80c19f"
+    },
+    {
+      "path": "games/snake-speed/pyodide/pyodide-lock.json",
+      "bytes": 119077,
+      "sha256": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+    },
+    {
+      "path": "games/snake-speed/pyodide/pyodide.asm.js",
+      "bytes": 1250344,
+      "sha256": "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635"
+    },
+    {
+      "path": "games/snake-speed/pyodide/pyodide.asm.wasm",
+      "bytes": 9598218,
+      "sha256": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6"
+    },
+    {
+      "path": "games/snake-speed/pyodide/pyodide.js",
+      "bytes": 17930,
+      "sha256": "2d877cf83d00b8be1d2d7692fbc862601678f9d5511b9bbce897209505308eda"
+    },
+    {
+      "path": "games/snake-speed/pyodide/python_stdlib.zip",
+      "bytes": 2545637,
+      "sha256": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a"
+    },
+    {
+      "path": "games/snake-speed/python-worker.js",
+      "bytes": 6265,
+      "sha256": "561b2f279a75b993d2f43945fb7e3458f97da955fc1a90a99973c7068de1566b"
+    },
+    {
+      "path": "games/snake-speed/python.js",
+      "bytes": 9298,
+      "sha256": "067e6ecab552be964ecf119073ae3729ab3b13e4254435e70b5a4bc276b61600"
+    },
+    {
+      "path": "games/sokoban-ai-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/sokoban-ai-lab/app.js",
+      "bytes": 62228,
+      "sha256": "c970b5c5bac40b6169fd7dc345df3866114f501180fc76d3e1ecd17042b60c85"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-clone-levels.js",
+      "bytes": 11149,
+      "sha256": "680b8a1bb145c3769e0805a602527f8b78ffb72c73c40c591f779e0dcf24c4a7"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-intro.css",
+      "bytes": 8209,
+      "sha256": "1be5f5feb3221bfa9261d16c5d79eb39d83b807d2e243d61b293ebbd25779820"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-intro.html",
+      "bytes": 4696,
+      "sha256": "26febc778e23e6df56abcbabde11a93152f61f98a01db92da93a062c2752ea46"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-intro.js",
+      "bytes": 49120,
+      "sha256": "6954ba9c6e7ecd0b2583f52e170a88feaa66ab8fe151dd5dd221fb9bfa29f634"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-levels.js",
+      "bytes": 32593,
+      "sha256": "100269fa4ba827c902cb0d1c1bf527ab4a3a6228a9deff3264cb8c0742519ae4"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-open-levels.js",
+      "bytes": 6045,
+      "sha256": "c016be2bd08e93d3c0d517a462642914007de5fd28279570f3885c4c52a306c6"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-portals.js",
+      "bytes": 3303,
+      "sha256": "2acb6c9f38c353f7c1f1e05b321f104cc9db93c4e5d8fd082f1bea51f8cfebf5"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-rooms.js",
+      "bytes": 8165,
+      "sha256": "ec9fdf4b589fa2dae200f42defc9fa7aab2cacd2849436957e0c918ea5c23682"
+    },
+    {
+      "path": "games/sokoban-ai-lab/box-transfer-levels.js",
+      "bytes": 15802,
+      "sha256": "3bd57ffc4dc35041e41554ae5d87ffb84aa71166243d0711508d58ce5c97bd9c"
+    },
+    {
+      "path": "games/sokoban-ai-lab/engine.js",
+      "bytes": 40139,
+      "sha256": "7bc4bc4ee80764ae5c24c3356611428ea6a3b6ade8d198d85d41ef3d763af4f6"
+    },
+    {
+      "path": "games/sokoban-ai-lab/index.html",
+      "bytes": 13130,
+      "sha256": "ce159a0fb00ff7def434f888f98422b195cccf2ad4ca78ec95f431a67bacf741"
+    },
+    {
+      "path": "games/sokoban-ai-lab/route-input.js",
+      "bytes": 6131,
+      "sha256": "5a271344212df00fdca2226c731a7d016af97b56b185a6b0c7fdcf8607a11a13"
+    },
+    {
+      "path": "games/sokoban-ai-lab/style.css",
+      "bytes": 17716,
+      "sha256": "98b8209d7890d2a1082ab577c547c66e044b158fac09e9a83e1e4717169fc1be"
+    },
+    {
+      "path": "games/tape-language-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/tape-language-lab/index.html",
+      "bytes": 16345,
+      "sha256": "d5f2de93805978b1fcee01a1356c276aa4eb6b7e3f610876963cfa5a19c48f73"
+    },
+    {
+      "path": "games/tape-language-lab/src/app.js",
+      "bytes": 39312,
+      "sha256": "adcc0eadd6b805a736f05650d2daf3fe9f11882fbe0a91287f225de5e42206aa"
+    },
+    {
+      "path": "games/tape-language-lab/src/examples.js",
+      "bytes": 3453,
+      "sha256": "eb69a25a15c4fdd9c655c4fc5297ec5192399aa268b8a6bce7db85f7de53eb97"
+    },
+    {
+      "path": "games/tape-language-lab/src/machine.js",
+      "bytes": 36830,
+      "sha256": "74c7342988067e0984bacf0d6d00e5084cdb3a4a64251757462859176dc58e09"
+    },
+    {
+      "path": "games/tape-language-lab/style.css",
+      "bytes": 22195,
+      "sha256": "8c0523e7801e9f80ecf77c5fd6a25a6c388332f6b32a7518355f6c93dcfc0d3f"
+    },
+    {
+      "path": "games/traffic-planner/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/traffic-planner/index.html",
+      "bytes": 15354,
+      "sha256": "0f136045da409995c72d37f52a79db8856840e4601430fa726353b32012cc9ab"
+    },
+    {
+      "path": "games/traffic-planner/src/app.js",
+      "bytes": 44437,
+      "sha256": "5948e35ca75fff46e80472beba5b97263c51e3f1404ff366c467760b53ef8f53"
+    },
+    {
+      "path": "games/traffic-planner/src/core.js",
+      "bytes": 13752,
+      "sha256": "279bcfd39803ef9782ae92eb4e4726897dce582626812794b04536e469e6259e"
+    },
+    {
+      "path": "games/traffic-planner/src/examples.js",
+      "bytes": 5078,
+      "sha256": "4dfac90408c520cb754c3be9250b81fe88be1daa47d694c292097d9004a89155"
+    },
+    {
+      "path": "games/traffic-planner/src/layer-renderer.js",
+      "bytes": 8600,
+      "sha256": "713b4ee94a03fa86466ae58b021fbc290e732ef2ace877f05c46973fb953ddde"
+    },
+    {
+      "path": "games/traffic-planner/src/metro-passengers.js",
+      "bytes": 2582,
+      "sha256": "c6db7f3133bbba8b4b36211c17b73c3b7875e999b3540ca8cdd01cd8efbc5477"
+    },
+    {
+      "path": "games/traffic-planner/src/metro-simulation.js",
+      "bytes": 7423,
+      "sha256": "330d56962ff278a0fec235908fe7e6749492288332fc60ca0546560383ceb21d"
+    },
+    {
+      "path": "games/traffic-planner/src/reversing.js",
+      "bytes": 2924,
+      "sha256": "886d3ce9fbe3b54ff5b105943bad4dfba1ef19eb8e77061066e9a039eeffe330"
+    },
+    {
+      "path": "games/traffic-planner/src/simulation.js",
+      "bytes": 10258,
+      "sha256": "e895a97b61079258b0be6dc0973edde72701ed9121dd51c1247a117185f57003"
+    },
+    {
+      "path": "games/traffic-planner/styles.css",
+      "bytes": 25341,
+      "sha256": "7f8e1efb1458e785adcdbda1c03f57c679bca8a44fb20dd1eba3c34e09a01e66"
+    },
+    {
+      "path": "games/turbowarp-graph-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/turbowarp-graph-lab/MPL-2.0.txt",
+      "bytes": 16726,
+      "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+    },
+    {
+      "path": "games/turbowarp-graph-lab/THIRD_PARTY_NOTICES.md",
+      "bytes": 210,
+      "sha256": "8f7643ae8d35ddad6bc5ddc765fab289419e01085e14b71de5c2f730f86ff7c7"
+    },
+    {
+      "path": "games/turbowarp-graph-lab/build-info.json",
+      "bytes": 252,
+      "sha256": "260c81b60403378af74b1e28e2ee46e107ba8b13a72227abaa6addc03668999e"
+    },
+    {
+      "path": "games/turbowarp-graph-lab/index.html",
+      "bytes": 2054683,
+      "sha256": "552cac238515277ba4e79d099015ea4e2af6c45d254ec00407320221982fbb44"
+    },
+    {
+      "path": "games/turbowarp-graph-lab/scaffolding-min.js.LICENSE.txt",
+      "bytes": 6712,
+      "sha256": "a9645e2013fcf48fac3ac0c3b89fc8a1e8c46392deaf781c4c9bab693e6e40ce"
+    },
+    {
+      "path": "games/turbowarp-life-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/turbowarp-life-lab/MPL-2.0.txt",
+      "bytes": 16725,
+      "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
+    },
+    {
+      "path": "games/turbowarp-life-lab/THIRD_PARTY_NOTICES.md",
+      "bytes": 507,
+      "sha256": "d38e40835d429e11926c0978f0d8da9c35bc9e827cea22a6762693f676d98f8e"
+    },
+    {
+      "path": "games/turbowarp-life-lab/build-info.json",
+      "bytes": 406,
+      "sha256": "f784fb811b7fa087bd47a7b42a1c40503b75f63239ebb9facaaeb2851269cb26"
+    },
+    {
+      "path": "games/turbowarp-life-lab/index.html",
+      "bytes": 1898301,
+      "sha256": "4bdccb56e99da20cbcc3ce035596a61c4ae85a608b94e2906adb6a0d51e0fe9c"
+    },
+    {
+      "path": "games/turbowarp-life-lab/scaffolding-min.js.LICENSE.txt",
+      "bytes": 6712,
+      "sha256": "a9645e2013fcf48fac3ac0c3b89fc8a1e8c46392deaf781c4c9bab693e6e40ce"
+    },
+    {
+      "path": "games/turbowarp-logic-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/turbowarp-logic-lab/MPL-2.0.txt",
+      "bytes": 16726,
+      "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+    },
+    {
+      "path": "games/turbowarp-logic-lab/THIRD_PARTY_NOTICES.md",
+      "bytes": 567,
+      "sha256": "0d25d1f33e9940f3bd6ee4653f851d3291bf711ab7297a86d10cbe21ebb2f1ac"
+    },
+    {
+      "path": "games/turbowarp-logic-lab/build-info.json",
+      "bytes": 469,
+      "sha256": "a8cea5388e02938296fd65a9c11f91f169406f07cde9f9d21a5b8e261d315dec"
+    },
+    {
+      "path": "games/turbowarp-logic-lab/index.html",
+      "bytes": 1882982,
+      "sha256": "b09ada62bacf490ac0b03fb81c86ab1eb96c47b192161cdbd6d4c641ff7f3008"
+    },
+    {
+      "path": "games/turbowarp-logic-lab/scaffolding-min.js.LICENSE.txt",
+      "bytes": 6712,
+      "sha256": "a9645e2013fcf48fac3ac0c3b89fc8a1e8c46392deaf781c4c9bab693e6e40ce"
+    },
+    {
+      "path": "games/turbowarp-neural-network/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/turbowarp-neural-network/MPL-2.0.txt",
+      "bytes": 16726,
+      "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+    },
+    {
+      "path": "games/turbowarp-neural-network/THIRD_PARTY_NOTICES.md",
+      "bytes": 567,
+      "sha256": "0d25d1f33e9940f3bd6ee4653f851d3291bf711ab7297a86d10cbe21ebb2f1ac"
+    },
+    {
+      "path": "games/turbowarp-neural-network/build-info.json",
+      "bytes": 482,
+      "sha256": "2c068fde921f03253f2b3a494a33f803283832296d98bec8c51778d770114852"
+    },
+    {
+      "path": "games/turbowarp-neural-network/index.html",
+      "bytes": 1855472,
+      "sha256": "0437e9c0f862689f165af07a5d01394458c5dfd412fb1ed1c2b959345d32f20c"
+    },
+    {
+      "path": "games/turbowarp-neural-network/scaffolding-min.js.LICENSE.txt",
+      "bytes": 6712,
+      "sha256": "a9645e2013fcf48fac3ac0c3b89fc8a1e8c46392deaf781c4c9bab693e6e40ce"
+    },
+    {
+      "path": "games/turbowarp-turing-lab/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/turbowarp-turing-lab/MPL-2.0.txt",
+      "bytes": 16725,
+      "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
+    },
+    {
+      "path": "games/turbowarp-turing-lab/THIRD_PARTY_NOTICES.md",
+      "bytes": 507,
+      "sha256": "d38e40835d429e11926c0978f0d8da9c35bc9e827cea22a6762693f676d98f8e"
+    },
+    {
+      "path": "games/turbowarp-turing-lab/build-info.json",
+      "bytes": 407,
+      "sha256": "1d646f15eb4fb869939c69aa15a75141f2d8fd6f0db65a208b4f1065b89261ed"
+    },
+    {
+      "path": "games/turbowarp-turing-lab/index.html",
+      "bytes": 2008987,
+      "sha256": "e4a0849f6bee9e80ebe74b780d36f165f7eabf208b6fffd9015da4902dd4dc4f"
+    },
+    {
+      "path": "games/turbowarp-turing-lab/scaffolding-min.js.LICENSE.txt",
+      "bytes": 6712,
+      "sha256": "a9645e2013fcf48fac3ac0c3b89fc8a1e8c46392deaf781c4c9bab693e6e40ce"
+    },
+    {
+      "path": "games/turing/LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "games/turing/assets/campaign-CL-dVuZQ.css",
+      "bytes": 9661,
+      "sha256": "1bc77f76883b08e9234bb9c0140c2d8507bce2e606eca3962fe0b18561227784"
+    },
+    {
+      "path": "games/turing/assets/campaign-iMEr2cx1.js",
+      "bytes": 31907,
+      "sha256": "14e476e413ff47a55a40000d235d947c6029ced89063b6a96c4e4ff6fe8f4ba9"
+    },
+    {
+      "path": "games/turing/assets/core-BmS44wlX.js",
+      "bytes": 3571,
+      "sha256": "defddab3e9965b38b9088816288801efc6f4b42607290af9169a34e097584912"
+    },
+    {
+      "path": "games/turing/assets/gijswijt-worker-BVTAjsju.js",
+      "bytes": 584,
+      "sha256": "09c150d910bb7629a0eb4a842b0bb5d2f20c29b0cf987c696586719d322f6eef"
+    },
+    {
+      "path": "games/turing/assets/main-CIj5DFoc.css",
+      "bytes": 12469,
+      "sha256": "516078ac27069bc623dad4538a60e88c640573c85fd158e064fe801f4fc64c5c"
+    },
+    {
+      "path": "games/turing/assets/main-DkX1GBy6.js",
+      "bytes": 56563,
+      "sha256": "022d6472b214e61c3e65fd629db698df4c1634c889e8605e31259592d7ef86cf"
+    },
+    {
+      "path": "games/turing/assets/route-worker--cIr4Dp-.js",
+      "bytes": 2817,
+      "sha256": "1cc23d89b84c9329dccd88b8abbe93aecb8c914a45468879cc31dff36209ce6e"
+    },
+    {
+      "path": "games/turing/campaign.html",
+      "bytes": 681,
+      "sha256": "5c40c1c5dea17e0512a66d54cbc2d80ca30376fb79779f5a6f6c128207a9899a"
+    },
+    {
+      "path": "games/turing/hub-source-proof.json",
+      "bytes": 13084,
+      "sha256": "cd2a1eee468163953cb0e195188340aa4c759d4db62df2e5b5448259e437cdf2"
+    },
+    {
+      "path": "games/turing/hub/turing-format.js",
+      "bytes": 5425,
+      "sha256": "9656e6aad7d50146d012aac1309a509eddf59a0ae742abdec7afac6cd6377e22"
+    },
+    {
+      "path": "games/turing/hub/turing-legacy.js",
+      "bytes": 10905,
+      "sha256": "1c2e431b725627d53f015e5d9208b14fe218c54ed1dc16f4d020816f072b1628"
+    },
+    {
+      "path": "games/turing/hub/turing-preservation.js",
+      "bytes": 11819,
+      "sha256": "550aa88d17228d02a09e0225c4ab15065017afe7074f6c128c7150a685a93604"
+    },
+    {
+      "path": "games/turing/hub/turing-ui.js",
+      "bytes": 17670,
+      "sha256": "a50b15d2456d32eeb606de1c55ed716c0cb7b2b55997c65303f0747f6de1547f"
+    },
+    {
+      "path": "games/turing/index.html",
+      "bytes": 870,
+      "sha256": "d7adcf0e0a17850430b240673623ce7f7aae0718a18b2e2744a63bd19e906061"
+    },
+    {
+      "path": "icons/abelian-sandpile.png",
+      "bytes": 6786,
+      "sha256": "b4fdd912d5ba5a0905c69e854c5eb469e18e9f92bfc208da77393e15d9acd245"
+    },
+    {
+      "path": "icons/conway.png",
+      "bytes": 232645,
+      "sha256": "c8fdbbba82e584329a08791ddd4c7fffd20321cd746e83055e5eb8cafeebb16a"
+    },
+    {
+      "path": "icons/eml.png",
+      "bytes": 207555,
+      "sha256": "cc2915265d012c6ee001a18e255ff6d10d1c0503359b216cce381b0e9b9e1f8f"
+    },
+    {
+      "path": "icons/lambda-diagram-game.png",
+      "bytes": 7208,
+      "sha256": "2e8d78e5f2fd00b2a74948023a0557bad43d704446a1c52f1c010d2494455bb1"
+    },
+    {
+      "path": "icons/light.png",
+      "bytes": 44662,
+      "sha256": "003fadb6b96819eb4e3752fcb18e881b83bdb90bcc42042cdd9ab4ec5d218a3c"
+    },
+    {
+      "path": "icons/logic-circuit.png",
+      "bytes": 4626,
+      "sha256": "24b9661407812f1f2cf04ae4bbe28c41b29572f06522db4597a326658efe0764"
+    },
+    {
+      "path": "icons/memory-demo.png",
+      "bytes": 6902,
+      "sha256": "d0f099992dd975f8c6c4c692afe92e97a5c8c4a9c3bd6268b3163782578ff2a6"
+    },
+    {
+      "path": "icons/mini-scratch.png",
+      "bytes": 5900,
+      "sha256": "ca651b82f5a1d8a4914b238a102a1a477088165c895607fbd49fe3ca9fc0bbc7"
+    },
+    {
+      "path": "icons/red-green-puzzle.png",
+      "bytes": 6539,
+      "sha256": "7defb6ef2d82aa68da72d9e108619f93cca4243a8df18745141e898ffabb9061"
+    },
+    {
+      "path": "icons/traffic-planner.png",
+      "bytes": 6782,
+      "sha256": "53829916275772e0bc5b3cf65f56f2902bd4e4de502afb15e9d2b3aec6676e3e"
+    },
+    {
+      "path": "icons/turing.png",
+      "bytes": 168886,
+      "sha256": "40e5bff1398ed2c15b75727f59eb6c3f77364e58fc4ba8f52f6475eeebe7309a"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1330,
+      "sha256": "286bc825fda7dbc7fa93949ff6a4dcded27792f6f236b5ff9283f07c4920e3ba"
+    },
+    {
+      "path": "offline-ui.js",
+      "bytes": 3511,
+      "sha256": "84c7aff7db9c0213f4349cbc613fa78ef02bf28b1e9ea0807797de9e40b9abc0"
+    },
+    {
+      "path": "offline.css",
+      "bytes": 379,
+      "sha256": "11178f8fd07bb3ce3289a6e92e18b6ef634b89aad2a7e0727f53ad951221be08"
+    },
+    {
+      "path": "proof/adaptations.json",
+      "bytes": 9507,
+      "sha256": "19857b11ab403e1678de8a357453f91d0cbfa9f5775d2caf60831114282233e0"
+    },
+    {
+      "path": "proof/v1.signed.json",
+      "bytes": 21055,
+      "sha256": "febaaa477e73fb3ce10a3577cb6577bced7e6d6b6280354ae5a39c9d3dde3feb"
+    },
+    {
+      "path": "proof/v2.signed.json",
+      "bytes": 64903,
+      "sha256": "b27297fe57d74058ffa605c20f01f0fd7712706d2e973a2b37693d92f7886545"
+    },
+    {
+      "path": "save-ui.js",
+      "bytes": 4614,
+      "sha256": "db392a95586a6cd36f67e22ed4a7241a4820f7364b7a19fb4fdf0570e2a5f843"
+    },
+    {
+      "path": "save-vault.js",
+      "bytes": 19294,
+      "sha256": "37d39c87c8651ce1af5d041ab7cf012593ccd1d45e4adccef8e7c09d622fa62c"
+    },
+    {
+      "path": "save.css",
+      "bytes": 392,
+      "sha256": "f3a3d012f39518f23b41a941de6008a52d7f8c05f09a4e20a07282c7ef4f1de7"
+    },
+    {
+      "path": "storage-isolation.js",
+      "bytes": 4233,
+      "sha256": "5c6ae87b7987de41fc048e55a7788452a596d03768b3c0122ba822fece6297b7"
+    },
+    {
+      "path": "style.css",
+      "bytes": 2230,
+      "sha256": "f14c4c0a9f4ce736d19590a82828c5a53e6164e7946f9dd049fe4f9e1fb415ae"
+    }
+  ]
+}
