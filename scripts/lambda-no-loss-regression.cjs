@@ -1,0 +1,23 @@
+const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),{chromium}=require('playwright');
+const file=process.env.LAMBDA_TEST_HTML||'examples/lambda-diagram-038-20261121/lambda-lab.html';
+const html=fs.readFileSync(file),old=fs.readFileSync('examples/lambda-diagram-038-20261121/lambda-lab.html');let active=old;
+const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/html; charset=utf-8'}).end(active));
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+ try{const context=await browser.newContext({acceptDownloads:true}),page=await context.newPage(),url=`http://127.0.0.1:${server.address().port}/`;
+  await page.goto(url);await page.locator('#expression').fill('(λoriginal.original) preserved');await page.waitForTimeout(900);
+  const saved=await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4'));assert.ok(saved&&JSON.parse(saved).draft.includes('preserved'));
+  active=html;await page.reload();await page.locator('#expression').fill('(λa.a) first');await page.waitForTimeout(700);await page.locator('#expression').fill('(λb.b) second');await page.waitForTimeout(700);
+  const preserved=await page.evaluate(raw=>Object.keys(localStorage).filter(k=>k.startsWith('lambda-hub-session-archive-v1.')).some(k=>Object.values(JSON.parse(localStorage.getItem(k)).storage).includes(raw)),saved);
+  assert.equal(preserved,true,'previous session must remain in an immutable verified archive after repeated edits');
+  const original=page.waitForEvent('download');await page.getByRole('button',{name:'导出所有本机存档'}).click();const stream=await(await original).createReadStream();let data='';for await(const chunk of stream)data+=chunk;
+  assert.ok(JSON.parse(data).storage,'raw export must contain storage');
+  await page.getByRole('button',{name:'查看保存前备份'}).click();const archiveDialog=page.getByRole('dialog').filter({has:page.getByRole('heading',{name:'保存前备份'})});
+  const archiveDownload=page.waitForEvent('download');await archiveDialog.getByRole('button',{name:'导出'}).first().click();const archiveStream=await(await archiveDownload).createReadStream();let archiveText='';for await(const chunk of archiveStream)archiveText+=chunk;
+  assert.equal(JSON.parse(archiveText).type,'raw-local-storage');await archiveDialog.getByRole('button',{name:'关闭'}).click();
+  const beforeQuota=await page.evaluate(()=>{localStorage.setItem('lambda-lab-test-sentinel','quota-preserve');return localStorage.getItem('lambda-lab-hub-v4')});
+  await page.addInitScript(()=>{const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k.startsWith('lambda-hub-session-archive-v1.'))throw new DOMException('simulated quota','QuotaExceededError');return set.call(this,k,v)}});
+  await page.reload();await page.getByText('Lambda存档需要处理').waitFor({timeout:10000});assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4')),beforeQuota);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('lambda-lab-test-sentinel')),'quota-preserve');
+  console.log('PASS: sessions are archived, raw data can be exported and quota failure preserves current storage');await context.close();
+ }finally{await browser.close();server.close()}
+})().catch(e=>{console.error(e.stack);server.close();process.exitCode=1});
