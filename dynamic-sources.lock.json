@@ -613,20 +613,20 @@
       "iconKind": "simulation",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/territory-conquest.git",
-      "revision": "4f4be3523e1c45556e09e3ad9b8335de47f54b63",
+      "revision": "2fdfe952ce6dc2ecf6b9005d323314717360e3e1",
       "directory": "dist",
-      "version": "1.0.0",
-      "contentCode": 1,
+      "version": "1.0.1",
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "territory-conquest-dynamic-v1",
       "files": [
         "LICENSE",
-        "app.mjs",
-        "engine.mjs",
+        "app.js",
+        "engine.js",
         "index.html",
         "style.css"
       ],
-      "releaseNotes": "零依赖浏览器回合策略游戏首次发行：六个单人关卡与自定义地图，支持同机多人、人机混合与电脑自动观战，胜负与增兵规则透明展示；通关记录保存在本机。"
+      "releaseNotes": "修复大厅安装后无法启动：脚本改为 .js 扩展名，避免被当作二进制下发而被模块脚本的严格 MIME 检查拒绝；玩法与存档格式不变。"
     }
   ]
 }
