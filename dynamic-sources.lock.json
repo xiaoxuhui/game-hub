@@ -58,7 +58,7 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "037eb829516709e0a7d369c5718259496fefa2fb",
+      "revision": "3e7858043bbb3822be94522a5ac6a06ac4c7e7a7",
       "directory": "examples/lambda-diagram-omega-20261120",
       "version": "0.3.6",
       "contentCode": 11,

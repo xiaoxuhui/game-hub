@@ -19,7 +19,7 @@ test('staged Lambda protection is reproducible from the pinned existing resource
 });
 test('pinned Lambda content 11 packs deterministically with its complete manifest',()=>{
  const source=dynamicSources(read('dynamic-sources.lock.json')).sources.find(item=>item.id==='lambda-diagram-game');
- assert.equal(source.revision,'037eb829516709e0a7d369c5718259496fefa2fb');assert.equal(source.contentCode,11);
+ assert.equal(source.revision,'3e7858043bbb3822be94522a5ac6a06ac4c7e7a7');assert.equal(source.contentCode,11);
  const entries=source.files.map(path=>({path,data:read(`${source.directory}/${path}`)}));
  const first=packDynamic(source,entries),second=packDynamic(source,entries);
  assert.deepEqual(first.archive,second.archive);assert.equal(first.game.archiveSha256,hash(first.archive));
