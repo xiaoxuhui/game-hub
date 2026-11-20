@@ -6,6 +6,8 @@ on:
       - 'examples/lambda-diagram-update-20261121/**'
       - 'examples/lambda-diagram-038-20261121/**'
       - 'examples/lambda-diagram-039-20261121/**'
+      - 'examples/lambda-039-recovery-20261121/**'
+      - 'tests/lambda-039-recovery.test.mjs'
       - 'examples/lambda-preserve-20261121/**'
       - 'examples/lambda-roundtrip-20261121/**'
       - 'examples/lambda-recovery-20261121/**'
@@ -55,24 +57,24 @@ jobs:
       - run: node tests/lambda-manual-restore.browser.cjs
       - run: node tests/lambda-manual-restore.browser.cjs
         env:
-          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-039-20261121/lambda-lab.html
+          LAMBDA_HALL_HTML_PATH: examples/lambda-039-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-30-second-regression.cjs
         env:
-          LAMBDA_HALL_HTML_PATH: examples/lambda-diagram-039-20261121/lambda-lab.html
+          LAMBDA_HALL_HTML_PATH: examples/lambda-039-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-hall-browser.cjs
       - run: node scripts/lambda-no-loss-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-039-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-no-loss-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-039-recovery-20261121/lambda-lab.html
           LAMBDA_MOBILE: '1'
       - run: node scripts/lambda-export-roundtrip-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-039-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-large-archive-regression.cjs
         env:
-          LAMBDA_TEST_HTML: examples/lambda-recovery-20261121/lambda-lab.html
+          LAMBDA_TEST_HTML: examples/lambda-039-recovery-20261121/lambda-lab.html
       - run: node scripts/lambda-experiment-build.cjs
       - run: node scripts/lambda-prerun-backup-experiment.cjs
       - run: node scripts/lambda-prerun-actions-experiment.cjs

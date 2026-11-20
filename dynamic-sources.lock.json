@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "aa2eb72798935dcfedd3728a0a49ec9ca9b07213",
-      "directory": "examples/lambda-diagram-039-20261121",
+      "revision": "24ec1f29f7dbb1338cc81bb73f0edfaaf112a652",
+      "directory": "examples/lambda-039-recovery-20261121",
       "version": "0.3.9",
-      "contentCode": 17,
+      "contentCode": 18,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "函数展开加入逐线动画：原线路平滑展开为内部结构，其余线路随布局移动缩放，回退反向收回。保留逐层展开、四种归约组合、保存前备份与全量存档导入导出修复。"
+      "releaseNotes": "保留函数展开动画、旧会话保护和全量备份恢复；修复较大备份无法导入，并对全量导出和导入使用一致的安全上限。"
     },
     {
       "id": "red-green-puzzle",
