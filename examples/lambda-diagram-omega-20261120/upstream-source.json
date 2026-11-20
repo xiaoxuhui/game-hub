@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+  "revision": "d09769203ad5adac9892b28bb08342822e2b0f81",
+  "upstreamHtmlSha256": "0e65b21716f08e599cc357ffa15ceed1383ca93912e9e94e060aa00185aa51f0",
+  "integration": {
+    "id": "lambda-content4-storage-c5-manual-restore-v1",
+    "inputSha256": "0e65b21716f08e599cc357ffa15ceed1383ca93912e9e94e060aa00185aa51f0",
+    "outputSha256": "dccb75aefd4a668ec06c3ebebbcc5ba7a23217f63f12ecbf44446f86fbb72483",
+    "adapterSha256": "b69913e57f4f6802035d82df613efd2600ce7db2f8746286159492b920bc08d5",
+    "integration": "lambda-content4-storage-c5-manual-restore-v1",
+    "browserAdapterSha256": "4e3cba9fa97fab9d866537076527cd1a927e6fcc8dcc9a1d63a18c71ffe73d54",
+    "storageAdapterSha256": "20051d83516780956100b308ba78248feaf2e1ec4eb913d231f296f336513d5a",
+    "legacyReaderFixtureSha256": "f31d9324bc34860b4a868d3b6c6fd8008ddad3a48f6284b9261ed218fbcf37cd"
+  },
+  "hallProtection": {
+    "id": "lambda-omega-recovery-v1",
+    "sourceCommit": "b51cef1135d736c3b7e9cb777497e605552a5d25",
+    "inputSha256": "dccb75aefd4a668ec06c3ebebbcc5ba7a23217f63f12ecbf44446f86fbb72483",
+    "outputSha256": "ba3a5c0f5db586675f9d033895fac2ee31ef4587f2d00f7d6f803e59ad593120",
+    "adapterSha256": "0cb61f39ae63864004037d4533769de672dc661f894354cc1bbb64447c50b0ae"
+  }
+}
