@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "b4aa5fdb78e9501e7ad51604b53854ce0a10ab7d",
-      "directory": "examples/lambda-preserve-20261121",
+      "revision": "b74d82995db5d72815ebda1134f37d39f90103ee",
+      "directory": "examples/lambda-roundtrip-20261121",
       "version": "0.3.8",
-      "contentCode": 15,
+      "contentCode": 16,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "保护已有本机存档：写入前保存独立副本，可导出原始存档和保存前备份；保留 Lambda 0.3.8 的函数展开和计算功能。"
+      "releaseNotes": "修复全量存档导入时无法选择旧会话的问题，保留保存前独立备份及 Lambda 0.3.8 的计算功能。"
     },
     {
       "id": "red-green-puzzle",
