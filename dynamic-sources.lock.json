@@ -531,10 +531,10 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/sokoban-ai-lab.git",
-      "revision": "12e8beab2db28da9b1a9d1cd580d36f011eb14fa",
+      "revision": "82c94e40d4ed57d31998721f66d11bffcd9e0afb",
       "directory": "dist",
-      "version": "1.0.1",
-      "contentCode": 4,
+      "version": "1.0.2",
+      "contentCode": 5,
       "entryPage": "index.html",
       "storageContract": "sokoban-ai-lab-dynamic-v1",
       "files": [
@@ -550,14 +550,16 @@
         "box-open-levels.js",
         "box-player-levels.js",
         "box-portals.js",
+        "box-possess-levels.js",
         "box-rooms.js",
         "box-transfer-levels.js",
+        "box-wall-levels.js",
         "engine.js",
         "index.html",
         "route-input.js",
         "style.css"
       ],
-      "releaseNotes": "1.0.1：套箱模式新增循环、翻转、玩家三章——循环链整链前移、镜像箱左右出入口相反、玩家自身可被吞入并携带内部地图；新增多玩家同步/切换控制与当前玩家选择；原有章节与存档保持兼容。"
+      "releaseNotes": "套箱模式新增「占据」22 关与「墙」15 关两章，占据章可同时操控多名玩家，墙章演示实心房间与不可进入的墙体；原有关卡、操作与存档格式不变。"
     },
     {
       "id": "tape-language-lab",
@@ -604,6 +606,27 @@
         "style.css"
       ],
       "releaseNotes": "像素画与逐帧动画编辑，包含图案挑战，作品保存在本机。"
+    },
+    {
+      "id": "territory-conquest",
+      "displayName": "疆界 · 领土争夺",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/territory-conquest.git",
+      "revision": "4f4be3523e1c45556e09e3ad9b8335de47f54b63",
+      "directory": "dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "territory-conquest-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "app.mjs",
+        "engine.mjs",
+        "index.html",
+        "style.css"
+      ],
+      "releaseNotes": "零依赖浏览器回合策略游戏首次发行：六个单人关卡与自定义地图，支持同机多人、人机混合与电脑自动观战，胜负与增兵规则透明展示；通关记录保存在本机。"
     }
   ]
 }
