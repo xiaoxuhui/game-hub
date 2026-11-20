@@ -57,7 +57,8 @@ mkdirSync(out,{recursive:true});for(const path of paths){const input=resolve(sit
  writeFileSync(target,updated);proof.adapted.push({id,path,sourceSha256:sourceSha,adaptedSha256:hash(Buffer.from(updated))});writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
 }
 const index=join(out,'index.html'),before=readFileSync(index,'utf8');if(!before.includes('</body>'))throw Error('大厅入口不完整');writeFileSync(index,before.replace('</body>','<link rel="stylesheet" href="./offline.css"><link rel="stylesheet" href="./save.css"><script type="module" src="./offline-ui.js"></script><script type="module" src="./save-ui.js"></script></body>'));
-for(const name of ['client.js','offline-ui.js','offline.css','save-vault.js','save-ui.js','save.css'])copyFileSync(join(root,'pages-web',name),join(out,name));
+for(const name of ['client.js','storage-isolation.js','offline-ui.js','offline.css','save-vault.js','save-ui.js','save.css'])copyFileSync(join(root,'pages-web',name),join(out,name));
+proof.storageScriptSha256=hash(readFileSync(join(out,'storage-isolation.js')));writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
 const names=[...new Set([...paths,'offline-ui.js','offline.css','save-vault.js','save-ui.js','save.css'])].sort(),files=names.map(path=>{const bytes=readFileSync(join(out,path));return {path,bytes:bytes.length,sha256:hash(bytes)}}),manifest=Buffer.from(JSON.stringify({schemaVersion:1,baseline,files},null,2)+'\n');writeFileSync(join(out,'offline-manifest.json'),manifest);
 const worker=readFileSync(join(root,'pages-web/offline-worker.js'),'utf8'),workerSha=hash(Buffer.from(worker));writeFileSync(join(out,'sw.js'),worker.replace('__MANIFEST_SHA256__',hash(manifest)).replace('__WORKER_SHA256__',workerSha));
 console.log(`离线候选：${files.length} 个文件，${files.reduce((n,f)=>n+f.bytes,0)} 字节；线上基线 ${baseline}`);
