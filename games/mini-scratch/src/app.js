@@ -82,4 +82,4 @@ document.addEventListener('keyup',e=>senses.keys.delete(normalizedKey(e.key)));w
 $('stage').addEventListener('pointermove',e=>{const rect=$('stageSvg').getBoundingClientRect();senses.mouseX=Math.round(Math.max(-240,Math.min(240,(e.clientX-rect.left)/rect.width*480-240)));senses.mouseY=Math.round(Math.max(-180,Math.min(180,180-(e.clientY-rect.top)/rect.height*360)));});
 $('stage').addEventListener('pointerdown',()=>senses.mouseDown=true);window.addEventListener('pointerup',()=>senses.mouseDown=false);window.addEventListener('pointercancel',()=>senses.mouseDown=false);
 $('sprite').addEventListener('click',()=>trigger('click'));$('sprite').addEventListener('keydown',e=>{if(e.key==='Enter'){e.stopPropagation();trigger('click');}});
-render();if(bootMessage)toast(bootMessage);else save();
+render();if(bootMessage){$('saveStatus').textContent='旧存档无法读取，请先导出备份';toast(bootMessage);}else save();

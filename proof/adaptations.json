@@ -100,7 +100,7 @@
       "id": "mini-scratch",
       "path": "index.html",
       "sourceSha256": "84bc2b4577ee1cb6cb1db50f3cdd13bcf1e4e2767c00c89f8f484ac39ebbb99b",
-      "adaptedSha256": "08873d9481a1b832c1e2b7990874c1469ff569fb4756496ca3e2abd75f57d5f0"
+      "adaptedSha256": "54f36c0b5caeff0cedc01222467ddbba0f4cf0ab7abda2cc59da4bf2c73ea9b0"
     },
     {
       "id": "mini-scratch",
@@ -227,6 +227,12 @@
       "path": "scripts/app.js",
       "sourceSha256": "50900439da27dad2faaef1ffabaa2e8c5461bf0c5aadf80f40014a40564e312b",
       "adaptedSha256": "4618302ab2269992cc33609de6df03eadc0ef92b32a0cf498a47a240fcf2d277"
+    },
+    {
+      "id": "mini-scratch",
+      "path": "src/app.js",
+      "sourceSha256": "a33b98ba79d0d5a88fbfc5ea31305bd0cd7eea1197d90ad5e4266777473b3dec",
+      "adaptedSha256": "7836516072faaeff61311d49f17bb071e5a23c9cda17ac61b1636f8855e47793"
     }
   ]
 }
