@@ -59,6 +59,10 @@ class LambdaNoLossDeviceTest {
             waitFor(exported);val storage=JSONObject(exportText).getJSONObject("storage")
             val keys=storage.keys();var archiveFound=false;while(keys.hasNext())if(keys.next().startsWith("lambda-hub-session-archive-v1."))archiveFound=true
             assertTrue("Android export omitted the preserved archive",archiveFound)
+            js(view,"window.prompt=(message)=>{const row=message.split('\\n').find(line=>line.includes('preserved'));return row?row.match(/^\\d+/)[0]:null};const data=new DataTransfer();data.items.add(new File([${JSONObject.quote(exportText)}],'all.json',{type:'application/json'}));const input=document.querySelector('#import-file');input.files=data.files;input.dispatchEvent(new Event('change',{bubbles:true}));true")
+            val deadline=System.currentTimeMillis()+15000;var restored=false
+            while(!restored&&System.currentTimeMillis()<deadline){restored=js(view,"document.querySelector('#expression').value==='(λoriginal.original) preserved'")=="true";if(!restored)Thread.sleep(100)}
+            assertTrue("Android could not restore the archived session from its full export",restored)
         }finally{inst.runOnMainSync{view.destroy()}}
     }
 }
