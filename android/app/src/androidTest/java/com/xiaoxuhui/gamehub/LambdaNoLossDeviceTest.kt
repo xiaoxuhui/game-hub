@@ -63,6 +63,12 @@ class LambdaNoLossDeviceTest {
             val deadline=System.currentTimeMillis()+15000;var restored=false
             while(!restored&&System.currentTimeMillis()<deadline){restored=js(view,"document.querySelector('#expression').value==='(λoriginal.original) preserved'")=="true";if(!restored)Thread.sleep(100)}
             assertTrue("Android could not restore the archived session from its full export",restored)
+            val beforeLarge=js(view,"localStorage.getItem('lambda-lab-hub-v4')")
+            js(view,"window.__largePrompt=false;window.prompt=(message)=>{window.__largePrompt=message.includes('preserved');return null};const large=new DataTransfer();large.items.add(new File([JSON.stringify({schemaVersion:1,type:'raw-local-storage',game:'lambda-diagram-game',storage:{'lambda-lab-hub-v4':${JSONObject.quote(raw)},'lambda-hub-padding':'x'.repeat(8*1024*1024)}})],'large.json',{type:'application/json'}));const fileInput=document.querySelector('#import-file');fileInput.files=large.files;fileInput.dispatchEvent(new Event('change',{bubbles:true}));true")
+            val largeDeadline=System.currentTimeMillis()+15000;var offered=false
+            while(!offered&&System.currentTimeMillis()<largeDeadline){offered=js(view,"window.__largePrompt")=="true";if(!offered)Thread.sleep(100)}
+            assertTrue("Android rejected the valid large raw archive",offered)
+            assertEquals("cancelling import changed the current save",beforeLarge,js(view,"localStorage.getItem('lambda-lab-hub-v4')"))
         }finally{inst.runOnMainSync{view.destroy()}}
     }
 }
