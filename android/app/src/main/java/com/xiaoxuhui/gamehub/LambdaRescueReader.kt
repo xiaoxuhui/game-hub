@@ -16,7 +16,7 @@ import org.json.JSONObject
 /** Reads a pre-run snapshot from the game origin without loading the game. */
 internal object LambdaRescueReader {
     sealed class Result {
-        data class Found(val content: String) : Result()
+        data class Found(val content: String, val fileName: String = "lambda-before-run.json", val rawFallback: Boolean = false) : Result()
         data class Unavailable(val reason: String) : Result()
     }
     @SuppressLint("SetJavaScriptEnabled")
@@ -62,29 +62,61 @@ internal object LambdaRescueReader {
                 webView.evaluateJavascript(SCRIPT) { value ->
                     if (finished) return@evaluateJavascript
                     val parsed = runCatching { JSONObject(value) }.getOrNull()
-                    val content = parsed?.optString("content")
-                    val valid = content != null && content.toByteArray(Charsets.UTF_8).size <= MAX_BYTES && runCatching {
-                        val archive = JSONObject(content)
-                        archive.optInt("version") in 2..4 && archive.opt("draft") is String && archive.opt("session") is JSONObject
-                    }.getOrDefault(false)
-                    if (parsed?.optString("status") == "ok" && valid) finish(Result.Found(content!!))
-                    else finish(Result.Unavailable(parsed?.optString("reason")?.takeIf { it.isNotBlank() } ?: "未找到可读取的运行前备份"))
+                    val status = parsed?.optString("status")
+                    val length = parsed?.optInt("length", -1) ?: -1
+                    if (status !in setOf("ok", "raw") || length !in 1..MAX_BYTES) {
+                        finish(Result.Unavailable(parsed?.optString("reason")?.takeIf { it.isNotBlank() } ?: "未找到可读取的运行前备份"))
+                        return@evaluateJavascript
+                    }
+                    val buffer = StringBuilder(length)
+                    fun readChunk(offset: Int) {
+                        if (finished) return
+                        if (offset == length) {
+                            val content = buffer.toString()
+                            val valid = content.toByteArray(Charsets.UTF_8).size <= MAX_BYTES && runCatching {
+                                val archive = JSONObject(content)
+                                if (status == "raw") archive.optString("type") == "raw-local-storage" && archive.opt("storage") is JSONObject
+                                else archive.optInt("version") in 2..4 && archive.opt("draft") is String && archive.opt("session") is JSONObject
+                            }.getOrDefault(false)
+                            if (valid) finish(Result.Found(content, if (status == "raw") "lambda-recovery-raw.json" else "lambda-before-run.json", status == "raw"))
+                            else finish(Result.Unavailable("备份格式无效或超出大小限制，原存档保持不变"))
+                            return
+                        }
+                        val end = minOf(offset + CHUNK_CHARS, length)
+                        webView.evaluateJavascript("window.__lambdaRescueText.slice($offset,$end)") chunkResult@{ chunk ->
+                            if (finished) return@chunkResult
+                            val text = runCatching { JSONObject("{\"v\":$chunk}").getString("v") }.getOrNull()
+                            if (text == null || text.length != end - offset) finish(Result.Unavailable("备份读取中断，原存档保持不变"))
+                            else { buffer.append(text); readChunk(end) }
+                        }
+                    }
+                    readChunk(0)
                 }
             }
         }
         handler.postDelayed({ if (!finished) finish(Result.Unavailable("备份检查超时，原存档保持不变")) }, 10000)
         view.loadUrl(url)
     }
-    private const val MAX_BYTES = 2 * 1024 * 1024
+    private const val MAX_BYTES = 8 * 1024 * 1024
+    private const val CHUNK_CHARS = 16 * 1024
     private val SCRIPT = """
         (function(){try{
           if(navigator.serviceWorker && navigator.serviceWorker.controller)return {status:'error',reason:'备份检查被旧服务工作线程控制'};
           var prefix='lambda-lab-hub-before-run-v1.';
           var key=localStorage.getItem('lambda-lab-hub-before-run-latest-v1');
-          if(!key || !key.startsWith(prefix))return {status:'error',reason:'没有运行前备份，原存档保持不变'};
-          var content=localStorage.getItem(key);
-          if(!content || content.length>2097152)return {status:'error',reason:'运行前备份缺失或超出大小限制'};
-          return {status:'ok',content:content};
+          if(key && key.startsWith(prefix)){
+            var content=localStorage.getItem(key);
+            if(content && content.length<=2097152){try{
+              var parsed=JSON.parse(content);
+              if(parsed && parsed.version>=2 && parsed.version<=4 && typeof parsed.draft==='string' && parsed.session && typeof parsed.session==='object'){window.__lambdaRescueText=content;return {status:'ok',length:content.length};}
+            }catch(e){}}
+          }
+          var storage=Object.create(null);
+          for(var i=0;i<localStorage.length;i++){var item=localStorage.key(i);if(item!==null)storage[item]=localStorage.getItem(item);}
+          if(!Object.keys(storage).length)return {status:'error',reason:'没有找到 Lambda 本机存档'};
+          var raw=JSON.stringify({schemaVersion:1,type:'raw-local-storage',game:'lambda-diagram-game',storage:storage});
+          if(raw.length>8388608)return {status:'error',reason:'原始存档过大，未自动导出；原数据保持不变'};
+          window.__lambdaRescueText=raw;return {status:'raw',length:raw.length};
         }catch(e){return {status:'error',reason:'读取备份失败：'+String(e)};}})()
     """.trimIndent()
 }

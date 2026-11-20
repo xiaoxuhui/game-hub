@@ -48,10 +48,15 @@ class LambdaRescueReaderTest {
             assertEquals(backup, (read(id) as LambdaRescueReader.Result.Found).content)
             assertEquals(org.json.JSONObject.quote(backup), js(view, "localStorage.getItem('$key')"))
             js(view, "localStorage.setItem('lambda-lab-hub-before-run-latest-v1','not-a-backup-key');true")
-            assertTrue(read(id) is LambdaRescueReader.Result.Unavailable)
+            val fallback = read(id) as LambdaRescueReader.Result.Found
+            assertTrue(fallback.rawFallback)
+            assertEquals(backup, org.json.JSONObject(fallback.content).getJSONObject("storage").getString(key))
             assertEquals(org.json.JSONObject.quote(backup), js(view, "localStorage.getItem('$key')"))
             js(view, "localStorage.setItem('$key','{}');localStorage.setItem('lambda-lab-hub-before-run-latest-v1','$key');true")
-            assertTrue(read(id) is LambdaRescueReader.Result.Unavailable)
+            assertTrue((read(id) as LambdaRescueReader.Result.Found).rawFallback)
+            val longBackup = org.json.JSONObject(backup).put("draft", "文".repeat(16383) + "😀" + "文".repeat(20000)).toString()
+            js(view, "localStorage.setItem('$key',${org.json.JSONObject.quote(longBackup)});true")
+            assertEquals(longBackup, (read(id) as LambdaRescueReader.Result.Found).content)
         } finally {
             js(view, "localStorage.removeItem('$key');localStorage.removeItem('lambda-lab-hub-before-run-latest-v1');true")
             inst.runOnMainSync { view.destroy() }

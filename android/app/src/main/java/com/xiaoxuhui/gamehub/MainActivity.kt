@@ -1178,11 +1178,12 @@ class MainActivity : ComponentActivity() {
             when (result) {
                 is LambdaRescueReader.Result.Unavailable -> { Log.w("GameHub", "Lambda rescue unavailable: ${result.reason}"); toast(result.reason) }
                 is LambdaRescueReader.Result.Found -> {
-                    val export = DocumentExport("lambda-before-run.json", result.content)
+                    val export = DocumentExport(result.fileName, result.content)
                     if (exports.busy || !exports.offer(export)) { toast("请先完成当前保存，再导出运行前备份"); return@read }
                     refreshUpdatePresence()
                     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
                         .setType("application/json").putExtra(Intent.EXTRA_TITLE, export.name)
+                    if (result.rawFallback) toast("没有运行前备份，准备导出 Lambda 原始存档，请选择保存位置")
                     runCatching { saveLauncher.launch(intent) }.onFailure {
                         exports.cancelled(); refreshUpdatePresence(); toast("无法打开保存窗口，原存档保持不变")
                     }
