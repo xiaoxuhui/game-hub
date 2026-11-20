@@ -1,0 +1,14 @@
+import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {inspectResources} from './resource-bundle.mjs';
+import {preserveLambdaSessions} from './lambda-preserve-sessions.mjs';
+const base='examples/lambda-diagram-038-20261121',target='examples/lambda-preserve-20261121',revision='e11edee273a8c66763262c6d9a6732c7c88709de';
+const hash=data=>createHash('sha256').update(data).digest('hex');
+if(existsSync(target))throw Error('Target already exists');
+for(const name of ['lambda-lab.html','LICENSE','upstream-source.json'])if(!execFileSync('git',['show',`${revision}:${base}/${name}`]).equals(readFileSync(`${base}/${name}`)))throw Error(`Pinned source differs: ${name}`);
+const source=readFileSync(`${base}/lambda-lab.html`),license=readFileSync(`${base}/LICENSE`),proof=JSON.parse(readFileSync(`${base}/upstream-source.json`));
+const output=Buffer.from(preserveLambdaSessions(source.toString('utf8')));
+const metadata={...proof,hallSessionPreservation:{id:'lambda-preserve-sessions-v1',sourceCommit:revision,inputSha256:hash(source),outputSha256:hash(output),adapterSha256:hash(readFileSync('scripts/lambda-preserve-sessions.mjs'))}};
+const entries=[{path:'lambda-lab.html',data:output},{path:'LICENSE',data:license},{path:'upstream-source.json',data:Buffer.from(JSON.stringify(metadata,null,2)+'\n')}];
+inspectResources(entries,'lambda-diagram-game');mkdirSync(target);for(const entry of entries)writeFileSync(`${target}/${entry.path}`,entry.data,{flag:'wx'});console.log(`Lambda no-loss resource: ${hash(output)}`);

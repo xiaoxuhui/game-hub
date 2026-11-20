@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "id": "lambda-diagram-game",
+  "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+  "revision": "9f4469ae39c1c6119d4ab14a540924c3e4c40ea2",
+  "version": "0.3.8",
+  "buildKind": "inline-html",
+  "entryPage": "lambda-lab.html",
+  "inputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "index.html",
+      "bytes": 23031,
+      "sha256": "1c5243328a8fc6bc1bc9a36279989aa71e3be3ceb204ed586887f1c1408d0f75"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1542,
+      "sha256": "1dabea07a2e43e691273a52eaf1ce12562e1ef35c2bb244cde008513e86ec014"
+    },
+    {
+      "path": "scripts/build-guide-names.cjs",
+      "bytes": 1413,
+      "sha256": "b6d52653c872ed3b88c5d607eacd0004f0189903893282d83ea3b81dc2e0fee4"
+    },
+    {
+      "path": "scripts/build.mjs",
+      "bytes": 1278,
+      "sha256": "43f600dc127bbd9126af41a6a90eb182e532ed9a40b1c6e278472c720c11cd95"
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 53636,
+      "sha256": "6f4b69868d8300ad8568aeb667ae168b1c85afaa89aa88a6969d69d6ba0e89d6"
+    },
+    {
+      "path": "src/challenges.js",
+      "bytes": 1136,
+      "sha256": "8754b796c69f7a8faa5cf04b2452ac0ed891491629c2f39de12c1203cd14417e"
+    },
+    {
+      "path": "src/combinator-compiler.js",
+      "bytes": 4767,
+      "sha256": "5b5f5f367ef70c14fd0b8ff8151c5cde728db14501da69100a103e89c3d3ce4d"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 19257,
+      "sha256": "fb6aa82961a5855e80649aa018fc3f4af8112b329a616063c11c8ab55e4f7d68"
+    },
+    {
+      "path": "src/data-encoding-editor.js",
+      "bytes": 6255,
+      "sha256": "ef1382cc457e8c7c9c7b0a734f6fadb9389fb718796844c31649cda27bfe15f0"
+    },
+    {
+      "path": "src/data-encoding.js",
+      "bytes": 15888,
+      "sha256": "a9bd4ed0968d17d6cf695165a48e775b59d53ae8be5a6e8e0e82f95d6c9d677f"
+    },
+    {
+      "path": "src/decimal.js",
+      "bytes": 15941,
+      "sha256": "9b47459cc1a535d9c0999fa13e2d07284b409f4894f1c4eb5b8b8e41ae5ef6f7"
+    },
+    {
+      "path": "src/default-state.js",
+      "bytes": 2416,
+      "sha256": "5af720479117bccfb1db0bc9a5cf12327a76a66d0d1e8d88e6a651f88eaed8b0"
+    },
+    {
+      "path": "src/diagram-view.js",
+      "bytes": 11956,
+      "sha256": "5a5531471cb72c547183528ad4fe4a8a9723de867bc749c91331235fd6863b10"
+    },
+    {
+      "path": "src/diagram.js",
+      "bytes": 6955,
+      "sha256": "f059bb4cc8bd606c2071206aeca22390d9ad1fa961a4c5f6243086ef1b409203"
+    },
+    {
+      "path": "src/download.js",
+      "bytes": 1043,
+      "sha256": "535a746503a46fd21b0f09521e42cca6c4d6f28944a7077fd71aca7def9e1c19"
+    },
+    {
+      "path": "src/encoding-table.js",
+      "bytes": 6344,
+      "sha256": "78e6d38049f95d7eef82d19eb69a7714613228ee9887a2e8bce129671275cb32"
+    },
+    {
+      "path": "src/function-reduction.js",
+      "bytes": 4238,
+      "sha256": "7e779e0c6c2d0b84643f77aecf1006836b7a1c478286ec59dc2ff34475d75f44"
+    },
+    {
+      "path": "src/guide-advanced.js",
+      "bytes": 57558,
+      "sha256": "284ae5b4e27e99508cbbae791ff0dc4b1ee6a8bdba1bcb666a1ff36447e1c44f"
+    },
+    {
+      "path": "src/guide-details.js",
+      "bytes": 29236,
+      "sha256": "d03191f4031d4f7405830aea93abb39c045c8a8e85113cc3c456392e3f9c5767"
+    },
+    {
+      "path": "src/guide-name-data.js",
+      "bytes": 83010,
+      "sha256": "a16a6af962f7c0e6b59ead889dc31bf7cb62c2e9cd0caff49d9f0622db189d6a"
+    },
+    {
+      "path": "src/guide-names.js",
+      "bytes": 19404,
+      "sha256": "b4cfc560f922b588d204da2d8de89a34c142523806d6e97b44f61a4dd9e5646b"
+    },
+    {
+      "path": "src/guide-pairs.js",
+      "bytes": 15294,
+      "sha256": "642abc55b2bf7618aa100330cbe48ef682ad5ff9ab78977a4ae54b8661102f3d"
+    },
+    {
+      "path": "src/guide-polynomial.js",
+      "bytes": 20137,
+      "sha256": "0708e713d5d5d9726ce6008390243296705eaca18a895ba69e832370e942d2f9"
+    },
+    {
+      "path": "src/guide.js",
+      "bytes": 47579,
+      "sha256": "5497c354c22e71a54a4d6be72d110b2021889e81ccd3ac2746ee59960c10d606"
+    },
+    {
+      "path": "src/input-format-editor.js",
+      "bytes": 3441,
+      "sha256": "0496b5670fa4bdf5aafb0d459cda5315d2e9228f7f336c4580975a0faaa20c90"
+    },
+    {
+      "path": "src/lazy-eval.js",
+      "bytes": 6592,
+      "sha256": "236ec6ef84ff6178f010631f9c2e7fdd631c718b00870518b53c21a6c532efbe"
+    },
+    {
+      "path": "src/library.js",
+      "bytes": 4927,
+      "sha256": "c5a92f47c87ea1ee596dcef540c3561d56b5dc57db940512fffc266959eb8b9b"
+    },
+    {
+      "path": "src/meta-lambda.js",
+      "bytes": 13237,
+      "sha256": "8d5108feaddd7ad418acf28c78f5df68ac15a8788bf8e134ab9d00694efb99d5"
+    },
+    {
+      "path": "src/palette.js",
+      "bytes": 3896,
+      "sha256": "1cf3041059de067ac301aa6f8033ee27682ab3ada7d34da18f813b49bf6ec0a9"
+    },
+    {
+      "path": "src/polynomial.js",
+      "bytes": 7300,
+      "sha256": "3a50f1a6c64be01797c6419f6a1acd7e08be2b226be0ae56723738ec9e8dd38e"
+    },
+    {
+      "path": "src/presets.js",
+      "bytes": 35776,
+      "sha256": "ea4f9f52a363e27fb6438b6d66f639fd35a1b56c937ca4e950913985cc9f65a8"
+    },
+    {
+      "path": "src/run-guard.js",
+      "bytes": 1078,
+      "sha256": "c3891e7fd8f7d64fc96c2b92439d5767199673fdd9ea676549c124c47fd6d2bc"
+    },
+    {
+      "path": "src/snapshot.js",
+      "bytes": 16388,
+      "sha256": "4627c68fa6b99b23d8d6a36b8d7b0248638ff6ac6cc963971341c1777da37a2d"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 31236,
+      "sha256": "f4017d9e998565dd9e79de1bd08d845998510893694863f704e60dda7ebf9d4b"
+    },
+    {
+      "path": "src/trace.js",
+      "bytes": 2759,
+      "sha256": "c247125d3a49210ee235414ee6f594ca30a94b8eef7a77d368942cf4e5b54856"
+    },
+    {
+      "path": "src/viewport.js",
+      "bytes": 5315,
+      "sha256": "466d2b8c9428f3073890578002e3efadcf3334b6c22f7f5df9e896f84265217a"
+    },
+    {
+      "path": "src/workspace-tools.js",
+      "bytes": 18122,
+      "sha256": "81918d26738095ff4743b87382b6a88eb9110c334524010b6b536ad220aded81"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "lambda-lab.html",
+      "bytes": 658774,
+      "sha256": "9321fd1429a5cee223b399cef8e9b9e5625f7beff59963137677c08e5a101bd4"
+    }
+  ],
+  "trackedArtifact": {
+    "path": "dist/lambda-lab.html",
+    "bytes": 594389,
+    "sha256": "694ca1eb7d413da125886a0ffdc6e9722601688fee432ad56b0369234ab6cba4",
+    "matchesRebuild": true
+  },
+  "adaptation": {
+    "id": "lambda-content4-storage-c5-manual-restore-v1",
+    "inputSha256": "694ca1eb7d413da125886a0ffdc6e9722601688fee432ad56b0369234ab6cba4",
+    "outputSha256": "9321fd1429a5cee223b399cef8e9b9e5625f7beff59963137677c08e5a101bd4",
+    "adapterSha256": "b69913e57f4f6802035d82df613efd2600ce7db2f8746286159492b920bc08d5",
+    "integration": "lambda-content4-storage-c5-manual-restore-v1",
+    "browserAdapterSha256": "e29380debdd3e23d58983df3bcccac8262a243d60d35cac9e7d7bcdde222faf9",
+    "storageAdapterSha256": "a68a58de74548d9bb7d65c0422f705f3be3ec6e76d7cda4c5dd5f04eb0be573f",
+    "legacyReaderFixtureSha256": "f31d9324bc34860b4a868d3b6c6fd8008ddad3a48f6284b9261ed218fbcf37cd"
+  },
+  "hallProtection": {
+    "id": "lambda-037-recovery-v1",
+    "inputSha256": "9321fd1429a5cee223b399cef8e9b9e5625f7beff59963137677c08e5a101bd4",
+    "outputSha256": "04f11e5e3bc26934000b00177ff1ac79b4982eeed10198a32b5a36c397970efd",
+    "adapterSha256": "ab7c0552e0f97bc3bc1d1961cc11744ff3c58b205d50922e4f4af21edb0bdab7",
+    "baseAdapterSha256": "44b22d6029c41e8f68d1416185b81aea72f4d7951d4e7799e5f1902dedc26716",
+    "historyGuardSha256": "b976f1d1fe7abfada12f2ef058ef401e385f29c329dbdf1edbba7f21a01d2f24"
+  },
+  "hallSessionPreservation": {
+    "id": "lambda-preserve-sessions-v1",
+    "sourceCommit": "e11edee273a8c66763262c6d9a6732c7c88709de",
+    "inputSha256": "04f11e5e3bc26934000b00177ff1ac79b4982eeed10198a32b5a36c397970efd",
+    "outputSha256": "42bb516a0d1f93ca52b8c63bcd2840310eb60bfcaf8fe660ada29215be26d20a",
+    "adapterSha256": "a8462bb2566ac36fc2fcf9fa130bf9d4fbe70420bcd285db52c99c69825b152b"
+  }
+}
