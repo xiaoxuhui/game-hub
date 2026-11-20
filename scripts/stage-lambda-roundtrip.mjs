@@ -1,0 +1,14 @@
+import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {inspectResources} from './resource-bundle.mjs';
+import {fixLambdaExportRoundTrip} from './lambda-export-roundtrip.mjs';
+const base='examples/lambda-preserve-20261121',target='examples/lambda-roundtrip-20261121',revision='b4aa5fdb78e9501e7ad51604b53854ce0a10ab7d';
+const hash=data=>createHash('sha256').update(data).digest('hex');
+if(existsSync(target))throw Error('Target already exists');
+for(const name of ['lambda-lab.html','LICENSE','upstream-source.json'])if(!execFileSync('git',['show',`${revision}:${base}/${name}`]).equals(readFileSync(`${base}/${name}`)))throw Error(`Pinned source differs: ${name}`);
+const source=readFileSync(`${base}/lambda-lab.html`),license=readFileSync(`${base}/LICENSE`),proof=JSON.parse(readFileSync(`${base}/upstream-source.json`));
+const output=Buffer.from(fixLambdaExportRoundTrip(source.toString('utf8')));
+const metadata={...proof,hallRoundTripFix:{id:'lambda-raw-roundtrip-v1',sourceCommit:revision,inputSha256:hash(source),outputSha256:hash(output),adapterSha256:hash(readFileSync('scripts/lambda-export-roundtrip.mjs'))}};
+const entries=[{path:'lambda-lab.html',data:output},{path:'LICENSE',data:license},{path:'upstream-source.json',data:Buffer.from(JSON.stringify(metadata,null,2)+'\n')}];
+inspectResources(entries,'lambda-diagram-game');mkdirSync(target);for(const entry of entries)writeFileSync(`${target}/${entry.path}`,entry.data,{flag:'wx'});console.log(`Lambda round-trip resource: ${hash(output)}`);
