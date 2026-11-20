@@ -132,10 +132,11 @@ export function lambdaC5BrowserAdapterSource() {
       button('重新加载',()=>root.location.reload());
     });
     const mapped=new Map([['lambda-lab-v2','lambda-lab-hub-v4'],['lambda-lab-checkpoint-v2','lambda-lab-hub-checkpoint-v4'],['lambda-lab-v1','lambda-lab-hub-legacy-v4']]);
+    const backups=new Map([['lambda-lab-previous-v2','lambda-lab-hub-previous-v4'],['lambda-lab-checkpoint-previous-v2','lambda-lab-hub-checkpoint-previous-v4']]);
     const assertUnblocked=()=>{if(conflictBlocked)throw new Error('Lambda存档冲突尚未处理；当前页面已停止读取和写入。');};
-    const adapter={getItem(key){assertUnblocked();return c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return c5.removeItem(mapped.get(key)||key);},setItem(key,value){
+    const adapter={getItem(key){assertUnblocked();return backups.has(key)?raw.getItem(backups.get(key)):c5.getItem(mapped.get(key)||key);},removeItem(key){assertUnblocked();return backups.has(key)?raw.removeItem(backups.get(key)):c5.removeItem(mapped.get(key)||key);},setItem(key,value){
       assertUnblocked();
-      try{return c5.setItem(mapped.get(key)||key,value);}catch(error){
+      try{if(backups.has(key)){S.decodeStartingState(value);return raw.setItem(backups.get(key),value);}return c5.setItem(mapped.get(key)||key,value);}catch(error){
         if(error?.name==='QuotaExceededError'||/quota|storage full|配额/i.test(String(error?.message||''))){
           const snapshot=C5.captureLambdaC5Snapshot(raw);show('设备存储空间不足','自动存档未能写入。现有存档保持原样；请先导出恢复文件，再清理设备空间。');
           button('导出全部Lambda存档',()=>{const result=safeExport('quota',snapshot);dialogStatus.textContent=result===true?'已请求下载导出文件。':'导出失败：'+String(result);});
@@ -170,7 +171,56 @@ export function lambdaC5AdapterEvidence() {
   };
 }
 
+// Current upstream owns transactional writes and multi-tab revision checks.
+// Keep those safeguards intact while retaining the hall's explicit restore UI.
+function currentManualRestoreHtml(source) {
+  let html=source;
+  const replace=(before,after)=>{
+    if(html.split(before).length!==2)throw new Error('Lambda current manual-restore marker changed: '+before);
+    html=html.replace(before,after);
+  };
+  replace('let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,functionController=null;',
+    'let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,functionController=null,autosaveReady=false;');
+  replace('function persist(force=false) {\n      clearTimeout(saveTimer);',
+    'function persist(force=false) {\n      autosaveReady=true;clearTimeout(saveTimer);saveTimer=null;');
+  replace('function queueSave(){if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(persist,180);}}',
+    'function queueSave(){autosaveReady=true;if(!restoring){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=null;persist();},180);}}');
+  replace('lastAuto=encoded;lastCaptured=signature(snapshot);storageLocked=false;storageStatus(true);return encoded;',
+    'lastAuto=encoded;lastCaptured=signature(snapshot);storageLocked=false;autosaveReady=true;storageStatus(true);return encoded;');
+  replace("window.addEventListener('pagehide',()=>persist());",
+    "window.addEventListener('pagehide',()=>{if(autosaveReady)persist();});");
+  replace('function save() { workspace?.queueSave(); }',
+    "let initializing=true,lastAutosaveSnapshot='';function save() { if(initializing)return;const current=JSON.stringify(capture());if(current!==lastAutosaveSnapshot){lastAutosaveSnapshot=current;workspace?.queueSave();} }");
+  replace('workspace.restoreInitial().then(restored=>{\n    if(!restored){renderMode();convert();workspace.persist();}\n  });',
+    'workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;');
+  replace('persist,queueSave,restoreInitial,','persist,queueSave,prepareManualRestore,');
+  const start='    async function restoreInitial() {',end="    $('function-form').addEventListener";
+  if(html.split(start).length!==2||html.split(end).length!==2)throw new Error('Lambda current restore handler markers');
+  const from=html.indexOf(start),to=html.indexOf(end,from);
+  const handler=`    function prepareManualRestore() {
+      let text=null;
+      try {
+        lastAuto=localStorage.getItem(AUTO);
+        text=localStorage.getItem(CHECKPOINT)||lastAuto||localStorage.getItem(LEGACY);
+        if(text){S.decodeStartingState(text);checkpoint=text;}
+        storageLocked=false;
+        $('storage-status').textContent=checkpoint?'本机存档已保留，可手动恢复':'已打开新会话';
+      }catch(error){
+        storageLocked=true;
+        feedback('本机存档无法读取，原存档已保护，自动写入已暂停：'+error.message,true);
+        $('storage-status').textContent='原存档已保护，未覆盖';
+        const button=document.createElement('button');button.type='button';button.id='export-original-save';button.className='button';button.textContent='导出原存档';
+        button.addEventListener('click',()=>root.LambdaDownload.save('lambda-lab-original-save.json',text||lastAuto||'','application/json'));
+        $('save-feedback').after(button);
+      }
+      $('restore-state').disabled=!checkpoint;renderLibrary();
+    }
+`;
+  return html.slice(0,from)+handler+html.slice(to);
+}
+
 export function lambdaManualRestoreHtml(source) {
+  if(source.includes('function persist(force=false) {'))return currentManualRestoreHtml(source);
   const replacements = [
     ["let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null;", "let functions=[],checkpoint=null,saveTimer=null,restoring=false,editing=null,autosaveReady=false;"],
     ["function persist() {", "function persist(explicit=false) {"],

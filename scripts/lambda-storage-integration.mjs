@@ -83,9 +83,9 @@ export function integrateLambdaHtml(bytes){
 }
 export function integrateLambdaC5Html(bytes){
   const declaration="const AUTO='lambda-lab-v2',CHECKPOINT='lambda-lab-checkpoint-v2',LEGACY='lambda-lab-v1';";
-  const load='const text=localStorage.getItem(AUTO)||localStorage.getItem(LEGACY);';
+  const loads=['const text=localStorage.getItem(AUTO)||localStorage.getItem(LEGACY);','lastAuto=localStorage.getItem(AUTO);text=lastAuto||localStorage.getItem(LEGACY);'];
   let html=bytes.toString('utf8');
-  for(const marker of [declaration,load])if(html.split(marker).length!==2)throw new Error('Lambda C5 integration requires exact reviewed workspace markers');
+  if(html.split(declaration).length!==2||loads.filter(marker=>html.split(marker).length===2).length!==1)throw new Error('Lambda C5 integration requires exact reviewed workspace markers');
   html=html.replace(declaration,lambdaC5BrowserAdapterSource());
   return Buffer.from(lambdaManualRestoreHtml(html));
 }

@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),http=require('node:http'),fs=require(
 let pw;try{pw=require('playwright');}catch{pw=require(path.resolve(path.dirname(process.execPath),'../node_modules/playwright'));}
 const root=path.resolve(__dirname,'..');
 const old=execFileSync('git',['show','64c8932af9a0b5cc886db25910b3923a16aa0677:examples/lambda-diagram-game/lambda-lab.html'],{cwd:root,maxBuffer:2000000});
-const latest=fs.readFileSync(path.join(root,'examples/lambda-diagram-game/lambda-lab.html'));
+const latest=fs.readFileSync(process.env.LAMBDA_HALL_HTML_PATH || path.join(root,'examples/lambda-diagram-game/lambda-lab.html'));
 const oldAuto='lambda-lab-v2',oldCp='lambda-lab-checkpoint-v2',auto='lambda-lab-hub-v3',cp='lambda-lab-hub-checkpoint-v3';
 const server=http.createServer((req,res)=>res.writeHead(200,{'Content-Type':'text/html;charset=utf-8'}).end(req.url.startsWith('/old')?old:latest));
 (async()=>{

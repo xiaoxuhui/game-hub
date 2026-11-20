@@ -6,7 +6,7 @@ let playwright;
 try { playwright = require('playwright'); }
 catch { playwright = require(path.resolve(path.dirname(process.execPath), '../node_modules/playwright')); }
 
-const html = fs.readFileSync(path.join(__dirname, '../examples/lambda-diagram-game/lambda-lab.html'));
+const html = fs.readFileSync(process.env.LAMBDA_HALL_HTML_PATH || path.join(__dirname, '../examples/lambda-diagram-game/lambda-lab.html'));
 const server = http.createServer((req, res) => res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }).end(html));
 
 (async () => {
