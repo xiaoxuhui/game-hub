@@ -33,6 +33,8 @@ export function preserveLambdaSessions(source) {
     exportAllLocal(){const storage=Object.create(null);for(let i=0;i<(normalRaw.length||0);i++){const key=normalRaw.key(i);if(key&&(key.startsWith('lambda-lab-')||key.startsWith('lambda-hub-')))storage[key]=normalRaw.getItem(key);}return JSON.stringify({schemaVersion:1,type:'raw-local-storage',game:'lambda-diagram-game',storage});},
     saveRunBackup(text){`);
  replace('      const encoded=S.encode(snapshot),current=writableCurrent(allowProtected),targets=[[AUTO,encoded,current]];', '      const encoded=S.encode(snapshot),current=writableCurrent(allowProtected);localStorage.ensureSessionArchive();const targets=[[AUTO,encoded,current]];');
+ replace("        $('storage-status').textContent=checkpoint?'本机存档已保留，可手动恢复':'已打开新会话';", `        $('storage-status').textContent=checkpoint?'本机存档已保留，可手动恢复':'已打开新会话';
+        if(checkpoint){const note=document.createElement('p');note.setAttribute('role','status');note.textContent='发现本机存档：当前显示新会话。可手动恢复，或先导出所有本机存档；开始编辑前会保留旧存档副本。';$('storage-status').after(note);}`);
  replace("    manage.addEventListener('click',()=>{", `    const exportAll=document.createElement('button');exportAll.type='button';exportAll.className='button';exportAll.textContent='导出所有本机存档';manage.after(exportAll);
     exportAll.addEventListener('click',()=>{try{root.LambdaDownload.save('lambda-all-local-storage.json',localStorage.exportAllLocal(),'application/json')}catch(error){feedback('原始存档导出失败：'+String(error.message||error),true)}});
     const archives=document.createElement('button');archives.type='button';archives.className='button';archives.textContent='查看保存前备份';exportAll.after(archives);

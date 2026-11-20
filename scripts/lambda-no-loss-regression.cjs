@@ -3,10 +3,11 @@ const file=process.env.LAMBDA_TEST_HTML||'examples/lambda-diagram-038-20261121/l
 const html=fs.readFileSync(file),old=fs.readFileSync('examples/lambda-diagram-038-20261121/lambda-lab.html');let active=old;
 const server=http.createServer((_,res)=>res.writeHead(200,{'content-type':'text/html; charset=utf-8'}).end(active));
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
- try{const context=await browser.newContext({acceptDownloads:true}),page=await context.newPage(),url=`http://127.0.0.1:${server.address().port}/`;
+ try{const context=await browser.newContext({acceptDownloads:true,...(process.env.LAMBDA_MOBILE?{viewport:{width:390,height:844},isMobile:true,hasTouch:true}:{})}),page=await context.newPage(),url=`http://127.0.0.1:${server.address().port}/`;
   await page.goto(url);await page.locator('#expression').fill('(λoriginal.original) preserved');await page.waitForTimeout(900);
   const saved=await page.evaluate(()=>localStorage.getItem('lambda-lab-hub-v4'));assert.ok(saved&&JSON.parse(saved).draft.includes('preserved'));
   active=html;await page.reload();await page.locator('#expression').fill('(λa.a) first');await page.waitForTimeout(700);await page.locator('#expression').fill('(λb.b) second');await page.waitForTimeout(700);
+  assert.equal(await page.getByText(/发现本机存档：当前显示新会话/).count(),1);
   const preserved=await page.evaluate(raw=>Object.keys(localStorage).filter(k=>k.startsWith('lambda-hub-session-archive-v1.')).some(k=>Object.values(JSON.parse(localStorage.getItem(k)).storage).includes(raw)),saved);
   assert.equal(preserved,true,'previous session must remain in an immutable verified archive after repeated edits');
   const original=page.waitForEvent('download');await page.getByRole('button',{name:'导出所有本机存档'}).click();const stream=await(await original).createReadStream();let data='';for await(const chunk of stream)data+=chunk;
