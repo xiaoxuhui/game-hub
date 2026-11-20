@@ -32,6 +32,18 @@ mkdirSync(out,{recursive:true});for(const path of paths){const input=resolve(sit
  const id='fourier-drawing-studio',path='app.js',target=join(out,'games',id,path),bytes=readFileSync(target),sourceSha=hash(bytes),original=bytes.toString('utf8'),anchor="loadShape(preset('heart'),'爱心');setCount(40);resize();requestAnimationFrame(animate);",adapt=readFileSync(join(root,'pages-web/adaptations/fourier.inc.js'),'utf8');
  if(sourceSha!=='ccea8c1100f53daa29cdbbbe91f7e06d9b1a4b0b32f596becdfdf642c64cb53a'||original.split(anchor).length!==2||proof.adapted.some(item=>item.id===id&&item.path===path))throw Error('傅里叶画室基线不符');const updated=original.replace(anchor,anchor+'\n'+adapt);writeFileSync(target,updated);proof.adapted.push({id,path,sourceSha256:sourceSha,adaptedSha256:hash(Buffer.from(updated))});writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
 }
+{
+ const id='lambda-diagram-game',path='lambda-lab.html',target=join(out,'games',id,path),original=readFileSync(target,'utf8'),entry=proof.adapted.find(item=>item.id===id&&item.path===path);
+ if(!entry||hash(Buffer.from(original))!=='6cd10c9f798244e3dd74c37f57ebd1eb9a52ad9a08f81a685f50cf06fd6ee1ec')throw Error('Lambda 基线不符');let updated=original;
+ const replace=(a,b)=>{if(updated.split(a).length!==2)throw Error('Lambda 适配锚点不唯一');updated=updated.replace(a,b)};
+ replace('functionController=null,autosaveReady=false;', 'functionController=null,autosaveReady=false,autosaveBlocked=false;');
+ replace('if(restoring||(!autosaveReady&&explicit!==true))return;', 'if(autosaveBlocked||restoring||(!autosaveReady&&explicit!==true))return;');
+ replace('function queueSave(){autosaveReady=true;', 'function queueSave(){if(autosaveBlocked)return;autosaveReady=true;');
+ replace('    function prepareManualRestore() {',readFileSync(join(root,'pages-web/adaptations/lambda-latest.inc.js'),'utf8')+'\n    function prepareManualRestore() {');
+ replace('persist,queueSave,prepareManualRestore};','persist,queueSave,prepareManualRestore,restoreLatest};');
+ replace('workspace.prepareManualRestore();renderMode();convert();lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;','workspace.prepareManualRestore();if(!workspace.restoreLatest()){renderMode();convert();}lastAutosaveSnapshot=JSON.stringify(capture());initializing=false;');
+ writeFileSync(target,updated);entry.adaptedSha256=hash(Buffer.from(updated));writeFileSync(join(out,'proof/adaptations.json'),JSON.stringify(proof,null,2)+'\n');
+}
 const index=join(out,'index.html'),before=readFileSync(index,'utf8');if(!before.includes('</body>'))throw Error('大厅入口不完整');writeFileSync(index,before.replace('</body>','<link rel="stylesheet" href="./offline.css"><link rel="stylesheet" href="./save.css"><script type="module" src="./offline-ui.js"></script><script type="module" src="./save-ui.js"></script></body>'));
 for(const name of ['client.js','offline-ui.js','offline.css','save-vault.js','save-ui.js','save.css'])copyFileSync(join(root,'pages-web',name),join(out,name));
 const names=[...new Set([...paths,'offline-ui.js','offline.css','save-vault.js','save-ui.js','save.css'])].sort(),files=names.map(path=>{const bytes=readFileSync(join(out,path));return {path,bytes:bytes.length,sha256:hash(bytes)}}),manifest=Buffer.from(JSON.stringify({schemaVersion:1,baseline,files},null,2)+'\n');writeFileSync(join(out,'offline-manifest.json'),manifest);
