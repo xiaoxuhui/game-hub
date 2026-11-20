@@ -4,18 +4,6 @@ const longHistoryGuard=readFileSync(new URL('./lambda-long-history-guard.inc.js'
 export function protectLambdaOmega(source) {
  let html=source;
  function replace(a,b){if(html.split(a).length!==2)throw Error('Lambda Omega integration marker changed: '+a);html=html.replace(a,b)}
- // The original one-second growth window falsely pauses finite calculations.
- // Existing saves containing the old default receive the new default too.
- replace('const DEFAULT_MS=1000;', 'const DEFAULT_MS=30000;');
- replace('<option value="1000" selected>1 秒</option>', '<option value="1000">1 秒</option>');
- replace('<option value="30000">30 秒</option>', '<option value="30000" selected>30 秒</option>');
- replace('state.growthWindowMs=s.view.growthWindowMs??Guard.DEFAULT_MS;', "state.growthWindowMs=s.view.growthWindowMs===1000&&!(()=>{try{return window.localStorage.getItem('lambda-hub-growth-window-explicit-v1')}catch{return null}})()?Guard.DEFAULT_MS:(s.view.growthWindowMs??Guard.DEFAULT_MS);");
- replace("$('growth-window').addEventListener('change',()=>{state.growthWindowMs=Number($('growth-window').value);", "$('growth-window').addEventListener('change',()=>{try{window.localStorage.setItem('lambda-hub-growth-window-explicit-v1','1')}catch{}state.growthWindowMs=Number($('growth-window').value);");
- // Repeated or growing expressions can occur during useful work: observe for
- // thirty seconds before allowing this heuristic to stop an active run.
- replace('let repeatedTerm=null,runGuard=null;', 'let repeatedTerm=null,runGuard=null,runStartedAt=0;');
- replace("state.halt='';state.running=true;state.fast=fast;repeatedTerm=C.cycleCheck(state.term);", "state.halt='';state.running=true;state.fast=fast;runStartedAt=performance.now();repeatedTerm=C.cycleCheck(state.term);");
- replace('else if(repeatedTerm?.(state.term,result)){', 'else if(performance.now()-runStartedAt>=30000&&repeatedTerm?.(state.term,result)){');
  replace('async function convert() {','async function convert({initial=false}={}) {');
  replace('    cancelRewind();\n    cancelConversion();const controller=new AbortController();', '    if(!initial&&workspace&&!workspace.backupBeforeRun())return false;\n    cancelRewind();\n    cancelConversion();const controller=new AbortController();');
  replace('function render(duration=0,undone=null) {','function render(duration=0,undone=null,suppressSave=false) {');
