@@ -13,6 +13,7 @@ import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import android.view.accessibility.AccessibilityNodeInfo
 
 /** Uses a fresh emulator profile and stops if the real Lambda origin already has data. */
 class LambdaRescueFlowTest {
@@ -63,7 +64,23 @@ class LambdaRescueFlowTest {
                 assertEquals(saved, exports.pending?.content)
                 assertEquals("lambda-before-run.json", exports.pending?.name)
                 assertEquals(org.json.JSONObject.quote(saved), js(seed, "localStorage.getItem('$key')"))
-                inst.uiAutomation.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK)
+                fun nodes(node: AccessibilityNodeInfo?): List<AccessibilityNodeInfo> {
+                    if (node == null) return emptyList()
+                    return listOf(node) + (0 until node.childCount).flatMap { nodes(node.getChild(it)) }
+                }
+                val chooserDeadline = System.currentTimeMillis() + 10000
+                var save: AccessibilityNodeInfo? = null
+                while (save == null && System.currentTimeMillis() < chooserDeadline) {
+                    save = nodes(inst.uiAutomation.rootInActiveWindow).firstOrNull {
+                        it.isClickable && it.text?.toString()?.lowercase() in setOf("save", "保存")
+                    }
+                    if (save == null) Thread.sleep(100)
+                }
+                assertNotNull("system save action not found", save)
+                assertTrue(save!!.performAction(AccessibilityNodeInfo.ACTION_CLICK))
+                val writeDeadline = System.currentTimeMillis() + 10000
+                while (exports.busy && System.currentTimeMillis() < writeDeadline) Thread.sleep(100)
+                assertFalse("document write did not finish", exports.busy)
             }
         } finally {
             if (seeded) js(seed, "if(localStorage.getItem('$index')==='$key'&&localStorage.getItem('$key')===${org.json.JSONObject.quote(saved)}){localStorage.removeItem('$key');localStorage.removeItem('$index')};true")
