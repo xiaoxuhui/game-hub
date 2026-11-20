@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "39d7bd438a8984b47af86381a9b9a214360b0d47",
-      "directory": "examples/lambda-diagram-update-20261117",
-      "version": "0.3.5",
-      "contentCode": 9,
+      "revision": "b51cef1135d736c3b7e9cb777497e605552a5d25",
+      "directory": "examples/lambda-diagram-update-20261120",
+      "version": "0.3.6",
+      "contentCode": 10,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "LICENSE",
         "upstream-source.json"
       ],
-      "releaseNotes": "更新归约追踪、配色和图示交互，保留旧存档及手动恢复。"
+      "releaseNotes": "小数采用正序丘奇数位列表：0.125 = λk.k true [0,1,2,5] 3；旧档保留数位顺序。教程改用常见易读简写，S保留通用名称。修复存档覆盖、写入回滚和草稿保存，保留大厅手动恢复与旧档兼容。"
     },
     {
       "id": "red-green-puzzle",

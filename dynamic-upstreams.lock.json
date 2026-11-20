@@ -12,8 +12,8 @@
     {
       "id": "lambda-diagram-game",
       "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
-      "revision": "2ce0fa371e583bb9b57e74ace1f5cd2a7b14bd2c",
-      "version": "0.3.3",
+      "revision": "d09769203ad5adac9892b28bb08342822e2b0f81",
+      "version": "0.3.6",
       "kind": "inline-html",
       "entryPage": "lambda-lab.html",
       "integration": "lambda-content4-storage-c5-manual-restore-v1"
