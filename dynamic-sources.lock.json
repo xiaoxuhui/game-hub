@@ -135,16 +135,17 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/logic-circuit.git",
-      "revision": "5c03d31c8112e0e66159167fff27bb05b4001625",
+      "revision": "6aa2b824ac04a37a7a6f808ca45b5d074a0b853b",
       "directory": "dist",
-      "version": "0.3.55",
-      "contentCode": 43,
+      "version": "0.3.56",
+      "contentCode": 44,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
         "LICENSE",
         "index.html",
         "src/app.js",
+        "src/beta-preset.js",
         "src/conway-exchange.js",
         "src/conway-life-view.js",
         "src/conway-life-worker.js",
@@ -173,7 +174,7 @@
         "src/wireworld-worker.js",
         "styles.css"
       ],
-      "releaseNotes": "0.3.55：Conway 生命电路模式修复——保留自定义闸门信号方向，组合逻辑电路在输入变化时同步刷新并自动匹配输出探针，清除过期输出，各玩法统一显示下一拍动作；存档与关卡保持兼容。"
+      "releaseNotes": "新增「时钟化 BLC β 归约」预设：用 NAND 门搭出带时钟的惰性 β 归约器，可直接从元件库取用；原有电路与存档兼容。"
     },
     {
       "id": "traffic-planner",
@@ -531,16 +532,17 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/sokoban-ai-lab.git",
-      "revision": "82c94e40d4ed57d31998721f66d11bffcd9e0afb",
+      "revision": "597422a608293e5023caa1e6e899af1d9d9bf584",
       "directory": "dist",
-      "version": "1.0.2",
-      "contentCode": 5,
+      "version": "1.0.3",
+      "contentCode": 6,
       "entryPage": "index.html",
       "storageContract": "sokoban-ai-lab-dynamic-v1",
       "files": [
         "LICENSE",
         "app.js",
         "box-clone-levels.js",
+        "box-color-data.js",
         "box-cycle-levels.js",
         "box-flip-levels.js",
         "box-intro.css",
@@ -559,7 +561,7 @@
         "route-input.js",
         "style.css"
       ],
-      "releaseNotes": "套箱模式新增「占据」22 关与「墙」15 关两章，占据章可同时操控多名玩家，墙章演示实心房间与不可进入的墙体；原有关卡、操作与存档格式不变。"
+      "releaseNotes": "全 15 章 249 关按原版实机画面对照修正配色：房间地板改用自身颜色混色，循环、玩家、墙等章节恢复各自色系；套箱接管时实体、房间与字符地图同步变色。玩法、碰撞与存档格式不变。"
     },
     {
       "id": "tape-language-lab",
@@ -613,10 +615,10 @@
       "iconKind": "simulation",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/territory-conquest.git",
-      "revision": "2fdfe952ce6dc2ecf6b9005d323314717360e3e1",
+      "revision": "6598427de3e87d1180e0251af8850a204a91eb8a",
       "directory": "dist",
-      "version": "1.0.1",
-      "contentCode": 2,
+      "version": "1.1.0",
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "territory-conquest-dynamic-v1",
       "files": [
@@ -626,7 +628,32 @@
         "index.html",
         "style.css"
       ],
-      "releaseNotes": "修复大厅安装后无法启动：脚本改为 .js 扩展名，避免被当作二进制下发而被模块脚本的严格 MIME 检查拒绝；玩法与存档格式不变。"
+      "releaseNotes": "新增首都建设与迁都、有方向的外交关系（和平/中立/敌对，含 1% 缓和与恶化）、地区动荡独立建国、逐格小队行军、观战 1×–8× 倍速；电脑改用扩张/集结/稳步推进策略。存档格式不变。"
+    },
+    {
+      "id": "cube-step-solver",
+      "displayName": "魔方一步步",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/cube-step-solver.git",
+      "revision": "5b5c6bd1c59a38ec5256efabbe90734d1198d2ca",
+      "directory": "dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "cube-step-solver-dynamic-v1",
+      "files": [
+        "app.js",
+        "core.js",
+        "cuboid.js",
+        "index.html",
+        "solver-worker.js",
+        "style.css",
+        "vendor/LICENSE",
+        "vendor/cube.js",
+        "vendor/solve.js"
+      ],
+      "releaseNotes": "多尺寸魔方填色与逐步还原工具：2–7 阶正方体与长方体，随机打乱、随机涂黑与黑色忽略标记，还原方案在本机线程中计算，无需联网；尺寸、填色与打乱记录保存在本机。"
     }
   ]
 }
