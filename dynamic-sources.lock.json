@@ -638,25 +638,28 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/cube-step-solver.git",
-      "revision": "9dfc18e273c04aa373534d03d8ef493628cacfa6",
+      "revision": "a31c38cb472039983907d3d778b1b56b3d2b3061",
       "directory": "dist",
-      "version": "1.0.0",
-      "contentCode": 1,
+      "version": "1.1.0",
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "cube-step-solver-dynamic-v1",
       "files": [
         "LICENSE",
         "app.js",
+        "color-input.js",
         "core.js",
         "cuboid.js",
         "index.html",
+        "large-view.js",
+        "net-motion.js",
         "solver-worker.js",
         "style.css",
         "vendor/LICENSE",
         "vendor/cube.js",
         "vendor/solve.js"
       ],
-      "releaseNotes": "多尺寸魔方填色与逐步还原工具：2–7 阶正方体与长方体，随机打乱、随机涂黑与黑色忽略标记，还原方案在本机线程中计算，无需联网；尺寸、填色与打乱记录保存在本机。"
+      "releaseNotes": "魔方一步步 1.1.0：支持 1–200 阶正方体与长方体（两百阶 240000 个表面格），六面展开图显示运行过程并高亮本步受影响区域；手动填色可直接输入或粘贴颜色（中文、字母、RLE 计数、? 未填），支持最多 10000 步历史与 0.5–120 步/秒调速，全部在本机离线运行。"
     }
   ]
 }
