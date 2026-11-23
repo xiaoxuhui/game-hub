@@ -7,6 +7,13 @@ param(
     [switch]$ResumeAfterUploads
 )
 $ErrorActionPreference='Stop'
+# Preload the DPAPI assembly so publishing no longer needs an external wrapper script.
+if(-not ('Security.Cryptography.ProtectedData' -as [type])){
+    [void][Reflection.Assembly]::LoadWithPartialName('System.Security')
+}
+if(-not ('Security.Cryptography.ProtectedData' -as [type])){
+    try{ Add-Type -AssemblyName System.Security -ErrorAction Stop }catch{}
+}
 $taskCheckout='D:\soft\.ci-tmp\game-hub-n10\work'
 $taskEvidenceRoot='D:\soft\.ci-tmp\game-hub-n10\evidence\publication'
 if($TaskScope -ieq 'n12'){
@@ -92,6 +99,7 @@ try {
     }
     node scripts/resource-v1-successor.mjs payload $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Fresh complete asset-bound payload failed'}
+    if(-not ('Security.Cryptography.ProtectedData' -as [type])){throw 'System.Security ProtectedData unavailable; cannot decrypt the signing key'}
     $taskEncrypted=[IO.File]::ReadAllBytes('D:\aiden\game-hub-resource-signing\resource-private-key.dpapi')
     $taskDer=[Security.Cryptography.ProtectedData]::Unprotect($taskEncrypted,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
     $taskPem="-----BEGIN PRIVATE KEY-----`n"+[Convert]::ToBase64String($taskDer,[Base64FormattingOptions]::InsertLineBreaks)+"`n-----END PRIVATE KEY-----`n"
