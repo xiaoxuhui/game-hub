@@ -345,21 +345,22 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/compass-polygon-studio.git",
-      "revision": "29fd308f4a9bfc1fc7cb71977b9ba198278c3278",
+      "revision": "af22088f8dd5f15239a2d9275344388bb4db9411",
       "directory": "dist",
-      "version": "1.0.0",
-      "contentCode": 3,
+      "version": "1.1.0",
+      "contentCode": 4,
       "entryPage": "index.html",
       "storageContract": "compass-polygon-studio-dynamic-v1",
       "files": [
         "LICENSE",
         "app.js",
+        "desmos.js",
         "geometry.js",
         "index.html",
-        "style.css",
-        "desmos.js"
+        "principles.js",
+        "style.css"
       ],
-      "releaseNotes": "更新尺规作图导出，支持 Desmos 几何构造与可拖动的参考点。"
+      "releaseNotes": "新增「作图原理」面板：逐步解释当前步骤的几何依据，并给出阶段说明与公式；切换步骤时同步刷新。"
     },
     {
       "id": "fourier-drawing-studio",
@@ -615,10 +616,10 @@
       "iconKind": "simulation",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/territory-conquest.git",
-      "revision": "6598427de3e87d1180e0251af8850a204a91eb8a",
+      "revision": "1592c9edd871cfcc90438123c6fceda14e57eb7a",
       "directory": "dist",
-      "version": "1.1.0",
-      "contentCode": 3,
+      "version": "1.2.0",
+      "contentCode": 4,
       "entryPage": "index.html",
       "storageContract": "territory-conquest-dynamic-v1",
       "files": [
@@ -626,9 +627,10 @@
         "app.js",
         "engine.js",
         "index.html",
+        "map-editor.js",
         "style.css"
       ],
-      "releaseNotes": "新增首都建设与迁都、有方向的外交关系（和平/中立/敌对，含 1% 缓和与恶化）、地区动荡独立建国、逐格小队行军、观战 1×–8× 倍速；电脑改用扩张/集结/稳步推进策略。存档格式不变。"
+      "releaseNotes": "新增自定义地图编辑器（10×10/30×30/100×100、陆海笔刷、撤销、随机海陆）与开局设置（初始首都、单向初始外交）；新增地球式边界模式、海洋领地与 10% 入海判定、查看国家六个自动跟随选项、势力图指标切换、接管国家、国家轮廓；人数上限提到 64，动荡改按敌对攻占或抽走 ≥75% 兵力计次。旧地图与存档兼容。"
     },
     {
       "id": "cube-step-solver",
