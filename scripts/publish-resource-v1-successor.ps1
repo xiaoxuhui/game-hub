@@ -57,7 +57,7 @@ try {
     node scripts/resource-v1-successor.mjs $taskAdmissionMode $taskDirectory $ExpectedPreviousSha $NextSequence
     if($LASTEXITCODE -ne 0){throw 'Anonymous history/candidate admission failed before credentials'}
     $taskSnapshotName=if($ResumeAfterUploads){'resume-snapshot.json'}else{'before-snapshot.json'}
-    $taskBefore=Get-Content -LiteralPath (Join-Path $taskDirectory $taskSnapshotName) -Raw | ConvertFrom-Json
+    $taskBefore=Get-Content -LiteralPath (Join-Path $taskDirectory $taskSnapshotName) -Raw -Encoding UTF8 | ConvertFrom-Json
     $taskAssets=@($taskBefore.assetPages | ForEach-Object {$_.assets})
     $taskOld=@($taskAssets | Where-Object name -CEQ 'catalog.signed.json')
     if($taskOld.Count -ne 1){throw 'Current catalog identity missing'}
@@ -82,7 +82,7 @@ try {
         return $asset
     }
     if(-not $ResumeAfterUploads){
-        $games=Get-Content -LiteralPath '.build\resource-candidate\games.unsigned.json' -Raw | ConvertFrom-Json
+        $games=Get-Content -LiteralPath '.build\resource-candidate\games.unsigned.json' -Raw -Encoding UTF8 | ConvertFrom-Json
         $uploads=@()
         foreach($game in $games){
             $name="game-$($game.id)-$($game.contentCode)-$($game.archiveSha256.Substring(0,12)).zip"
@@ -103,7 +103,7 @@ try {
     Assert-FixedTags
     $current=Invoke-RestMethod -Uri "$taskApi/releases/assets/$taskOldId" -Headers $taskHeaders
     if($current.name -cne 'catalog.signed.json' -or $current.digest -ne "sha256:$ExpectedPreviousSha" -or $current.state -ne 'uploaded'){throw 'Old current asset moved before activation; inspect'}
-    $oldPayload=Get-Content -LiteralPath (Join-Path $taskDirectory 'payload.json') -Raw | ConvertFrom-Json
+    $oldPayload=Get-Content -LiteralPath (Join-Path $taskDirectory 'payload.json') -Raw -Encoding UTF8 | ConvertFrom-Json
     $oldSequence=([System.Numerics.BigInteger]::Parse($oldPayload.catalogSequence)-[System.Numerics.BigInteger]::One).ToString()
     $historyName="catalog-seq$oldSequence-$($ExpectedPreviousSha.Substring(0,12)).signed.json"
     if(@($taskAssets | Where-Object name -CEQ $historyName).Count){throw 'History name already present; inspect previous issuance'}
