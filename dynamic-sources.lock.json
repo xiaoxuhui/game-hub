@@ -58,18 +58,18 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "820f63c90523b96147c5aa453fd96bf6bd0519a5",
-      "directory": "examples/lambda-quota-readonly-20261121",
-      "version": "0.3.9",
-      "contentCode": 19,
+      "revision": "a393d450b83f31fdca25d65b9e549b00c9a5c4c0",
+      "directory": "examples/lambda-diagram-040-20261123",
+      "version": "0.4.0",
+      "contentCode": 20,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
-        "lambda-lab.html",
         "LICENSE",
+        "lambda-lab.html",
         "upstream-source.json"
       ],
-      "releaseNotes": "本机存储配额不足时保留原始存档，支持导出及手动只读查看；只读期间不会自动保存，也不会自动删除备份。"
+      "releaseNotes": "新增布尔逻辑与电路 20 例、列表与二进制 19 例、无限数列入口、SK/BCKW 转换与函数重名处理，数字与列表可按需逐层展开；保留 0.3.9 存档与配额不足时的导出、只读保护。"
     },
     {
       "id": "red-green-puzzle",
