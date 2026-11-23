@@ -1,3 +1,7 @@
+import { transitionFormatError } from "./rule-error";
+import { decodeRuleSymbol, expandImplicitRead } from "./rule-format";
+import { protectSymbolAnnotations, splitInputSymbols } from "./symbol-annotations";
+
 export type Direction = "L" | "R" | "N";
 
 export interface Transition {
@@ -67,6 +71,7 @@ export class TuringMachine {
   headPosition: number;
   stepCount = 0;
   private readonly index = new Map<string, Map<string, Transition>>();
+  private readonly scopedStates: string[];
   private readonly initialTape: Array<[number, string]>;
   private readonly initialHeadPosition: number;
 
@@ -91,6 +96,7 @@ export class TuringMachine {
       }
       row.set(transition.readSymbol, transition);
     }
+    this.scopedStates = [...this.index.keys()].filter(state => state.endsWith(".*")).sort((a, b) => b.length - a.length);
   }
 
   reset(): void {
@@ -112,11 +118,19 @@ export class TuringMachine {
     if (terminal) return { stopped: true, reason: terminal };
 
     const readSymbol = this.tape.read(this.headPosition);
-    const transition = this.index.get(this.currentState)?.get(readSymbol);
+    const match = (state: string) => this.index.get(state)?.get(readSymbol) ?? this.index.get(state)?.get("");
+    let transition = match(this.currentState);
+    if (!transition) for (const scope of this.scopedStates) {
+      if (this.currentState.startsWith(scope.slice(0, -1))) transition = match(scope);
+      if (transition) break;
+    }
+    transition ??= match("");
     if (!transition) return { stopped: true, reason: "missing-transition" };
 
     const headBefore = this.headPosition;
-    this.tape.write(this.headPosition, transition.writeSymbol);
+    const fromState = this.currentState;
+    const writeSymbol = transition.writeSymbol || readSymbol;
+    this.tape.write(this.headPosition, writeSymbol);
     if (transition.direction === "L") this.headPosition -= 1;
     if (transition.direction === "R") this.headPosition += 1;
     this.currentState = transition.toState;
@@ -124,6 +138,9 @@ export class TuringMachine {
 
     const record: StepRecord = {
       ...transition,
+      fromState,
+      readSymbol,
+      writeSymbol,
       step: this.stepCount,
       headBefore,
       headAfter: this.headPosition,
@@ -135,21 +152,51 @@ export class TuringMachine {
 export interface ParseResult {
   transitions: Transition[];
   errors: string[];
+  hasFunctions?: boolean;
+  initialState?: string;
+  functionEntries?: Array<{ name: string; state: string }>;
+  stateExports?: Array<{ name: string; state: string }>;
+  sourceEntries?: Array<{ name: string; state: string }>;
+  internalNames?: Array<{ source: string; actual: string; context: string }>;
 }
 
-export function parseTransitions(source: string): ParseResult {
+export interface ParseOptions {
+  haltStates?: string[];
+  acceptStates?: string[];
+  rejectStates?: string[];
+}
+
+export function resolveInitialState(parsed: ParseResult, requested: string): string {
+  const name = requested.trim();
+  if (!name) return parsed.initialState ?? "";
+  return parsed.sourceEntries?.find(item => item.name === name)?.state
+    ?? parsed.functionEntries?.find(fn => fn.name === name)?.state
+    ?? parsed.stateExports?.find(state => state.name === name)?.state ?? name;
+}
+
+export function parseTransitions(source: string, options: ParseOptions = {}): ParseResult {
+  const program = parseRuleFunctions(source, options, parseTransitions);
+  if (program) return program;
   const transitions: Transition[] = [];
   const errors: string[] = [];
   const seen = new Set<string>();
   source.split(/\r?\n/).forEach((raw, index) => {
     const line = raw.trim();
     if (!line || line.startsWith("#")) return;
-    const match = line.match(/^([^,]+),(.+?)\s*->\s*([^,]+),(.+?),([LRNlrn])$/);
-    if (!match) {
-      errors.push(`第 ${index + 1} 行格式错误`);
+    const { text, restore } = protectSymbolAnnotations(line);
+    const match = expandImplicitRead(text).match(/^([^,]*),([^,]*?)\s*->\s*([^,]+)(?:,([^,]*)(?:,\s*([LRNlrn*]?)\s*)?)?$/);
+    if (!match || !match[3].trim()) {
+      errors.push(`第 ${index + 1} 行：${transitionFormatError(line)}`);
       return;
     }
-    const [, fromState, readSymbol, toState, writeSymbol, direction] = match.map((value) => value.trim());
+    const fromField = match[1].trim(), readField = match[2].trim();
+    const fromState = fromField === "*" ? "" : restore(fromField);
+    const readSymbol = readField === "*" ? "" : decodeRuleSymbol(restore(readField));
+    const toState = restore(match[3].trim());
+    const writeField = match[4]?.trim(), directionField = match[5]?.trim();
+    const shortMove = match[5] === undefined && /^[RLrl]$/.test(writeField ?? "");
+    const writeSymbol = shortMove || !writeField || writeField === "*" ? readSymbol : decodeRuleSymbol(restore(writeField));
+    const direction = shortMove ? writeField! : !directionField || directionField === "*" ? "N" : directionField;
     const transition: Transition = {
       fromState,
       readSymbol,
@@ -168,12 +215,12 @@ export function parseTransitions(source: string): ParseResult {
 }
 
 export function inputToTape(input: string, blankSymbol: string): Array<[number, string]> {
-  return Array.from(input).flatMap((symbol, position) =>
+  return splitInputSymbols(input).flatMap((symbol, position) =>
     symbol === blankSymbol ? [] : ([[position, symbol]] as Array<[number, string]>),
   );
 }
 
-export type TapeViewMode = "follow-head" | "fixed-zero" | "free-drag";
+export type TapeViewMode = "follow-head" | "fixed-zero" | "free-drag" | "show-all";
 
 export function tapeWindowCenter(mode: TapeViewMode, headPosition: number): number {
   // free-drag 与 fixed-zero 都以 0 为基准（满足“初始位置在零”），follow-head 跟随读写头。
@@ -217,6 +264,7 @@ export function effectiveTapeScroll(mode: TapeViewMode, scroll: number): number 
 
 /**
  * 跟随读写头模式下，纸带滑动的过渡时长（毫秒），跟随目标速度自适应。
+ * 手动单步固定 180ms，不受目标速度影响。
  *
  * 步进节奏由速度决定：单步间隔 ≈ 1000 / 速度(步/秒) 毫秒。固定过渡时长会脱节——
  * 慢速时滑完就干等（像“跳一步”），快速时过渡比间隔还长（积压、刷新不过来）。
@@ -225,9 +273,12 @@ export function effectiveTapeScroll(mode: TapeViewMode, scroll: number): number 
  * - 快速(如 1000) → 远小于间隔、近乎瞬时，能跟上演进、不积压。
  * speed 非法(0/负/NaN/超范围)时夹紧到 [1,1000]，默认当 1 处理。
  */
-export function slideDurationMs(stepsPerSecond: number): number {
+export function slideDurationMs(stepsPerSecond: number, motion: "continuous" | "manual" = "continuous"): number {
+  if (motion === "manual") return 180;
   const speed = Math.min(1000, Math.max(1, Number.isFinite(stepsPerSecond) ? stepsPerSecond : 1));
   const interval = 1000 / speed;
   return Math.min(900, Math.max(8, interval * 0.9));
 }
+
+import { parseRuleFunctions } from "./rule-functions";
 

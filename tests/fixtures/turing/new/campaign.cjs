@@ -4,16 +4,20 @@ exports.campaignLevels = exports.campaignSections = void 0;
 exports.tapeOutput = tapeOutput;
 exports.verifyLevel = verifyLevel;
 exports.emptyCampaignProgress = emptyCampaignProgress;
+exports.normalizeCampaignDraft = normalizeCampaignDraft;
 exports.normalizeCampaignProgress = normalizeCampaignProgress;
 exports.isLevelUnlocked = isLevelUnlocked;
 exports.completeLevel = completeLevel;
 exports.uncompleteLevel = uncompleteLevel;
 exports.resetDraft = resetDraft;
 const core_1 = require("./core.cjs");
+const campaign_advanced_1 = require("./campaign-advanced.cjs");
+const campaign_extra_1 = require("./campaign-extra.cjs");
+const rule_format_1 = require("./rule-format.cjs");
 exports.campaignSections = [
-    { id: "tutorial", title: "教程", description: "小步学习规则、扫描、分支与状态切换" },
-    { id: "challenge", title: "闯关", description: "组合已学套路，只给策略提示" },
-    { id: "hard", title: "高难", description: "多阶段算法、临时标记与边界处理" },
+    { id: "tutorial", title: "教程", description: "规则、位权、进位、借位与函数；一步一个新概念" },
+    { id: "challenge", title: "闯关", description: "复制与复用函数，组合一进制和二进制四则运算" },
+    { id: "hard", title: "高难", description: "乘方、整数逆运算，以及超幂、超超幂" },
 ];
 const base = {
     description: "关卡练习草稿：根据教程独立完成规则。",
@@ -21,7 +25,7 @@ const base = {
     rejectStates: "",
     haltStates: "HALT",
 };
-exports.campaignLevels = [
+const originalCampaignLevels = [
     {
         id: "write-one",
         section: "tutorial",
@@ -327,6 +331,14 @@ exports.campaignLevels = [
         starter: { ...base, name: "高难 2：一进制翻倍", input: "111", blankSymbol: "□", initialState: "seek", rules: "# 可使用 X 标记原输入、Y 标记复制出的 1\n" },
     },
 ];
+const additionsBefore = {
+    "turn-back": ["binary-place-zero", "binary-place-one"],
+    "binary-increment": ["binary-carry-local", "binary-carry-chain", "binary-borrow-local", "binary-borrow-chain", "binary-parity-bit", "binary-shift-right"],
+};
+exports.campaignLevels = exports.campaignSections.flatMap(section => [
+    ...originalCampaignLevels.filter(level => level.section === section.id),
+    ...campaign_advanced_1.advancedCampaignLevels.filter(level => level.section === section.id),
+].flatMap(level => [...(additionsBefore[level.id] ?? []).map(id => campaign_extra_1.extraCampaignLevels.find(item => item.id === id)), level]).concat(campaign_extra_1.extraCampaignLevels.filter(level => level.section === section.id && !Object.values(additionsBefore).flat().includes(level.id)))).map((level, index) => ({ ...level, title: `第 ${index + 1} 关 · ${level.title.replace(/^第 \d+ 关 · /, "")}`, starter: { ...level.starter, rules: (0, rule_format_1.compactRuleArrows)(level.starter.rules) } }));
 function tapeOutput(tape) {
     const entries = tape.entries();
     if (!entries.length)
@@ -366,6 +378,17 @@ function verifyLevel(level, definition) {
 function emptyCampaignProgress() {
     return { version: 1, completedLevelIds: [], drafts: {} };
 }
+function normalizeCampaignDraft(levelId, source) {
+    const compact = (0, rule_format_1.compactRuleArrows)(source);
+    const previous = levelId === "function-ret" ? "next" : levelId === "function-conditional" ? "after" : null;
+    if (!previous || /^done,/m.test(compact))
+        return compact;
+    return compact.replace(/^([^\s,]+),([^,\r\n]+)->([^,\r\n]+),([^\r\n]+)$/gm, (line, from, read, to, tail) => {
+        if (from !== previous && to !== previous)
+            return line;
+        return `${from === previous ? "done" : from},${read}->${to === previous ? "done" : to},${tail}`;
+    });
+}
 function normalizeCampaignProgress(value) {
     if (typeof value !== "object" || value === null)
         return emptyCampaignProgress();
@@ -375,7 +398,7 @@ function normalizeCampaignProgress(value) {
     const known = new Set(exports.campaignLevels.map((level) => level.id));
     const completedLevelIds = [...new Set(candidate.completedLevelIds.filter((id) => typeof id === "string" && known.has(id)))];
     const drafts = typeof candidate.drafts === "object" && candidate.drafts !== null
-        ? Object.fromEntries(Object.entries(candidate.drafts).filter(([id, draft]) => known.has(id) && typeof draft === "string" && draft.length <= 100_000))
+        ? Object.fromEntries(Object.entries(candidate.drafts).filter(([id, draft]) => known.has(id) && typeof draft === "string" && draft.length <= 100_000).map(([id, draft]) => [id, normalizeCampaignDraft(id, draft)]))
         : {};
     return { version: 1, completedLevelIds, drafts };
 }

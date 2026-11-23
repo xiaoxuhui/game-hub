@@ -37,19 +37,19 @@ function validateProjectData(value) {
         throw new Error("目标速度必须在 1–1000 步/秒之间");
     }
     const project = value;
-    if (!project.initialState.trim())
-        throw new Error("初始状态不能为空");
     if (Array.from(project.blankSymbol).length !== 1)
         throw new Error("空白符必须是一个字符");
-    const parsed = (0, core_1.parseTransitions)(project.rules);
+    const terminalStates = { acceptStates: splitStates(project.acceptStates), rejectStates: splitStates(project.rejectStates), haltStates: splitStates(project.haltStates) };
+    const parsed = (0, core_1.parseTransitions)(project.rules, terminalStates);
     if (parsed.errors.length)
         throw new Error(parsed.errors.slice(0, 4).join("；"));
+    const initialState = (0, core_1.resolveInitialState)(parsed, project.initialState);
+    if (!initialState)
+        throw new Error("初始状态不能为空");
     new core_1.TuringMachine({
         blankSymbol: project.blankSymbol,
-        initialState: project.initialState.trim(),
-        acceptStates: splitStates(project.acceptStates),
-        rejectStates: splitStates(project.rejectStates),
-        haltStates: splitStates(project.haltStates),
+        initialState,
+        ...terminalStates,
         transitions: parsed.transitions,
     }, []);
     return { ...project };

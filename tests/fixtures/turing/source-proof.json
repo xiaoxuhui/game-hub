@@ -6,7 +6,7 @@
     "version": "5.9.3",
     "target": "ES2022",
     "module": "CommonJS",
-    "onlyResolutionRewrite": "require(\"./core\") -> require(\"./core.cjs\")"
+    "onlyResolutionRewrite": "require(\"./x\") -> require(\"./x.cjs\")"
   },
   "sources": [
     {
@@ -39,31 +39,58 @@
     },
     {
       "kind": "new",
-      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "revision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
       "path": "src/core.ts",
       "fixture": "new/core.ts.txt",
-      "bytes": 8123,
-      "sha256": "54e6e45544790c87301e19dcb69bffb3390467b4a1473bb9116dfc932b9430b0",
+      "bytes": 10801,
+      "sha256": "56492b62f4b11431b818b529676b8dd4f8a3fafbff880a70397b0df28499f0b4",
       "compiledFixture": "new/core.cjs",
-      "compiledSha256": "4da386980d8db9c6c6b660c0ebfb47a3c936d0fbb45fd26a30fda76d1470c729"
+      "compiledSha256": "29415cf0f7ce71ee24878a589928c4114ed7675f7438fc011073874637410e42"
     },
     {
       "kind": "new",
-      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "revision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
       "path": "src/project-codec.ts",
       "fixture": "new/project-codec.ts.txt",
-      "bytes": 3064,
-      "sha256": "bc4876603162e36183aa282139941cc65ebcdf83c6fd430d351ac50e7803db26",
+      "bytes": 3171,
+      "sha256": "dbd53affd7601265c3fed6c90388f44e8fbe02d56d4fceb6d40c69e64d70a970",
       "compiledFixture": "new/project-codec.cjs",
-      "compiledSha256": "32074ce75aaf8fdf42da1a4a768f0dfaf5e85a09f115182707381363e9478b88"
+      "compiledSha256": "8f9e3f78fb11e3f8e3b77afb70a5bc5adbe77a644183c6a12f09f302c9cf518f"
     },
     {
       "kind": "new",
-      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "revision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
       "path": "LICENSE",
       "fixture": "new/LICENSE",
       "bytes": 1066,
       "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    }
+  ],
+  "closure": [
+    {
+      "path": "src/rule-error.ts",
+      "fixture": "new/rule-error.cjs",
+      "sha256": "62bc26d0ba25c96dbdeeadb66f7db307c73cb46b5032bade234a55eac0715762"
+    },
+    {
+      "path": "src/rule-format.ts",
+      "fixture": "new/rule-format.cjs",
+      "sha256": "eb42e60998f3fcc0206189942bde11c1c40c7836c886dfbce956438331a7750e"
+    },
+    {
+      "path": "src/rule-functions.ts",
+      "fixture": "new/rule-functions.cjs",
+      "sha256": "0257dee3382257bd50be929dfbaa2b03e00d125d836731cd173128ec61a09084"
+    },
+    {
+      "path": "src/symbol-annotations.ts",
+      "fixture": "new/symbol-annotations.cjs",
+      "sha256": "596300fb7d6b3e494c09c85127c8a6384321b6229cdac386b41399e8b9711c39"
+    },
+    {
+      "path": "src/function-parameters.ts",
+      "fixture": "new/function-parameters.cjs",
+      "sha256": "b41e2907d6bd58d674dad0da7df2f38d4ef8c40d3c8dad0cc39a109b033fbdef"
     }
   ]
 }

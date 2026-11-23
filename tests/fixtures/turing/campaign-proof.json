@@ -11,19 +11,96 @@
     },
     {
       "kind": "new",
-      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "revision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
       "path": "src/campaign.ts",
-      "sourceSha256": "24d36f62d6448906637b325972277ba41f4a6081af806abe0e68817726cfd4ec",
+      "sourceSha256": "7219b810bad838b792df7eb4df89a8546bfee40b42791a20d173767212e25253",
       "fixture": "new/campaign.cjs",
-      "compiledSha256": "81af1fcf7e3dbaf35ee1c29f80e50a8fddf5d0ec8e71e5ca6f50d46b746ceb58"
+      "compiledSha256": "6335580a46a6e92c468393e988d80f5cf6b1948c0fd8f96afd518e8d794b8dff"
     },
     {
       "kind": "new",
-      "revision": "ec1b7a0a6b7504c0adb9e15688031be0c7ff0ff3",
+      "revision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
       "path": "src/campaign-backup.ts",
       "sourceSha256": "1b95d2ddcbc07797d4bc9d8066125c63f09c19a4c752cf1b8da838fffb1d4a3a",
       "fixture": "new/campaign-backup.cjs",
       "compiledSha256": "bbb9b89251cb86037d2f3da483b6c33e07691a055b9651874d5a3b1ce996f984"
+    }
+  ],
+  "closure": [
+    {
+      "path": "src/campaign-advanced.ts",
+      "fixture": "new/campaign-advanced.cjs",
+      "sha256": "2c36e049d2a99bf926a8d649a412ad877d8c227dc1d610f0a57d6e11e97e23c1"
+    },
+    {
+      "path": "src/campaign-extra.ts",
+      "fixture": "new/campaign-extra.cjs",
+      "sha256": "9278ea427249216649f3ef3930aaf845e6e2367e9b8f6d845f22d6044721f308"
+    },
+    {
+      "path": "src/core.ts",
+      "fixture": "new/core.cjs",
+      "sha256": "29415cf0f7ce71ee24878a589928c4114ed7675f7438fc011073874637410e42"
+    },
+    {
+      "path": "src/rule-error.ts",
+      "fixture": "new/rule-error.cjs",
+      "sha256": "62bc26d0ba25c96dbdeeadb66f7db307c73cb46b5032bade234a55eac0715762"
+    },
+    {
+      "path": "src/rule-format.ts",
+      "fixture": "new/rule-format.cjs",
+      "sha256": "eb42e60998f3fcc0206189942bde11c1c40c7836c886dfbce956438331a7750e"
+    },
+    {
+      "path": "src/rule-functions.ts",
+      "fixture": "new/rule-functions.cjs",
+      "sha256": "0257dee3382257bd50be929dfbaa2b03e00d125d836731cd173128ec61a09084"
+    },
+    {
+      "path": "src/rule-guide.ts",
+      "fixture": "new/rule-guide.cjs",
+      "sha256": "c5f5ce5885956117f10c4dee0ba84dac7565b0011facc98ec0ea2964ae52c10d"
+    },
+    {
+      "path": "src/symbol-annotations.ts",
+      "fixture": "new/symbol-annotations.cjs",
+      "sha256": "596300fb7d6b3e494c09c85127c8a6384321b6229cdac386b41399e8b9711c39"
+    },
+    {
+      "path": "src/tape-stack-program.ts",
+      "fixture": "new/tape-stack-program.cjs",
+      "sha256": "ddd57b89efb11af9abf511409698d303bc193b55bb1fdb20a84e1e21d63effc4"
+    },
+    {
+      "path": "src/binary-examples.ts",
+      "fixture": "new/binary-examples.cjs",
+      "sha256": "363a9f07ecba111376ff06fc7c3a336d14bc65514e8ed68780938f7592fbdf5c"
+    },
+    {
+      "path": "src/hyperoperation-examples.ts",
+      "fixture": "new/hyperoperation-examples.cjs",
+      "sha256": "65c5a473fbd62815a2e9d98ace6edef15bd61cf3a656b56609e32a9e154680b2"
+    },
+    {
+      "path": "src/inverse-operation-examples.ts",
+      "fixture": "new/inverse-operation-examples.cjs",
+      "sha256": "776950ed381fa68a11a2a96b5f9b87a73280cc2214c35b2c0e54c049d56c70c1"
+    },
+    {
+      "path": "src/register-tm.ts",
+      "fixture": "new/register-tm.cjs",
+      "sha256": "7f2d8b94b328cd88d649498cd885aae53b61a57c334d42e64dd0ead8d5107be6"
+    },
+    {
+      "path": "src/unary-examples.ts",
+      "fixture": "new/unary-examples.cjs",
+      "sha256": "885848562a323aa9bc8655426d5f57e38543c6966aeab1dbe55733879e82848a"
+    },
+    {
+      "path": "src/function-parameters.ts",
+      "fixture": "new/function-parameters.cjs",
+      "sha256": "b41e2907d6bd58d674dad0da7df2f38d4ef8c40d3c8dad0cc39a109b033fbdef"
     }
   ]
 }
