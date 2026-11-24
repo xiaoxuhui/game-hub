@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "id": "lambda-diagram-game",
+  "repository": "https://github.com/xiaoxuhui/lambda-diagram-game.git",
+  "revision": "2acc58b532d6146272af1d88e51fe1c1bc2772ea",
+  "version": "0.5.0",
+  "buildKind": "inline-html",
+  "entryPage": "lambda-lab.html",
+  "inputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "index.html",
+      "bytes": 29151,
+      "sha256": "a03c0aabb995051ab4609b3d5c86a03de3c0e90ca9a138893eaf5d9d29dda682"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1542,
+      "sha256": "a182873362c38ebe3166fa319268e04d30d2fc31e1f4535afc894a2c4af7448f"
+    },
+    {
+      "path": "scripts/build-guide-names.cjs",
+      "bytes": 1413,
+      "sha256": "b6d52653c872ed3b88c5d607eacd0004f0189903893282d83ea3b81dc2e0fee4"
+    },
+    {
+      "path": "scripts/build.mjs",
+      "bytes": 1341,
+      "sha256": "8f9343139619010b9aef9ec105e4d0abfe0b5aeefb9e0be73ea013405a1decdf"
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 65226,
+      "sha256": "695a21d20b4ea573c767d8929751cedc5f3d0fceef0d8367bd3ba6dc44c1da95"
+    },
+    {
+      "path": "src/boolean-circuits.js",
+      "bytes": 14645,
+      "sha256": "aa9fd8bc05cb65a86420cc857574077ce659a36a50119db84421aad01f4122e6"
+    },
+    {
+      "path": "src/challenges.js",
+      "bytes": 1136,
+      "sha256": "8754b796c69f7a8faa5cf04b2452ac0ed891491629c2f39de12c1203cd14417e"
+    },
+    {
+      "path": "src/combinator-compiler.js",
+      "bytes": 20354,
+      "sha256": "d92d025d6fd118a1bd2a14cfc3f4e143ee1c1fdd0a4a40a9021a6fd5e70e569e"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 19283,
+      "sha256": "e3ef252822af648ea98df1e31814716014fa2b1732eb9a0dd6ef4f7976811090"
+    },
+    {
+      "path": "src/data-encoding-editor.js",
+      "bytes": 7230,
+      "sha256": "daee8b1efd2cb0951e425c39d114c9159bd6409142aece82318fcdee80666e22"
+    },
+    {
+      "path": "src/data-encoding.js",
+      "bytes": 18095,
+      "sha256": "1a1b671a5b0f0cd5eb0101df73684a8f08fac20a6b33d6c148bdb1b9b445b19f"
+    },
+    {
+      "path": "src/decimal.js",
+      "bytes": 15941,
+      "sha256": "9b47459cc1a535d9c0999fa13e2d07284b409f4894f1c4eb5b8b8e41ae5ef6f7"
+    },
+    {
+      "path": "src/default-state.js",
+      "bytes": 2416,
+      "sha256": "5af720479117bccfb1db0bc9a5cf12327a76a66d0d1e8d88e6a651f88eaed8b0"
+    },
+    {
+      "path": "src/definitions.js",
+      "bytes": 5562,
+      "sha256": "10d98bbebb15e857c75d319ab4be24329c6f7dac7f96b3236d5660cc08b72338"
+    },
+    {
+      "path": "src/diagram-view.js",
+      "bytes": 12724,
+      "sha256": "4ad90b71b6059296b4191c6679d853ecffcf565c2fa1419e0741b5ede9ab5aa3"
+    },
+    {
+      "path": "src/diagram.js",
+      "bytes": 8173,
+      "sha256": "0edd2f06e875bf50816fba0bdbf24d643acb3e4364abd4b1c7de628c60f4da06"
+    },
+    {
+      "path": "src/download.js",
+      "bytes": 1043,
+      "sha256": "535a746503a46fd21b0f09521e42cca6c4d6f28944a7077fd71aca7def9e1c19"
+    },
+    {
+      "path": "src/encoding-table.js",
+      "bytes": 6392,
+      "sha256": "2d51a34ed5611c292175cf6ff9166590079320473ada797b1f43979d277209a5"
+    },
+    {
+      "path": "src/function-reduction.js",
+      "bytes": 7489,
+      "sha256": "ddea01267b36863e382184531c8fdcd05dd964b6a1e7cccda9864ead75259a9a"
+    },
+    {
+      "path": "src/guide-advanced.js",
+      "bytes": 63462,
+      "sha256": "dbe9c5e9014286897ab1ad88dd811927d0f9938825545c9d8c6a8e7289159eef"
+    },
+    {
+      "path": "src/guide-details.js",
+      "bytes": 29878,
+      "sha256": "9a98dfac48ecb75a6035d545a17db0f291d39e280f74dc6e9562b19360476a4c"
+    },
+    {
+      "path": "src/guide-name-data.js",
+      "bytes": 137980,
+      "sha256": "23780a82f3b1a5474f992db297098da16ec33a116fbf28650c12c8097dbe68e6"
+    },
+    {
+      "path": "src/guide-names.js",
+      "bytes": 25864,
+      "sha256": "9dd8b026c4900a12c9724fd1ee5c8b9c0bd6660a96f47b98ab78199f9cbc32f6"
+    },
+    {
+      "path": "src/guide-pairs.js",
+      "bytes": 18644,
+      "sha256": "408ea211c6a41a89f2c7eeb5f2f26be76a92d5b44e336fdbac4016244293d45e"
+    },
+    {
+      "path": "src/guide-polynomial.js",
+      "bytes": 20137,
+      "sha256": "0708e713d5d5d9726ce6008390243296705eaca18a895ba69e832370e942d2f9"
+    },
+    {
+      "path": "src/guide.js",
+      "bytes": 62939,
+      "sha256": "76237e06eef9a47ca5a0da16cbfa5d5242d079f62900f7d17dff14b19aeb1111"
+    },
+    {
+      "path": "src/input-format-editor.js",
+      "bytes": 3441,
+      "sha256": "0496b5670fa4bdf5aafb0d459cda5315d2e9228f7f336c4580975a0faaa20c90"
+    },
+    {
+      "path": "src/lazy-eval.js",
+      "bytes": 6592,
+      "sha256": "236ec6ef84ff6178f010631f9c2e7fdd631c718b00870518b53c21a6c532efbe"
+    },
+    {
+      "path": "src/library.js",
+      "bytes": 23151,
+      "sha256": "824701e717b4bc3dbda88668f5272c041707fd517d99c74d571229b31524e3ab"
+    },
+    {
+      "path": "src/list-operations.js",
+      "bytes": 15165,
+      "sha256": "d90e965db279b520078ac0e2e9812cd4e57cd33081335640506e2b469d49536f"
+    },
+    {
+      "path": "src/meta-lambda.js",
+      "bytes": 13807,
+      "sha256": "08b8f9a922ba0499459a3955e5469f7051b563927a4dd6dd43348aff94e3b255"
+    },
+    {
+      "path": "src/palette.js",
+      "bytes": 3896,
+      "sha256": "1cf3041059de067ac301aa6f8033ee27682ab3ada7d34da18f813b49bf6ec0a9"
+    },
+    {
+      "path": "src/polynomial.js",
+      "bytes": 7300,
+      "sha256": "3a50f1a6c64be01797c6419f6a1acd7e08be2b226be0ae56723738ec9e8dd38e"
+    },
+    {
+      "path": "src/presets.js",
+      "bytes": 48992,
+      "sha256": "f4e9614f345fc6db56ea53f3427d6916eb87e534c51cfb75b95079f4a6601e90"
+    },
+    {
+      "path": "src/run-guard.js",
+      "bytes": 1078,
+      "sha256": "c3891e7fd8f7d64fc96c2b92439d5767199673fdd9ea676549c124c47fd6d2bc"
+    },
+    {
+      "path": "src/sequences.js",
+      "bytes": 14079,
+      "sha256": "422410ce22ca63e4620e65e67d4177e5aa4583e8e6b9eb386e325d353f800f81"
+    },
+    {
+      "path": "src/snapshot.js",
+      "bytes": 18060,
+      "sha256": "7709860ec1b98e6f80a59548b6c11deb274dc21fb5a07ab28d62e19f4f27cac3"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 32428,
+      "sha256": "2ecb72b5f5616a5e348bbd9f6a4e90b8ed919c0290f7eb848c1a52643f1c2cf8"
+    },
+    {
+      "path": "src/trace.js",
+      "bytes": 2759,
+      "sha256": "c247125d3a49210ee235414ee6f594ca30a94b8eef7a77d368942cf4e5b54856"
+    },
+    {
+      "path": "src/viewport.js",
+      "bytes": 5315,
+      "sha256": "466d2b8c9428f3073890578002e3efadcf3334b6c22f7f5df9e896f84265217a"
+    },
+    {
+      "path": "src/workspace-tools.js",
+      "bytes": 22694,
+      "sha256": "baab64d8d48ee3cfaf9306451fd8d58dc464df6086bdfcbc5faa5092984a59ef"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "LICENSE",
+      "bytes": 1066,
+      "sha256": "12eb4f44e3289367dbba7f173765735d8b7d2bfefa4f027f90d8e38f834838ec"
+    },
+    {
+      "path": "lambda-lab.html",
+      "bytes": 876030,
+      "sha256": "c2273bdae03b3ae96ffd0f5604e4d03ae7e188bea63f4969d36a4fe771f58d36"
+    }
+  ],
+  "trackedArtifact": {
+    "path": "dist/lambda-lab.html",
+    "bytes": 811663,
+    "sha256": "3a0d98196488caba9ecf2304dcc63cc303cf823c6813f0302ff52f29f1dafe2c",
+    "matchesRebuild": true
+  },
+  "adaptation": {
+    "id": "lambda-content4-storage-c5-manual-restore-v1",
+    "inputSha256": "3a0d98196488caba9ecf2304dcc63cc303cf823c6813f0302ff52f29f1dafe2c",
+    "outputSha256": "c2273bdae03b3ae96ffd0f5604e4d03ae7e188bea63f4969d36a4fe771f58d36",
+    "adapterSha256": "c42bed74200f5e30063ab4dcd24aa7eb5cd443742ad960218b97c1242d9c5d75",
+    "integration": "lambda-content4-storage-c5-manual-restore-v1",
+    "browserAdapterSha256": "e29380debdd3e23d58983df3bcccac8262a243d60d35cac9e7d7bcdde222faf9",
+    "storageAdapterSha256": "a68a58de74548d9bb7d65c0422f705f3be3ec6e76d7cda4c5dd5f04eb0be573f",
+    "legacyReaderFixtureSha256": "f31d9324bc34860b4a868d3b6c6fd8008ddad3a48f6284b9261ed218fbcf37cd"
+  },
+  "hallProtection": {
+    "id": "lambda-040-recovery-v1",
+    "sessionArchiveAdapterSha256": "a8462bb2566ac36fc2fcf9fa130bf9d4fbe70420bcd285db52c99c69825b152b",
+    "exportRoundTripAdapterSha256": "0d58aa01d9e2708bf0d6b0e743fc40f8678e647df132ca6f8ea7837b45b441f0",
+    "inputSha256": "c2273bdae03b3ae96ffd0f5604e4d03ae7e188bea63f4969d36a4fe771f58d36",
+    "outputSha256": "8fb8d340b7ebb5006e8dad3a4bdbcc1da4bddc0aee43c2d0128eca3e443595ff",
+    "adapterSha256": "47ad84f4110a053cd64ea5632603a64b3997c48ccc6a63820e11e51662d9421f",
+    "baseAdapterSha256": "4acbf6c368584146643100ae3cd240f8458de02ecd045d40a6e8b013fc41f961",
+    "historyGuardSha256": "b976f1d1fe7abfada12f2ef058ef401e385f29c329dbdf1edbba7f21a01d2f24"
+  },
+  "hallRecoveryFixes": {
+    "id": "lambda-040-bounded-recovery-v1",
+    "sourceCommit": "8b3157d0bb950295d9aad7c81027652f6690b29c",
+    "inputSha256": "8fb8d340b7ebb5006e8dad3a4bdbcc1da4bddc0aee43c2d0128eca3e443595ff",
+    "outputSha256": "1f01fd045c2fc70b3b3071d6bf97a84761c41508a446f43af60a94aefe45d595",
+    "largeArchiveAdapterSha256": "e4331e504e1c53d853b1269c3990e1f9d1e2f2ef510a6de8107c634cb0a489ab"
+  },
+  "hallQuotaReadonly": {
+    "id": "lambda-040-quota-readonly-v1",
+    "sourceCommit": "8b3157d0bb950295d9aad7c81027652f6690b29c",
+    "inputSha256": "1f01fd045c2fc70b3b3071d6bf97a84761c41508a446f43af60a94aefe45d595",
+    "outputSha256": "0fc3f4ae2f6a8c52837389d729f86cdd747f751237a0ee6d113f5cb2aaf0cf8c",
+    "adapterSha256": "4a8bf9133149ad2b5f6be8a02e051dfab86e46b7da6fd01822daf4bf7e2195c6"
+  }
+}
