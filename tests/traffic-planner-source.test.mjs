@@ -6,6 +6,6 @@ import {dynamicSources} from '../scripts/dynamic-resources.mjs';
 test('traffic planner uses an immutable licensed eleven-file offline source',()=>{
  const lock=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))),g=lock.sources.find(s=>s.id==='traffic-planner');
  assert.ok(g);assert.equal(g.repository,'https://github.com/xiaoxuhui/traffic-planner.git');assert.match(g.revision,/^[a-f0-9]{40}$/);
- assert.equal(g.directory,'dist');assert.equal(g.version,'0.1.0');assert.equal(g.contentCode,3);assert.equal(g.storageContract,'traffic-planner-dynamic-v1');assert.equal(g.iconKind,'generic');
- assert.deepEqual([...g.files].sort(),['LICENSE','index.html','styles.css','src/core.js','src/examples.js','src/simulation.js','src/reversing.js','src/app.js','src/layer-renderer.js','src/metro-passengers.js','src/metro-simulation.js'].sort());assert.equal(g.entryPage,'index.html');assert.equal(g.available,true);
+ assert.equal(g.directory,'dist');assert.equal(g.version,'0.1.0');assert.equal(g.contentCode,4);assert.equal(g.storageContract,'traffic-planner-dynamic-v1');assert.equal(g.iconKind,'generic');
+ assert.deepEqual([...g.files].sort(),['hub-icon.png','LICENSE','index.html','styles.css','src/core.js','src/examples.js','src/simulation.js','src/reversing.js','src/app.js','src/layer-renderer.js','src/metro-passengers.js','src/metro-simulation.js'].sort());assert.equal(g.entryPage,'index.html');assert.equal(g.available,true);
 });

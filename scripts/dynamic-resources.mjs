@@ -16,6 +16,9 @@ export function dynamicSources(bytes) {
     ids.add(source.id);safePath(source.directory);
     if(!Array.isArray(source.files) || !source.files.length || new Set(source.files).size!==source.files.length) throw new Error('Dynamic source file list');
     source.files.forEach(safePath); if(!source.files.includes('LICENSE') || !source.files.includes(source.entryPage)) throw new Error('Dynamic required files');
+    if(source.hubIcon!==undefined) {
+      if(source.hubIcon!==`assets/game-icons/${source.id}.png` || !source.files.includes('hub-icon.png')) throw new Error('Dynamic icon overlay identity');
+    }
   }
   return lock;
 }
@@ -57,6 +60,14 @@ function lockedSourceEntries(checkout, source) {
   for(const entry of entries) {
     const committed=execFileSync('git',['show',`${source.revision}:${source.directory}/${entry.path}`],{cwd:directory,maxBuffer:LIMITS.file+1,env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_TERMINAL_PROMPT:'0'}});
     if(!entry.data.equals(committed)) throw new Error('Dynamic working file differs from committed blob bytes');
+  }
+  if(source.hubIcon!==undefined) {
+    if(entries.some(entry=>entry.path.toLowerCase()==='hub-icon.png')) throw new Error('Icon overlay conflicts with upstream');
+    const icon=join(checkout,source.hubIcon);
+    if(!lstatSync(icon).isFile() || lstatSync(icon).isSymbolicLink() || realpathSync(icon)!==resolve(icon)) throw new Error('Icon overlay path');
+    const data=readFileSync(icon),committed=execFileSync('git',['show',`HEAD:${source.hubIcon}`],{cwd:checkout,maxBuffer:512*1024+1,env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_TERMINAL_PROMPT:'0'}});
+    if(!data.equals(committed) || data.length>512*1024 || !data.subarray(0,8).equals(Buffer.from('89504e470d0a1a0a','hex'))) throw new Error('Icon overlay proof');
+    entries.push({path:'hub-icon.png',data});
   }
   if(!entries.some(e=>e.path==='LICENSE' && /^MIT License\r?\n/.test(e.data.toString('utf8')))) throw new Error('Dynamic MIT license');
   return entries;

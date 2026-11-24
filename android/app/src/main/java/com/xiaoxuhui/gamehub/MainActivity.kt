@@ -72,13 +72,13 @@ class MainActivity : ComponentActivity() {
     private val gameIconViews = mutableMapOf<String, ImageView>()
     private val iconLoader = Executors.newSingleThreadExecutor()
     private fun bindResourceIcon(view: ImageView, id: String, local: LocalResourceInfo?, fallback: Int) {
-        val game = local?.active ?: if (local?.selection?.active == "builtin") local.ready else null
+        val game = local?.active ?: if (DynamicGamePolicy.validId(id) && local?.selection?.active == "builtin") local.ready else null
         val identity = game?.identity
         val key = "$id/${identity ?: "builtin"}/$fallback"
         if (view.tag == key) return
         view.tag = key
         view.setImageResource(fallback)
-        if (identity == null || game.files.none { it.path == "hub-icon.png" && it.mime == "image/png" }) return
+        if (identity == null || game.files.none { it.path == "hub-icon.png" && it.mime == "image/png" } || iconLoader.isShutdown) return
         iconLoader.execute {
             val bitmap = runCatching {
                 val bytes = ResourceRuntime.get(applicationContext).storeFor(id).readIcon(id, identity) ?: return@runCatching null

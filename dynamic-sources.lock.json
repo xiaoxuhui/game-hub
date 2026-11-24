@@ -10,7 +10,7 @@
       "revision": "80898b3ba78ea51a62533c42362f00a4e37421f1",
       "directory": "examples/memory-demo",
       "version": "1.0.1",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "memory-demo-dynamic-v1",
       "files": [
@@ -18,9 +18,11 @@
         "app.js",
         "core.js",
         "index.html",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "配对示范兼容更新：翻牌后保持键盘焦点，支持方向键及Home/End选牌；原存档格式和进度保持。"
+      "releaseNotes": "配对示范兼容更新：翻牌后保持键盘焦点，支持方向键及Home/End选牌；原存档格式和进度保持。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/memory-demo.png"
     },
     {
       "id": "abelian-sandpile",
@@ -31,7 +33,7 @@
       "revision": "06febcbf7ae9a16ed40cb10aa6507ce6e1ceb4cc",
       "directory": "examples/abelian-sandpile",
       "version": "0.1.2",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "abelian-sandpile-dynamic-v1",
       "files": [
@@ -48,9 +50,11 @@
         "src/storage/persistence.js",
         "src/styles.css",
         "src/teaching.js",
-        "upstream-source.json"
+        "upstream-source.json",
+        "hub-icon.png"
       ],
-      "releaseNotes": "阿贝尔同版资源修订：动画间隔允许100到5000范围内任意整数毫秒，修复250ms等合法输入被拒绝；玩法与存档格式不变。固定上游c4290283，来源证明与完整MIT随包。"
+      "releaseNotes": "阿贝尔同版资源修订：动画间隔允许100到5000范围内任意整数毫秒，修复250ms等合法输入被拒绝；玩法与存档格式不变。固定上游c4290283，来源证明与完整MIT随包。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/abelian-sandpile.png"
     },
     {
       "id": "lambda-diagram-game",
@@ -61,15 +65,17 @@
       "revision": "d20b006beda5c41c3825d2164ea83f266877a349",
       "directory": "examples/lambda-diagram-050-20261124",
       "version": "0.5.0",
-      "contentCode": 21,
+      "contentCode": 22,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
         "LICENSE",
         "lambda-lab.html",
-        "upstream-source.json"
+        "upstream-source.json",
+        "hub-icon.png"
       ],
-      "releaseNotes": "新增「名称 = 表达式」多行定义与「保存等号定义」，只存函数不执行算式，转换与组合子编译都识别定义块；示例与教程改为逐个保存全部命名定义并逐字核对原文，同名不同定义整批停止，v6 存档兼容旧存档；转换不再按参数名或实参猜测内部声明，(λtrue.true) (λa.λb.a) 第 0 步保持原式；组合子识别扩到 23 种（m/a/t/v/q/f/r/d/e/j/h/l/o/phi/psi/y/z），SK 与 BCKW 基元限制不变；函数重名提供替换/加数字/跳过/直接使用四策略并随存档保存。"
+      "releaseNotes": "新增「名称 = 表达式」多行定义与「保存等号定义」，只存函数不执行算式，转换与组合子编译都识别定义块；示例与教程改为逐个保存全部命名定义并逐字核对原文，同名不同定义整批停止，v6 存档兼容旧存档；转换不再按参数名或实参猜测内部声明，(λtrue.true) (λa.λb.a) 第 0 步保持原式；组合子识别扩到 23 种（m/a/t/v/q/f/r/d/e/j/h/l/o/phi/psi/y/z），SK 与 BCKW 基元限制不变；函数重名提供替换/加数字/跳过/直接使用四策略并随存档保存。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/lambda-diagram-game.png"
     },
     {
       "id": "red-green-puzzle",
@@ -80,7 +86,7 @@
       "revision": "31eec2e638357d8e3e6a0550afc780e09bdaac49",
       "directory": "examples/red-green-puzzle",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "red-green-puzzle-dynamic-v1",
       "files": [
@@ -88,9 +94,11 @@
         "app.js",
         "core.js",
         "index.html",
-        "upstream-source.json"
+        "upstream-source.json",
+        "hub-icon.png"
       ],
-      "releaseNotes": "红绿变换首次接入：数量限1到10、最多683行，恢复本机数量参数；复制不可用时可选全文手动复制。固定图灵上游592027，适配源码与完整MIT许可随包。"
+      "releaseNotes": "红绿变换首次接入：数量限1到10、最多683行，恢复本机数量参数；复制不可用时可选全文手动复制。固定图灵上游592027，适配源码与完整MIT许可随包。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/red-green-puzzle.png"
     },
     {
       "id": "mini-scratch",
@@ -101,7 +109,7 @@
       "revision": "f5d9d5b613515c2f8500e76466151127b7500baf",
       "directory": "dist",
       "version": "0.5.0",
-      "contentCode": 7,
+      "contentCode": 8,
       "entryPage": "index.html",
       "storageContract": "mini-scratch-dynamic-v1",
       "files": [
@@ -125,9 +133,11 @@
         "src/recorder.js",
         "src/runtime.js",
         "src/sprites.js",
-        "src/style.css"
+        "src/style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "0.5.0：变量分类加入列表，可编辑数字、文字、布尔初始项；支持末尾添加、替换、插入、删除、清空，列表项与长度可作为返回值。舞台实时分页监视；序号从1开始，插入长度+1为末尾，错误序号明确提示。独立v5存档保留v4及旧槽与备份。"
+      "releaseNotes": "0.5.0：变量分类加入列表，可编辑数字、文字、布尔初始项；支持末尾添加、替换、插入、删除、清空，列表项与长度可作为返回值。舞台实时分页监视；序号从1开始，插入长度+1为末尾，错误序号明确提示。独立v5存档保留v4及旧槽与备份。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/mini-scratch.png"
     },
     {
       "id": "logic-circuit",
@@ -138,7 +148,7 @@
       "revision": "6aa2b824ac04a37a7a6f808ca45b5d074a0b853b",
       "directory": "dist",
       "version": "0.3.56",
-      "contentCode": 44,
+      "contentCode": 45,
       "entryPage": "index.html",
       "storageContract": "logic-circuit-dynamic-v1",
       "files": [
@@ -172,9 +182,11 @@
         "src/wireworld-model.js",
         "src/wireworld-view.js",
         "src/wireworld-worker.js",
-        "styles.css"
+        "styles.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "新增「时钟化 BLC β 归约」预设：用 NAND 门搭出带时钟的惰性 β 归约器，可直接从元件库取用；原有电路与存档兼容。"
+      "releaseNotes": "新增「时钟化 BLC β 归约」预设：用 NAND 门搭出带时钟的惰性 β 归约器，可直接从元件库取用；原有电路与存档兼容。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/logic-circuit.png"
     },
     {
       "id": "traffic-planner",
@@ -185,7 +197,7 @@
       "revision": "8938869d7548b37abbaa636d37c987ad462883ba",
       "directory": "dist",
       "version": "0.1.0",
-      "contentCode": 3,
+      "contentCode": 4,
       "entryPage": "index.html",
       "storageContract": "traffic-planner-dynamic-v1",
       "files": [
@@ -199,9 +211,11 @@
         "src/metro-simulation.js",
         "src/reversing.js",
         "src/simulation.js",
-        "styles.css"
+        "styles.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "0.1.0：新增地铁乘客队列与站点目的地、六车编组运行、持久化立体道路编辑；保留倒车让路与 v1 方案/路线存档。"
+      "releaseNotes": "0.1.0：新增地铁乘客队列与站点目的地、六车编组运行、持久化立体道路编辑；保留倒车让路与 v1 方案/路线存档。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/traffic-planner.png"
     },
     {
       "id": "hex-cell-lab",
@@ -212,7 +226,7 @@
       "revision": "167a59efa53e9f8114b9df2e50dfd28de9864236",
       "directory": "examples/hex-cell-lab",
       "version": "1.12.1",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "hex-cell-lab-dynamic-v1",
       "files": [
@@ -231,9 +245,11 @@
         "styles/main.css",
         "upstream-source.json",
         "vendor/jsep-1.4.0/LICENSE",
-        "vendor/jsep-1.4.0/dist/iife/jsep.iife.js"
+        "vendor/jsep-1.4.0/dist/iife/jsep.iife.js",
+        "hub-icon.png"
       ],
-      "releaseNotes": "元胞实验室 1.12.1：无限棋盘（区段存储，可四面延伸且保留坐标）、导入 Golly RLE / Macrocell 文本与 .rle/.mc/.gz 文件并保留原始位置、Golly 规则互通（B3/S23、@TABLE、@TREE 导入，自定义规则导出 .rule）、整盘周期检测与长度显示、尺寸扩到 3–160 × 3–120 且调整可撤销；Wireworld 与红石表达式规则、随机演化、JSON 存档导入导出保持，仍沿用 cell-lab-v1 存档键，旧存档可读。"
+      "releaseNotes": "元胞实验室 1.12.1：无限棋盘（区段存储，可四面延伸且保留坐标）、导入 Golly RLE / Macrocell 文本与 .rle/.mc/.gz 文件并保留原始位置、Golly 规则互通（B3/S23、@TABLE、@TREE 导入，自定义规则导出 .rule）、整盘周期检测与长度显示、尺寸扩到 3–160 × 3–120 且调整可撤销；Wireworld 与红石表达式规则、随机演化、JSON 存档导入导出保持，仍沿用 cell-lab-v1 存档键，旧存档可读。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/hex-cell-lab.png"
     },
     {
       "id": "langtons-ant",
@@ -244,7 +260,7 @@
       "revision": "20e308259c62e7a88ade50e08fab0182e12dbdcf",
       "directory": "dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "langtons-ant-dynamic-v1",
       "files": [
@@ -255,9 +271,11 @@
         "src/interaction.js",
         "src/renderer.js",
         "src/storage.js",
-        "styles.css"
+        "styles.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "0.1.0：独立离线网页，触摸绘制/擦除/平移、本地自动存档，恢复时暂停。"
+      "releaseNotes": "0.1.0：独立离线网页，触摸绘制/擦除/平移、本地自动存档，恢复时暂停。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/langtons-ant.png"
     },
     {
       "id": "turbowarp-neural-network",
@@ -268,7 +286,7 @@
       "revision": "63943ff21d51ba4ba56f1817fc970c0fab88cde0",
       "directory": "web-dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "turbowarp-neural-network-dynamic-v1",
       "files": [
@@ -277,9 +295,11 @@
         "THIRD_PARTY_NOTICES.md",
         "build-info.json",
         "index.html",
-        "scaffolding-min.js.LICENSE.txt"
+        "scaffolding-min.js.LICENSE.txt",
+        "hub-icon.png"
       ],
-      "releaseNotes": "原有 TurboWarp 神经网络作品的离线网页封装；保留训练和预测积木，支持触摸及训练成果本地恢复。"
+      "releaseNotes": "原有 TurboWarp 神经网络作品的离线网页封装；保留训练和预测积木，支持触摸及训练成果本地恢复。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/turbowarp-neural-network.png"
     },
     {
       "id": "turbowarp-logic-lab",
@@ -290,7 +310,7 @@
       "revision": "04089708095ed77b4fde2c3c023406a79a3d68b5",
       "directory": "web-dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "turbowarp-logic-lab-dynamic-v1",
       "files": [
@@ -299,9 +319,11 @@
         "THIRD_PARTY_NOTICES.md",
         "build-info.json",
         "index.html",
-        "scaffolding-min.js.LICENSE.txt"
+        "scaffolding-min.js.LICENSE.txt",
+        "hub-icon.png"
       ],
-      "releaseNotes": "原有 TurboWarp 逻辑小实验室作品的离线网页封装；保留 NAND 电路和原生交互，支持触摸及电路本地恢复。"
+      "releaseNotes": "原有 TurboWarp 逻辑小实验室作品的离线网页封装；保留 NAND 电路和原生交互，支持触摸及电路本地恢复。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/turbowarp-logic-lab.png"
     },
     {
       "id": "lights-out-matrix",
@@ -312,15 +334,17 @@
       "revision": "09e81cfbe52e656b8c8d210325f069531e116f94",
       "directory": "examples/lights-out-matrix",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "lights-out-matrix-dynamic-v1",
       "files": [
         "LICENSE",
         "index.html",
-        "upstream-source.json"
+        "upstream-source.json",
+        "hub-icon.png"
       ],
-      "releaseNotes": "首次接入：固定上游 8640861，资源含 MIT 许可和来源证明。"
+      "releaseNotes": "首次接入：固定上游 8640861，资源含 MIT 许可和来源证明。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/lights-out-matrix.png"
     },
     {
       "id": "learning-machine",
@@ -331,7 +355,7 @@
       "revision": "e3cac51a8ac51ffeaa41e6d6df546170427c9841",
       "directory": "dist",
       "version": "1.4.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "learning-machine-dynamic-v1",
       "files": [
@@ -341,9 +365,11 @@
         "src/icon.svg",
         "src/model.js",
         "src/styles.css",
-        "src/visuals.js"
+        "src/visuals.js",
+        "hub-icon.png"
       ],
-      "releaseNotes": "学习小机器更新：可输入更高维度，训练时自动调整网络结构。"
+      "releaseNotes": "学习小机器更新：可输入更高维度，训练时自动调整网络结构。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/learning-machine.png"
     },
     {
       "id": "compass-polygon-studio",
@@ -354,7 +380,7 @@
       "revision": "af22088f8dd5f15239a2d9275344388bb4db9411",
       "directory": "dist",
       "version": "1.1.0",
-      "contentCode": 4,
+      "contentCode": 5,
       "entryPage": "index.html",
       "storageContract": "compass-polygon-studio-dynamic-v1",
       "files": [
@@ -364,9 +390,11 @@
         "geometry.js",
         "index.html",
         "principles.js",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "新增「作图原理」面板：逐步解释当前步骤的几何依据，并给出阶段说明与公式；切换步骤时同步刷新。"
+      "releaseNotes": "新增「作图原理」面板：逐步解释当前步骤的几何依据，并给出阶段说明与公式；切换步骤时同步刷新。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/compass-polygon-studio.png"
     },
     {
       "id": "fourier-drawing-studio",
@@ -377,7 +405,7 @@
       "revision": "ed8cc7dc55140c9dcd973cceecba5eb32a4f9666",
       "directory": "dist",
       "version": "0.1.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "fourier-drawing-studio-dynamic-v1",
       "files": [
@@ -386,9 +414,11 @@
         "contours.js",
         "fourier.js",
         "index.html",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "改进傅里叶绘图交互与显示。"
+      "releaseNotes": "改进傅里叶绘图交互与显示。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/fourier-drawing-studio.png"
     },
     {
       "id": "ai-racing-lab",
@@ -399,7 +429,7 @@
       "revision": "3b9c66bf5c13b761f220c5037153892a44f14767",
       "directory": "dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "ai-racing-lab-dynamic-v1",
       "files": [
@@ -412,9 +442,11 @@
         "memory.js",
         "style.css",
         "vision.css",
-        "vision.js"
+        "vision.js",
+        "hub-icon.png"
       ],
-      "releaseNotes": "离线赛车训练、地图编辑和实验。"
+      "releaseNotes": "离线赛车训练、地图编辑和实验。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/ai-racing-lab.png"
     },
     {
       "id": "turbowarp-life-lab",
@@ -425,7 +457,7 @@
       "revision": "553b2d4e7af9d3e6bcbf26bccf0bd72234ea02b2",
       "directory": "web-dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "turbowarp-life-lab-dynamic-v1",
       "files": [
@@ -434,9 +466,11 @@
         "THIRD_PARTY_NOTICES.md",
         "build-info.json",
         "index.html",
-        "scaffolding-min.js.LICENSE.txt"
+        "scaffolding-min.js.LICENSE.txt",
+        "hub-icon.png"
       ],
-      "releaseNotes": "原生 Scratch 生命规则作品的离线网页封装，支持触摸及棋盘、规则本地恢复。"
+      "releaseNotes": "原生 Scratch 生命规则作品的离线网页封装，支持触摸及棋盘、规则本地恢复。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/turbowarp-life-lab.png"
     },
     {
       "id": "turbowarp-turing-lab",
@@ -447,7 +481,7 @@
       "revision": "8a3e6ebf08ae9726ee38e60bc68738db7a2132c4",
       "directory": "web-dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "turbowarp-turing-lab-dynamic-v1",
       "files": [
@@ -456,9 +490,11 @@
         "THIRD_PARTY_NOTICES.md",
         "build-info.json",
         "index.html",
-        "scaffolding-min.js.LICENSE.txt"
+        "scaffolding-min.js.LICENSE.txt",
+        "hub-icon.png"
       ],
-      "releaseNotes": "原生 Scratch 图灵机作品的离线网页封装，支持规则输入及纸带与运行状态本地恢复。"
+      "releaseNotes": "原生 Scratch 图灵机作品的离线网页封装，支持规则输入及纸带与运行状态本地恢复。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/turbowarp-turing-lab.png"
     },
     {
       "id": "snake-speed",
@@ -469,11 +505,11 @@
       "revision": "493bcddce7b9bd99485c759634f4a14eed9beb70",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "minHostVersionCode": 9,
       "storageContract": "snake-speed-dynamic-v1",
-      "releaseNotes": "离线 Python 控制贪吃蛇，运行时随资源提供。",
+      "releaseNotes": "离线 Python 控制贪吃蛇，运行时随资源提供。；新增大厅图标资源，游戏内容和存档格式不变。",
       "files": [
         "LICENSE",
         "game.js",
@@ -487,8 +523,10 @@
         "pyodide/pyodide.js",
         "pyodide/python_stdlib.zip",
         "python-worker.js",
-        "python.js"
-      ]
+        "python.js",
+        "hub-icon.png"
+      ],
+      "hubIcon": "assets/game-icons/snake-speed.png"
     },
     {
       "id": "turbowarp-graph-lab",
@@ -499,18 +537,20 @@
       "revision": "f049219553c743b52fb919f7feb0540135ba5b1d",
       "directory": "web-dist",
       "version": "0.1.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "turbowarp-graph-lab-dynamic-v1",
-      "releaseNotes": "原生 Scratch 函数图形实验室的离线网页封装，支持本地保存。",
+      "releaseNotes": "原生 Scratch 函数图形实验室的离线网页封装，支持本地保存。；新增大厅图标资源，游戏内容和存档格式不变。",
       "files": [
         "LICENSE",
         "MPL-2.0.txt",
         "THIRD_PARTY_NOTICES.md",
         "build-info.json",
         "index.html",
-        "scaffolding-min.js.LICENSE.txt"
-      ]
+        "scaffolding-min.js.LICENSE.txt",
+        "hub-icon.png"
+      ],
+      "hubIcon": "assets/game-icons/turbowarp-graph-lab.png"
     },
     {
       "id": "fixed-point-workshop",
@@ -521,7 +561,7 @@
       "revision": "92ae288952b648a3abf47fa0d703124cc9121ef2",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "fixed-point-workshop-dynamic-v1",
       "files": [
@@ -529,9 +569,11 @@
         "app.js",
         "core.js",
         "index.html",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "元件库可直接拖到画布指定位置放置；自由搭建的输入按 A、B、…、Z、AA 自动命名，不再限制数量。"
+      "releaseNotes": "元件库可直接拖到画布指定位置放置；自由搭建的输入按 A、B、…、Z、AA 自动命名，不再限制数量。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/fixed-point-workshop.png"
     },
     {
       "id": "sokoban-ai-lab",
@@ -542,7 +584,7 @@
       "revision": "597422a608293e5023caa1e6e899af1d9d9bf584",
       "directory": "dist",
       "version": "1.0.3",
-      "contentCode": 6,
+      "contentCode": 7,
       "entryPage": "index.html",
       "storageContract": "sokoban-ai-lab-dynamic-v1",
       "files": [
@@ -566,9 +608,11 @@
         "engine.js",
         "index.html",
         "route-input.js",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "全 15 章 249 关按原版实机画面对照修正配色：房间地板改用自身颜色混色，循环、玩家、墙等章节恢复各自色系；套箱接管时实体、房间与字符地图同步变色。玩法、碰撞与存档格式不变。"
+      "releaseNotes": "全 15 章 249 关按原版实机画面对照修正配色：房间地板改用自身颜色混色，循环、玩家、墙等章节恢复各自色系；套箱接管时实体、房间与字符地图同步变色。玩法、碰撞与存档格式不变。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/sokoban-ai-lab.png"
     },
     {
       "id": "tape-language-lab",
@@ -579,7 +623,7 @@
       "revision": "b3c60120c88bf894e2c7f27c7cbafee782ea00b4",
       "directory": "examples/tape-language-release",
       "version": "0.1.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "tape-language-lab-dynamic-v1",
       "files": [
@@ -588,9 +632,11 @@
         "src/app.js",
         "src/examples.js",
         "src/machine.js",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "新增 BF、P 双撇和图灵机之间的源码与初始纸带转换。"
+      "releaseNotes": "新增 BF、P 双撇和图灵机之间的源码与初始纸带转换。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/tape-language-lab.png"
     },
     {
       "id": "pixel-frame",
@@ -601,7 +647,7 @@
       "revision": "77e777002e848aff1ef0329ef0bac1bb3210f6de",
       "directory": "dist",
       "version": "1.0.0",
-      "contentCode": 1,
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "pixel-frame-dynamic-v1",
       "files": [
@@ -612,9 +658,11 @@
         "lambda/LICENSE",
         "lambda/core.js",
         "lambda/tromp.js",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "像素画与逐帧动画编辑，包含图案挑战，作品保存在本机。"
+      "releaseNotes": "像素画与逐帧动画编辑，包含图案挑战，作品保存在本机。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/pixel-frame.png"
     },
     {
       "id": "territory-conquest",
@@ -625,7 +673,7 @@
       "revision": "ac3e27048d25a73592e88866df82ed7d39ec5f22",
       "directory": "dist",
       "version": "1.3.0",
-      "contentCode": 5,
+      "contentCode": 6,
       "entryPage": "index.html",
       "storageContract": "territory-conquest-dynamic-v1",
       "files": [
@@ -634,9 +682,11 @@
         "engine.js",
         "index.html",
         "map-editor.js",
-        "style.css"
+        "style.css",
+        "hub-icon.png"
       ],
-      "releaseNotes": "领土征服 1.3.0：可选规则「和平支援反击」（单向和平国沿现有格子反击施害国，含绕行与突破判据）、战场势力面板新增存活国家数/每国平均领土/平均兵力、兵力分级科学计数法、多线作战（多来源格同轮出兵，来源格每轮限一次）；外交、海洋判定与动荡规则不变。"
+      "releaseNotes": "领土征服 1.3.0：可选规则「和平支援反击」（单向和平国沿现有格子反击施害国，含绕行与突破判据）、战场势力面板新增存活国家数/每国平均领土/平均兵力、兵力分级科学计数法、多线作战（多来源格同轮出兵，来源格每轮限一次）；外交、海洋判定与动荡规则不变。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/territory-conquest.png"
     },
     {
       "id": "cube-step-solver",
@@ -647,7 +697,7 @@
       "revision": "a31c38cb472039983907d3d778b1b56b3d2b3061",
       "directory": "dist",
       "version": "1.1.0",
-      "contentCode": 2,
+      "contentCode": 3,
       "entryPage": "index.html",
       "storageContract": "cube-step-solver-dynamic-v1",
       "files": [
@@ -663,9 +713,11 @@
         "style.css",
         "vendor/LICENSE",
         "vendor/cube.js",
-        "vendor/solve.js"
+        "vendor/solve.js",
+        "hub-icon.png"
       ],
-      "releaseNotes": "魔方一步步 1.1.0：支持 1–200 阶正方体与长方体（两百阶 240000 个表面格），六面展开图显示运行过程并高亮本步受影响区域；手动填色可直接输入或粘贴颜色（中文、字母、RLE 计数、? 未填），支持最多 10000 步历史与 0.5–120 步/秒调速，全部在本机离线运行。"
+      "releaseNotes": "魔方一步步 1.1.0：支持 1–200 阶正方体与长方体（两百阶 240000 个表面格），六面展开图显示运行过程并高亮本步受影响区域；手动填色可直接输入或粘贴颜色（中文、字母、RLE 计数、? 未填），支持最多 10000 步历史与 0.5–120 步/秒调速，全部在本机离线运行。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "hubIcon": "assets/game-icons/cube-step-solver.png"
     }
   ]
 }

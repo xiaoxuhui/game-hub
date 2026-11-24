@@ -5,7 +5,7 @@ import {dynamicSources,packDynamic,verifyPackedDynamic} from '../scripts/dynamic
 import {attachAssets,validateReleaseSnapshot} from '../scripts/resource-catalog.mjs';
 import {assetName} from '../scripts/resource-protocol.mjs';
 const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
-const entries=source.files.map(path=>({path,data:readFileSync(new URL(`../examples/memory-demo/${path}`,import.meta.url))}));
+const entries=source.files.map(path=>({path,data:readFileSync(new URL(path==='hub-icon.png'?`../${source.hubIcon}`:`../examples/memory-demo/${path}`,import.meta.url))}));
 test('dynamic ZIP is repeatable, exact-manifest and keeps source lock immutable',()=>{
   const first=packDynamic(source,entries),second=packDynamic(source,[...entries].reverse());assert.deepEqual(first,second);
   assert.equal(first.game.minHostVersionCode,4);
@@ -34,7 +34,18 @@ test('v2 snapshot rejects wrong channel, missing retired ZIP and asset reuse',()
 });
 
 test('dynamic source lock accepts 100 distinct games and rejects 101',()=>{
-  const s=structuredClone(source),make=n=>({schemaVersion:1,sources:Array.from({length:n},(_,i)=>({...s,id:'game-'+i}))});
+  const s=structuredClone(source),make=n=>({schemaVersion:1,sources:Array.from({length:n},(_,i)=>({...s,id:'game-'+i,hubIcon:`assets/game-icons/game-${i}.png`}))});
   assert.equal(dynamicSources(Buffer.from(JSON.stringify(make(100)))).sources.length,100);
   assert.throws(()=>dynamicSources(Buffer.from(JSON.stringify(make(101)))),/Dynamic source lock/);
+});
+test('icon overlay is bound to game identity and must be declared in the resource manifest',()=>{
+  const invalid=structuredClone(source); invalid.hubIcon='assets/game-icons/other.png';
+  assert.throws(()=>dynamicSources(Buffer.from(JSON.stringify({schemaVersion:1,sources:[invalid]}))),/icon overlay/);
+  invalid.hubIcon=source.hubIcon; invalid.files=invalid.files.filter(x=>x!=='hub-icon.png');
+  assert.throws(()=>dynamicSources(Buffer.from(JSON.stringify({schemaVersion:1,sources:[invalid]}))),/icon overlay/);
+  const packed=packDynamic(source,entries); const icon=packed.game.files.find(x=>x.path==='hub-icon.png');
+  assert.equal(icon.mime,'image/png'); assert.ok(icon.bytes>0);
+  const changed=entries.map(e=>e.path==='hub-icon.png'?{...e,data:Buffer.from('forged')}:e);
+  const forged=packDynamic(source,changed);
+  assert.throws(()=>verifyPackedDynamic(source,entries,forged.game,forged.archive),/immutable source bytes/);
 });

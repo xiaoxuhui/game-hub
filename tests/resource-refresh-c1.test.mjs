@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {execFileSync} from 'node:child_process';
 import {sha256} from '../scripts/resource-protocol.mjs';
 test('C1 and Lambda refreshes preserve other sources after later admissions',()=>{
- const before=JSON.parse(execFileSync('git',['show','cd413ba63eadc0d61502272ffd0425db197f8279:dynamic-sources.lock.json'],{cwd:new URL('../',import.meta.url)})).sources,current=JSON.parse(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources;
+ const before=JSON.parse(execFileSync('git',['show','cd413ba63eadc0d61502272ffd0425db197f8279:dynamic-sources.lock.json'],{cwd:new URL('../',import.meta.url)})).sources,current=JSON.parse(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources.map(g=>{const x=structuredClone(g);assert.equal(x.hubIcon,'assets/game-icons/'+x.id+'.png');delete x.hubIcon;x.contentCode--;x.files=x.files.filter(f=>f!=='hub-icon.png');assert.ok(x.releaseNotes.endsWith('；新增大厅图标资源，游戏内容和存档格式不变。'));x.releaseNotes=x.releaseNotes.replace('；新增大厅图标资源，游戏内容和存档格式不变。','');return x;});
  const previousIds=new Set(before.map(g=>g.id)),previousCurrent=current.filter(g=>previousIds.has(g.id));
  assert.deepEqual(previousCurrent.map(g=>g.id),before.map(g=>g.id));
  assert.deepEqual(current.filter(g=>!previousIds.has(g.id)).map(g=>g.id),['turbowarp-neural-network','turbowarp-logic-lab','lights-out-matrix','learning-machine','compass-polygon-studio','fourier-drawing-studio','ai-racing-lab','turbowarp-life-lab','turbowarp-turing-lab','snake-speed','turbowarp-graph-lab','fixed-point-workshop','sokoban-ai-lab','tape-language-lab','pixel-frame','territory-conquest','cube-step-solver']);

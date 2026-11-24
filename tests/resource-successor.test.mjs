@@ -6,7 +6,7 @@ import {assetName} from '../scripts/resource-protocol.mjs';
 import {successorPayload,validateHistoryCatalogs,publicDownloadUrl,validateUploadedResume} from '../scripts/resource-successor.mjs';
 function fixture(){
   const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
-  const entries=source.files.map(path=>({path,data:readFileSync(new URL(`../examples/memory-demo/${path}`,import.meta.url))}));
+  const entries=source.files.map(path=>({path,data:readFileSync(new URL(path==='hub-icon.png'?`../${source.hubIcon}`:`../examples/memory-demo/${path}`,import.meta.url))}));
   const {game}=packDynamic(source,entries),oldGame={...game,assetId:100};
   const now=Date.now()-1000;
   const old={schemaVersion:2,channel:'game-hub-resources-v2',releaseId:407394942,catalogSequence:'1',issuedAt:new Date(now).toISOString(),expiresAt:new Date(now+86400000).toISOString(),games:[oldGame]};
