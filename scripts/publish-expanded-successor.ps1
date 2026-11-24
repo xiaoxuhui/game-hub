@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory=$true)][string]$ExpectedLegacySha,
     [Parameter(Mandatory=$true)][string]$ExpectedExpandedSha,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [ValidateSet('expanded','n23','lambda-motion')][string]$TaskScope='expanded',
+    [ValidateSet('expanded','n23','lambda-motion','icons')][string]$TaskScope='expanded',
     [switch]$Resume
 )
 $ErrorActionPreference='Stop'
@@ -19,6 +19,11 @@ if($TaskScope -ieq 'lambda-motion'){
     $checkout=Split-Path -Parent $PSScriptRoot
     $evidenceRoot='D:\soft\.ci-tmp\lambda-motion-evidence-20261114'
     $env:GAME_HUB_DYNAMIC_GAME='lambda-diagram-game'
+}
+if($TaskScope -ieq 'icons'){
+    $checkout=Split-Path -Parent $PSScriptRoot
+    $evidenceRoot='D:\aiden\game-hub-icons-evidence-20261124'
+    Remove-Item Env:GAME_HUB_DYNAMIC_GAME -ErrorAction SilentlyContinue
 }
 if($Commit -notmatch '^[0-9a-f]{40}$' -or $ExpectedLegacySha -notmatch '^[0-9a-f]{64}$' -or $ExpectedExpandedSha -notmatch '^[0-9a-f]{64}$'){throw 'Exact commit and channel digests required'}
 $dir=[IO.Path]::GetFullPath($EvidenceDirectory)

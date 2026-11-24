@@ -85,7 +85,9 @@ class MainActivity : ComponentActivity() {
                 val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                 BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                 require(options.outMimeType == "image/png" && options.outWidth in 1..1024 && options.outHeight in 1..1024)
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                var sample = 1
+                while (maxOf(options.outWidth, options.outHeight) / sample > 256) sample *= 2
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = sample })
             }.getOrNull()
             if (bitmap != null) runOnUiThread { if (!isDestroyed && view.tag == key) view.setImageBitmap(bitmap) }
         }
