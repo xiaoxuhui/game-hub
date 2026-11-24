@@ -58,10 +58,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "a393d450b83f31fdca25d65b9e549b00c9a5c4c0",
-      "directory": "examples/lambda-diagram-040-20261123",
-      "version": "0.4.0",
-      "contentCode": 20,
+      "revision": "d20b006beda5c41c3825d2164ea83f266877a349",
+      "directory": "examples/lambda-diagram-050-20261124",
+      "version": "0.5.0",
+      "contentCode": 21,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -69,7 +69,7 @@
         "lambda-lab.html",
         "upstream-source.json"
       ],
-      "releaseNotes": "新增布尔逻辑与电路 20 例、列表与二进制 19 例、无限数列入口、SK/BCKW 转换与函数重名处理，数字与列表可按需逐层展开；保留 0.3.9 存档与配额不足时的导出、只读保护。"
+      "releaseNotes": "新增「名称 = 表达式」多行定义与「保存等号定义」，只存函数不执行算式，转换与组合子编译都识别定义块；示例与教程改为逐个保存全部命名定义并逐字核对原文，同名不同定义整批停止，v6 存档兼容旧存档；转换不再按参数名或实参猜测内部声明，(λtrue.true) (λa.λb.a) 第 0 步保持原式；组合子识别扩到 23 种（m/a/t/v/q/f/r/d/e/j/h/l/o/phi/psi/y/z），SK 与 BCKW 基元限制不变；函数重名提供替换/加数字/跳过/直接使用四策略并随存档保存。"
     },
     {
       "id": "red-green-puzzle",
