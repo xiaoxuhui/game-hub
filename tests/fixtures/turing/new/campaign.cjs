@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.campaignLevels = exports.campaignSections = void 0;
-exports.tapeOutput = tapeOutput;
+exports.campaignLevels = exports.coreCampaignLevels = exports.campaignSections = exports.tapeOutput = void 0;
 exports.verifyLevel = verifyLevel;
 exports.emptyCampaignProgress = emptyCampaignProgress;
 exports.normalizeCampaignDraft = normalizeCampaignDraft;
@@ -10,10 +9,14 @@ exports.isLevelUnlocked = isLevelUnlocked;
 exports.completeLevel = completeLevel;
 exports.uncompleteLevel = uncompleteLevel;
 exports.resetDraft = resetDraft;
-const core_1 = require("./core.cjs");
+const campaign_verification_1 = require("./campaign-verification.cjs");
+var campaign_verification_2 = require("./campaign-verification.cjs");
+Object.defineProperty(exports, "tapeOutput", { enumerable: true, get: function () { return campaign_verification_2.tapeOutput; } });
 const campaign_advanced_1 = require("./campaign-advanced.cjs");
 const campaign_extra_1 = require("./campaign-extra.cjs");
+const campaign_from_examples_1 = require("./campaign-from-examples.cjs");
 const rule_format_1 = require("./rule-format.cjs");
+const campaign_limits_1 = require("./campaign-limits.cjs");
 exports.campaignSections = [
     { id: "tutorial", title: "教程", description: "规则、位权、进位、借位与函数；一步一个新概念" },
     { id: "challenge", title: "闯关", description: "复制与复用函数，组合一进制和二进制四则运算" },
@@ -335,45 +338,16 @@ const additionsBefore = {
     "turn-back": ["binary-place-zero", "binary-place-one"],
     "binary-increment": ["binary-carry-local", "binary-carry-chain", "binary-borrow-local", "binary-borrow-chain", "binary-parity-bit", "binary-shift-right"],
 };
-exports.campaignLevels = exports.campaignSections.flatMap(section => [
+exports.coreCampaignLevels = exports.campaignSections.flatMap(section => [
     ...originalCampaignLevels.filter(level => level.section === section.id),
     ...campaign_advanced_1.advancedCampaignLevels.filter(level => level.section === section.id),
 ].flatMap(level => [...(additionsBefore[level.id] ?? []).map(id => campaign_extra_1.extraCampaignLevels.find(item => item.id === id)), level]).concat(campaign_extra_1.extraCampaignLevels.filter(level => level.section === section.id && !Object.values(additionsBefore).flat().includes(level.id)))).map((level, index) => ({ ...level, title: `第 ${index + 1} 关 · ${level.title.replace(/^第 \d+ 关 · /, "")}`, starter: { ...level.starter, rules: (0, rule_format_1.compactRuleArrows)(level.starter.rules) } }));
-function tapeOutput(tape) {
-    const entries = tape.entries();
-    if (!entries.length)
-        return "";
-    const min = entries[0][0];
-    const max = entries[entries.length - 1][0];
-    let output = "";
-    for (let position = min; position <= max; position += 1)
-        output += tape.read(position);
-    return output;
-}
+exports.campaignLevels = exports.campaignSections.flatMap(section => [
+    ...exports.coreCampaignLevels.filter(level => level.section === section.id),
+    ...campaign_from_examples_1.exampleCampaignLevels.filter(level => level.section === section.id),
+]).map((level, index) => ({ ...level, title: `第 ${index + 1} 关 · ${level.title.replace(/^第 \d+ 关 · /, "")}` }));
 function verifyLevel(level, definition) {
-    const results = level.cases.map((testCase) => {
-        const machine = new core_1.TuringMachine(definition, (0, core_1.inputToTape)(testCase.input, definition.blankSymbol));
-        let reason = "step-limit";
-        while (machine.stepCount < level.maxSteps) {
-            const result = machine.step();
-            if (result.stopped) {
-                reason = result.reason;
-                break;
-            }
-        }
-        const actualOutput = tapeOutput(machine.tape);
-        return {
-            ...testCase,
-            actualOutput,
-            steps: machine.stepCount,
-            reason,
-            stoppedState: machine.currentState,
-            readSymbol: machine.tape.read(machine.headPosition),
-            passed: reason !== "step-limit" && actualOutput === testCase.expectedOutput,
-        };
-    });
-    const passedCount = results.filter((result) => result.passed).length;
-    return { passed: passedCount === results.length, passedCount, totalCount: results.length, cases: results };
+    return (0, campaign_verification_1.verifyCampaignCases)(level.cases, level.maxSteps, definition);
 }
 function emptyCampaignProgress() {
     return { version: 1, completedLevelIds: [], drafts: {} };
@@ -398,7 +372,7 @@ function normalizeCampaignProgress(value) {
     const known = new Set(exports.campaignLevels.map((level) => level.id));
     const completedLevelIds = [...new Set(candidate.completedLevelIds.filter((id) => typeof id === "string" && known.has(id)))];
     const drafts = typeof candidate.drafts === "object" && candidate.drafts !== null
-        ? Object.fromEntries(Object.entries(candidate.drafts).filter(([id, draft]) => known.has(id) && typeof draft === "string" && draft.length <= 100_000).map(([id, draft]) => [id, normalizeCampaignDraft(id, draft)]))
+        ? Object.fromEntries(Object.entries(candidate.drafts).filter(([id, draft]) => known.has(id) && typeof draft === "string" && draft.length <= campaign_limits_1.MAX_CAMPAIGN_DRAFT_LENGTH).map(([id, draft]) => [id, normalizeCampaignDraft(id, draft)]))
         : {};
     return { version: 1, completedLevelIds, drafts };
 }
@@ -410,10 +384,17 @@ function normalizeCampaignProgress(value) {
  * 第 4、5 关会一并变锁）。前沿式对空洞天然容错，同时仍只允许"一次推进一关"。
  */
 function isLevelUnlocked(progress, levelId) {
-    const index = exports.campaignLevels.findIndex((level) => level.id === levelId);
+    const requested = exports.campaignLevels.find(level => level.id === levelId);
+    if (!requested)
+        return false;
+    if (progress.completedLevelIds.includes(levelId))
+        return true;
+    if (requested.prerequisite)
+        return progress.completedLevelIds.includes(requested.prerequisite) || isLevelUnlocked(progress, requested.prerequisite);
+    const index = exports.coreCampaignLevels.findIndex((level) => level.id === levelId);
     if (index < 0)
         return false;
-    const frontier = exports.campaignLevels.reduce((max, level, position) => progress.completedLevelIds.includes(level.id) ? Math.max(max, position) : max, -1);
+    const frontier = exports.coreCampaignLevels.reduce((max, level, position) => progress.completedLevelIds.includes(level.id) ? Math.max(max, position) : max, -1);
     return index <= frontier + 1;
 }
 function completeLevel(progress, levelId) {

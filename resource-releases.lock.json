@@ -20,10 +20,10 @@
       "releaseNotes": "修复通关星数显示后未及时保存的问题；沿用原存档格式与存储合同，完整 MIT 许可随包。"
     },
     "turing": {
-      "contentCode": 5,
-      "sourceRevision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
+      "contentCode": 6,
+      "sourceRevision": "30059052f3e2b2ea6578b6f646d50026478b935a",
       "storageContract": "turing-baseline-v1",
-      "releaseNotes": "新增原理讲解页与 48 关关卡、λ 命名与纸带重构、Brainfuck 编译和通用图灵机；规则草稿与步数设置继续自动保存，并兼容已有项目和旧存档。"
+      "releaseNotes": "新增本地存档（IndexedDB 历史副本，可查看源码、恢复、批量下载与导入旧备份），独立关卡页扩到 78 关并按 15 类主题分组筛选，BF 面板补齐八条指令与示例，原理页改为四段讲解；存档契约不变，兼容已有项目与旧备份。"
     }
   }
 }

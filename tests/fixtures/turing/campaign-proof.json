@@ -11,22 +11,32 @@
     },
     {
       "kind": "new",
-      "revision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
+      "revision": "30059052f3e2b2ea6578b6f646d50026478b935a",
       "path": "src/campaign.ts",
-      "sourceSha256": "7219b810bad838b792df7eb4df89a8546bfee40b42791a20d173767212e25253",
+      "sourceSha256": "4b4419696809c5831e4df99006ce2a8752c16aafd25798fe783da540456b99e9",
       "fixture": "new/campaign.cjs",
-      "compiledSha256": "6335580a46a6e92c468393e988d80f5cf6b1948c0fd8f96afd518e8d794b8dff"
+      "compiledSha256": "80ad0342a3f0d1538580081ebb9ebb7e4a407028c6f2729cc3a8af8209aaaf96"
     },
     {
       "kind": "new",
-      "revision": "4fb90c4b3ad636d05829000db49bb78bb38f3cbd",
+      "revision": "30059052f3e2b2ea6578b6f646d50026478b935a",
       "path": "src/campaign-backup.ts",
-      "sourceSha256": "1b95d2ddcbc07797d4bc9d8066125c63f09c19a4c752cf1b8da838fffb1d4a3a",
+      "sourceSha256": "32c2cec6db608182fb01753f741d0243440d0434fd5273576b5cfceb36f694b3",
       "fixture": "new/campaign-backup.cjs",
-      "compiledSha256": "bbb9b89251cb86037d2f3da483b6c33e07691a055b9651874d5a3b1ce996f984"
+      "compiledSha256": "f1195b60efcc1a01414d2d26690f92f59957e4268452f1277cbbf63a538d4fc6"
     }
   ],
   "closure": [
+    {
+      "path": "src/binary-examples.ts",
+      "fixture": "new/binary-examples.cjs",
+      "sha256": "363a9f07ecba111376ff06fc7c3a336d14bc65514e8ed68780938f7592fbdf5c"
+    },
+    {
+      "path": "src/brainfuck.ts",
+      "fixture": "new/brainfuck.cjs",
+      "sha256": "bf5b23062a98277be57e77cdb6261c4249e8f4f6573f912e681e9a503a412d96"
+    },
     {
       "path": "src/campaign-advanced.ts",
       "fixture": "new/campaign-advanced.cjs",
@@ -38,9 +48,94 @@
       "sha256": "9278ea427249216649f3ef3930aaf845e6e2367e9b8f6d845f22d6044721f308"
     },
     {
+      "path": "src/campaign-from-examples.ts",
+      "fixture": "new/campaign-from-examples.cjs",
+      "sha256": "268c742f17ac035f417e8f0d0ba4e7d03207c3425476a85342a57d3e0c80dd2d"
+    },
+    {
+      "path": "src/campaign-limits.ts",
+      "fixture": "new/campaign-limits.cjs",
+      "sha256": "3ec0e5ff12e2a5aaeca18219a2598c23959ae2b33f777c6d1b84da9204da04c6"
+    },
+    {
+      "path": "src/campaign-verification.ts",
+      "fixture": "new/campaign-verification.cjs",
+      "sha256": "8340dd5b11d5a4ca7c0affa02b9ebf03f09b90becb24e47cdae3ad132571c893"
+    },
+    {
+      "path": "src/conjecture-examples.ts",
+      "fixture": "new/conjecture-examples.cjs",
+      "sha256": "dcacd5bbb4d6f7e3597c1e54e7d8c076eff69b9ce4846f51f0a26140de14c712"
+    },
+    {
       "path": "src/core.ts",
       "fixture": "new/core.cjs",
       "sha256": "29415cf0f7ce71ee24878a589928c4114ed7675f7438fc011073874637410e42"
+    },
+    {
+      "path": "src/example-catalog.ts",
+      "fixture": "new/example-catalog.cjs",
+      "sha256": "8528e75e301ceaf5fa626fbd417ffe97ab828f395433a47940a4e9528d402e6c"
+    },
+    {
+      "path": "src/example-learning.ts",
+      "fixture": "new/example-learning.cjs",
+      "sha256": "b742ccdbb447c4a09b365a872610eeaa2fc5dd1c7a3180337cef99bd0d413707"
+    },
+    {
+      "path": "src/example-level-links.ts",
+      "fixture": "new/example-level-links.cjs",
+      "sha256": "e350229052f569a7e72f39c2c88a3264e24d7d8a7db233c0484c85b9512a3715"
+    },
+    {
+      "path": "src/function-examples.ts",
+      "fixture": "new/function-examples.cjs",
+      "sha256": "cd90da1a3d7686539f4ae86bfe1a5e75b77ff6ac7e2bac51c0c0f568009a3e64"
+    },
+    {
+      "path": "src/function-parameters.ts",
+      "fixture": "new/function-parameters.cjs",
+      "sha256": "b41e2907d6bd58d674dad0da7df2f38d4ef8c40d3c8dad0cc39a109b033fbdef"
+    },
+    {
+      "path": "src/gijswijt-tm.ts",
+      "fixture": "new/gijswijt-tm.cjs",
+      "sha256": "6ccd9724af86a45562431b8ac61ed86f343de7e1cd8bef70baadaa346074e69c"
+    },
+    {
+      "path": "src/hyperoperation-examples.ts",
+      "fixture": "new/hyperoperation-examples.cjs",
+      "sha256": "65c5a473fbd62815a2e9d98ace6edef15bd61cf3a656b56609e32a9e154680b2"
+    },
+    {
+      "path": "src/inverse-operation-examples.ts",
+      "fixture": "new/inverse-operation-examples.cjs",
+      "sha256": "776950ed381fa68a11a2a96b5f9b87a73280cc2214c35b2c0e54c049d56c70c1"
+    },
+    {
+      "path": "src/lambda-example.ts",
+      "fixture": "new/lambda-example.cjs",
+      "sha256": "8573d3812f2d02d7991008d9e5c492600fa05643992f17b4a8ad7768deb06d09"
+    },
+    {
+      "path": "src/lambda-local.ts",
+      "fixture": "new/lambda-local.cjs",
+      "sha256": "bc43cd6a50108f212b504cde117d5d5333c896ec19bef9eec9361e82d097349e"
+    },
+    {
+      "path": "src/lambda-reduce.ts",
+      "fixture": "new/lambda-reduce.cjs",
+      "sha256": "9db47e288f538dbfaf862a25813a96bdc8daec7938061ef09946d8ddad63115f"
+    },
+    {
+      "path": "src/lambda-tape.ts",
+      "fixture": "new/lambda-tape.cjs",
+      "sha256": "663caddf11b39f9366327548c19c928b6ece415dab3336776d1b77db1f919bf1"
+    },
+    {
+      "path": "src/register-tm.ts",
+      "fixture": "new/register-tm.cjs",
+      "sha256": "7f2d8b94b328cd88d649498cd885aae53b61a57c334d42e64dd0ead8d5107be6"
     },
     {
       "path": "src/rule-error.ts",
@@ -73,34 +168,24 @@
       "sha256": "ddd57b89efb11af9abf511409698d303bc193b55bb1fdb20a84e1e21d63effc4"
     },
     {
-      "path": "src/binary-examples.ts",
-      "fixture": "new/binary-examples.cjs",
-      "sha256": "363a9f07ecba111376ff06fc7c3a336d14bc65514e8ed68780938f7592fbdf5c"
-    },
-    {
-      "path": "src/hyperoperation-examples.ts",
-      "fixture": "new/hyperoperation-examples.cjs",
-      "sha256": "65c5a473fbd62815a2e9d98ace6edef15bd61cf3a656b56609e32a9e154680b2"
-    },
-    {
-      "path": "src/inverse-operation-examples.ts",
-      "fixture": "new/inverse-operation-examples.cjs",
-      "sha256": "776950ed381fa68a11a2a96b5f9b87a73280cc2214c35b2c0e54c049d56c70c1"
-    },
-    {
-      "path": "src/register-tm.ts",
-      "fixture": "new/register-tm.cjs",
-      "sha256": "7f2d8b94b328cd88d649498cd885aae53b61a57c334d42e64dd0ead8d5107be6"
-    },
-    {
       "path": "src/unary-examples.ts",
       "fixture": "new/unary-examples.cjs",
       "sha256": "885848562a323aa9bc8655426d5f57e38543c6966aeab1dbe55733879e82848a"
     },
     {
-      "path": "src/function-parameters.ts",
-      "fixture": "new/function-parameters.cjs",
-      "sha256": "b41e2907d6bd58d674dad0da7df2f38d4ef8c40d3c8dad0cc39a109b033fbdef"
+      "path": "src/unary-state-names.ts",
+      "fixture": "new/unary-state-names.cjs",
+      "sha256": "03ba278a21a747de934e4fd1e5ae91c50e12bd2c498f8351a725f7d2131ba71c"
+    },
+    {
+      "path": "src/universal-machine.ts",
+      "fixture": "new/universal-machine.cjs",
+      "sha256": "b97e31c327f8fc975334642b8250e961d8add9a6c46d805a4db391ce18e14e66"
+    },
+    {
+      "path": "src/universal-tape.ts",
+      "fixture": "new/universal-tape.cjs",
+      "sha256": "b9cc38a99525dcc25c575d6c44264141f1e39b6a960430236a23e4dde84f0ab2"
     }
   ]
 }

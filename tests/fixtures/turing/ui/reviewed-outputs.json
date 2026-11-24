@@ -1,23 +1,28 @@
 [
   {
-    "path": "assets/campaign-CBbxwe-L.css",
-    "bytes": 10986,
-    "sha256": "0d29deef38fbbad7fc316c5e477cf8f6ffb4fea851701d2095684961e7ed04af"
+    "path": "assets/campaign-BW1jOc76.js",
+    "bytes": 28900,
+    "sha256": "bb2cd4a0508c417678c33cb909a554317b13477b3dcf91135d12a4e3693c7b91"
   },
   {
-    "path": "assets/campaign-DeswkHY8.js",
-    "bytes": 19421,
-    "sha256": "8023793c31658f904bca087a4d8fcec9a0273a9c5341a28401808053b7b946f6"
+    "path": "assets/campaign-DURYaQZg.css",
+    "bytes": 11650,
+    "sha256": "d9240284c2672bc489228169027d0bc4af4c767c051b6b49f213b32c60a8784d"
   },
   {
-    "path": "assets/campaign-solutions-By-kLT4Z.js",
-    "bytes": 116843,
-    "sha256": "58eb40611e6a66f75e2640fd613f4d817d3f865aa1c125b27f8f8060fb8e9e35"
+    "path": "assets/campaign-solutions-B9_3hJiS.js",
+    "bytes": 178767,
+    "sha256": "f7d9689981a4a4f8f924b54d01d2a4441e8da06fcf83921a2324c85cc63e8248"
   },
   {
-    "path": "assets/example-variants-nEgcF6wu.js",
-    "bytes": 57187,
-    "sha256": "bb31885aba8451aa6ad0de3435a5905b3d86b757a83d3e9c1e51a62c37c746f9"
+    "path": "assets/campaign-worker-CloQa8TC.js",
+    "bytes": 9706,
+    "sha256": "49efa6b5c672e24b7ceb41eab086179af494c5c738cae7047fb712073bbd390a"
+  },
+  {
+    "path": "assets/example-variants-CeXAyzO7.js",
+    "bytes": 9629,
+    "sha256": "0124957e3e43744dbab01f3a1def0bf326fdc3df61f579420facaa70f123f562"
   },
   {
     "path": "assets/gijswijt-worker-BVTAjsju.js",
@@ -30,9 +35,19 @@
     "sha256": "10460de6451be17ac9cd04eee276e992332c6ce398d1e78393215726bea64ad8"
   },
   {
-    "path": "assets/main-B7RmaSwR.js",
-    "bytes": 92645,
-    "sha256": "0519046e04825db7f552303437a4236cd8cb7f84921d32244a3939e7d41273f1"
+    "path": "assets/local-archive-view-B53v89kh.js",
+    "bytes": 12233,
+    "sha256": "317684036fe6d3562afc6583b2c13f10798f27d7b8d478b09969de7822663970"
+  },
+  {
+    "path": "assets/local-archive-view-hklar_3K.css",
+    "bytes": 2484,
+    "sha256": "7783bf8dd7d2021794e8b137fcb913a3e146187443de1a6f9c87c30c28fe4c9b"
+  },
+  {
+    "path": "assets/main-PVToYctc.js",
+    "bytes": 83567,
+    "sha256": "f7bdfe7ebe57c814dd1f265e6f117fc70982a61910cbe4cbfe41f06b0f3f04b0"
   },
   {
     "path": "assets/main-u9wqkNy_.css",
@@ -40,14 +55,14 @@
     "sha256": "5755c6d49a1391da156790aa20910819bdcae174769c8d9e05262c570f40d4a3"
   },
   {
-    "path": "assets/principles-Dtsbnb8Y.js",
-    "bytes": 37619,
-    "sha256": "45950e5aa2de1a31fc3040b3253569b50715e4e7dfcd0cb978637d014a2a29ce"
+    "path": "assets/principles-BfssFSS4.css",
+    "bytes": 3128,
+    "sha256": "37c4b121f7979f54972e13659ef38e6f9ebcc5cf6bba2a2b0420082d1f0ab09a"
   },
   {
-    "path": "assets/principles-DwFUzVhT.css",
-    "bytes": 4243,
-    "sha256": "b452c5fcd8b2a539c491138d7a1dab18bc1d0a0f2923b81feb4e23fa0700748d"
+    "path": "assets/principles-veKfCmNO.js",
+    "bytes": 21981,
+    "sha256": "58b8b33eadeed0f80e7a9061abf47d0397d03d6b7313d1ef88102c7073931feb"
   },
   {
     "path": "assets/route-worker-BzPQFO9e.js",
@@ -55,19 +70,9 @@
     "sha256": "bf5d50d1f65ca47aa645a89ca2054df18a80601ca14b600698fa0e5f591afe1d"
   },
   {
-    "path": "assets/rule-diagnostics-BxdvHXd0.js",
-    "bytes": 2644,
-    "sha256": "8a815f3624078297cf688dc3b777c2daf60eff4533205f727959a974c064795e"
-  },
-  {
-    "path": "assets/rule-diagnostics-C2wx2BTJ.css",
-    "bytes": 777,
-    "sha256": "e13e36dfff4c0a144cfd81f8debcbae58940e3acc2756f872e1e4b56d1d8ab5e"
-  },
-  {
     "path": "campaign.html",
-    "bytes": 780,
-    "sha256": "ba50fbe31c4192131a339e66e3a7d0b4e596435ca5fe0bc72e5918b38379134c"
+    "bytes": 784,
+    "sha256": "26f60d0128fa3005275b484ac68569efba831357dcfa950dca53f8826121a671"
   },
   {
     "path": "hub/turing-format.js",
@@ -91,12 +96,12 @@
   },
   {
     "path": "index.html",
-    "bytes": 1057,
-    "sha256": "be77574c78d3f7cb39928b686ad94f27042174039d5a777bc786f07ebc13a5b6"
+    "bytes": 1061,
+    "sha256": "e1a7008a79669a8d5a456711ab579ecad8c6c3af126fcc657cd4e3679d968ddc"
   },
   {
     "path": "principles.html",
     "bytes": 776,
-    "sha256": "865d7ccfb73f8bde59e36c93ac5312320c4966a85972cb4c5d6348c4253daf9e"
+    "sha256": "27afe4782a1a23b8e3a7d358349e58be09ee2004df572c4f690dbc24f003ff77"
   }
 ]

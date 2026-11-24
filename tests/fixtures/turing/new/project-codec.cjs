@@ -5,6 +5,7 @@ exports.parseProjectJson = parseProjectJson;
 exports.saveProject = saveProject;
 exports.loadProject = loadProject;
 const core_1 = require("./core.cjs");
+const local_archive_1 = require("./local-archive.cjs");
 const textFields = [
     "name",
     "description",
@@ -65,6 +66,7 @@ function parseProjectJson(source) {
     return validateProjectData(parsed);
 }
 function saveProject(storage, key, project) {
+    (0, local_archive_1.queueArchive)({ kind: "project", title: project.name || "实验台项目", content: JSON.stringify(project) });
     try {
         storage.setItem(key, JSON.stringify(project));
         return null;

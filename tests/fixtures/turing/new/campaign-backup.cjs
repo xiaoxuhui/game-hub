@@ -4,7 +4,8 @@ exports.MAX_CAMPAIGN_BACKUP_BYTES = void 0;
 exports.encodeCampaignBackup = encodeCampaignBackup;
 exports.parseCampaignBackup = parseCampaignBackup;
 const campaign_1 = require("./campaign.cjs");
-exports.MAX_CAMPAIGN_BACKUP_BYTES = 1_048_576;
+const campaign_limits_1 = require("./campaign-limits.cjs");
+exports.MAX_CAMPAIGN_BACKUP_BYTES = 32 * 1_048_576;
 const FORMAT = "turing-machine-campaign";
 function isRecord(value) {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -14,18 +15,19 @@ function validateProgress(value) {
         throw new Error("存档缺少有效的关卡进度或规则草稿。");
     }
     const knownIds = new Set(campaign_1.campaignLevels.map((level) => level.id));
+    const recognized = (id) => knownIds.has(id) || campaign_limits_1.retiredCampaignLevelIds.has(id);
     const completed = value.completedLevelIds;
-    if (completed.length > knownIds.size || completed.some((id) => typeof id !== "string" || !knownIds.has(id)) || new Set(completed).size !== completed.length) {
+    if (completed.length > knownIds.size + campaign_limits_1.retiredCampaignLevelIds.size || completed.some((id) => typeof id !== "string" || !recognized(id)) || new Set(completed).size !== completed.length) {
         throw new Error("存档包含未知或重复的已通关关卡。");
     }
     const drafts = Object.entries(value.drafts);
-    if (drafts.length > knownIds.size || drafts.some(([id, rules]) => !knownIds.has(id) || typeof rules !== "string" || rules.length > 100_000)) {
+    if (drafts.length > knownIds.size + campaign_limits_1.retiredCampaignLevelIds.size || drafts.some(([id, rules]) => !recognized(id) || typeof rules !== "string" || rules.length > campaign_limits_1.MAX_CAMPAIGN_DRAFT_LENGTH)) {
         throw new Error("存档包含无效的规则草稿。");
     }
     return {
         version: 1,
-        completedLevelIds: [...completed],
-        drafts: Object.fromEntries(drafts),
+        completedLevelIds: completed.filter((id) => typeof id === "string" && knownIds.has(id)),
+        drafts: Object.fromEntries(drafts.filter(([id]) => knownIds.has(id))),
     };
 }
 function encodeCampaignBackup(progress, exportedAt = new Date()) {
@@ -35,11 +37,14 @@ function encodeCampaignBackup(progress, exportedAt = new Date()) {
         exportedAt: exportedAt.toISOString(),
         progress: validateProgress(progress),
     };
-    return `${JSON.stringify(backup, null, 2)}\n`;
+    const encoded = `${JSON.stringify(backup, null, 2)}\n`;
+    if (new TextEncoder().encode(encoded).byteLength > exports.MAX_CAMPAIGN_BACKUP_BYTES)
+        throw new Error("存档超过 32 MiB，无法导出。");
+    return encoded;
 }
 function parseCampaignBackup(source) {
     if (new TextEncoder().encode(source).byteLength > exports.MAX_CAMPAIGN_BACKUP_BYTES) {
-        throw new Error("存档文件超过 1 MiB。");
+        throw new Error("存档文件超过 32 MiB。");
     }
     let value;
     try {
