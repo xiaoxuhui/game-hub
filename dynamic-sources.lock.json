@@ -581,10 +581,10 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/sokoban-ai-lab.git",
-      "revision": "597422a608293e5023caa1e6e899af1d9d9bf584",
+      "revision": "892dbce250096d9f32da089ae4a06b4fb52031e1",
       "directory": "dist",
-      "version": "1.0.3",
-      "contentCode": 7,
+      "version": "1.1.0",
+      "contentCode": 8,
       "entryPage": "index.html",
       "storageContract": "sokoban-ai-lab-dynamic-v1",
       "files": [
@@ -602,16 +602,18 @@
         "box-player-levels.js",
         "box-portals.js",
         "box-possess-levels.js",
+        "box-progress.js",
         "box-rooms.js",
         "box-transfer-levels.js",
         "box-wall-levels.js",
         "engine.js",
         "index.html",
         "route-input.js",
+        "save-preservation.js",
         "style.css",
         "hub-icon.png"
       ],
-      "releaseNotes": "全 15 章 249 关按原版实机画面对照修正配色：房间地板改用自身颜色混色，循环、玩家、墙等章节恢复各自色系；套箱接管时实体、房间与字符地图同步变色。玩法、碰撞与存档格式不变。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "releaseNotes": "推箱子实验室 1.1.0：新增存档保留层与关卡进度（按关卡身份而非编号记录，章节调整后进度不串关；旧存档在升级时自动归档，不会因版本切换丢失）；套箱导览页同步显示进度并支持从已完成关卡继续。关卡内容与碰撞规则不变。",
       "hubIcon": "assets/game-icons/sokoban-ai-lab.png"
     },
     {
@@ -694,10 +696,10 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/cube-step-solver.git",
-      "revision": "a31c38cb472039983907d3d778b1b56b3d2b3061",
+      "revision": "50528e5f08fd1864cb9e4f2c1e2a3966e1bc8aa1",
       "directory": "dist",
-      "version": "1.1.0",
-      "contentCode": 3,
+      "version": "1.2.0",
+      "contentCode": 4,
       "entryPage": "index.html",
       "storageContract": "cube-step-solver-dynamic-v1",
       "files": [
@@ -706,6 +708,8 @@
         "color-input.js",
         "core.js",
         "cuboid.js",
+        "huge-app.js",
+        "huge-model.js",
         "index.html",
         "large-view.js",
         "net-motion.js",
@@ -716,7 +720,7 @@
         "vendor/solve.js",
         "hub-icon.png"
       ],
-      "releaseNotes": "魔方一步步 1.1.0：支持 1–200 阶正方体与长方体（两百阶 240000 个表面格），六面展开图显示运行过程并高亮本步受影响区域；手动填色可直接输入或粘贴颜色（中文、字母、RLE 计数、? 未填），支持最多 10000 步历史与 0.5–120 步/秒调速，全部在本机离线运行。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "releaseNotes": "魔方一步步 1.2.0：支持到 4,503,599,627,370,495 阶的超大尺寸（任一边超过 200 自动切换按需计算模型，不按表面积分配数组，稀疏填色与涂黑规则精确保留），可一键应用最大尺寸；新增同轴并行转动与并行还原（同层转角合并抵消、跨轴顺序保留、整组上一步/下一步）；大尺寸三维预览改按真实行列生成纹理并按设备像素比绘制，消除网格干扰纹。小尺寸玩法与存档格式不变。",
       "hubIcon": "assets/game-icons/cube-step-solver.png"
     }
   ]
