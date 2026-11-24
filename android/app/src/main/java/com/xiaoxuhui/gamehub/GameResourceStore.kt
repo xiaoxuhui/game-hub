@@ -78,6 +78,19 @@ internal class GameResourceStore(trustedDirectory: File, private val hostCode: I
     fun failure(): String? = synchronized(lock) { stateFailure ?: renewalFailures.takeIf { it.isNotEmpty() }?.entries?.joinToString("；") { "${it.key}：${it.value}" } ?: candidateFailure }
     fun selection(id: String): ResourceSelection = synchronized(lock) { selections.getValue(id) }
     fun installed(id: String): Boolean = synchronized(lock) { selections[id]?.let { it.active != "builtin" || it.ready != null } ?: false }
+    /** Only an installed, selected version with a signed icon entry may supply artwork. Never activates a candidate. */
+    fun readIcon(id: String, identity: String): ByteArray? = synchronized(lock) {
+        val selected = selections[id] ?: return@synchronized null
+        if (identity == "builtin" || (identity != selected.active && identity != selected.ready)) return@synchronized null
+        val game = verifyVersion(id, identity)
+        val icon = game.files.singleOrNull { it.path == "hub-icon.png" && it.mime == "image/png" } ?: return@synchronized null
+        require(icon.bytes in 1..(512 * 1024).toLong()) { "Icon exceeds size limit" }
+        val file = File(version(id, identity), icon.path)
+        ResourcePathGuard.requireUnlinked(file)
+        val bytes = file.inputStream().use { ResourceIo.readBounded(it, icon.bytes) }
+        require(bytes.size.toLong() == icon.bytes && ResourcePolicy.sha256(bytes) == icon.sha256) { "Icon digest mismatch" }
+        bytes
+    }
     fun removeResources(id: String) = synchronized(lock) {
         require(policy == ResourceStorePolicy.DYNAMIC && stateFailure == null && !hasSessions()) { "仅能在空闲大厅移除动态资源；存档保留" }
         val current = selections.getValue(id)

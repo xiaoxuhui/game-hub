@@ -15,6 +15,20 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 class GameResourceStoreTest {
+    @Test fun iconComesOnlyFromSelectedSignedResourceAndDoesNotActivateIt() {
+        val f=Fixture(); try {
+            val icon=Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")
+            val store=f.store; val (game,proof,zip)=f.release(icon=icon)
+            store.install(game,proof,zip)
+            assertArrayEquals(icon,store.readIcon("conway",game.identity))
+            assertEquals("builtin",store.selection("conway").active)
+            assertNull(store.readIcon("conway","builtin"))
+            assertNull(store.readIcon("conway","999-"+"a".repeat(64)))
+            File(f.root,"versions/conway/${game.identity}/hub-icon.png").writeBytes(byteArrayOf(1,2,3))
+            rejected { store.readIcon("conway",game.identity) }
+            assertEquals("builtin",store.selection("conway").active)
+        } finally { f.close() }
+    }
     @Test fun rememberedDirectoryRequiresBothTrustedWatermarksAndNeverRenewsExpiry() {
         val f = Fixture()
         try {
@@ -164,8 +178,9 @@ class GameResourceStoreTest {
         var time = 1791417600000L
         fun proofFile(file: File) = object : ResourceStateFile { override fun read() = if (file.isFile) file.readBytes() else null; override fun write(bytes: ByteArray) { file.parentFile!!.mkdirs(); file.writeBytes(bytes) } }
         val store get() = GameResourceStore(root, 3, pair.public.encoded, state, now = { time }, proofFile = ::proofFile)
-        fun release(code: Int = 2, sequence: Int = code, body: String = "new resource", issued: String = "2026-10-08T00:00:00.000Z", expires: String = "2026-10-09T00:00:00.000Z", version: String = "1.0.$code", revision: String = "a".repeat(40)): Triple<ResourceGame, ByteArray, File> {
+        fun release(code: Int = 2, sequence: Int = code, body: String = "new resource", issued: String = "2026-10-08T00:00:00.000Z", expires: String = "2026-10-09T00:00:00.000Z", version: String = "1.0.$code", revision: String = "a".repeat(40), icon: ByteArray? = null): Triple<ResourceGame, ByteArray, File> {
             val resources = linkedMapOf("LICENSE" to "MIT License".toByteArray(), "index.html" to "<html>$body</html>".toByteArray())
+            if(icon!=null) resources["hub-icon.png"]=icon
             val output = ByteArrayOutputStream()
             ZipOutputStream(output).use { zip -> for ((path, bytes) in resources) {
                 val entry = ZipEntry(path).apply { method = ZipEntry.STORED; size = bytes.size.toLong(); compressedSize = size; crc = CRC32().apply { update(bytes) }.value; setTime(315532800000L) }

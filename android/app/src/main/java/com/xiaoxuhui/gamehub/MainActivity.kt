@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -51,6 +52,7 @@ import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import org.json.JSONObject
 import java.io.File
+import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
     private data class Game(val id: String, val name: String, val version: String, val revision: String, val entry: String)
@@ -67,6 +69,27 @@ class MainActivity : ComponentActivity() {
     private val gameDialogs = mutableSetOf<AlertDialog>()
     private val gameVersionLabels = mutableMapOf<String, TextView>()
     private val gameCards = mutableMapOf<String, View>()
+    private val gameIconViews = mutableMapOf<String, ImageView>()
+    private val iconLoader = Executors.newSingleThreadExecutor()
+    private fun bindResourceIcon(view: ImageView, id: String, local: LocalResourceInfo?, fallback: Int) {
+        val game = local?.active ?: if (local?.selection?.active == "builtin") local.ready else null
+        val identity = game?.identity
+        val key = "$id/${identity ?: "builtin"}/$fallback"
+        if (view.tag == key) return
+        view.tag = key
+        view.setImageResource(fallback)
+        if (identity == null || game.files.none { it.path == "hub-icon.png" && it.mime == "image/png" }) return
+        iconLoader.execute {
+            val bitmap = runCatching {
+                val bytes = ResourceRuntime.get(applicationContext).storeFor(id).readIcon(id, identity) ?: return@runCatching null
+                val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                require(options.outMimeType == "image/png" && options.outWidth in 1..1024 && options.outHeight in 1..1024)
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            }.getOrNull()
+            if (bitmap != null) runOnUiThread { if (!isDestroyed && view.tag == key) view.setImageBitmap(bitmap) }
+        }
+    }
     private val hostVersionCode by lazy { packageManager.getPackageInfo(packageName, 0).let { if (Build.VERSION.SDK_INT >= 28) it.longVersionCode.toInt() else it.versionCode } }
     private val updateListener: (UpdateSnapshot) -> Unit = { state -> renderUpdates(state) }
     private val updateManager by lazy { ApkUpdateManager(this) }
@@ -338,6 +361,7 @@ class MainActivity : ComponentActivity() {
                 gameCards[game.id] = card
                 card.addView(ImageView(this).apply {
                     setImageResource(iconFor(game.id))
+                    gameIconViews[game.id] = this
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     background = rounded(BACKGROUND, dp(17))
                     clipToOutline = true
@@ -374,7 +398,7 @@ class MainActivity : ComponentActivity() {
                 dynamicGame(id,local,remote) to dynamicIcon(id,(local.active ?: local.ready ?: remote)?.iconKind)
             }
         if(entries!=dynamicLobbyKey){
-            dynamicLobbyKey.forEach {(game,_)->gameVersionLabels.remove(game.id);gameCards.remove(game.id)}
+            dynamicLobbyKey.forEach {(game,_)->gameVersionLabels.remove(game.id);gameCards.remove(game.id);gameIconViews.remove(game.id)}
             dynamicLobbyKey=entries;dynamicSection.removeAllViews()
             if(entries.isNotEmpty())dynamicSection.addView(label("已安装的游戏",15f,Color.WHITE,true).apply {setPadding(dp(6),dp(12),0,dp(4))})
             entries.chunked(2).forEach {pair->
@@ -388,7 +412,7 @@ class MainActivity : ComponentActivity() {
                     }
                     row.addView(card,LinearLayout.LayoutParams(0,-2,1f).apply {setMargins(dp(4),dp(4),dp(4),dp(4))})
                     gameCards[game.id]=card
-                    card.addView(ImageView(this).apply {setImageResource(icon);contentDescription=null},LinearLayout.LayoutParams(dp(56),dp(56)))
+                    card.addView(ImageView(this).apply {setImageResource(icon);contentDescription=null;gameIconViews[game.id]=this},LinearLayout.LayoutParams(dp(56),dp(56)))
                     card.addView(label(game.name,16f,Color.WHITE,true).apply {gravity=Gravity.CENTER;maxLines=3;setPadding(0,dp(6),0,0)})
                     card.addView(label("",11f,MUTED,false).apply {gravity=Gravity.CENTER;gameVersionLabels[game.id]=this})
                     card.addView(reinstallButton(game.id,game.name))
@@ -398,6 +422,7 @@ class MainActivity : ComponentActivity() {
         }
         entries.forEach {(game,_)->
             val local=state.localDynamicResources.getValue(game.id)
+            gameIconViews[game.id]?.let { bindResourceIcon(it, game.id, local, dynamicIcon(game.id, (local.active ?: local.ready)?.iconKind)) }
             val text=when {
                 local.stateError!=null || local.activeError!=null->"资源异常 · 待恢复"
                 local.selection.active.substringBefore('-').toIntOrNull() in local.selection.quarantine->"失败已隔离 · 待恢复"
@@ -445,6 +470,7 @@ class MainActivity : ComponentActivity() {
         renderDynamicLobby(state)
         for (game in games) {
             val local = state.localResources[game.id]
+            gameIconViews[game.id]?.let { bindResourceIcon(it, game.id, local, iconFor(game.id)) }
             val actual = when {
                 local == null -> if (state.localReadError != null || state.localLoaded) "本地状态不可用 · 待恢复" else "本地资源核验中"
                 local.selection.active == "builtin" -> "v${game.version} · 内置"
@@ -1128,6 +1154,7 @@ class MainActivity : ComponentActivity() {
         stopGameWatchdog()
         navigationSerial++
         clearWebView()
+        iconLoader.shutdownNow()
         super.onDestroy()
     }
 
