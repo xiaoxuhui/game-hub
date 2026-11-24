@@ -622,10 +622,10 @@
       "iconKind": "simulation",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/territory-conquest.git",
-      "revision": "1592c9edd871cfcc90438123c6fceda14e57eb7a",
+      "revision": "ac3e27048d25a73592e88866df82ed7d39ec5f22",
       "directory": "dist",
-      "version": "1.2.0",
-      "contentCode": 4,
+      "version": "1.3.0",
+      "contentCode": 5,
       "entryPage": "index.html",
       "storageContract": "territory-conquest-dynamic-v1",
       "files": [
@@ -636,7 +636,7 @@
         "map-editor.js",
         "style.css"
       ],
-      "releaseNotes": "新增自定义地图编辑器（10×10/30×30/100×100、陆海笔刷、撤销、随机海陆）与开局设置（初始首都、单向初始外交）；新增地球式边界模式、海洋领地与 10% 入海判定、查看国家六个自动跟随选项、势力图指标切换、接管国家、国家轮廓；人数上限提到 64，动荡改按敌对攻占或抽走 ≥75% 兵力计次。旧地图与存档兼容。"
+      "releaseNotes": "领土征服 1.3.0：可选规则「和平支援反击」（单向和平国沿现有格子反击施害国，含绕行与突破判据）、战场势力面板新增存活国家数/每国平均领土/平均兵力、兵力分级科学计数法、多线作战（多来源格同轮出兵，来源格每轮限一次）；外交、海洋判定与动荡规则不变。"
     },
     {
       "id": "cube-step-solver",
