@@ -2,40 +2,70 @@
   "schemaVersion": 1,
   "id": "hex-cell-lab",
   "repository": "https://github.com/xiaoxuhui/hex-cell-lab.git",
-  "revision": "5040dde0521e9e38a5b640c80993a567f18a25c0",
-  "version": "1.4.0",
+  "revision": "e6cbbf4442fa0032151b7c904bd5adcaa453e88a",
+  "version": "1.12.1",
   "buildKind": "static-copy",
   "entryPage": "index.html",
   "inputs": [
     {
       "path": "index.html",
-      "bytes": 11159,
-      "sha256": "e7334a45d4c439359577a58ef5cb4ef0fbcf04c03c56e9fdd7b2abd9aa8759ac"
+      "bytes": 17698,
+      "sha256": "9e2a4e5849e6f1bb7450f18f52b2d4702185648f07a618024c038012c20be18e"
     },
     {
       "path": "styles/main.css",
-      "bytes": 13576,
-      "sha256": "ebc28cf4725003955a9e3a634bfff42e778a27347424319a48e3e8623c1a6d84"
-    },
-    {
-      "path": "src/core.js",
-      "bytes": 5840,
-      "sha256": "267c39ee747f6dc402ea2d1ad7ce104136f30a960567ff33bbedc35b312c0b10"
+      "bytes": 16139,
+      "sha256": "0c393f3ac27ab0d94dc7c37e96e09feae7b082eac8ba0b211e95c30ce7874dbd"
     },
     {
       "path": "src/app.js",
-      "bytes": 17305,
-      "sha256": "af6f9fe995e4f11d819c0cd864f0e493a23a0471e85a0cd168aedd4632ed88c5"
+      "bytes": 40910,
+      "sha256": "6a26eb36b3c384a45b6a99f4bbab7db48435c7ec79aae0f7e35d4fd70b3deb29"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 6302,
+      "sha256": "839bb28cb568de001f644181ddc29ddb62030c1f9002e9e0570dc2a9542f2b0b"
+    },
+    {
+      "path": "src/cycles.js",
+      "bytes": 4783,
+      "sha256": "345e9280128fa0ada9065d63c4010485ee2747fd6f801d24eb1e437cb8feb3fb"
     },
     {
       "path": "src/expression.js",
-      "bytes": 5224,
-      "sha256": "7443befffdc4e25fe3c624129a765cd2e291ee2158166ec44e07e595ddc11c41"
+      "bytes": 5622,
+      "sha256": "d2057502ecd117aec4ea0df732e5d8ecc358cb4d703e2ec9ca31ffc0fed3e104"
+    },
+    {
+      "path": "src/golly-input.js",
+      "bytes": 12015,
+      "sha256": "59e7e8cad104fd8b8ebc43725cde429bb7e61629355ac3d95720eb9dad7d96c6"
+    },
+    {
+      "path": "src/golly.js",
+      "bytes": 6815,
+      "sha256": "149041d6772d97ef0ac934fb6fe887c39f4838ac624510d2ae6167f063ac9f5f"
+    },
+    {
+      "path": "src/pattern.js",
+      "bytes": 9773,
+      "sha256": "58ab3ca7d76aa7f3bb852bba0fd2a1f8d4ba3886cfeee6c878e99001c228b70c"
     },
     {
       "path": "src/presets.js",
       "bytes": 1532,
       "sha256": "c7ca83e681119fb9f67df97860d6c15fa117b718dce8a5402a2a6d2c0f4a70ca"
+    },
+    {
+      "path": "src/redstone.js",
+      "bytes": 4557,
+      "sha256": "f9f4c402efe0b723ab96962254c20718698bb0bc9bed9e216f3dea3308630c58"
+    },
+    {
+      "path": "src/world.js",
+      "bytes": 10809,
+      "sha256": "51ddedbc248c75087144fe5b2404b1bf158ac8801ef73e67e91849d401ef2a99"
     },
     {
       "path": "vendor/jsep-1.4.0/dist/iife/jsep.iife.js",
@@ -49,13 +79,13 @@
     },
     {
       "path": "package.json",
-      "bytes": 534,
-      "sha256": "d5119bbc107e69ccf472eed068aa562169467ebd379c973fcd08db10edcce996"
+      "bytes": 632,
+      "sha256": "0071956041aa4440f53cf2ccdd4c25a1b00601bdd14e8feee48243c5950b9754"
     },
     {
       "path": "scripts/build.cjs",
-      "bytes": 494,
-      "sha256": "acecce249989695e7967714db0545a02b1f1140c67926054e00d55a1571925d4"
+      "bytes": 596,
+      "sha256": "e223f30cded39e7d488583b5316a3d366e084cdeab95dd5b34fc2d18fcf0da46"
     }
   ],
   "license": {
@@ -73,33 +103,63 @@
   "outputs": [
     {
       "path": "index.html",
-      "bytes": 11159,
-      "sha256": "e7334a45d4c439359577a58ef5cb4ef0fbcf04c03c56e9fdd7b2abd9aa8759ac"
+      "bytes": 17698,
+      "sha256": "9e2a4e5849e6f1bb7450f18f52b2d4702185648f07a618024c038012c20be18e"
     },
     {
       "path": "styles/main.css",
-      "bytes": 13576,
-      "sha256": "ebc28cf4725003955a9e3a634bfff42e778a27347424319a48e3e8623c1a6d84"
-    },
-    {
-      "path": "src/core.js",
-      "bytes": 5840,
-      "sha256": "267c39ee747f6dc402ea2d1ad7ce104136f30a960567ff33bbedc35b312c0b10"
+      "bytes": 16139,
+      "sha256": "0c393f3ac27ab0d94dc7c37e96e09feae7b082eac8ba0b211e95c30ce7874dbd"
     },
     {
       "path": "src/app.js",
-      "bytes": 17305,
-      "sha256": "af6f9fe995e4f11d819c0cd864f0e493a23a0471e85a0cd168aedd4632ed88c5"
+      "bytes": 40910,
+      "sha256": "6a26eb36b3c384a45b6a99f4bbab7db48435c7ec79aae0f7e35d4fd70b3deb29"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 6302,
+      "sha256": "839bb28cb568de001f644181ddc29ddb62030c1f9002e9e0570dc2a9542f2b0b"
+    },
+    {
+      "path": "src/cycles.js",
+      "bytes": 4783,
+      "sha256": "345e9280128fa0ada9065d63c4010485ee2747fd6f801d24eb1e437cb8feb3fb"
     },
     {
       "path": "src/expression.js",
-      "bytes": 5224,
-      "sha256": "7443befffdc4e25fe3c624129a765cd2e291ee2158166ec44e07e595ddc11c41"
+      "bytes": 5622,
+      "sha256": "d2057502ecd117aec4ea0df732e5d8ecc358cb4d703e2ec9ca31ffc0fed3e104"
+    },
+    {
+      "path": "src/golly-input.js",
+      "bytes": 12015,
+      "sha256": "59e7e8cad104fd8b8ebc43725cde429bb7e61629355ac3d95720eb9dad7d96c6"
+    },
+    {
+      "path": "src/golly.js",
+      "bytes": 6815,
+      "sha256": "149041d6772d97ef0ac934fb6fe887c39f4838ac624510d2ae6167f063ac9f5f"
+    },
+    {
+      "path": "src/pattern.js",
+      "bytes": 9773,
+      "sha256": "58ab3ca7d76aa7f3bb852bba0fd2a1f8d4ba3886cfeee6c878e99001c228b70c"
     },
     {
       "path": "src/presets.js",
       "bytes": 1532,
       "sha256": "c7ca83e681119fb9f67df97860d6c15fa117b718dce8a5402a2a6d2c0f4a70ca"
+    },
+    {
+      "path": "src/redstone.js",
+      "bytes": 4557,
+      "sha256": "f9f4c402efe0b723ab96962254c20718698bb0bc9bed9e216f3dea3308630c58"
+    },
+    {
+      "path": "src/world.js",
+      "bytes": 10809,
+      "sha256": "51ddedbc248c75087144fe5b2404b1bf158ac8801ef73e67e91849d401ef2a99"
     },
     {
       "path": "vendor/jsep-1.4.0/dist/iife/jsep.iife.js",

@@ -3,18 +3,18 @@ import {execFileSync} from 'node:child_process';
 import {resolve,dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {sha256} from './resource-protocol.mjs';
-export const HEX_REVISION='5040dde0521e9e38a5b640c80993a567f18a25c0';
-export const HEX_FILES=['index.html','styles/main.css','src/core.js','src/app.js','src/expression.js','src/presets.js','vendor/jsep-1.4.0/dist/iife/jsep.iife.js','vendor/jsep-1.4.0/LICENSE'];
+export const HEX_REVISION='e6cbbf4442fa0032151b7c904bd5adcaa453e88a';
+export const HEX_FILES=['index.html','styles/main.css','src/app.js','src/core.js','src/cycles.js','src/expression.js','src/golly-input.js','src/golly.js','src/pattern.js','src/presets.js','src/redstone.js','src/world.js','vendor/jsep-1.4.0/dist/iife/jsep.iife.js','vendor/jsep-1.4.0/LICENSE'];
 const root=fileURLToPath(new URL('../',import.meta.url)),repository='https://github.com/xiaoxuhui/hex-cell-lab.git';
 export function hexSource(checkout){
   const git=args=>execFileSync('git',args,{cwd:checkout,encoding:'utf8',env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_TERMINAL_PROMPT:'0'}}).trim();
   if(git(['rev-parse','HEAD'])!==HEX_REVISION||git(['remote','get-url','origin'])!==repository||git(['status','--porcelain=v1','--untracked-files=all']))throw Error('Hex immutable clean remote source required');
   const read=path=>execFileSync('git',['show',HEX_REVISION+':'+path],{cwd:checkout,maxBuffer:8*1024*1024});
-  if(JSON.parse(read('package.json')).version!=='1.4.0')throw Error('Hex source version mismatch');
+  if(JSON.parse(read('package.json')).version!=='1.12.1')throw Error('Hex source version mismatch');
   const licenseRevision='11f1dbe51f9fd764d91fffac878c602bfc61a0ee',license=execFileSync('git',['show',licenseRevision+':LICENSE'],{cwd:root});if(!/^MIT License\r?\n/.test(license.toString())||!license.toString().includes('Copyright (c) 2026 xiaoxuhui'))throw Error('Author license identity mismatch');
   const entries=HEX_FILES.map(path=>({path,data:read(path)}));
   const inputs=[...HEX_FILES,'package.json','scripts/build.cjs'].map(path=>{const data=read(path);return {path,bytes:data.length,sha256:sha256(data)};});
-  const proof={schemaVersion:1,id:'hex-cell-lab',repository,revision:HEX_REVISION,version:'1.4.0',buildKind:'static-copy',entryPage:'index.html',inputs,license:{spdx:'MIT',copyright:'2026 xiaoxuhui',authorization:'Author explicitly approved MIT resource publication in conversation on 2026-10-25',sourceRepository:'https://github.com/xiaoxuhui/game-hub.git',sourceRevision:licenseRevision,path:'LICENSE',bytes:license.length,sha256:sha256(license),thirdParty:'vendor/jsep-1.4.0/LICENSE preserved byte-for-byte'},adaptations:[],outputs:[...entries,{path:'LICENSE',data:license}].map(e=>({path:e.path,bytes:e.data.length,sha256:sha256(e.data)}))};
+  const proof={schemaVersion:1,id:'hex-cell-lab',repository,revision:HEX_REVISION,version:'1.12.1',buildKind:'static-copy',entryPage:'index.html',inputs,license:{spdx:'MIT',copyright:'2026 xiaoxuhui',authorization:'Author explicitly approved MIT resource publication in conversation on 2026-10-25',sourceRepository:'https://github.com/xiaoxuhui/game-hub.git',sourceRevision:licenseRevision,path:'LICENSE',bytes:license.length,sha256:sha256(license),thirdParty:'vendor/jsep-1.4.0/LICENSE preserved byte-for-byte'},adaptations:[],outputs:[...entries,{path:'LICENSE',data:license}].map(e=>({path:e.path,bytes:e.data.length,sha256:sha256(e.data)}))};
   return [...entries,{path:'LICENSE',data:license},{path:'upstream-source.json',data:Buffer.from(JSON.stringify(proof,null,2)+'\n')}];
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

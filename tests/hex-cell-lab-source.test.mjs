@@ -7,7 +7,7 @@ import {sha256} from '../scripts/resource-protocol.mjs';
 import {inspectResources} from '../scripts/resource-bundle.mjs';
 test('hex-cell source closure preserves fixed runtime bytes and both MIT licenses',()=>{
   const root=new URL('../examples/hex-cell-lab/',import.meta.url),proof=JSON.parse(readFileSync(new URL('upstream-source.json',root))),entries=HEX_FILES.map(path=>({path,data:readFileSync(new URL(path,root))}));
-  assert.equal(proof.revision,HEX_REVISION);assert.equal(proof.version,'1.4.0');assert.equal(proof.license.spdx,'MIT');assert.match(proof.license.authorization,/explicitly approved/);assert.deepEqual(proof.adaptations,[]);
+  assert.equal(proof.revision,HEX_REVISION);assert.equal(proof.version,'1.12.1');assert.equal(proof.license.spdx,'MIT');assert.match(proof.license.authorization,/explicitly approved/);assert.deepEqual(proof.adaptations,[]);
   assert.deepEqual(proof.outputs.map(f=>f.path).sort(),[...HEX_FILES,'LICENSE'].sort());
   for(const e of entries){const input=proof.inputs.find(i=>i.path===e.path),output=proof.outputs.find(i=>i.path===e.path);assert.equal(input.sha256,sha256(e.data));assert.deepEqual(input,output);}
   const license=readFileSync(new URL('LICENSE',root)),expected=execFileSync('git',['show','11f1dbe51f9fd764d91fffac878c602bfc61a0ee:LICENSE'],{cwd:new URL('../',import.meta.url)});assert.deepEqual(license,expected);assert.equal(proof.license.sha256,sha256(expected));assert.equal(proof.license.bytes,expected.length);assert.deepEqual(proof.outputs.find(f=>f.path==='LICENSE'),{path:'LICENSE',bytes:expected.length,sha256:sha256(expected)});
