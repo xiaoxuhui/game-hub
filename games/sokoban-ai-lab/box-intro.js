@@ -29,9 +29,18 @@ const chapters = [
   { id: 'clone', title: '克隆', levels: BoxCampaign.clone, color: '#8caad2' },
   { id: 'transfer', title: '转移', levels: BoxCampaign.transfer, color: '#5a8cdc' },
   { id: 'open', title: '开放', levels: BoxCampaign.open, color: '#6496e6' },
+  { id: 'flip', title: '翻转', levels: BoxCampaign.flip, color: '#786efa' },
+  { id: 'cycle', title: '循环', levels: BoxCampaign.cycle, color: '#786efa' },
+  { id: 'player', title: '玩家', levels: BoxCampaign.player, color: '#cbcbce' },
+  { id: 'possess', title: '占据', levels: BoxCampaign.possess, color: '#cbcbce' },
+  { id: 'wall', title: '墙', levels: BoxCampaign.wall, color: '#cbcbce' },
 ];
 const levels = [];
 for (const chapter of chapters) {
+  chapter.levels = chapter.levels.map((level, index) => {
+    const palette = globalThis.BoxCampaignColors?.[chapter.id]?.[index];
+    return palette ? { ...level, colors: palette.colors, playerColor: palette.playerColor, pieceColors: palette.pieceColors, possessColor: palette.possessColor } : level;
+  });
   chapter.start = levels.length;
   levels.push(...chapter.levels);
 }
@@ -45,6 +54,8 @@ const returnButton = $('intro-return');
 const parentButton = $('intro-view-parent');
 const moveButtons = document.querySelectorAll('[data-move]');
 const roomMaps = new WeakMap();
+const playerViews = new WeakMap();
+const solidRoomViews = new WeakMap();
 let previewContents;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const zoomCanvas = $('intro-recursive-view');
@@ -57,7 +68,7 @@ const finishColor = '#fff2d9';
 let levelButtons = [];
 let chapterIndex = -1;
 const storageKey = 'sokoban-lab-box-intro-v1';
-const layoutRevision = 5;
+const layoutRevision = 7;
 const moveKeys = { arrowup: 0, w: 0, arrowright: 1, d: 1, arrowdown: 2, s: 2, arrowleft: 3, a: 3 };
 let active = 0;
 let complete = [];
@@ -67,6 +78,7 @@ let history = [];
 let future = [];
 let textView = false;
 let inspectedRoom = null;
+let inspectedFlipped = false;
 let roomMotion;
 let recursiveZoom;
 let routeInput;
@@ -75,7 +87,7 @@ let boxMotion;
 try {
   const saved = JSON.parse(localStorage.getItem(storageKey));
   if (Number.isInteger(saved?.active) && levels[saved.active]) active = saved.active;
-  if ([2, 3, 4, layoutRevision].includes(saved?.revision) && Array.isArray(saved.complete)) {
+  if ([2, 3, 4, 5, 6, layoutRevision].includes(saved?.revision) && Array.isArray(saved.complete)) {
     complete = saved.complete.slice(0, levels.length);
   }
   if (saved?.revision === 2) {
@@ -96,6 +108,26 @@ try {
     else if (active === fourth) active = third;
     if (complete.length > third) {
       [complete[third], complete[fourth]] = [complete[fourth], complete[third]];
+    }
+  }
+  if ([2, 3, 4, 5].includes(saved?.revision)) {
+    const flip = chapters.find(chapter => chapter.id === 'flip');
+    const fifteenth = flip.start + 14;
+    const sixteenth = flip.start + 15;
+    if (active === fifteenth) active = sixteenth;
+    else if (active === sixteenth) active = fifteenth;
+    if (complete.length > fifteenth) {
+      [complete[fifteenth], complete[sixteenth]] = [complete[sixteenth], complete[fifteenth]];
+    }
+  }
+  if (saved?.revision === 6) {
+    const cycle = chapters.find(chapter => chapter.id === 'cycle');
+    const ninth = cycle.start + 8;
+    const tenth = cycle.start + 9;
+    if (active === ninth) active = tenth;
+    else if (active === tenth) active = ninth;
+    if (complete.length > ninth) {
+      [complete[ninth], complete[tenth]] = [complete[tenth], complete[ninth]];
     }
   }
 } catch { /* Progress is optional when storage is unavailable. */ }
@@ -131,21 +163,63 @@ function roomLabel(roomId) {
   return depth ? '箱内第 ' + depth + ' 层' : '外层';
 }
 
+function playerIds(snapshot = state) { return snapshot.players ?? map.players; }
+
+function roomHasPreview(roomId) {
+  if (roomId < 0) return false;
+  if (!solidRoomViews.has(map)) {
+    // An empty room sealed on every edge represents a solid body. Its hollow
+    // implementation must not become a visible interior when it is a player.
+    const solid = new Set();
+    for (const [id, room] of map.rooms.entries()) {
+      const closed = [...room.tiles].every((tile, cell) => {
+        const x = cell % room.width, y = Math.floor(cell / room.width);
+        return tile === '#' || (tile === ' ' && x > 0 && y > 0 && x < room.width - 1 && y < room.height - 1);
+      });
+      const contents = [...map.initial.positions, ...map.goals, ...map.finishes].some(position => position[0] === id);
+      if (closed && !contents) solid.add(id);
+    }
+    solidRoomViews.set(map, solid);
+  }
+  return !solidRoomViews.get(map).has(roomId);
+}
+
+function viewFlipped() {
+  return inspectedRoom === null ? Boolean(playerViews.get(state)) : inspectedFlipped;
+}
+
+function viewAfterCrossings(previous, next) {
+  let mirrored = Boolean(playerViews.get(previous));
+  for (const crossing of next.crossings ?? []) {
+    const room = crossing.room ?? map.inside[crossing.owner];
+    const hostRoom = crossing.host?.[0] ?? next.positions[crossing.owner][0];
+    const selfReference = room === hostRoom;
+    const flipped = crossing.flipped ?? (previous.flipped ?? map.flipped)[crossing.owner];
+    if (flipped && !selfReference) mirrored = !mirrored;
+  }
+  return mirrored;
+}
+
 function inspectRoom(roomId, crossing) {
   clearBoxMotion();
-  inspectedRoom = roomId === state.positions[0][0] ? null : roomId;
+  const owner = crossing?.owner;
+  const selfReference = owner >= 0 && map.inside[owner] === state.positions[owner][0];
+  const mirrored = owner >= 0 ? viewFlipped() !== (Boolean((state.flipped ?? map.flipped)[owner]) && !selfReference) :
+    roomId === state.positions[state.activePlayer ?? playerIds()[0]][0] && Boolean(playerViews.get(state));
+  inspectedRoom = roomId === state.positions[state.activePlayer ?? playerIds()[0]][0] && mirrored === Boolean(playerViews.get(state)) ? null : roomId;
+  inspectedFlipped = mirrored;
   render(crossing ? [crossing] : []);
 }
 
 function inspectParent() {
-  const roomId = inspectedRoom ?? state.positions[0][0];
+  const roomId = inspectedRoom ?? state.positions[state.activePlayer ?? playerIds()[0]][0];
   const parent = parentRoom(roomId);
   if (parent >= 0) inspectRoom(parent, { direction: 'out', owner: map.rooms[roomId].owner });
   else returnToPlayer();
 }
 
 function returnToPlayer() {
-  if (inspectedRoom !== null) inspectRoom(state.positions[0][0]);
+  if (inspectedRoom !== null) inspectRoom(state.positions[state.activePlayer ?? playerIds()[0]][0]);
 }
 
 function cameraCrossing(crossings, previousRoom, roomId) {
@@ -166,7 +240,7 @@ function cameraCrossing(crossings, previousRoom, roomId) {
 }
 
 function render(crossings = []) {
-  const [playerRoom, x, y] = state.positions[0];
+  const [playerRoom, x, y] = state.positions[state.activePlayer ?? playerIds()[0]];
   const inspecting = inspectedRoom !== null;
   const roomId = inspectedRoom ?? playerRoom;
   const showText = textView && !inspecting;
@@ -175,17 +249,18 @@ function render(crossings = []) {
   renderScene(roomId, cameraCrossing(crossings, Number(board.dataset.room), roomId), showText);
   if (showText) renderTextMaps(playerRoom);
   updateRecursiveZoom(roomId);
-  $('intro-room').hidden = map.rooms.length === 1 && map.rooms[0].owner < 0;
-  $('intro-room').textContent = (inspecting ? '正在查看 · ' : '') + roomLabel(roomId);
+  $('intro-room').hidden = map.rooms.length === 1 && map.rooms[0].owner < 0 && !map.possessionEnabled;
+  $('intro-room').textContent = (inspecting ? '正在查看 · ' : map.possessionEnabled ? (map.walls[playerIds()[0]] ? '当前控制墙 · ' : '当前控制方块 · ') : '') + roomLabel(roomId);
   const canLookOut = parentRoom(roomId) >= 0;
   parentButton.hidden = !canLookOut;
   returnButton.hidden = !inspecting;
   for (const button of moveButtons) button.disabled = inspecting;
   stage.classList.toggle('can-look-out', canLookOut || inspecting);
   board.setAttribute('aria-label', inspecting ? '正在查看' + roomLabel(roomId) :
-    '棋盘，玩家第 ' + (x + 1) + ' 列，第 ' + (y + 1) + ' 行');
+    '棋盘，玩家第 ' + (viewFlipped() ? map.rooms[roomId].width - x : x + 1) + ' 列，第 ' + (y + 1) + ' 行');
   $('intro-count').textContent = state.moves + ' 步 · 推箱 ' + state.pushes + ' 次';
-  $('intro-status').textContent = solved ? '通关！' : covered === map.goals.length ?
+  const wallAtFinish = map.walls[state.activePlayer ?? playerIds()[0]] && map.finishes.some(([id, fx, fy]) => id === playerRoom && fx === x && fy === y);
+  $('intro-status').textContent = solved ? '通关！' : wallAtFinish ? '墙不能占据玩家终点，请换成普通方块。' : covered === map.goals.length ?
     '箱子都到位了，走到玩家终点即可通关。' : '箱子到位 ' + covered + ' / ' + map.goals.length;
   $('intro-status').classList.toggle('success', solved);
   $('intro-next').hidden = !solved || active === levels.length - 1;
@@ -208,7 +283,27 @@ function addPiece(cell, name) {
 }
 
 function roomColor(roomId) {
-  return map.rooms[roomId].color ?? (roomId === 0 ? chapters[chapterIndex].color : '#79aedc');
+  const room = map.rooms[roomId];
+  // Possession changes the whole owned room, including shared recursive views.
+  if (map.possessColor && map.possessable[room.owner]) {
+    return playerIds().some(entity => map.inside[entity] === roomId) ? map.playerColor : map.possessColor;
+  }
+  return room.color ?? (roomId === 0 ? chapters[chapterIndex].color : '#79aedc');
+}
+
+function pieceColor(entity) {
+  if (map.walls[entity]) return roomColor(state.positions[entity][0]);
+  if (map.possessColor && map.possessable[entity]) {
+    return playerIds().includes(entity) ? map.playerColor : map.possessColor;
+  }
+  const solid = map.inside[entity] < 0 || !roomHasPreview(map.inside[entity]);
+  if (solid && playerIds().includes(entity)) return map.playerColor;
+  if (map.inside[entity] >= 0) return roomColor(map.inside[entity]);
+  return map.pieceColors[entity] ?? '#ffb63a';
+}
+
+function cloneColor(color) {
+  return '#' + color.slice(1).match(/../g).map(value => Math.round(parseInt(value, 16) * .78 + 255 * .22).toString(16).padStart(2, '0')).join('');
 }
 
 function setTextView(enabled) {
@@ -241,25 +336,28 @@ function renderTextMaps(playerRoom) {
       }
       button.append(label, lines);
       button.addEventListener('click', () => {
-        if (state.positions[0][0] !== roomId) inspectRoom(roomId);
+        if (state.positions[state.activePlayer ?? playerIds()[0]][0] !== roomId) inspectRoom(roomId);
       });
       textMaps.append(button);
     }
   }
   const glyphs = map.rooms.map(room => Array.from(room.tiles, tile => tile === '#' ? '#' : '.'));
+  const bodyColors = map.rooms.map(room => Array(room.tiles.length).fill(''));
   for (const [room, x, y] of map.goals) glyphs[room][y * map.rooms[room].width + x] = '_';
-  const [finishRoom, finishX, finishY] = map.finish;
-  glyphs[finishRoom][finishY * map.rooms[finishRoom].width + finishX] = '=';
+  for (const [finishRoom, finishX, finishY] of map.finishes) glyphs[finishRoom][finishY * map.rooms[finishRoom].width + finishX] = '=';
   state.positions.forEach(([room, x, y], entity) => {
     const child = map.inside[entity];
-    glyphs[room][y * map.rooms[room].width + x] = entity === 0 ? 'p' : child >= 0 ? String(child + 1) : 'b';
+    glyphs[room][y * map.rooms[room].width + x] = playerIds().includes(entity) ? 'p' : map.walls[entity] ? '#' : child >= 0 ? String(child + 1) : 'b';
+    bodyColors[room][y * map.rooms[room].width + x] = map.clones[entity] ? cloneColor(pieceColor(entity)) : pieceColor(entity);
   });
   const cloneCells = new Set(state.positions.flatMap(([room, x, y], entity) =>
     map.clones[entity] ? [room + ':' + (y * map.rooms[room].width + x)] : []));
   for (const [roomId, button] of Array.from(textMaps.children).entries()) {
+    button.style.setProperty('--text-room-color', roomColor(roomId));
     const cells = button.querySelector('.intro-text-lines').children;
     glyphs[roomId].forEach((glyph, index) => {
       const cell = cells[index];
+      cell.style.color = bodyColors[roomId][index];
       cell.toggleAttribute('data-clone', cloneCells.has(roomId + ':' + index));
       if (cell.dataset.glyph !== glyph) {
         cell.textContent = glyph;
@@ -273,7 +371,7 @@ function renderTextMaps(playerRoom) {
 
 function floorColor(roomId) {
   if (map.rooms[roomId].void) return '#090b10';
-  return map.eat ? 'color-mix(in srgb, #241b2c 67%, ' + roomColor(roomId) + ')' : '#535257';
+  return 'color-mix(in srgb, ' + roomColor(roomId) + ' 40%, black)';
 }
 
 function drawTargetOutline(context, left, top, size, color = targetColor) {
@@ -296,80 +394,115 @@ function drawFinish(context, left, top, size, playerOnFinish) {
   if (!playerOnFinish) drawRoomEyes(context, left, top, size, finishColor);
 }
 
-function drawRoomMap(canvas, roomId, size = 10, showFinish = true, nested = true, viewport = null) {
+function drawRoomMap(canvas, roomId, size = 10, showFinish = true, nested = true, viewport = null, flipped = false) {
   const room = map.rooms[roomId];
   const hidden = [...hiddenBoxes].join(',');
-  if (previewContents?.map !== map || previewContents.positions !== state.positions || previewContents.hidden !== hidden) {
+  const players = playerIds().join(',');
+  if (previewContents?.map !== map || previewContents.positions !== state.positions ||
+      previewContents.flipped !== state.flipped || previewContents.hidden !== hidden || previewContents.players !== players) {
     const pieces = map.rooms.map(() => []);
     state.positions.forEach(([id, x, y], entity) => {
       if (!hiddenBoxes.has(entity)) pieces[id].push([entity, x, y]);
     });
-    previewContents = { map, positions: state.positions, hidden, pieces };
+    previewContents = { map, positions: state.positions, flipped: state.flipped, hidden, pieces, players };
   }
   const cached = roomMaps.get(canvas);
   const view = viewport ? JSON.stringify(viewport) : '';
   if (cached?.contents === previewContents && cached.roomId === roomId && cached.size === size &&
-      cached.showFinish === showFinish && cached.nested === nested && cached.view === view) return;
-  roomMaps.set(canvas, { contents: previewContents, roomId, size, showFinish, nested, view });
+      cached.showFinish === showFinish && cached.nested === nested && cached.view === view && cached.flipped === flipped) return;
+  roomMaps.set(canvas, { contents: previewContents, roomId, size, showFinish, nested, view, flipped });
   canvas.width = viewport?.width ?? Math.ceil(room.width * size);
   canvas.height = viewport?.height ?? Math.ceil(room.height * size);
   const context = canvas.getContext('2d');
-  const emptyChapter = board.classList.contains('empty-chapter');
-  const cloneChapter = board.classList.contains('clone-chapter');
-  const playerColor = cloneChapter ? '#be2850' : board.classList.contains('reference-chapter') ? '#c53d3a' :
-    map.eat ? '#d260bd' : emptyChapter ? '#db562f' : '#df328d';
-  const crateColor = cloneChapter ? '#468cfa' : map.eat ? '#ffdc72' : emptyChapter ? '#add444' : board.classList.contains('blue-crates') ? '#38bce8' : '#ffb63a';
 
-  function paint(id, left, top, cellSize, depth) {
+  function paint(id, left, top, cellSize, depth, mirrored = false, bounds = null) {
     const room = map.rooms[id];
-    if (left >= canvas.width || top >= canvas.height ||
-        left + room.width * cellSize <= 0 || top + room.height * cellSize <= 0) return;
+    if (bounds) {
+      context.save();
+      context.translate(left, top);
+      context.scale(bounds.width / (room.width * cellSize), bounds.height / (room.height * cellSize));
+      paint(id, 0, 0, cellSize, depth, mirrored);
+      context.restore();
+      return;
+    }
+    const transform = context.getTransform();
+    const x1 = transform.a * left + transform.e;
+    const x2 = transform.a * (left + room.width * cellSize) + transform.e;
+    const y1 = transform.d * top + transform.f;
+    const y2 = transform.d * (top + room.height * cellSize) + transform.f;
+    if (Math.min(x1, x2) >= canvas.width || Math.min(y1, y2) >= canvas.height ||
+        Math.max(x1, x2) <= 0 || Math.max(y1, y2) <= 0) return;
+    context.save();
+    if (mirrored) {
+      context.translate(left * 2 + room.width * cellSize, 0);
+      context.scale(-1, 1);
+    }
     const pieces = previewContents.pieces[id];
     context.fillStyle = floorColor(id);
     context.fillRect(left, top, room.width * cellSize, room.height * cellSize);
     context.fillStyle = roomColor(id);
+    const wallTransform = context.getTransform();
     for (let i = 0; i < room.tiles.length; i++) {
       if (room.tiles[i] !== '#') continue;
       const x = i % room.width, y = Math.floor(i / room.width);
-      const x0 = Math.round(left + x * cellSize), y0 = Math.round(top + y * cellSize);
-      context.fillRect(x0, y0, Math.round(left + (x + 1) * cellSize) - x0,
-        Math.round(top + (y + 1) * cellSize) - y0);
+      const x0 = Math.round(wallTransform.a * (left + x * cellSize) + wallTransform.e);
+      const x1 = Math.round(wallTransform.a * (left + (x + 1) * cellSize) + wallTransform.e);
+      const y0 = Math.round(wallTransform.d * (top + y * cellSize) + wallTransform.f);
+      const y1 = Math.round(wallTransform.d * (top + (y + 1) * cellSize) + wallTransform.f);
+      const localX = Math.min((x0 - wallTransform.e) / wallTransform.a, (x1 - wallTransform.e) / wallTransform.a);
+      context.fillRect(localX, (y0 - wallTransform.f) / wallTransform.d, Math.abs((x1 - x0) / wallTransform.a),
+        (y1 - y0) / wallTransform.d);
     }
     for (const [entity, x, y] of pieces) {
       const child = map.inside[entity];
       const px = left + x * cellSize, py = top + y * cellSize;
+      if (map.walls[entity]) {
+        context.fillStyle = roomColor(id);
+        context.fillRect(px, py, cellSize, cellSize);
+        if (playerIds().includes(entity) || map.possessable[entity]) drawRoomEyes(context, px, py, cellSize, playerIds().includes(entity) ? '#d250be' : '#8c958f');
+        continue;
+      }
       const inset = Math.min(1, cellSize * .1);
       const side = cellSize - inset * 2;
-      context.fillStyle = entity === 0 ? playerColor : child >= 0 ? roomColor(child) : crateColor;
+      context.fillStyle = pieceColor(entity);
       context.fillRect(px + inset, py + inset, side, side);
       // Repeat shared and self-referencing rooms only while their contents are visible.
-      if (nested && child >= 0 && side >= 3 && depth < 12) {
+      if (nested && roomHasPreview(child) && side >= 3 && depth < 12) {
         const inner = map.rooms[child];
         const scale = side / Math.max(inner.width, inner.height);
-        paint(child, px + (cellSize - inner.width * scale) / 2,
-          py + (cellSize - inner.height * scale) / 2, scale, depth + 1);
+        if (map.compressedRooms) {
+          paint(child, px + inset, py + inset, scale, depth + 1, (state.flipped ?? map.flipped)[entity], { width: side, height: side });
+        } else {
+          paint(child, px + (cellSize - inner.width * scale) / 2,
+            py + (cellSize - inner.height * scale) / 2, scale, depth + 1, (state.flipped ?? map.flipped)[entity]);
+        }
       }
       if (map.clones[entity]) {
+        context.fillStyle = 'rgba(255,255,255,.22)';
+        context.fillRect(px + inset, py + inset, side, side);
         context.strokeStyle = '#e9f3ff';
         context.lineWidth = cellSize * .08;
         context.setLineDash([cellSize * .18, cellSize * .12]);
         context.strokeRect(px + inset, py + inset, side, side);
         context.setLineDash([]);
       }
-      if (entity === 0) drawRoomEyes(context, px, py, cellSize, '#651914');
+      if (playerIds().includes(entity)) drawRoomEyes(context, px, py, cellSize, '#651914');
+      else if (map.possessionEnabled && map.possessable[entity]) drawRoomEyes(context, px, py, cellSize, '#e0c4d6');
     }
     for (const [goalRoom, x, y] of map.goals) {
-      if (goalRoom === id) drawTargetOutline(context, left + x * cellSize, top + y * cellSize, cellSize);
+      if (goalRoom === id && !pieces.some(([entity, px, py]) => map.walls[entity] && px === x && py === y)) drawTargetOutline(context, left + x * cellSize, top + y * cellSize, cellSize);
     }
-    const [finishRoom, finishX, finishY] = map.finish;
-    if (showFinish && finishRoom === id) {
-      const playerOnFinish = pieces.some(([entity, x, y]) => entity === 0 && x === finishX && y === finishY);
+    for (const [finishRoom, finishX, finishY] of map.finishes) if (showFinish && finishRoom === id) {
+      if (pieces.some(([entity, x, y]) => map.walls[entity] && x === finishX && y === finishY)) continue;
+      const playerOnFinish = pieces.some(([entity, x, y]) => playerIds().includes(entity) && x === finishX && y === finishY);
       drawFinish(context, left + finishX * cellSize, top + finishY * cellSize, cellSize, playerOnFinish);
     }
+    context.restore();
   }
   if (viewport?.layers) {
-    for (const layer of viewport.layers) paint(layer.roomId, layer.left, layer.top, layer.size, 0);
-  } else paint(roomId, viewport?.left ?? 0, viewport?.top ?? 0, size, 0);
+    for (const layer of viewport.layers) paint(layer.roomId, layer.left, layer.top, layer.size, 0, layer.flipped,
+      map.compressedRooms ? { width: layer.width, height: layer.height } : null);
+  } else paint(roomId, viewport?.left ?? 0, viewport?.top ?? 0, size, 0, flipped);
 }
 
 function renderSurround(scene, roomId) {
@@ -388,6 +521,7 @@ function renderSurround(scene, roomId) {
     width: board.clientWidth * ratio, height: board.clientHeight * ratio,
   };
   let current = roomId;
+  let mirrored = viewFlipped();
   const seen = new Set([current]);
   const layers = [];
   while (true) {
@@ -396,8 +530,9 @@ function renderSurround(scene, roomId) {
     const outer = map.rooms[host[0]];
     const size = Math.max(frame.width, frame.height);
     if (!Number.isFinite(size) || size > Number.MAX_SAFE_INTEGER / Math.max(outer.width, outer.height)) break;
-    frame = parentFrame(frame, host, 1);
-    layers.push({ roomId: host[0], size, left: frame.left, top: frame.top });
+    mirrored = mirrored !== (state.flipped ?? map.flipped)[map.rooms[current].owner];
+    frame = parentFrame(frame, host, 1, mirrored);
+    layers.push({ roomId: host[0], size, left: frame.left, top: frame.top, width: frame.width, height: frame.height, flipped: mirrored });
     current = host[0];
     if (seen.has(current)) break;
     seen.add(current);
@@ -435,6 +570,14 @@ function cloneBoard() {
 
 function cameraPose(rect, anchor, target) {
   const scale = Math.min(target.width / anchor.width, target.height / anchor.height);
+  if (map.compressedRooms) {
+    const scaleX = target.width / anchor.width, scaleY = target.height / anchor.height;
+    return {
+      x: target.left + target.width / 2 - rect.left - rect.width / 2 + (rect.left + rect.width / 2 - anchor.left - anchor.width / 2) * scaleX,
+      y: target.top + target.height / 2 - rect.top - rect.height / 2 + (rect.top + rect.height / 2 - anchor.top - anchor.height / 2) * scaleY,
+      scale: Math.sqrt(scaleX * scaleY), scaleX, scaleY,
+    };
+  }
   return {
     x: target.left + target.width / 2 - rect.left - rect.width / 2 +
       (rect.left + rect.width / 2 - anchor.left - anchor.width / 2) * scale,
@@ -460,11 +603,19 @@ function animateCamera(element, from, to, fromOpacity, toOpacity, duration) {
     const progress = index / 8;
     const scale = zoomAtProgress(from.scale, to.scale, progress);
     const zoom = to.scale === from.scale ? progress : (scale - from.scale) / (to.scale - from.scale);
-    const x = from.x + (to.x - from.x) * zoom;
-    const y = from.y + (to.y - from.y) * zoom;
+    const scaleX = zoomAtProgress(from.scaleX ?? from.scale, to.scaleX ?? to.scale, progress);
+    const scaleY = zoomAtProgress(from.scaleY ?? from.scale, to.scaleY ?? to.scale, progress);
+    const zoomX = from.scaleX === undefined && to.scaleX === undefined ? zoom :
+      (to.scaleX ?? to.scale) === (from.scaleX ?? from.scale) ? progress :
+        (scaleX - (from.scaleX ?? from.scale)) / ((to.scaleX ?? to.scale) - (from.scaleX ?? from.scale));
+    const zoomY = from.scaleY === undefined && to.scaleY === undefined ? zoom :
+      (to.scaleY ?? to.scale) === (from.scaleY ?? from.scale) ? progress :
+        (scaleY - (from.scaleY ?? from.scale)) / ((to.scaleY ?? to.scale) - (from.scaleY ?? from.scale));
+    const x = from.x + (to.x - from.x) * zoomX;
+    const y = from.y + (to.y - from.y) * zoomY;
     return {
       opacity: fromOpacity + (toOpacity - fromOpacity) * progress,
-      transform: 'translate(' + x + 'px, ' + y + 'px) scale(' + scale + ')',
+      transform: 'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX + ',' + scaleY + ')',
     };
   });
   return element.animate(frames, { duration, easing: 'linear', fill: 'backwards' });
@@ -474,41 +625,60 @@ function tileFrame(frame, roomId, x, y) {
   const room = map.rooms[roomId];
   const width = frame.width / room.width;
   const height = frame.height / room.height;
-  return { left: frame.left + x * width, top: frame.top + y * height, width, height };
+  return { left: frame.left + (frame.flipped ? room.width - 1 - x : x) * width, top: frame.top + y * height, width, height };
 }
 
-function childFrame(frame, childId, host, inset = shellInset) {
+function childFrame(frame, childId, host, inset = shellInset, mirrored = Boolean(frame.flipped) !== Boolean((state.flipped ?? map.flipped)[map.rooms[childId].owner])) {
   const tile = tileFrame(frame, host[0], host[1], host[2]);
+  if (map.compressedRooms) return {
+    left: tile.left + tile.width * (1 - inset) / 2, top: tile.top + tile.height * (1 - inset) / 2,
+    width: tile.width * inset, height: tile.height * inset, flipped: mirrored,
+  };
   const room = map.rooms[childId];
   const size = Math.min(tile.width, tile.height) * inset / Math.max(room.width, room.height);
   return {
     left: tile.left + tile.width / 2 - room.width * size / 2,
     top: tile.top + tile.height / 2 - room.height * size / 2,
-    width: room.width * size, height: room.height * size,
+    width: room.width * size, height: room.height * size, flipped: mirrored,
   };
 }
 
-function parentFrame(frame, host, inset = shellInset) {
+function parentFrame(frame, host, inset = shellInset, mirrored = false) {
   const size = Math.max(frame.width, frame.height) / inset;
   const room = map.rooms[host[0]];
+  if (map.compressedRooms) {
+    const width = frame.width / inset, height = frame.height / inset;
+    return {
+      left: frame.left + frame.width / 2 - (mirrored ? room.width - host[1] - .5 : host[1] + .5) * width,
+      top: frame.top + frame.height / 2 - (host[2] + .5) * height,
+      width: room.width * width, height: room.height * height, flipped: mirrored,
+    };
+  }
   return {
-    left: frame.left + frame.width / 2 - (host[1] + .5) * size,
+    left: frame.left + frame.width / 2 - (mirrored ? room.width - host[1] - .5 : host[1] + .5) * size,
     top: frame.top + frame.height / 2 - (host[2] + .5) * size,
-    width: room.width * size, height: room.height * size,
+    width: room.width * size, height: room.height * size, flipped: mirrored,
   };
+}
+
+function viewedRoomFrame() {
+  const { left, top, width, height } = board.getBoundingClientRect();
+  return { left, top, width, height, flipped: viewFlipped() };
 }
 
 function visibleRoomFrame(roomId, positions, seen = new Set()) {
   const viewRoom = Number(board.dataset.room);
-  if (roomId === viewRoom) return board.getBoundingClientRect();
+  if (roomId === viewRoom) return viewedRoomFrame();
   const outside = stage.querySelector('.intro-surround');
   if (!outside.hidden) {
-    let ancestor = viewRoom, frame = board.getBoundingClientRect();
+    let ancestor = viewRoom, frame = viewedRoomFrame();
+    let mirrored = viewFlipped();
     const ancestors = new Set([ancestor]);
     while (true) {
       const host = positions[map.rooms[ancestor].owner];
       if (!host) break;
-      frame = parentFrame(frame, host, 1);
+      mirrored = mirrored !== (state.flipped ?? map.flipped)[map.rooms[ancestor].owner];
+      frame = parentFrame(frame, host, 1, mirrored);
       ancestor = host[0];
       if (ancestor === roomId) return frame;
       if (ancestors.has(ancestor)) break;
@@ -525,7 +695,7 @@ function visibleRoomFrame(roomId, positions, seen = new Set()) {
 
 function sourceBoxFrame(position, positions, route = [], destination = null) {
   if (destination?.[0] === Number(board.dataset.room) && position[0] !== destination[0] && route.length) {
-    let frame = zoomCanvas.hidden ? board.getBoundingClientRect() : sourceBoxFrame(destination, positions);
+    let frame = zoomCanvas.hidden ? viewedRoomFrame() : sourceBoxFrame(destination, positions);
     if (!frame) return null;
     for (const [index, transfer] of route.slice().reverse().entries()) {
       const inverse = { ...transfer, direction: transfer.direction === 'in' ? 'out' : 'in' };
@@ -552,37 +722,44 @@ function sourceBoxFrame(position, positions, route = [], destination = null) {
 function transferFrame(frame, transfer, positions, inset) {
   const currentHost = positions[transfer.owner];
   const host = currentHost[0] === transfer.host[0] ? currentHost : transfer.host;
-  return transfer.direction === 'in' ? childFrame(frame, transfer.room, host, inset) :
-    parentFrame(frame, host, inset);
+  const mirrored = Boolean(frame.flipped) !== Boolean(transfer.flipped ?? (state.flipped ?? map.flipped)[transfer.owner]);
+  return transfer.direction === 'in' ? childFrame(frame, transfer.room, host, inset, mirrored) :
+    parentFrame(frame, host, inset, mirrored);
 }
 
-function boxSprite(entity) {
+function boxSprite(entity, mirrored = viewFlipped()) {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = Math.ceil(Math.max(stage.clientWidth, stage.clientHeight) * (devicePixelRatio || 1));
   const context = canvas.getContext('2d');
   const child = map.inside[entity];
+  if (map.walls[entity]) {
+    context.fillStyle = roomColor(state.positions[entity][0]); context.fillRect(0, 0, canvas.width, canvas.height);
+    drawRoomEyes(context, 0, 0, canvas.width, playerIds().includes(entity) ? '#d250be' : '#8c958f');
+    return canvas;
+  }
   const edge = canvas.width * .065;
   const side = canvas.width - edge * 2;
-  context.fillStyle = child >= 0 ? roomColor(child) :
-    board.classList.contains('clone-chapter') ? '#468cfa' :
-    board.classList.contains('blue-crates') ? '#38bce8' :
-    board.classList.contains('empty-chapter') ? '#add444' :
-    board.classList.contains('eat-chapter') ? '#ffdc72' : '#ffb63a';
+  context.fillStyle = pieceColor(entity);
   context.fillRect(edge, edge, side, side);
   context.strokeStyle = child >= 0 ? '#d2e1fa' : '#ffedaf';
   context.lineWidth = 3;
   if (map.clones[entity]) context.setLineDash([18, 12]);
   context.strokeRect(edge, edge, side, side);
   context.setLineDash([]);
-  if (child >= 0) {
+  if (roomHasPreview(child)) {
     const preview = document.createElement('canvas');
     const room = map.rooms[child];
-    drawRoomMap(preview, child, Math.ceil(side / Math.max(room.width, room.height)));
+    drawRoomMap(preview, child, Math.ceil(side / Math.max(room.width, room.height)), true, true, null, mirrored !== Boolean((state.flipped ?? map.flipped)[entity]));
     const scale = (side - 12) / Math.max(preview.width, preview.height);
-    const width = preview.width * scale;
-    const height = preview.height * scale;
+    const width = map.compressedRooms ? side - 12 : preview.width * scale;
+    const height = map.compressedRooms ? side - 12 : preview.height * scale;
     context.drawImage(preview, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
   }
+  if (map.clones[entity]) {
+    context.fillStyle = 'rgba(255,255,255,.22)';
+    context.fillRect(edge, edge, side, side);
+  }
+  if (playerIds().includes(entity)) drawRoomEyes(context, edge, edge, side, '#651914');
   return canvas;
 }
 
@@ -600,7 +777,7 @@ function prepareBoxMotion(next, transfers, crossings = []) {
   const sprites = [];
   const now = performance.now();
   if (!reduceMotion.matches && !textView && inspectedRoom === null &&
-      state.positions[0][0] === next.positions[0][0] && !crossings.length) {
+      state.positions[state.activePlayer ?? playerIds()[0]][0] === next.positions[next.activePlayer ?? playerIds(next)[0]][0] && !crossings.length) {
     const groups = new Map();
     for (const transfer of transfers) {
       if (!groups.has(transfer.entity)) groups.set(transfer.entity, []);
@@ -609,7 +786,7 @@ function prepareBoxMotion(next, transfers, crossings = []) {
     for (const sprite of boxMotion?.sprites ?? []) {
       if (!groups.has(sprite.entity) && now < sprite.started + sprite.duration &&
           sprite.nextPositions[sprite.entity].every((value, index) => value === next.positions[sprite.entity][index])) {
-        sprites.push({ ...sprite, nextPositions: next.positions });
+        sprites.push({ ...sprite, nextPositions: next.positions, nextFlipped: next.flipped ?? map.flipped });
       }
     }
     for (const [entity, route] of groups) {
@@ -619,7 +796,9 @@ function prepareBoxMotion(next, transfers, crossings = []) {
       const old = boxMotion?.sprites.find(sprite => sprite.entity === entity);
       sprites.push({
         entity, route, position, positions: state.positions, nextPositions: next.positions,
-        from: old?.current ?? tileFrame(frame, ...position), canvas: boxSprite(entity),
+        from: old?.current ?? tileFrame(frame, ...position), canvas: boxSprite(entity, Boolean(frame.flipped)),
+        orientation: Boolean(frame.flipped) !== Boolean((state.flipped ?? map.flipped)[entity]),
+        nextFlipped: next.flipped ?? map.flipped,
         started: now, duration: 220,
       });
     }
@@ -655,7 +834,7 @@ function paintBoxMotion(time) {
     }
     const position = sprite.nextPositions[sprite.entity];
     if (position[0] === Number(board.dataset.room) && position[0] !== sprite.position[0] && zoomCanvas.hidden) {
-      frame = board.getBoundingClientRect();
+      frame = viewedRoomFrame();
     }
     const target = tileFrame(frame, ...position);
     const from = sprite.from;
@@ -666,7 +845,15 @@ function paintBoxMotion(time) {
     const cx = from.left + from.width / 2 + (target.left + target.width / 2 - from.left - from.width / 2) * zoom;
     const cy = from.top + from.height / 2 + (target.top + target.height / 2 - from.top - from.height / 2) * zoom;
     sprite.current = { left: cx - width / 2, top: cy - height / 2, width, height };
-    context.drawImage(sprite.canvas, sprite.current.left - area.left, sprite.current.top - area.top, width, height);
+    const left = sprite.current.left - area.left, top = sprite.current.top - area.top;
+    const targetOrientation = Boolean(frame.flipped) !== Boolean(sprite.nextFlipped[sprite.entity]);
+    if (sprite.orientation !== targetOrientation && progress >= .5) {
+      context.save();
+      context.translate(left + width, top);
+      context.scale(-1, 1);
+      context.drawImage(sprite.canvas, 0, 0, width, height);
+      context.restore();
+    } else context.drawImage(sprite.canvas, left, top, width, height);
     if (progress < 1) active.push(sprite);
     else hiddenBoxes.delete(sprite.entity);
   }
@@ -768,7 +955,7 @@ function paintRecursiveZoom(time) {
   const size = zoomAtProgress(cover, cover / scale, progress);
   zoom.layers = [];
   const [finishRoom, finishX, finishY] = map.finish;
-  const [playerRoom, playerX, playerY] = state.positions[0];
+  const [playerRoom, playerX, playerY] = state.positions[state.activePlayer ?? playerIds()[0]];
   const playerOnFinish = playerRoom === finishRoom && playerX === finishX && playerY === finishY;
 
   function paintRoom(roomId, cx, cy, size, container) {
@@ -802,7 +989,8 @@ function paintRecursiveZoom(time) {
 }
 
 function renderScene(roomId, crossing, showText) {
-  const animate = crossing && !showText && !reduceMotion.matches;
+  const sameRoom = board.children.length > 0 && Number(board.dataset.room) === roomId;
+  const animate = crossing && !sameRoom && !showText && !reduceMotion.matches;
   const entering = crossing?.direction === 'in';
   const shell = crossing?.owner >= 0 ? '[data-shell="' + crossing.owner + '"]' : null;
   let oldFrame, oldShell, returningFrame, ghost;
@@ -867,22 +1055,18 @@ function renderScene(roomId, crossing, showText) {
 
 function renderRoom(container, roomId) {
   const room = map.rooms[roomId];
-  if (container.dataset.room !== String(roomId) || !container.children.length) {
+  const mirrored = viewFlipped();
+  container.style.setProperty('--room-color', roomColor(roomId));
+  container.style.setProperty('--room-floor', floorColor(roomId));
+  if (container.dataset.room !== String(roomId) || container.dataset.flipped !== String(mirrored) || !container.children.length) {
+    // A new level may reuse the same room ID with different walls and colors.
+    delete container.dataset.terrain;
     container.dataset.room = roomId;
+    container.dataset.flipped = mirrored;
+    container.style.direction = mirrored ? 'rtl' : 'ltr';
     container.style.setProperty('--columns', room.width);
+    container.style.setProperty('--rows', room.height);
     container.style.setProperty('--longest-side', Math.max(room.width, room.height));
-    container.style.setProperty('--room-color', roomColor(roomId));
-    container.style.setProperty('--room-floor', floorColor(roomId));
-    // A single bitmap keeps wall runs continuous at fractional zoom and cell sizes.
-    const terrain = document.createElement('canvas');
-    terrain.width = room.width;
-    terrain.height = room.height;
-    const terrainContext = terrain.getContext('2d');
-    terrainContext.fillStyle = roomColor(roomId);
-    for (let cell = 0; cell < room.tiles.length; cell++) {
-      if (room.tiles[cell] === '#') terrainContext.fillRect(cell % room.width, Math.floor(cell / room.width), 1, 1);
-    }
-    container.style.backgroundImage = 'url("' + terrain.toDataURL() + '")';
     container.replaceChildren(...Array.from(room.tiles, tile => {
       const cell = document.createElement('div');
       cell.className = tile === '#' ? 'cell wall' : 'cell';
@@ -890,46 +1074,72 @@ function renderRoom(container, roomId) {
     }));
   }
   const goalCells = new Set(map.goals.filter(([id]) => id === roomId).map(([, x, y]) => y * room.width + x));
-  const finishCell = map.finish[0] === roomId ? map.finish[2] * room.width + map.finish[1] : -1;
+  const finishCells = new Set(map.finishes.filter(([id]) => id === roomId).map(([, x, y]) => y * room.width + x));
   const occupied = new Map();
   state.positions.forEach(([id, x, y], entity) => { if (id === roomId) occupied.set(y * room.width + x, entity); });
+  const wallCells = new Set([...occupied].filter(([, entity]) => map.walls[entity] && !hiddenBoxes.has(entity)).map(([cell]) => cell));
+  const terrainKey = roomId + ':' + mirrored + ':' + roomColor(roomId) + ':' + [...wallCells].join(',');
+  if (container.dataset.terrain !== terrainKey) {
+    const terrain = document.createElement('canvas'); terrain.width = room.width; terrain.height = room.height;
+    const context = terrain.getContext('2d'); context.fillStyle = roomColor(roomId);
+    for (let cell = 0; cell < room.tiles.length; cell++) if (room.tiles[cell] === '#' || wallCells.has(cell)) {
+      context.fillRect(mirrored ? room.width - 1 - cell % room.width : cell % room.width, Math.floor(cell / room.width), 1, 1);
+    }
+    container.style.backgroundImage = 'url("' + terrain.toDataURL() + '")'; container.dataset.terrain = terrainKey;
+  }
   for (const [index, cell] of Array.from(container.children).entries()) {
     if (room.tiles[index] === '#') continue;
     const entity = occupied.get(index);
+    if (entity !== undefined) cell.style.setProperty('--piece-color', pieceColor(entity));
+    else cell.style.removeProperty('--piece-color');
     const child = entity === undefined ? -1 : map.inside[entity];
-    const crate = entity > 0;
+    const preview = roomHasPreview(child);
+    const isPlayer = playerIds().includes(entity);
+    const wall = Boolean(map.walls[entity]);
+    const canPossess = Boolean(map.possessionEnabled && map.possessable[entity] && !isPlayer);
+    const crate = entity !== undefined && !isPlayer && !wall;
+    cell.classList.toggle('wall', wall);
     cell.style.setProperty('--box-visibility', hiddenBoxes.has(entity) ? 'hidden' : 'visible');
     const goal = goalCells.has(index);
-    const signature = (entity ?? '') + ':' + Number(goal) + ':' + Number(index === finishCell);
+    const signature = (entity ?? '') + ':' + Number(goal) + ':' + Number(finishCells.has(index)) + ':' + Number(isPlayer) + ':' + Number(wall);
     if (cell.dataset.tile !== signature) {
       cell.dataset.tile = signature;
       cell.replaceChildren();
-      if (goal && !crate) addPiece(cell, 'goal');
-      if (index === finishCell && !crate) addPiece(cell, 'intro-player-goal');
-      if (entity === 0) addPiece(cell, 'player');
-      else if (child >= 0) {
+      if (goal && !crate && !wall) addPiece(cell, 'goal');
+      if (finishCells.has(index) && !crate && !wall) addPiece(cell, 'intro-player-goal');
+      if (wall) {
+        addPiece(cell, 'wall-piece' + (isPlayer ? ' player-wall' : canPossess ? ' possessable-piece' : ''));
+      } else if (preview) {
         const button = document.createElement('button');
         button.type = 'button';
         button.dataset.shell = entity;
-        button.className = 'room-box' + (goal ? ' room-on-goal' : '') + (map.clones[entity] ? ' room-clone' : '');
-        button.style.setProperty('--box-color', roomColor(child));
+        button.className = 'room-box' + (isPlayer ? ' room-player' : canPossess ? ' possessable-piece' : '') + (goal ? ' room-on-goal' : '') + (map.clones[entity] ? ' room-clone' : '');
+        button.style.setProperty('--box-color', pieceColor(entity));
         button.setAttribute('aria-label', child === roomId ? '查看小箱子里的同一张棋盘' :
-          '查看第 ' + (index % room.width + 1) + ' 列第 ' + (Math.floor(index / room.width) + 1) + ' 行的箱内房间');
+          '查看第 ' + (mirrored ? room.width - index % room.width : index % room.width + 1) + ' 列第 ' + (Math.floor(index / room.width) + 1) + ' 行的箱内房间');
         if (map.clones[entity]) {
           button.setAttribute('aria-label', '查看复制体里的共享房间，退出时回到本体');
           button.title = '复制体：进入同一房间，退出回到本体';
         }
         button.append(document.createElement('canvas'));
+        if (map.clones[entity]) {
+          const tint = document.createElement('span'); tint.className = 'clone-tint'; tint.setAttribute('aria-hidden', 'true'); button.append(tint);
+        }
         button.addEventListener('click', () => inspectRoom(child, { direction: 'in', owner: entity }));
         cell.append(button);
-      } else if (crate) addPiece(cell, goal ? 'crate placed' : 'crate');
+      } else if (isPlayer) addPiece(cell, 'player');
+      else if (crate) addPiece(cell, (goal ? 'crate placed' : 'crate') + (canPossess ? ' possessable-piece' : ''));
     }
-    if (child >= 0) {
+    if (preview) {
       const canvas = cell.querySelector('canvas');
+      const button = canvas.parentElement;
+      button.style.setProperty('--box-color', pieceColor(entity));
+      button.title = canPossess ? '可占据：推动、进入和吞入都不可行时，控制权会转移到这个方块' : (state.flipped ?? map.flipped)[entity] ? '镜像箱子：左右出入口相反' :
+        map.clones[entity] ? '复制体：进入同一房间，退出回到本体' : '';
       const inner = map.rooms[child];
       const size = Math.max(10, Math.ceil(Math.min(canvas.clientWidth / inner.width,
         canvas.clientHeight / inner.height) * (devicePixelRatio || 1)));
-      drawRoomMap(canvas, child, size);
+      drawRoomMap(canvas, child, size, true, true, null, mirrored !== Boolean((state.flipped ?? map.flipped)[entity]));
     }
   }
 }
@@ -940,6 +1150,7 @@ function openLevel(index) {
   clearRoomMotion();
   if (recursiveZoom) cancelAnimationFrame(recursiveZoom.frame);
   inspectedRoom = null;
+  inspectedFlipped = false;
   active = index;
   const level = levels[index];
   const nextChapter = chapters.findLastIndex(chapter => index >= chapter.start);
@@ -963,7 +1174,7 @@ function openLevel(index) {
     $('intro-levels').replaceChildren(...levelButtons);
   }
   const theme = chapters[nextChapter].id;
-  map = compile({ ...level, eat: ['eat', 'reference', 'swap', 'center', 'clone', 'transfer', 'open'].includes(theme), allowCycles: ['reference', 'swap', 'center', 'clone', 'transfer', 'open'].includes(theme), transfer: theme === 'transfer' });
+  map = compile({ ...level, eat: ['eat', 'reference', 'swap', 'center', 'clone', 'transfer', 'open', 'flip', 'cycle', 'player', 'possess', 'wall'].includes(theme), allowCycles: ['reference', 'swap', 'center', 'clone', 'transfer', 'open', 'flip', 'cycle', 'player', 'possess', 'wall'].includes(theme), transfer: theme === 'transfer' });
   $('intro-convert').hidden = map.transfer || !map.portalConversion;
   $('intro-convert').disabled = map.transfer || !map.portalConversion;
   const now = performance.now();
@@ -977,6 +1188,7 @@ function openLevel(index) {
   zoomCanvas.hidden = !recursiveZoom;
   zoomButton.hidden = !recursiveZoom;
   state = map.initial;
+  playerViews.set(state, false);
   history = [];
   future = [];
   $('intro-title').textContent = '第 ' + (active - chapters[chapterIndex].start + 1) + ' 关 · ' + level.title;
@@ -987,6 +1199,8 @@ function openLevel(index) {
   board.classList.toggle('eat-chapter', theme === 'eat');
   board.classList.toggle('reference-chapter', theme === 'reference');
   board.classList.toggle('clone-chapter', theme === 'clone');
+  board.classList.toggle('flip-chapter', theme === 'flip');
+  board.classList.toggle('compressed-rooms', map.compressedRooms);
   board.replaceChildren();
   textMaps.replaceChildren();
   displayMode.hidden = !level.textView;
@@ -997,11 +1211,13 @@ function openLevel(index) {
 
 function move(direction) {
   if (inspectedRoom !== null || won(map, state)) return;
+  if (viewFlipped() && direction % 2) direction ^= 2;
   applyState(step(map, state, direction));
 }
 
 function applyState(next) {
   if (next === state) return;
+  playerViews.set(next, next === map.initial ? false : viewAfterCrossings(state, next));
   const prepared = prepareBoxMotion(next, next.transfers ?? [], next.crossings ?? []);
   history.push(state);
   future = [];
@@ -1069,7 +1285,7 @@ zoomButton.addEventListener('click', () => {
     recursiveZoom.started += now - recursiveZoom.pausedAt;
     recursiveZoom.pausedAt = null;
   }
-  updateRecursiveZoom(inspectedRoom ?? state.positions[0][0]);
+  updateRecursiveZoom(inspectedRoom ?? state.positions[state.activePlayer ?? playerIds()[0]][0]);
 });
 zoomCanvas.addEventListener('click', event => {
   const bounds = zoomCanvas.getBoundingClientRect();
@@ -1077,7 +1293,7 @@ zoomCanvas.addEventListener('click', event => {
   const y = event.clientY - bounds.top;
   const layer = recursiveZoom.layers.findLast(layer => x >= layer.left && x < layer.right &&
     y >= layer.top && y < layer.bottom);
-  const viewed = inspectedRoom ?? state.positions[0][0];
+  const viewed = inspectedRoom ?? state.positions[state.activePlayer ?? playerIds()[0]][0];
   if (layer?.container?.roomId === viewed) {
     inspectRoom(layer.roomId, { direction: 'in', owner: layer.container.owner });
   } else if (layer?.roomId !== viewed) inspectParent();
@@ -1119,6 +1335,7 @@ document.addEventListener('keydown', event => {
 openLevel(active);
 new ResizeObserver(() => render()).observe(stage);
 routeInput = RouteInput.mount($('route-input'), {
+  playerSelection: false,
   devices: () => false,
   state: () => state,
   available: () => inspectedRoom === null,

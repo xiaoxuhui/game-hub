@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131c">
+  <meta name="description" content="设置 X、Y、Z 方向格数，随机魔方和随机涂黑，跟随每一步旋转还原非黑色格子。">
+  <title>魔方一步步 · 多尺寸魔方</title>
+  <link rel="stylesheet" href="style.css?v=net1">
+  <script src="vendor/cube.js" defer></script>
+  <script src="core.js?v=black1" defer></script>
+  <script src="cuboid.js?v=expand1" defer></script>
+  <script src="large-view.js?v=net1" defer></script>
+  <script src="net-motion.js?v=net1" defer></script>
+  <script src="color-input.js?v=expand1" defer></script>
+  <script src="app.js?v=net1" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./"><span class="brand-mark">▦</span>魔方一步步</a><span id="size-tag" class="tag">3 × 3 × 3</span></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">填入颜色 · 每次一步</p><h1>把混乱，转回整齐。</h1><p class="subtitle">记录你的魔方，跟着 X、Y、Z 轴旋转指引，一步步完成还原。</p></div><div class="random-actions"><button id="demo" class="secondary">试试随机魔方</button><button id="random-black" class="secondary">随机涂黑</button><label class="black-ratio">涂黑比例 <input id="black-percent" type="number" min="0" max="100" step="1" value="40" aria-label="随机涂黑百分比"> %</label></div></section>
+    <section class="size-panel" aria-label="魔方尺寸设置"><div class="size-fields"><label>X 数量<input id="size-x" type="number" min="1" max="200" step="1" value="3"></label><label>Y 数量<input id="size-y" type="number" min="1" max="200" step="1" value="3"></label><label>Z 数量<input id="size-z" type="number" min="1" max="200" step="1" value="3"></label><button id="apply-size" class="secondary">应用尺寸</button></div><p id="size-hint">X 为左右格数，Y 为上下格数，Z 为前后格数，每项 1–200。应用后重新开始。</p><p id="solver-scope">三阶支持任意合法填色求解。</p></section>
+    <p id="scramble-info" class="hint" role="status">每次随机生成时，转法和打乱步数都会随机。</p>
+    <div class="workspace">
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="panel-heading"><h2 id="input-title">六面填色</h2><button id="clear" class="text-button">清空重填</button></div>
+        <p id="paint-hint" class="hint">先选颜色，再点方格。黑色表示忽略：只需将非黑色格子还原到对应颜色的面。三阶中心格固定。</p>
+        <div id="palette" class="palette" role="group" aria-label="选择画笔颜色"></div>
+        <button id="mask-empty" class="text-button">将未填格涂黑（忽略）</button>
+        <details id="manual-colors" class="manual-colors"><summary>手动填写颜色（输入或粘贴）</summary><p>选一个面，按从上到下、从左到右填写。可用中文颜色，或 W 白、R 红、G 绿、Y 黄、O 橙、B 蓝、K 黑；空格和换行都可以。W9 表示连续 9 个白格，K9 表示 9 个忽略格，? 表示未填。</p><label>填写哪个面<select id="input-face" aria-label="手动填写的面"><option value="U">上 U</option><option value="R">右 R</option><option value="F" selected>前 F</option><option value="D">下 D</option><option value="L">左 L</option><option value="B">后 B</option></select></label><p id="face-input-shape" class="hint"></p><textarea id="face-input" rows="6" maxlength="500000" spellcheck="false" aria-label="手动填写面颜色" placeholder="例如：GGG 换行 GGG 换行 GGG，也可填写 G9"></textarea><div class="face-input-buttons"><button id="read-face" class="secondary">读取当前面</button><button id="apply-face" class="primary">应用到此面</button></div><p id="face-input-status" role="status" aria-live="polite"></p></details>
+        <div class="net-process"><div><span id="net-process-label" role="status">展开图与三维视图同步显示每一步。</span><span id="net-process-value"></span></div><div class="net-process-track"><div id="net-process-fill"></div></div></div>
+        <div class="net-view-controls"><button id="net-run" class="primary" disabled>运行</button><button id="net-next" class="secondary" disabled>下一步</button><button id="net-reset" class="secondary" disabled>重置</button></div>
+        <div class="net-scroll"><div id="net" class="net" aria-label="魔方六面展开图"></div></div>
+        <p class="orientation">展开方向：前面居中，上、下分别在前面的上方和下方；背面在右面右侧。按展开图方向填写。</p>
+        <details><summary>怎么对照实物填色？</summary><p>先选定上面 U 和前面 F，并保持这两个方向。左右面像书页一样向外展开，背面接在右面外侧。上面的下边、下面的上边都与前面相接。可拖动右侧模型核对各面的方向。</p><p>目标配色默认上白、下黄、前绿、后蓝、左橙、右红。可在下面调整。三阶中心格固定；其他尺寸以目标配色判断还原，所有方格均可填写。</p><div id="centers" class="centers"></div></details>
+        <button id="solve" class="primary wide">计算还原步骤</button>
+        <p id="status" class="status" role="status" aria-live="polite">可以填写你的魔方，或先试试随机示例。</p>
+      </section>
+      <section class="panel play-panel" aria-labelledby="view-title">
+        <div class="panel-heading"><h2 id="view-title">旋转预览</h2><button id="home-view" class="text-button">回正视角</button></div>
+        <div class="view-legend"><span><i class="axis-x"></i>X 左右轴</span><span><i class="axis-y"></i>Y 上下轴</span><span><i class="axis-z"></i>Z 前后轴</span></div>
+        <div id="scene" class="scene" aria-label="可拖动旋转视角的三维魔方"><div id="cube" class="cube"></div><div class="shadow"></div></div>
+        <p id="preview-hint" class="drag-hint">拖动查看各面 · 滚轮缩放</p>
+        <div class="view-controls" role="group" aria-label="绕轴查看魔方"><span>查看视角</span><button data-view="X">X</button><button data-view="Y">Y</button><button data-view="Z">Z</button></div>
+        <div class="step-card">
+          <div class="step-top"><span id="step-label">等待填色</span><span id="step-count">0 / 0</span></div>
+          <div class="instruction"><span id="move-token" class="move-token">—</span><div><h3 id="instruction-title">准备好你的魔方</h3><p id="instruction-detail">填写六面颜色后，点击“计算还原步骤”。</p></div></div>
+          <div class="progress" role="progressbar" aria-label="还原进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-fill"></div></div>
+          <div class="step-buttons"><button id="prev" class="secondary" disabled>上一步</button><button id="next" class="primary" disabled>执行下一步</button></div>
+          <div class="run-buttons"><button id="run" class="primary" disabled>运行</button><button id="reset-run" class="secondary" disabled>重置本次运行</button></div>
+          <label class="speed-control">运行速度 <input id="run-speed" type="range" min="0.5" max="120" step="0.5" value="4" aria-label="运行速度，每秒步数"><output id="speed-value">4 步/秒</output></label>
+          <label class="speed-number-control">手动速度 <input id="run-speed-number" type="number" min="0.5" max="120" step="0.5" value="4" aria-label="手动运行速度">步/秒</label>
+          <label class="animation-control"><input id="animation-enabled" type="checkbox" checked>显示转动动画</label>
+          <p class="run-help">重置会恢复到本次计算前的魔方；暂停后当前转动完成即停止。关闭动画可加快高速运行。</p>
+          <p id="solver-method" class="run-help" role="status"></p>
+        </div>
+        <details class="manual"><summary>手动转动一层</summary><p>每次转动后需要重新计算方案。非正方形截面仅允许 180°，以保持长方体尺寸。</p><div class="manual-controls"><label>轴<select id="manual-axis"><option>X</option><option>Y</option><option>Z</option></select></label><label>层<select id="manual-layer"><option value="1">正侧（右 / 上 / 前）</option><option value="-1">负侧（左 / 下 / 后）</option></select></label><label>方向<select id="manual-turn"><option value="">顺时针 90°</option><option value="'">逆时针 90°</option><option value="2">旋转 180°</option></select></label><button id="manual-apply" class="secondary">转动一层</button></div><p id="manual-hint">方向均为正对所转面的视角。X / Y / Z 视角按钮仅改变观看角度。</p></details>
+      </section>
+    </div>
+    <footer><span>一步一转，直到所有非黑色格子归位。</span><span>颜色和还原计算均在你的设备上处理。</span></footer>
+  </main>
+</body>
+</html>

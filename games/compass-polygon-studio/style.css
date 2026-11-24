@@ -30,3 +30,44 @@
   color: var(--green);
   font: 12px/1.5 Consolas, monospace;
 }
+.construction-principle {
+  flex-shrink: 0;
+  border-top: 1px solid var(--line);
+  background: #f3f6ed;
+}
+.construction-principle[hidden] { display: none; }
+.construction-principle summary {
+  padding: 16px 23px;
+  color: #315640;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.principle-content {
+  padding: 0 23px 20px;
+  color: #455f42;
+  overflow-wrap: anywhere;
+}
+.principle-content h3 {
+  font-size: .9rem;
+  line-height: 1.7;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.principle-content h3:not(:first-child) { margin-top: 20px; }
+.principle-content p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.9;
+}
+.principle-content .reason-formula {
+  margin-top: 14px;
+  padding: 12px;
+  border-left: 2px solid #9cb18a;
+  background: #fffef9;
+  font-family: Georgia, 'Microsoft YaHei', serif;
+  line-height: 1.7;
+}
+@media (max-width: 620px) {
+  .construction-principle summary { padding: 15px 18px; }
+  .principle-content { padding: 0 18px 18px; }
+}

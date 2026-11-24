@@ -7,7 +7,8 @@
       const directions = { W: 0, D: 1, S: 2, F: 2, A: 3, '↑': 0, '→': 1, '↓': 2, '←': 3 };
       const letters = text.toUpperCase().replace(/[\s,，;；\-]/gu, '');
       if (!letters) throw Error('请先输入方向字母。');
-      return Array.from(letters, (letter, index) => {
+      return (letters.match(/P[1-9]\d*|./gu) ?? []).map((letter, index) => {
+        if (/^P[1-9]\d*$/.test(letter)) return letter;
         if (directions[letter] === undefined) throw Error('第 ' + (index + 1) + ' 个方向无法识别，请用 W、A、S、D，F 也表示下。');
         return directions[letter];
       });
@@ -74,7 +75,8 @@
       const devices = game.devices();
       help.textContent = devices ?
         '点击编码使用当时的装置坐标 x,y，多步换行或用分号分隔。装置移动后，用它的新坐标。有电源时点击电源，无电源时点击拉推头。' :
-        'W 上、A 左、S 下、D 右，F 也表示下。支持连续字母、空格和连字符，例如 W-A-S-D。';
+        'W 上、A 左、S 下、D 右，F 也表示下。支持连续字母、空格和连字符。' +
+        (game.playerSelection === false ? '多个玩家始终同步行动。' : '多玩家切换模式可用 P1、P2 选择玩家，例如 D P2 W。');
       input.placeholder = devices ? '-19,-6\n-20,-6\n-18,-6' : 'wwaassdddd';
       status.textContent = '载入后，从当前局面执行。';
     }
@@ -121,6 +123,9 @@
       reset();
       try {
         const parsed = parse(input.value, game.devices());
+        if (game.playerSelection === false && parsed.some(action => typeof action === 'string')) {
+          throw Error('套箱模式同步控制所有玩家，请只输入方向步骤。');
+        }
         const error = game.prepare();
         if (error) throw Error(error);
         actions = parsed;

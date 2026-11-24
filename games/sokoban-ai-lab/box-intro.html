@@ -1,21 +1,27 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><script src="../../storage-isolation.js?v=recovery-20261119" data-game="sokoban-ai-lab"></script>
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="套箱模式的入门、进入、空白、吞食、参照、调换、居中、克隆、转移和开放关卡。">
+  <meta name="description" content="套箱模式的入门、进入、空白、吞食、参照、调换、居中、克隆、转移、开放、翻转、循环、玩家、占据和墙关卡。">
   <meta name="theme-color" content="#111715">
   <title>套箱模式 · 入门</title>
   <link rel="stylesheet" href="style.css?v=48">
-  <link rel="stylesheet" href="box-intro.css?v=19">
-  <script src="box-rooms.js?v=9" defer></script>
+  <link rel="stylesheet" href="box-intro.css?v=26">
+  <script src="box-rooms.js?v=21" defer></script>
   <script src="box-levels.js?v=15" defer></script>
   <script src="box-clone-levels.js?v=1" defer></script>
   <script src="box-transfer-levels.js?v=1" defer></script>
   <script src="box-open-levels.js?v=1" defer></script>
-  <script src="box-portals.js?v=4" defer></script>
-  <script src="route-input.js?v=2" defer></script>
-  <script src="box-intro.js?v=30" defer></script>
+  <script src="box-flip-levels.js?v=5" defer></script>
+  <script src="box-cycle-levels.js?v=5" defer></script>
+  <script src="box-player-levels.js?v=2" defer></script>
+  <script src="box-possess-levels.js?v=2" defer></script>
+  <script src="box-wall-levels.js?v=1" defer></script>
+  <script src="box-color-data.js?v=4" defer></script>
+  <script src="box-portals.js?v=8" defer></script>
+  <script src="route-input.js?v=4" defer></script>
+  <script src="box-intro.js?v=48" defer></script>
 </head>
 <body>
   <header class="top">
@@ -27,7 +33,7 @@
   <main class="intro-main">
     <div class="intro-heading">
       <h1 id="intro-chapter-title">入门</h1>
-      <label class="intro-chapter">章节 <select id="intro-chapter"><option value="0">入门</option><option value="1">进入</option><option value="2">空白</option><option value="3">吞食</option><option value="4">参照</option><option value="5">调换</option><option value="6">居中</option><option value="7">克隆</option><option value="8">转移</option><option value="9">开放</option></select></label>
+      <label class="intro-chapter">章节 <select id="intro-chapter"><option value="0">入门</option><option value="1">进入</option><option value="2">空白</option><option value="3">吞食</option><option value="4">参照</option><option value="5">调换</option><option value="6">居中</option><option value="7">克隆</option><option value="8">转移</option><option value="9">开放</option><option value="10">翻转</option><option value="11">循环</option><option value="12">玩家</option><option value="13">占据</option><option value="14">墙</option></select></label>
     </div>
     <nav class="modes intro-levels" id="intro-levels" aria-label="选择关卡"></nav>
     <section class="panel intro-panel" aria-labelledby="intro-title">

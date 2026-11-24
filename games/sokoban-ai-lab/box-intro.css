@@ -25,11 +25,14 @@
 .intro-scene > :is(.intro-board, .intro-surround) { --scene-side: min(100cqw, 100cqh, 440px); }
 .intro-scene.with-surround > :is(.intro-board, .intro-surround) { --scene-side: min(85cqw, 85cqh, 396px); }
 .intro-scene > .intro-board { position: relative; z-index: 1; width: calc(var(--scene-side) * var(--columns) / var(--longest-side)); }
+.intro-scene > .intro-board.compressed-rooms { width: var(--scene-side); height: var(--scene-side); max-width: none; grid-template-rows: repeat(var(--rows), minmax(0, 1fr)); }
+.intro-board.compressed-rooms .cell { aspect-ratio: auto; min-width: 0; min-height: 0; }
+.intro-board.compressed-rooms .room-box canvas { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); object-fit: fill; }
 .intro-scene > .intro-ghost { position: absolute; max-width: none; opacity: 0; pointer-events: none; z-index: 2; }
 .intro-surround { position: absolute; pointer-events: none; opacity: .65; inset: 0; width: 100%; height: 100%; }
 .intro-recursive-view { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; }
 .intro-box-motion { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; pointer-events: none; }
-.intro-board .cell > :is(.crate, .room-box) { visibility: var(--box-visibility, visible); }
+.intro-board .cell > :is(.crate, .room-box, .wall-piece) { visibility: var(--box-visibility, visible); }
 .intro-stage:has(.intro-board :focus-visible) > .intro-recursive-view { pointer-events: none; opacity: 0; }
 .intro-stage.text-view { background: #17151c; }
 .intro-stage.text-view .intro-surround { visibility: hidden; }
@@ -38,9 +41,6 @@
 .intro-text-room:hover { background: transparent; }
 .intro-text-lines { white-space: pre; }
 .intro-text-lines span { display: inline-block; width: var(--text-cell); }
-.intro-text-room [data-glyph="p"] { color: #ef8edb; }
-.intro-text-room [data-glyph="b"] { color: #ffdc72; }
-.intro-text-room [data-glyph="2"] { color: #8eafff; }
 .intro-text-room :is([data-glyph="_"], [data-glyph="="]) { color: #f7f0e5; }
 .intro-text-room [data-clone] { outline: 1px dashed currentColor; outline-offset: -2px; }
 .intro-board .cell { aspect-ratio: 1; border: 0; background: transparent; }
@@ -75,10 +75,26 @@
 .intro-board .room-box { position: absolute; width: 87%; height: 87%; padding: 2px; border-radius: 4px; background: var(--box-color); border: 1px solid #d2e1fa; display: grid; place-items: center; }
 .intro-board .room-box canvas { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .intro-board .room-box.room-on-goal { outline: 2px solid #f5dfa7; outline-offset: 1px; }
-.intro-board .room-box.room-clone { border: 2px dashed #e9f3ff; }
+.intro-board .room-box.room-clone { border: 2px dashed #e9f3ff; background: var(--box-color); }
+.intro-board .clone-tint { position: absolute; inset: 1px; border-radius: 2px; background: rgba(255,255,255,.22); pointer-events: none; }
+.intro-board .room-box.room-player::before, .intro-board .room-box.room-player::after { content: ''; position: absolute; top: 44%; width: 11%; height: 11%; border-radius: 50%; background: #651914; z-index: 1; pointer-events: none; }
+.intro-board .room-box.room-player::before { left: 23%; }
+.intro-board .room-box.room-player::after { right: 23%; }
+.intro-player-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.intro-board .wall-piece { position: absolute; inset: 0; background: var(--room-color); }
+.intro-board .crate.possessable-piece { background: #bd6c9f; border-color: #e1a7cb; }
+.intro-board .possessable-piece::before, .intro-board .possessable-piece::after,
+.intro-board .wall-piece.player-wall::before, .intro-board .wall-piece.player-wall::after { content: ''; position: absolute; inset: auto; top: 44%; width: 12%; height: 12%; border: 0; border-radius: 50%; transform: none; background: color-mix(in srgb, var(--piece-color) 45%, black); pointer-events: none; z-index: 1; }
+.intro-board .possessable-piece::before, .intro-board .wall-piece.player-wall::before { left: 23%; }
+.intro-board .possessable-piece::after, .intro-board .wall-piece.player-wall::after { right: 23%; }
+.intro-board .wall-piece.player-wall::before, .intro-board .wall-piece.player-wall::after { background: #173c60; }
 .clone-chapter .crate { background: #468cfa; border-color: #91bdff; box-shadow: inset 0 -3px #2656a5, 0 2px 4px #141c36a6; }
 .clone-chapter .crate.placed { background: #83b5ff; border-color: #e0eeff; }
 .clone-chapter .player { background: #be2850; border-color: #f57b94; box-shadow: inset 0 -3px #7d1632, 0 2px 4px #211020a6; }
+.flip-chapter .crate { background: #5abea0; border-color: #a0e6cc; box-shadow: inset 0 -3px #36846c, 0 2px 4px #142f26a6; }
+.flip-chapter .crate.placed { background: #8bd8bb; border-color: #d1f5e6; }
+.flip-chapter .player { background: #d250be; border-color: #f5a1dc; box-shadow: inset 0 -3px #9b407d, 0 2px 4px #211020a6; }
+.intro-board .cell > :is(.crate, .player) { background: var(--piece-color); border-color: color-mix(in srgb, var(--piece-color) 60%, white); box-shadow: inset 0 -3px color-mix(in srgb, var(--piece-color) 68%, black), 0 2px 4px #211020a6; }
 .intro-board .cell:has(> .room-box) { z-index: 1; }
 .intro-controls, .intro-result { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
 .intro-controls .tools-group { flex-wrap: wrap; }

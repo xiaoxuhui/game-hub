@@ -1,5 +1,5 @@
 'use strict';
-const MANIFEST_SHA='d6f4a41a88e640a74f26d76462074e14ea47e1ef7a7e9ec3f3e0888790133957',WORKER_SHA='7f6312d4f32e65cc9de0cb349458a95d77bcb967355ec66fbbf2270280cbdcd2',PREFIX='game-hub-offline-v1-',CACHE=PREFIX+MANIFEST_SHA+'-'+WORKER_SHA;
+const MANIFEST_SHA='35fea9e32c02209ddee55e853838ff9f60319db5b0811a1a09c39ab298bc1c7f',WORKER_SHA='7f6312d4f32e65cc9de0cb349458a95d77bcb967355ec66fbbf2270280cbdcd2',PREFIX='game-hub-offline-v1-',CACHE=PREFIX+MANIFEST_SHA+'-'+WORKER_SHA;
 const base=new URL(self.registration.scope),manifestUrl=new URL('offline-manifest.json',base).href,markerUrl=new URL('__offline_ready__',base).href;
 const hex=buffer=>Array.from(new Uint8Array(buffer),x=>x.toString(16).padStart(2,'0')).join('');
 async function sha(buffer){return hex(await crypto.subtle.digest('SHA-256',buffer));}

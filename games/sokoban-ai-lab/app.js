@@ -33,7 +33,7 @@ function loadLevels() {
         const clicks = layout.gameplay === 'powered' || layout.gameplay === 'direct';
         const inputs = Array.isArray(demonstration) ? demonstration.filter(input => clicks ?
           typeof input === 'string' && /^-?\d+,-?\d+$/.test(input) :
-          Number.isInteger(input) && input >= 0 && input <= 3) : [];
+          Number.isInteger(input) && input >= 0 && input <= 3 || typeof input === 'string' && /^P[1-9]\d*$/.test(input)) : [];
         return { name, ...layout, demonstration: inputs };
       });
       return { entries, index: entries[saved.index] ? saved.index : 0 };
@@ -174,7 +174,7 @@ function renderBoard(state, previous = null) {
     if (changed && !changed.has(coordinate)) return;
     if (!marks.has(coordinate)) marks.set(coordinate, []);
     const kind = map.portalIndex.exitOnly[index] ? 'exit' : map.portalIndex.exitOnly[index | 1] ? 'entry' : '';
-    marks.get(coordinate).push({ side: map.portalSides[index], pair: Math.floor(index / 2) + 1, kind });
+    marks.get(coordinate).push({ side: (state.portalSides ?? map.portalSides)[index], pair: Math.floor(index / 2) + 1, kind });
   });
   if (linking && pendingPortal) {
     if (!marks.has(pendingPortal.cell)) marks.set(pendingPortal.cell, []);
@@ -182,10 +182,10 @@ function renderBoard(state, previous = null) {
   }
   const drawCell = (cell, coordinate) => {
     const goal = map.goals.has(coordinate);
-    const finish = map.finish === coordinate;
+    const finish = map.finishes.includes(coordinate);
     const tile = map.isWall(coordinate) ? '#' :
       boxes?.has(coordinate) ? (goal ? '*' : '$') :
-      state.player === coordinate ? (goal ? '+' : '@') : (goal ? '.' : ' ');
+      (state.players ?? [state.player]).includes(coordinate) ? (goal ? '+' : '@') : (goal ? '.' : ' ');
     const ends = marks.get(coordinate) ?? [];
     const signature = ends.map(({ side, pair, kind }) => side + ':' + pair + (kind ? ':' + kind : '')).join(',');
     const device = state.devices?.get(coordinate);
@@ -275,8 +275,9 @@ function renderPortalArrows(state) {
   const scale = window.devicePixelRatio || 1;
   if (portalArrowLayout?.map === map && portalArrowLayout.camera === camera && portalArrowLayout.scale === scale &&
       portalArrowLayout.width === viewWidth && portalArrowLayout.height === viewHeight &&
+      portalArrowLayout.sides === state.portalSides &&
       (portalArrowLayout.links === links || links.every((cell, index) => portalArrowLayout.links[index] === cell))) return;
-  portalArrowLayout = { map, camera, scale, width: viewWidth, height: viewHeight, links };
+  portalArrowLayout = { map, camera, scale, width: viewWidth, height: viewHeight, links, sides: state.portalSides };
   const width = Math.round(viewWidth * scale);
   const height = Math.round(viewHeight * scale);
   if (portalCanvas.width !== width) portalCanvas.width = width;
@@ -289,7 +290,7 @@ function renderPortalArrows(state) {
   const size = cellSize();
   const facePoint = index => {
     const [x, y] = point(links[index]);
-    const [offsetX, offsetY] = portalOffsets[map.portalSides[index]];
+    const [offsetX, offsetY] = portalOffsets[(state.portalSides ?? map.portalSides)[index]];
     return [(x + 0.5 + offsetX - camera.x) * size + viewWidth / 2,
       (y + 0.5 + offsetY - camera.y) * size + viewHeight / 2];
   };
@@ -346,6 +347,7 @@ function drawPortalMarks(cell, ends) {
 
 function changedCells(previous, state, boxes) {
   const changed = new Set([previous.player, state.player]);
+  if (previous.players !== state.players) for (const cell of [...(previous.players ?? []), ...(state.players ?? [])]) changed.add(cell);
   if (boxes) {
     const before = new Set(previous.boxes);
     for (const coordinate of before) if (!boxes.has(coordinate)) changed.add(coordinate);
@@ -353,7 +355,7 @@ function changedCells(previous, state, boxes) {
   }
   state.portalCells.forEach((coordinate, index) => {
     const old = previous.portalCells[index];
-    if (old === coordinate) return;
+    if (old === coordinate && (previous.portalSides ?? map.portalSides)[index] === (state.portalSides ?? map.portalSides)[index]) return;
     changed.add(old);
     changed.add(coordinate);
   });
@@ -401,6 +403,14 @@ function renderMap() {
   $('ai-follow-option').hidden = !watching && mode !== 'replay';
   $('click-follow-option').hidden = !playing || !devices;
   $('map-actions').hidden = !editing;
+  $('player-mode-option').hidden = devices;
+  $('player-mode').value = level.playerMode ?? map.playerMode;
+  $('active-player-option').hidden = !playing || (state.players?.length ?? 0) < 2;
+  const playerSelect = $('active-player');
+  if (playerSelect.options.length !== (state.players?.length ?? 0)) playerSelect.replaceChildren(...(state.players ?? []).map((_, index) => {
+    const option = document.createElement('option'); option.value = index; option.textContent = '玩家 ' + (index + 1); return option;
+  }));
+  playerSelect.value = String(state.activePlayer ?? 0);
   $('dpad').hidden = !playing || state.player === -1;
   $('record-tools').hidden = !recording;
   $('portal-direction-label').hidden = !linking;
@@ -408,12 +418,12 @@ function renderMap() {
   $('portal-help').hidden = !linking;
   const oneWay = oneWayPortal.value === 'one-way';
   $('portal-help').textContent = portalMessage || (pendingPortal ?
-    (oneWay ? '已选入口。请点出口，可共用已有出口。' : '已选第一端，再点墙或箱子的另一条边。') :
-    (oneWay ? '先点入口，再点出口。点已有端点可管理连接。' : '点墙或箱子的两条边配对。点已有端点可管理连接。'));
+    (oneWay ? '已选入口。请点出口，可共用已有出口。' : '已选第一端，再点墙、箱子或玩家的另一条边。') :
+    (oneWay ? '先点入口，再点出口。点已有端点可管理连接。' : '点墙、箱子或玩家的两条边配对。点已有端点可管理连接。'));
   $('map-info').textContent = (devices ? '方块推推推' : '无限地图') + ' · ' +
-    map.initial.boxes.length + ' 个箱子 · ' + map.goals.size + ' 个目标';
+    map.initial.boxes.length + ' 个箱子 · ' + map.goals.size + ' 个目标' + (map.players.length > 1 ? ' · ' + map.players.length + ' 个玩家' : '');
   $('finish-status').hidden = devices;
-  $('finish-status').textContent = map.finish === null ? '玩家终点可选' : '已设置玩家终点';
+  $('finish-status').textContent = map.finishes.length ? '已设置 ' + map.finishes.length + ' 个玩家终点' : '玩家终点可选';
   if (playing) {
     renderManual();
     return;
@@ -442,8 +452,9 @@ function setMapNote(message, status = '') {
 
 function renderManual(previous = null) {
   renderBoard(manual, previous);
+  $('active-player').value = String(manual.activePlayer ?? 0);
   $('undo').disabled = !undo.length;
-  $('reset-play').disabled = !manual.moves;
+  $('reset-play').disabled = !manualPath.length;
   $('save-demo').disabled = !manualPath.length;
   renderMoveCount();
   const covered = placed(map, manual);
@@ -466,7 +477,7 @@ function stateProgress(state) {
 }
 
 function objectiveProgress(state, covered = placed(map, state)) {
-  if (map.finish !== null && covered === map.goals.size && state.player !== map.finish) return '请走到玩家终点。';
+  if (map.finishes.length && covered === map.goals.size && !won(map, state, covered)) return '请让玩家占据所有玩家终点。';
   return '目标已覆盖 ' + covered + ' / ' + map.goals.size;
 }
 
@@ -701,11 +712,15 @@ function paint(coordinate) {
       $('map-note').classList.add('error');
       return;
     }
-    editMap({ finish: map.finish === coordinate ? null : coordinate });
+    if ((level.playerMode ?? 'single') !== 'single' || map.players.length > 1) {
+      const finishes = map.finishes.includes(coordinate) ? map.finishes.filter(cell => cell !== coordinate) : [...map.finishes, coordinate];
+      editMap({ finishes, finish: finishes[0] ?? null });
+    } else editMap({ finish: map.finish === coordinate ? null : coordinate, finishes: undefined });
     return;
   }
-  if (brush === ' ' && map.finish === coordinate) {
-    editMap({ finish: null });
+  if (brush === ' ' && map.finishes.includes(coordinate)) {
+    const finishes = map.finishes.filter(cell => cell !== coordinate);
+    editMap({ finishes, finish: finishes[0] ?? null });
     return;
   }
   const wasGoal = '.*+'.includes(old);
@@ -718,19 +733,36 @@ function paint(coordinate) {
   if (tile === old) return;
 
   const tiles = new Map(map.tiles);
-  if (brush === '@' && map.initial.player !== -1) {
+  let portals = level.portals ?? [];
+  const migratedFaces = new Set();
+  let movedPlayer;
+  if (brush === '@' && map.initial.player !== -1 && (level.playerMode ?? 'single') === 'single') {
     const previous = map.initial.player;
+    movedPlayer = previous;
     if (tiles.get(previous) === '+') tiles.set(previous, '.');
     else tiles.delete(previous);
+    const overwritten = new Set(portals.flatMap((end, index) => end.cell === coordinate ? [Math.floor(index / 2)] : []));
+    portals = portals.filter((_, index) => !overwritten.has(Math.floor(index / 2))).map(end => {
+      if (end.cell !== previous) return end;
+      const moved = { ...end, cell: coordinate }; migratedFaces.add(moved); return moved;
+    });
   }
   if (tile === ' ') tiles.delete(coordinate);
   else tiles.set(coordinate, tile);
-  const portals = level.portals ?? [];
   const sameHost = portalHost(tile) && portalHost(old) && (tile === '#') === (old === '#');
   const removed = new Set();
-  if (!sameHost) portals.forEach((end, i) => { if (end.cell === coordinate) removed.add(Math.floor(i / 2)); });
+  if (!sameHost) portals.forEach((end, i) => { if (end.cell === coordinate && !migratedFaces.has(end)) removed.add(Math.floor(i / 2)); });
   const finish = tile === '#' && level.finish === coordinate ? null : level.finish ?? null;
   const changes = { tiles, portals: portals.filter((_, i) => !removed.has(Math.floor(i / 2))), finish };
+  if (level.players || (level.playerMode ?? 'single') !== 'single') {
+    const players = [...tiles].filter(([, tile]) => '@+'.includes(tile)).map(([cell]) => cell);
+    const order = (level.players ?? map.players).map(cell => cell === movedPlayer ? coordinate : cell).filter(cell => players.includes(cell));
+    changes.players = [...order, ...players.filter(cell => !order.includes(cell))];
+  }
+  if (level.finishes) {
+    changes.finishes = level.finishes.filter(cell => cell !== coordinate || tile !== '#');
+    changes.finish = changes.finishes[0] ?? null;
+  }
   if ('$*'.includes(tile) && level.devices?.has(coordinate)) {
     changes.devices = new Map(level.devices);
     changes.devices.delete(coordinate);
@@ -749,7 +781,7 @@ function rotatableDeviceAt(coordinate) {
 
 function choosePortalFace(coordinate, side) {
   if (!portalHost(map.tiles.get(coordinate))) {
-    portalMessage = '请选择墙或箱子的边。';
+    portalMessage = '请选择墙、箱子或玩家的边。';
     renderMap();
     return;
   }
@@ -940,6 +972,14 @@ function cancelPortalSelection() {
 }
 $('portal-cancel').addEventListener('click', cancelPortalSelection);
 oneWayPortal.addEventListener('change', cancelPortalSelection);
+$('player-mode').addEventListener('change', event => editMap({ playerMode: event.target.value }));
+$('active-player').addEventListener('change', event => {
+  const activePlayer = Number(event.target.value);
+  if (!manual.players?.[activePlayer]) return;
+  const input = 'P' + (activePlayer + 1);
+  const next = step(map, manual, input);
+  if (next !== manual) commitManualAction(next, input);
+});
 $('edit-mode').addEventListener('click', () => setMode('edit'));
 $('play-mode').addEventListener('click', () => setMode('play'));
 $('watch-mode').addEventListener('click', () => setMode('watch'));
@@ -1032,7 +1072,7 @@ routeInput = RouteInput.mount($('route-input'), {
 function getTrainer() {
   if (trainer) return trainer;
   if (map.initial.devices) return new Trainer(map);
-  const field = trainingMap(map.tiles, area, level.chainPush, level.portals, map.finish);
+  const field = trainingMap(map.tiles, area, level.chainPush, level.portals, map.finish, level);
   if (field) return new Trainer(field);
   trainingProblem = '摆放范围超过 40,000 格训练区。请缩小关卡范围后再试。';
   return null;
@@ -1216,7 +1256,7 @@ function renderPartialRoutes(best) {
 function toWorldState(state) {
   const coordinate = trainer.map.worldCell;
   if (!coordinate) return state;
-  return { ...state, player: coordinate(state.player), boxes: state.boxes.map(coordinate), portalCells: state.portalCells.map(coordinate) };
+  return { ...state, player: coordinate(state.player), boxes: state.boxes.map(coordinate), portalCells: state.portalCells.map(coordinate), ...(state.players ? { players: state.players.map(coordinate) } : {}) };
 }
 
 function syncWatchState() {
@@ -1455,7 +1495,8 @@ $('help').addEventListener('click', () => {
   openDialog('使用说明', '<p>地图从空白开始，按住鼠标右键拖动可向四周平移。选好工具后，用左键点击或拖动绘制。</p>' +
     '<p>放置玩家起点和箱子目标，箱子数可以多于目标数。选「玩家终点」放置一面旗，再点旗子可移除。有旗时，玩家也要走到旗子处才能通关。只放旗子也可以做走位关卡。</p>' +
     '<p>点「手动试玩」，用方向键、WASD 或屏幕方向按钮移动。键盘每按一次走一步，长按时只走第一步。按 Z 撤销上一步。勾选「允许连推多个箱子」后，一步可以推动相邻的一整排箱子。</p>' +
-    '<p>用「传送门」依次点选墙或箱子的两条边。双向门两端都能进入。选「单向」后，先点入口，再点出口。一个入口只有一个去向，标着「出」的端点可以接收多条连接。点已有端点可管理连接。</p>' +
+    '<p>选择「多玩家 · 同步控制」或「多玩家 · 切换控制」后，可放置多个玩家及玩家终点。同步模式按同一方向控制全部玩家；切换模式只控制「当前玩家」选中的玩家。所有玩家终点都有人占据才算通关。</p>' +
+    '<p>用「传送门」依次点选墙、箱子或玩家的两条边。玩家移动时，身上的传送门一起移动。双向门两端都能进入。选「单向」后，先点入口，再点出口。一个入口只有一个去向，标着「出」的端点可以接收多条连接。点已有端点可管理连接。</p>' +
     '<p>出口和另一个入口正对紧贴时，会继续通过下一对门。开启连推时，整排箱子先一起前进，最前面的箱子碰墙后才触发门箱传送。依次尝试后箱、前箱和玩家，没门或传不通就试下一项。前箱传走的同一步，门箱和它后面被推动的箱子会向前补一格。关闭连推时，门箱沿门面推到前箱就先传走前箱。没有可执行的推箱动作时，玩家可以从碰到的门面进入，即使门箱背后紧贴的是普通箱子。若最终出口有箱子并且推得动，玩家会在同一步穿门走到让出的格子。</p>' +
     '<p>开始训练后，左侧地图会显示 AI 的每一步。可在「观战 AI」中调速度或暂停。进入手动试玩会暂停训练，回到训练区可继续。</p>' +
     '<p>「方块推推推」用拉推头把箱子移到目标。无电源时点拉推头。有电源时点箭头指向拉推头的电源。正前一格有方块就向前推，空一格则把第二格的方块拉近。开启连推可以推动前方连续的多个方块。</p>' +
@@ -1498,7 +1539,7 @@ function confirmSaveChange(deleting) {
     actionButton('返回', 'outline plain', manageSave),
     actionButton('确认' + verb, 'primary danger', () => {
       if (deleting) deleteLevel();
-      else editMap({ tiles: new Map(), portals: [], finish: null, devices: new Map() }, true);
+      else editMap({ tiles: new Map(), portals: [], finish: null, finishes: [], players: [], devices: new Map() }, true);
       dialog.close();
     }),
   ]);
@@ -1548,7 +1589,7 @@ $('map-code').addEventListener('click', () => {
     actionButton('导入文本', 'primary', () => {
       try {
         const imported = readLevel($('map-text').value);
-        editMap({ portals: [], finish: null, gameplay: 'classic', devices: new Map(), unlimitedTraining: true, ...imported }, true);
+        editMap({ portals: [], finish: null, finishes: undefined, players: undefined, playerMode: 'single', gameplay: 'classic', devices: new Map(), unlimitedTraining: true, ...imported }, true);
         dialog.close();
       } catch (error) {
         dialogError(error.message);

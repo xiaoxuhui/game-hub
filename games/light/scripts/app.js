@@ -26,8 +26,6 @@
   /** 存档仓库。localStorage 不可用时自动降级为内存存档，游戏照常可玩。 */
   const store = storage.createStore();
 
-  const hubLevelKey="game-hub-web-latest-level-v1"; let hubLevelWritable=true;
-  function hubLevelWarning(text){let node=document.getElementById("hub-save-warning");if(!node){node=document.createElement("p");node.id="hub-save-warning";node.setAttribute("role","alert");document.body.prepend(node)}node.textContent=text;}
   const ERASER = "__eraser";
 
   /** 撤销栈上限。每个快照只是布局数组的浅拷贝，100 步既够用又不会无限吃内存。 */
@@ -403,7 +401,6 @@
       const stars = engine.starsFor(true, state.result.placedCount, level.par);
       const previous = state.stars[level.id] || 0;
       if (stars > previous) {
-        state.stars[level.id] = stars;
         rememberStars(level.id, stars);
       }
       updateHud();
@@ -823,7 +820,6 @@
     if (!level) return;
 
     state.levelId = id;
-    if(hubLevelWritable)try{localStorage.setItem(hubLevelKey,id)}catch{hubLevelWritable=false;hubLevelWarning("无法保存当前关卡，请导出工作台备份。");}
     // 回到某关时接着上次的布局继续 —— 自动存档的意义就在这儿
     state.placement = clonePlacement(storage.getBoard(store.data, id));
     state.selectedType = null;
@@ -1043,13 +1039,44 @@
     }
   });
 
+  // Refuse to overwrite an unrecognized, damaged or externally changed save.
+  const persistOriginal=store.persist.bind(store);
+  let observedRaw=null,storageProtected=false,protectedRaw=null,protectionNotice=null;
+  function canonical(value){
+    if(Array.isArray(value))return value.map(canonical);
+    if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])]));
+    return value;
+  }
+  function protectSave(raw,reason){
+    storageProtected=true;protectedRaw=raw;
+    if(protectionNotice)return;
+    const notice=document.createElement('section');notice.setAttribute('role','alert');
+    const message=document.createElement('p');message.textContent=reason+' 原始存档未覆盖，本次修改不会自动保存。';notice.append(message);
+    if(raw!==null){const button=document.createElement('button');button.type='button';button.textContent='导出原始存档';button.addEventListener('click',()=>storage.downloadFile('light-original-save.json',new Blob([protectedRaw],{type:'application/json'})));notice.append(button);}
+    document.body.prepend(notice);protectionNotice=notice;
+  }
+  try{
+    observedRaw=store.backend.getItem(storage.STORAGE_KEY);
+    if(observedRaw!==null){
+      const input=JSON.parse(observedRaw),normalized=JSON.parse(storage.serializeSave(storage.parseSave(observedRaw)));
+      if(JSON.stringify(canonical(input))!==JSON.stringify(canonical(normalized)))protectSave(observedRaw,'检测到无法完整识别的存档。');
+    }
+  }catch(error){protectSave(observedRaw,'无法安全读取或识别本机存档。');}
+  store.persist=function(){
+    if(storageProtected)return false;
+    try{const current=store.backend.getItem(storage.STORAGE_KEY);if(current!==observedRaw){protectSave(current,'本机存档在另一个页面发生变化。');return false;}}
+    catch(error){protectSave(observedRaw,'无法安全检查本机存档。');return false;}
+    const ok=persistOriginal();
+    if(ok){try{observedRaw=store.backend.getItem(storage.STORAGE_KEY);}catch(error){protectSave(observedRaw,'无法核对写入后的存档。');}}
+    return ok;
+  };
+
   // 先读档再进关卡：selectLevel 会把该关上次的布局恢复出来
   store.load();
   state.stars = store.data.stars;
 
   resize();
-  let hubLevel=levels.LEVELS[0].id;try{const saved=localStorage.getItem(hubLevelKey);if(saved!==null){if(!levels.getLevel(saved)){hubLevelWritable=false;hubLevelWarning("最近关卡无法恢复，原记录已保留。");}else hubLevel=saved;}}catch{hubLevelWritable=false;hubLevelWarning("无法读取当前关卡，请导出工作台备份。");}
-  selectLevel(hubLevel);
+  selectLevel(levels.LEVELS[0].id);
   start();
 
   globalThis.__lightGame = {
