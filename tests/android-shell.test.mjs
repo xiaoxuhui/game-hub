@@ -12,8 +12,8 @@ test('Android application identity and minimum API stay independent of source AP
   assert.match(gradle, /applicationId\s*=\s*"com\.xiaoxuhui\.gamehub"/);
   assert.match(gradle, /minSdk\s*=\s*24/);
   assert.equal(gradle.match(/versionName\s*=\s*"([^"]+)"/)[1], JSON.parse(text('package.json')).version);
-  assert.match(gradle, /versionCode\s*=\s*14\b/);
-  assert.match(gradle, /versionName\s*=\s*"0\.5\.6"/);
+  assert.match(gradle, /versionCode\s*=\s*15\b/);
+  assert.match(gradle, /versionName\s*=\s*"0\.5\.7"/);
   assert.doesNotMatch(gradle, /storeFile\s*=\s*file\("debug\.keystore"\)/);
 });
 
@@ -22,12 +22,12 @@ test('APK upgrade smoke fixture stays one version above the app release', () => 
   const workflow = text('.github/workflows/android-update-upgrade-smoke.yml');
   const instrumentation = text('android/app/src/androidTest/java/com/xiaoxuhui/gamehub/UpdateFixtureTest.kt');
   const script = text('scripts/update_upgrade_smoke.sh');
-  assert.match(gradle, /versionCode\s*=\s*14\b/);
-  assert.match(gradle, /versionName\s*=\s*"0\.5\.6"/);
-  assert.match(workflow, /versionCode = 15/);
-  assert.match(workflow, /versionName = "0\.5\.7"/);
-  assert.match(instrumentation, /ReleaseApk\("0\.5\.7"/);
-  assert.match(script, /grep 'versionCode=15'/);
+  assert.match(gradle, /versionCode\s*=\s*15\b/);
+  assert.match(gradle, /versionName\s*=\s*"0\.5\.7"/);
+  assert.match(workflow, /versionCode = 16/);
+  assert.match(workflow, /versionName = "0\.5\.8"/);
+  assert.match(instrumentation, /ReleaseApk\("0\.5\.8"/);
+  assert.match(script, /grep 'versionCode=16'/);
 });
 
 test('Manifest has one launcher and only the planned update permission', () => {
@@ -58,7 +58,7 @@ test('CI builds pinned sources and checks APK without a publish step', () => {
   const workflow = text('.github/workflows/android-check.yml');
   const releaseWorkflow = text('.github/workflows/android-release-candidate.yml');
   for (const config of [workflow, releaseWorkflow]) {
-    assert.match(config, /versionCode='14' versionName='0(?:\\+\.)5(?:\\+\.)6'/);
+    assert.match(config, /versionCode='15' versionName='0(?:\\+\.)5(?:\\+\.)7'/);
   }
   assert.match(workflow, /pnpm run bundle/);
   assert.match(workflow, /pnpm run verify:bundle/);

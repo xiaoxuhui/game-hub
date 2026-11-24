@@ -15,8 +15,8 @@ android {
         applicationId = "com.xiaoxuhui.gamehub"
         minSdk = 24
         targetSdk = 34
-        versionCode = 14
-        versionName = "0.5.6"
+        versionCode = 15
+        versionName = "0.5.7"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resourceConfigurations += listOf("zh", "en")
     }

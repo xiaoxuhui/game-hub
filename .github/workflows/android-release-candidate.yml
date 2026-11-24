@@ -53,7 +53,7 @@ jobs:
           test -f "$APK"
           python3 scripts/verify_apk.py "$APK" "$GITHUB_SHA"
           AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
-          "$AAPT" dump badging "$APK" | grep -E "^package: name='com\.xiaoxuhui\.gamehub' versionCode='14' versionName='0\.5\.6'([[:space:]]|$)"
+          "$AAPT" dump badging "$APK" | grep -E "^package: name='com\.xiaoxuhui\.gamehub' versionCode='15' versionName='0\.5\.7'([[:space:]]|$)"
           "$AAPT" dump permissions "$APK" > "$RUNNER_TEMP/apk-permissions.txt"
           grep -Fx "uses-permission: name='android.permission.INTERNET'" "$RUNNER_TEMP/apk-permissions.txt"
           grep -Fx "uses-permission: name='android.permission.ACCESS_NETWORK_STATE'" "$RUNNER_TEMP/apk-permissions.txt"
