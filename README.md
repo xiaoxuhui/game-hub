@@ -1,5 +1,7 @@
 # 游戏大厅
 
+**AI 2048 已加入源码与资源来源锁（待签名发布）。** 支持分别设置 2～20 列、2～20 行，键盘/触屏操作、AI 单步和自动游玩、本地存档。可直接打开 [游戏页面](examples/ai-2048/index.html) 本地试玩；[设计与验证](doc/AI-2048.md)。
+
 **2026-11-21 Lambda 更新：0.3.9 / 资源 #17。** 函数逐层展开时加入逐线动画，回退平滑还原；保留存档保护、历史备份及导出恢复。新旧签名目录均已发布并核验。在大厅检查更新、下载后重新进入游戏生效，无需重装 APK。见[发布记录](doc/evidence/lambda-0.3.9-resource-release.md)。
 
 **[下载 v0.5.4 安卓大厅](https://github.com/xiaoxuhui/game-hub/releases/download/v0.5.4/game-hub-v0.5.4.apk)** · [发行说明](https://github.com/xiaoxuhui/game-hub/releases/tag/v0.5.4) · [网页版大厅](https://xiaoxuhui.github.io/game-hub/)。v0.5.4 可在单个游戏持续无响应时尝试返回大厅，保留已保存数据；模拟器验证通过，真机验收待进行。

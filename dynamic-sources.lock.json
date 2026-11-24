@@ -666,6 +666,29 @@
         "vendor/solve.js"
       ],
       "releaseNotes": "魔方一步步 1.1.0：支持 1–200 阶正方体与长方体（两百阶 240000 个表面格），六面展开图显示运行过程并高亮本步受影响区域；手动填色可直接输入或粘贴颜色（中文、字母、RLE 计数、? 未填），支持最多 10000 步历史与 0.5–120 步/秒调速，全部在本机离线运行。"
+    },
+    {
+      "id": "ai-2048",
+      "displayName": "AI 2048",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "3f6bbf84a6c30853eb1e4c7d748dcdc358573a83",
+      "directory": "examples/ai-2048",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "ai-2048-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "ai.js",
+        "app.js",
+        "core.js",
+        "index.html",
+        "style.css",
+        "worker.js"
+      ],
+      "releaseNotes": "新增 AI 2048：宽（列）与高（行）可分别设为 2～20，默认 4×4；支持方向键、WASD、触屏滑动、AI 单步与自动游玩及调速。本地保存棋盘与最高分，重新进入时暂停 AI，离线可玩。"
     }
   ]
 }
