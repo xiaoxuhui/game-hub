@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101c2b">
+  <title>AI 2048</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="core.js"></script>
+  <script defer src="ai.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <main>
+    <header><div><p class="eyebrow">合并数字 · 探索下一步</p><h1>AI <span>2048</span></h1></div><div class="scores"><div>得分<strong id="score">0</strong></div><div>最高分<strong id="best">0</strong></div></div></header>
+    <div class="layout">
+      <section class="play" aria-label="游戏区">
+        <div class="board-heading"><span id="board-size">4 列 × 4 行</span><span id="moves">0 步</span></div>
+        <div class="board-scroll"><div id="board" role="grid" tabindex="0" aria-label="2048 棋盘，用方向键移动"></div></div>
+        <p id="status" role="status" aria-live="polite">合并相同数字，向 2048 前进。</p>
+        <div class="directions" aria-label="移动方向">
+          <button data-direction="up" aria-label="向上移动">上</button>
+          <div><button data-direction="left" aria-label="向左移动">左</button><button data-direction="down" aria-label="向下移动">下</button><button data-direction="right" aria-label="向右移动">右</button></div>
+        </div>
+      </section>
+      <aside>
+        <section class="panel"><h2>让 AI 来试试</h2><p>观察 AI 的下一步，也可以随时接手。</p><button id="auto" class="primary" aria-pressed="false">AI 自动游玩</button><button id="step">AI 走一步</button><label class="speed" for="speed">游玩速度<select id="speed"><option value="600">慢速</option><option value="250" selected>标准</option><option value="70">快速</option></select></label></section>
+        <section class="panel"><h2>自定义棋盘</h2><form id="size-form"><div class="dimensions"><label for="width">宽 · 列数<input id="width" type="number" min="2" max="20" step="1" value="4" required></label><span>×</span><label for="height">高 · 行数<input id="height" type="number" min="2" max="20" step="1" value="4" required></label></div><p>宽、高分别设置为 2～20。应用后开始新局。</p><button type="submit">应用尺寸并开始新局</button></form><button id="restart" class="quiet">按当前尺寸重新开始</button></section>
+        <section class="help"><h2>怎么玩</h2><p>方向键 / WASD、滑动棋盘或点击方向按钮。相同数字相遇就会合并；每次有效移动后出现一个 2 或 4。</p><p>达到 2048 后可继续。棋盘与得分自动保存在本机，重新进入时 AI 暂停。</p><p>AI 使用本地期望搜索，无需联网，不保证每局获胜。</p></section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
