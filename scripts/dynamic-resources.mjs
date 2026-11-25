@@ -22,8 +22,16 @@ export function dynamicSources(bytes) {
   }
   return lock;
 }
-function publicationSources(bytes) {
-  const {sources}=dynamicSources(bytes),id=process.env.GAME_HUB_DYNAMIC_GAME;
+export function publicationSources(bytes) {
+  const {sources}=dynamicSources(bytes),id=process.env.GAME_HUB_DYNAMIC_GAME,ids=process.env.GAME_HUB_DYNAMIC_GAMES;
+  if(id&&ids)throw new Error('Conflicting dynamic publication selectors');
+  if(ids){
+    const requested=ids.split(',');
+    if(!requested.length || new Set(requested).size!==requested.length || requested.some(value=>!dynamicId(value))) throw new Error('Invalid dynamic publication selection');
+    const chosen=sources.filter(entry=>requested.includes(entry.id));
+    if(chosen.length!==requested.length)throw new Error('Unknown dynamic publication game');
+    return chosen;
+  }
   if(!id)return sources;
   const source=sources.find(entry=>entry.id===id);
   if(!source)throw new Error('Unknown dynamic publication game');

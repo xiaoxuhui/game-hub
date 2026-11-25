@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {dynamicSources,packDynamic,verifyPackedDynamic} from '../scripts/dynamic-resources.mjs';
+import {dynamicSources,publicationSources,packDynamic,verifyPackedDynamic} from '../scripts/dynamic-resources.mjs';
 import {attachAssets,validateReleaseSnapshot} from '../scripts/resource-catalog.mjs';
 import {assetName} from '../scripts/resource-protocol.mjs';
 const source=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources[0];
@@ -48,4 +48,19 @@ test('icon overlay is bound to game identity and must be declared in the resourc
   const changed=entries.map(e=>e.path==='hub-icon.png'?{...e,data:Buffer.from('forged')}:e);
   const forged=packDynamic(source,changed);
   assert.throws(()=>verifyPackedDynamic(source,entries,forged.game,forged.archive),/immutable source bytes/);
+});
+test('multiple publication targets are exact and cannot conflict or silently omit games',()=>{
+  const lock=readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url));
+  const oldOne=process.env.GAME_HUB_DYNAMIC_GAME,oldMany=process.env.GAME_HUB_DYNAMIC_GAMES;
+  try{
+    delete process.env.GAME_HUB_DYNAMIC_GAME;
+    process.env.GAME_HUB_DYNAMIC_GAMES='hex-cell-lab,langtons-ant';
+    assert.deepEqual(publicationSources(lock).map(g=>g.id),['hex-cell-lab','langtons-ant']);
+    process.env.GAME_HUB_DYNAMIC_GAMES='hex-cell-lab,hex-cell-lab';assert.throws(()=>publicationSources(lock),/Invalid/);
+    process.env.GAME_HUB_DYNAMIC_GAMES='hex-cell-lab,missing-game';assert.throws(()=>publicationSources(lock),/Unknown/);
+    process.env.GAME_HUB_DYNAMIC_GAME='hex-cell-lab';assert.throws(()=>publicationSources(lock),/Conflicting/);
+  }finally{
+    if(oldOne===undefined)delete process.env.GAME_HUB_DYNAMIC_GAME;else process.env.GAME_HUB_DYNAMIC_GAME=oldOne;
+    if(oldMany===undefined)delete process.env.GAME_HUB_DYNAMIC_GAMES;else process.env.GAME_HUB_DYNAMIC_GAMES=oldMany;
+  }
 });

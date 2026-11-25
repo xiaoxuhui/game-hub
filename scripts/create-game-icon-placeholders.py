@@ -26,6 +26,8 @@ labels = {'hex-cell-lab':'HEX','langtons-ant':'ANT','turbowarp-neural-network':'
           'tape-language-lab':'TAPE','pixel-frame':'PIX','territory-conquest':'WAR','cube-step-solver':'CUBE'}
 for game in lock['sources']:
     game_id = game['id']; out = target / (game_id + '.png')
+    if out.exists():
+        continue  # Never replace reviewed artwork with an old placeholder.
     if game_id in names:
         out.write_bytes((bundled / ('game_icon_' + names[game_id] + '.png')).read_bytes())
         continue

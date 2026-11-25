@@ -15,8 +15,9 @@ for(const game of candidate){
   const bytes=Buffer.from(await response.arrayBuffer());
   if(bytes.length!==previous.archiveBytes || sha256(bytes)!==previous.archiveSha256)throw Error(`Published ZIP digest mismatch: ${game.id}`);
   const old=readStoredZip(bytes),now=readStoredZip(readFileSync(`.build/dynamic-candidate/${assetName(game)}`));
-  const withoutIcon=now.filter(e=>e.path!=='hub-icon.png');
-  if(now.length!==old.length+1 || withoutIcon.length!==old.length || old.some((e,i)=>e.path!==withoutIcon[i].path || !e.data.equals(withoutIcon[i].data))) throw Error(`Non-icon content changed: ${game.id}`);
+  const oldIcon=old.find(e=>e.path==='hub-icon.png'),newIcon=now.find(e=>e.path==='hub-icon.png');
+  const oldContent=old.filter(e=>e.path!=='hub-icon.png'),newContent=now.filter(e=>e.path!=='hub-icon.png');
+  if(!newIcon || (oldIcon&&oldIcon.data.equals(newIcon.data)) || oldContent.length!==newContent.length || oldContent.some((e,i)=>e.path!==newContent[i].path || !e.data.equals(newContent[i].data))) throw Error(`Non-icon content changed or icon unchanged: ${game.id}`);
   console.log(`Verified icon-only ${game.id}`);
 }
 console.log(`Verified ${candidate.length} icon-only upgrades against signed public ZIPs`);
