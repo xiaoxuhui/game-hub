@@ -729,7 +729,7 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "3f6bbf84a6c30853eb1e4c7d748dcdc358573a83",
+      "revision": "c6235fcc5a421420d16857ff01aeb51b27f46747",
       "directory": "examples/ai-2048",
       "version": "1.0.0",
       "contentCode": 1,
@@ -744,7 +744,7 @@
         "style.css",
         "worker.js"
       ],
-      "releaseNotes": "新增 AI 2048：宽（列）与高（行）可分别设为 2～20，默认 4×4；支持方向键、WASD、触屏滑动、AI 单步与自动游玩及调速。本地保存棋盘与最高分，重新进入时暂停 AI，离线可玩。"
+      "releaseNotes": "新增 AI 2048：宽（列）与高（行）可分别设为 2～20，支持方向键、WASD、触屏滑动和 AI 游玩；离线保存棋盘与最高分，支持导入导出存档。"
     }
   ]
 }
