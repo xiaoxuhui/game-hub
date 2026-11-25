@@ -26,6 +26,7 @@
       <aside>
         <section class="panel"><h2>让 AI 来试试</h2><p>观察 AI 的下一步，也可以随时接手。</p><button id="auto" class="primary" aria-pressed="false">AI 自动游玩</button><button id="step">AI 走一步</button><label class="speed" for="speed">游玩速度<select id="speed"><option value="600">慢速</option><option value="250" selected>标准</option><option value="70">快速</option></select></label></section>
         <section class="panel"><h2>自定义棋盘</h2><form id="size-form"><div class="dimensions"><label for="width">宽 · 列数<input id="width" type="number" min="2" max="20" step="1" value="4" required></label><span>×</span><label for="height">高 · 行数<input id="height" type="number" min="2" max="20" step="1" value="4" required></label></div><p>宽、高分别设置为 2～20。应用后开始新局。</p><button type="submit">应用尺寸并开始新局</button></form><button id="restart" class="quiet">按当前尺寸重新开始</button></section>
+        <section class="panel"><h2>存档备份</h2><button id="export-save" type="button">导出存档</button><label>导入存档<input id="import-save" type="file" accept="application/json,.json"></label></section>
         <section class="help"><h2>怎么玩</h2><p>方向键 / WASD、滑动棋盘或点击方向按钮。相同数字相遇就会合并；每次有效移动后出现一个 2 或 4。</p><p>达到 2048 后可继续。棋盘与得分自动保存在本机，重新进入时 AI 暂停。</p><p>AI 使用本地期望搜索，无需联网，不保证每局获胜。</p></section>
       </aside>
     </div>

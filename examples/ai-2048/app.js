@@ -101,6 +101,33 @@
     catch (error) { notice = error.message; render(); }
   });
   $('restart').addEventListener('click', () => newGame(state.width, state.height));
+  $('export-save').addEventListener('click', () => {
+    if (protectedSave) { notice = '原存档无法读取，未用当前棋盘覆盖；请先导入有效备份。'; render(); return; }
+    const content = JSON.stringify(state, null, 2), name = 'ai-2048-save.json';
+    if (typeof GameHubBridge !== 'undefined') {
+      try { notice = GameHubBridge.saveFile(name, content) ? '已受理，请选择保存位置；保存结果由大厅提示。' : '无法受理导出，请稍后重试。'; }
+      catch { notice = '无法受理导出，请稍后重试。'; }
+    } else {
+      const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }));
+      const link = document.createElement('a'); link.href = url; link.download = name; link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000); notice = '已开始导出存档。';
+    }
+    render();
+  });
+  $('import-save').addEventListener('change', async event => {
+    const input = event.target, file = input.files[0];
+    try {
+      if (!file) return;
+      if (file.size > 65536) throw new Error('存档过大');
+      const candidate = core.validate(JSON.parse(await file.text()));
+      if (!window.confirm('导入会替换当前棋盘和本机存档，继续吗？')) return;
+      pause();
+      localStorage.setItem(key, JSON.stringify(candidate));
+      state = candidate; protectedSave = false; storageWarning = ''; notice = '存档已导入。';
+      $('width').value = state.width; $('height').value = state.height;
+    } catch { notice = '未能导入，原棋盘和存档已保留。'; }
+    finally { input.value = ''; render(); }
+  });
   $('auto').addEventListener('click', () => { if (auto) { pause(); render(); } else { auto = true; askAI(); } });
   $('step').addEventListener('click', askAI);
   function manual(direction) { pause(); play(direction); }

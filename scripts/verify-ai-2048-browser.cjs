@@ -87,6 +87,21 @@ const { chromium } = require('playwright');
     assert.match(await page.locator('#status').textContent(), /本局结束/);
     checks.push('Dead board stops AI and shows the end-of-game message');
 
+    await fixture(2, 2, [1, 1, 0, 0]);
+    const original = await saved();
+    await page.evaluate(() => { window.GameHubBridge = { saveFile: (name, data) => { window.exported = { name, data }; return true; } }; });
+    await page.locator('#export-save').click();
+    const exported = await page.evaluate(() => window.exported);
+    assert.equal(exported.name, 'ai-2048-save.json'); assert.deepEqual(JSON.parse(exported.data), original);
+    await page.locator('#import-save').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{') });
+    await page.waitForFunction(() => document.querySelector('#status').textContent.includes('未能导入'));
+    assert.match(await page.locator('#status').textContent(), /未能导入/); assert.deepEqual(await saved(), original);
+    const imported = { ...original, width: 3, height: 2, cells: [1, 1, 0, 0, 0, 0] };
+    await page.locator('#import-save').setInputFiles({ name: 'valid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(imported)) });
+    await page.waitForFunction(() => document.querySelector('#status').textContent.includes('存档已导入'));
+    assert.deepEqual(await saved(), imported); assert.equal(await page.locator('.tile').count(), 6);
+    checks.push('Bridge export and validated import preserve progress; malformed imports do not replace saves');
+
     await page.evaluate(() => localStorage.setItem('ai-2048-save-v1', 'broken-save'));
     await page.reload();
     assert.match(await page.locator('#status').textContent(), /原存档无法读取/);
