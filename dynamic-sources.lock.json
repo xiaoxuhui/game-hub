@@ -722,6 +722,29 @@
       ],
       "releaseNotes": "魔方一步步 1.2.0：支持到 4,503,599,627,370,495 阶的超大尺寸（任一边超过 200 自动切换按需计算模型，不按表面积分配数组，稀疏填色与涂黑规则精确保留），可一键应用最大尺寸；新增同轴并行转动与并行还原（同层转角合并抵消、跨轴顺序保留、整组上一步/下一步）；大尺寸三维预览改按真实行列生成纹理并按设备像素比绘制，消除网格干扰纹。小尺寸玩法与存档格式不变。；大厅图标更新为游戏主题图案。",
       "hubIcon": "assets/game-icons/cube-step-solver.png"
+    },
+    {
+      "id": "ai-2048",
+      "displayName": "AI 2048",
+      "iconKind": "puzzle",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/game-hub.git",
+      "revision": "3f6bbf84a6c30853eb1e4c7d748dcdc358573a83",
+      "directory": "examples/ai-2048",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "ai-2048-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "ai.js",
+        "app.js",
+        "core.js",
+        "index.html",
+        "style.css",
+        "worker.js"
+      ],
+      "releaseNotes": "新增 AI 2048：宽（列）与高（行）可分别设为 2～20，默认 4×4；支持方向键、WASD、触屏滑动、AI 单步与自动游玩及调速。本地保存棋盘与最高分，重新进入时暂停 AI，离线可玩。"
     }
   ]
 }
