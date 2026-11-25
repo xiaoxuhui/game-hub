@@ -62,10 +62,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "d20b006beda5c41c3825d2164ea83f266877a349",
-      "directory": "examples/lambda-diagram-050-20261124",
-      "version": "0.5.0",
-      "contentCode": 22,
+      "revision": "cc17d0d28f5bb8ab20b31e469f3bf28fcca2043d",
+      "directory": "examples/lambda-diagram-051-20261126",
+      "version": "0.5.1",
+      "contentCode": 23,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -74,7 +74,7 @@
         "upstream-source.json",
         "hub-icon.png"
       ],
-      "releaseNotes": "新增「名称 = 表达式」多行定义与「保存等号定义」，只存函数不执行算式，转换与组合子编译都识别定义块；示例与教程改为逐个保存全部命名定义并逐字核对原文，同名不同定义整批停止，v6 存档兼容旧存档；转换不再按参数名或实参猜测内部声明，(λtrue.true) (λa.λb.a) 第 0 步保持原式；组合子识别扩到 23 种（m/a/t/v/q/f/r/d/e/j/h/l/o/phi/psi/y/z），SK 与 BCKW 基元限制不变；函数重名提供替换/加数字/跳过/直接使用四策略并随存档保存。；新增大厅图标资源，游戏内容和存档格式不变。",
+      "releaseNotes": "新增示例库与快速运行，完善布尔电路操作；保留大厅旧存档迁移、备份和离线使用。",
       "hubIcon": "assets/game-icons/lambda-diagram-game.png"
     },
     {
@@ -745,6 +745,24 @@
         "worker.js"
       ],
       "releaseNotes": "新增 AI 2048：宽（列）与高（行）可分别设为 2～20，支持方向键、WASD、触屏滑动和 AI 游玩；离线保存棋盘与最高分，支持导入导出存档。"
+    },
+    {
+      "id": "particle-life-lab",
+      "displayName": "粒子之间",
+      "iconKind": "simulation",
+      "available": true,
+      "repository": "https://github.com/xiaoxuhui/particle-life-lab.git",
+      "revision": "bbe8cbcf2fb4cc783692073af14891d4e19a1698",
+      "directory": "web-dist",
+      "version": "1.0.0",
+      "contentCode": 1,
+      "entryPage": "index.html",
+      "storageContract": "particle-life-lab-dynamic-v1",
+      "files": [
+        "LICENSE",
+        "index.html"
+      ],
+      "releaseNotes": "新增离线粒子生命模拟器：自定义粒子和作用规则，支持规则收藏、导入导出。"
     }
   ]
 }
