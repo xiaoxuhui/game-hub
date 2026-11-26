@@ -5,7 +5,8 @@ import {execFileSync} from 'node:child_process';
 import {dynamicSources} from '../scripts/dynamic-resources.mjs';
 const root=new URL('../',import.meta.url);
 test('daily resource update changes only the reviewed Lambda and adds particle life',()=>{
- const sources=dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources;
+ // Check the reviewed historical transition, independent of later game updates.
+ const sources=dynamicSources(execFileSync('git',['show','071210d34b8cde90e5fdc4b10dcf3c7578ef057b:dynamic-sources.lock.json'],{cwd:root})).sources;
  const old=JSON.parse(execFileSync('git',['show','0c8ebf50d3c7a0f2b607d4b03eacb733e572eed2:dynamic-sources.lock.json'],{cwd:root})).sources;
  assert.deepEqual(JSON.parse(JSON.stringify(sources.filter(x=>!['lambda-diagram-game','particle-life-lab'].includes(x.id)))),old.filter(x=>x.id!=='lambda-diagram-game'));
  const lambda=sources.find(x=>x.id==='lambda-diagram-game'),previous=old.find(x=>x.id===lambda.id);

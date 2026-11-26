@@ -11,7 +11,10 @@ test('AI 2048 admission freezes the complete source and leaves all existing game
   assert.ok(source);
   assert.equal(source.directory, 'examples/ai-2048');
   assert.equal(source.storageContract, 'ai-2048-dynamic-v1');
-  assert.equal(source.contentCode, 1);
+  assert.equal(source.version, '1.1.0');
+  assert.equal(source.contentCode, 2);
+  const beforeAnimation = JSON.parse(execFileSync('git', ['show', `${source.revision}:dynamic-sources.lock.json`], { cwd: root }));
+  assert.deepEqual(JSON.parse(JSON.stringify(sources.filter(game => game.id !== source.id))), beforeAnimation.sources.filter(game => game.id !== source.id));
   const previous = JSON.parse(execFileSync('git', ['show', '1136592da3bfafc201dbee53f35244f7186aba6f:dynamic-sources.lock.json'], { cwd: root }));
   assert.deepEqual(JSON.parse(JSON.stringify(sources.filter(game => ![source.id, 'lambda-diagram-game', 'particle-life-lab'].includes(game.id)))), previous.sources.filter(game => game.id !== 'lambda-diagram-game'));
   const base = new URL(`${source.directory}/`, root);

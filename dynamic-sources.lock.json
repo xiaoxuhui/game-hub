@@ -729,10 +729,10 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "c6235fcc5a421420d16857ff01aeb51b27f46747",
+      "revision": "94519bca5bf57b802aaea525d0e03452cd6ca3bc",
       "directory": "examples/ai-2048",
-      "version": "1.0.0",
-      "contentCode": 1,
+      "version": "1.1.0",
+      "contentCode": 2,
       "entryPage": "index.html",
       "storageContract": "ai-2048-dynamic-v1",
       "files": [
@@ -744,7 +744,7 @@
         "style.css",
         "worker.js"
       ],
-      "releaseNotes": "新增 AI 2048：宽（列）与高（行）可分别设为 2～20，支持方向键、WASD、触屏滑动和 AI 游玩；离线保存棋盘与最高分，支持导入导出存档。"
+      "releaseNotes": "AI 2048 1.1.0：按每次移动前的位置显示方块滑动，随后显示合并和新数字出现的动画；AI 等动画结束后再走下一步。保留自定义长宽、调速、本地存档及导入导出，兼容原存档。"
     },
     {
       "id": "particle-life-lab",
