@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 const ids=['hex-cell-lab','langtons-ant','turbowarp-neural-network','turbowarp-logic-lab','lights-out-matrix','learning-machine','compass-polygon-studio','fourier-drawing-studio','ai-racing-lab','turbowarp-life-lab','turbowarp-turing-lab','snake-speed','turbowarp-graph-lab','fixed-point-workshop','sokoban-ai-lab','tape-language-lab','pixel-frame','territory-conquest','cube-step-solver'];
 const root=new URL('../',import.meta.url),read=p=>readFileSync(new URL(p,root));
 const old=JSON.parse(execFileSync('git',['show','d496201:dynamic-sources.lock.json'],{cwd:root}));
-const current=JSON.parse(read('dynamic-sources.lock.json'));
+const current=JSON.parse(execFileSync('git',['show','e68fd849a06ce98cc61fb3f97b03fa217050add7:dynamic-sources.lock.json'],{cwd:root}));
 test('19 icons are valid, distinct PNGs with exact icon-only source lock increments',()=>{
   assert.equal(new Set(ids).size,19);const hashes=new Set();
   assert.ok(current.sources.length>=old.sources.length);

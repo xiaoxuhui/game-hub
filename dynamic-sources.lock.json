@@ -696,15 +696,16 @@
       "iconKind": "puzzle",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/cube-step-solver.git",
-      "revision": "50528e5f08fd1864cb9e4f2c1e2a3966e1bc8aa1",
+      "revision": "c5cec98ef729c95c6353164c5b2fbc9f859540e4",
       "directory": "dist",
-      "version": "1.2.0",
-      "contentCode": 5,
+      "version": "1.3.0",
+      "contentCode": 6,
       "entryPage": "index.html",
       "storageContract": "cube-step-solver-dynamic-v1",
       "files": [
         "LICENSE",
         "app.js",
+        "backup.js",
         "color-input.js",
         "core.js",
         "cuboid.js",
@@ -720,7 +721,7 @@
         "vendor/solve.js",
         "hub-icon.png"
       ],
-      "releaseNotes": "魔方一步步 1.2.0：支持到 4,503,599,627,370,495 阶的超大尺寸（任一边超过 200 自动切换按需计算模型，不按表面积分配数组，稀疏填色与涂黑规则精确保留），可一键应用最大尺寸；新增同轴并行转动与并行还原（同层转角合并抵消、跨轴顺序保留、整组上一步/下一步）；大尺寸三维预览改按真实行列生成纹理并按设备像素比绘制，消除网格干扰纹。小尺寸玩法与存档格式不变。；大厅图标更新为游戏主题图案。",
+      "releaseNotes": "魔方一步步 1.3.0：可编辑中心配色并改进长方体还原与界面；新增普通及超大魔方存档导入导出，保留旧存档。",
       "hubIcon": "assets/game-icons/cube-step-solver.png"
     },
     {

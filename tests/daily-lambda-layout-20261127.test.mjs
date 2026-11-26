@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {dynamicSources} from '../scripts/dynamic-resources.mjs';
 test('workspace layout release only changes the intended Lambda resource',()=>{
  const root=new URL('../',import.meta.url);
- const current=JSON.parse(JSON.stringify(dynamicSources(readFileSync(new URL('../dynamic-sources.lock.json',import.meta.url))).sources));
+ const current=JSON.parse(JSON.stringify(dynamicSources(execFileSync('git',['show','e68fd849a06ce98cc61fb3f97b03fa217050add7:dynamic-sources.lock.json'],{cwd:root})).sources));
  const old=JSON.parse(execFileSync('git',['show','418a68fde1e327a4080a682c2a121808e34fcba8:dynamic-sources.lock.json'],{cwd:root})).sources;
  assert.deepEqual(current.filter(s=>s.id!=='lambda-diagram-game'),old.filter(s=>s.id!=='lambda-diagram-game'));
  const now=current.find(s=>s.id==='lambda-diagram-game'),before=old.find(s=>s.id===now.id);
