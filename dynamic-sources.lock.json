@@ -62,10 +62,10 @@
       "iconKind": "logic",
       "available": true,
       "repository": "https://github.com/xiaoxuhui/game-hub.git",
-      "revision": "cc17d0d28f5bb8ab20b31e469f3bf28fcca2043d",
-      "directory": "examples/lambda-diagram-051-20261126",
+      "revision": "83ff8e4b9088086a755ba7930dc6d398672f8eb3",
+      "directory": "examples/lambda-diagram-051-20261127",
       "version": "0.5.1",
-      "contentCode": 23,
+      "contentCode": 24,
       "entryPage": "lambda-lab.html",
       "storageContract": "lambda-diagram-game-dynamic-v1",
       "files": [
@@ -74,7 +74,7 @@
         "upstream-source.json",
         "hub-icon.png"
       ],
-      "releaseNotes": "新增示例库与快速运行，完善布尔电路操作；保留大厅旧存档迁移、备份和离线使用。",
+      "releaseNotes": "改进工作区布局：桌面两列紧凑排列，手机优先显示输入、图示和运行；优化函数与组合子区域顺序，保留旧存档与导入导出。",
       "hubIcon": "assets/game-icons/lambda-diagram-game.png"
     },
     {
