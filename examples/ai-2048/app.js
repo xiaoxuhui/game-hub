@@ -3,6 +3,7 @@
   const core = AI2048, $ = id => document.getElementById(id), key = 'ai-2048-save-v1';
   let state, auto = false, busy = false, worker = null, timer = null, fallbackTimer = null;
   let generation = 0, protectedSave = false, storageWarning = '', notice = '';
+  let motion = null;
   try {
     const saved = localStorage.getItem(key);
     state = saved ? core.validate(JSON.parse(saved)) : core.initial();
@@ -26,29 +27,31 @@
     board.style.minWidth = `${state.width * 28 + (state.width - 1) * gap}px`;
     board.setAttribute('aria-rowcount', state.height); board.setAttribute('aria-colcount', state.width);
     board.style.touchAction = board.scrollWidth > board.parentElement.clientWidth ? 'pan-x' : 'none';
-    const fragment = document.createDocumentFragment();
-    for (let y = 0; y < state.height; y++) {
-      const row = document.createElement('div'); row.className = 'row'; row.setAttribute('role', 'row');
-      for (let x = 0; x < state.width; x++) {
-        const exponent = state.cells[y * state.width + x], tile = document.createElement('div');
-        const label = exponent ? numberLabel(exponent) : '';
-        tile.className = `tile${exponent ? ' filled' : ''}${exponent >= 11 ? ' high' : ''}${label.length >= 5 ? ' large' : ''}`;
-        tile.style.setProperty('--hue', String(170 - Math.min(exponent, 10) * 12));
-        tile.textContent = label; tile.setAttribute('role', 'gridcell');
-        tile.setAttribute('aria-label', `${y + 1} 行 ${x + 1} 列：${exponent ? label : '空'}`);
-        row.append(tile);
+    if (!motion || motion.phase !== 'sliding') {
+      const fragment = document.createDocumentFragment();
+      for (let y = 0; y < state.height; y++) {
+        const row = document.createElement('div'); row.className = 'row'; row.setAttribute('role', 'row');
+        for (let x = 0; x < state.width; x++) {
+          const exponent = state.cells[y * state.width + x], tile = document.createElement('div');
+          const label = exponent ? numberLabel(exponent) : '';
+          tile.className = `tile${exponent ? ' filled' : ''}${exponent >= 11 ? ' high' : ''}${label.length >= 5 ? ' large' : ''}`;
+          tile.style.setProperty('--hue', String(170 - Math.min(exponent, 10) * 12));
+          tile.textContent = label; tile.setAttribute('role', 'gridcell');
+          tile.setAttribute('aria-label', `${y + 1} 行 ${x + 1} 列：${exponent ? label : '空'}`);
+          row.append(tile);
+        }
+        fragment.append(row);
       }
-      fragment.append(row);
+      board.replaceChildren(fragment);
     }
-    board.replaceChildren(fragment);
     for (const name of ['score', 'best']) { $(name).textContent = scoreLabel(state[name]); $(name).title = state[name]; }
     $('board-size').textContent = `${state.width} 列 × ${state.height} 行`;
     $('moves').textContent = `${state.moves} 步`;
     const ended = !core.legalMoves(state).length;
     $('auto').textContent = auto ? '暂停 AI' : 'AI 自动游玩'; $('auto').setAttribute('aria-pressed', String(auto));
-    $('auto').disabled = ended; $('step').disabled = busy || auto || ended;
-    document.querySelectorAll('[data-direction]').forEach(button => { button.disabled = ended; });
-    const message = ended ? '本局结束：没有可移动的方向。可以重新开始或换个尺寸。'
+    $('auto').disabled = ended || (!!motion && !auto); $('step').disabled = busy || auto || ended || !!motion;
+    document.querySelectorAll('[data-direction]').forEach(button => { button.disabled = ended || !!motion; });
+    const message = motion ? '方块移动中…' : ended ? '本局结束：没有可移动的方向。可以重新开始或换个尺寸。'
       : notice || (busy ? 'AI 正在思考…' : auto ? 'AI 自动游玩中，点击暂停或手动移动即可接手。'
         : state.cells.some(n => n >= 11) ? '已达到 2048！可以继续挑战更大的数字。' : '合并相同数字，向 2048 前进。');
     const status = [message, storageWarning].filter(Boolean).join(' ');
@@ -59,23 +62,86 @@
     if (worker) worker.terminate(); worker = null; busy = false;
   }
   function pause() { auto = false; cancel(); }
+  function clearMotion(current) {
+    current.animations.forEach(animation => animation.cancel());
+    current.layer.remove();
+    $('board').classList.remove('is-moving');
+    $('board').removeAttribute('aria-busy');
+    delete $('board').dataset.motion;
+  }
+  function stopMotion() {
+    if (!motion) return;
+    const current = motion; motion = null;
+    clearMotion(current); current.resolve();
+  }
+  function animateMove(plan, next) {
+    const board = $('board');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || typeof board.animate !== 'function') {
+      render(); return Promise.resolve();
+    }
+    // Measure every old square before replacing any tile or revealing the new spawn.
+    const tiles = [...board.querySelectorAll('.row > .tile')];
+    const origin = board.getBoundingClientRect(), rects = tiles.map(tile => tile.getBoundingClientRect());
+    const layer = document.createElement('div'); layer.className = 'motion-layer'; layer.setAttribute('aria-hidden', 'true');
+    const current = { layer, phase: 'sliding', animations: [], resolve: null };
+    const finished = new Promise(resolve => { current.resolve = resolve; });
+    motion = current;
+    const duration = { '600': 260, '250': 180, '70': 100 }[$('speed').value] || 180;
+    for (const { from, to } of plan.motions) {
+      const tile = tiles[from].cloneNode(true), start = rects[from], end = rects[to];
+      tile.removeAttribute('role'); tile.removeAttribute('aria-label'); tile.classList.add('moving-tile');
+      tile.dataset.from = from; tile.dataset.to = to;
+      Object.assign(tile.style, { left: `${start.left - origin.left}px`, top: `${start.top - origin.top}px`,
+        width: `${start.width}px`, height: `${start.height}px` });
+      layer.append(tile);
+      current.animations.push(tile.animate([
+        { transform: 'translate(0, 0)' },
+        { transform: `translate(${end.left - start.left}px, ${end.top - start.top}px)` }
+      ], { duration, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' }));
+    }
+    board.append(layer); board.classList.add('is-moving'); board.setAttribute('aria-busy', 'true');
+    board.dataset.motion = 'sliding'; render();
+    (async () => {
+      await Promise.all(current.animations.map(animation => animation.finished.catch(() => {})));
+      if (motion !== current) return;
+      clearMotion(current); current.animations = []; current.phase = 'settling';
+      render(); board.dataset.motion = 'settling'; board.setAttribute('aria-busy', 'true');
+      const settled = [...board.querySelectorAll('.row > .tile')];
+      for (const index of plan.merges) {
+        current.animations.push(settled[index].animate([
+          { transform: 'scale(1)' }, { transform: 'scale(1.14)', offset: 0.45 }, { transform: 'scale(1)' }
+        ], { duration: 130, easing: 'ease-out' }));
+      }
+      const spawn = next.cells.findIndex((value, index) => value && !plan.cells[index]);
+      if (spawn >= 0) current.animations.push(settled[spawn].animate([
+        { transform: 'scale(.25)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }
+      ], { duration: 130, easing: 'ease-out' }));
+      await Promise.all(current.animations.map(animation => animation.finished.catch(() => {})));
+      if (motion !== current) return;
+      motion = null; clearMotion(current); render(); current.resolve();
+    })().catch(() => { if (motion === current) { stopMotion(); render(); } });
+    return finished;
+  }
   function play(direction) {
+    if (motion) return Promise.resolve();
+    const plan = core.slide(state, direction, true);
     const next = core.move(state, direction);
     notice = next === state ? '这个方向无法移动，试试其他方向。' : '';
     state = next;
     if (!notice) save();
     if (!core.legalMoves(state).length) pause();
-    render();
+    if (!notice) return animateMove(plan, next);
+    render(); return Promise.resolve();
   }
   function askAI() {
-    if (busy || !core.legalMoves(state).length) return;
+    if (busy || motion || !core.legalMoves(state).length) return;
     busy = true; notice = ''; const token = generation;
     render();
-    function done(direction) {
+    async function done(direction) {
       if (token !== generation) return;
       if (worker) worker.terminate(); worker = null; busy = false;
-      if (direction) play(direction); else { pause(); render(); }
-      if (auto) timer = setTimeout(askAI, Number($('speed').value));
+      if (direction) await play(direction); else { pause(); render(); }
+      if (auto && token === generation) timer = setTimeout(askAI, Number($('speed').value));
     }
     function fallback() {
       if (worker) worker.terminate(); worker = null;
@@ -91,6 +157,7 @@
   function newGame(width, height) {
     core.dimensions(width, height); pause();
     if ((state.moves > 0 || protectedSave) && !window.confirm('开始新局会替换当前棋盘和本机存档，最高分会保留。继续吗？')) { render(); return; }
+    stopMotion();
     state = core.initial(width, height, state.best); protectedSave = false; notice = '';
     $('width').value = width; $('height').value = height; save(); render();
   }
@@ -123,6 +190,7 @@
       if (!window.confirm('导入会替换当前棋盘和本机存档，继续吗？')) return;
       pause();
       localStorage.setItem(key, JSON.stringify(candidate));
+      stopMotion();
       state = candidate; protectedSave = false; storageWarning = ''; notice = '存档已导入。';
       $('width').value = state.width; $('height').value = state.height;
     } catch { notice = '未能导入，原棋盘和存档已保留。'; }
@@ -150,8 +218,8 @@
     manual(Math.abs(dx) > Math.abs(dy) ? dx > 0 ? 'right' : 'left' : dy > 0 ? 'down' : 'up');
   });
   $('board').addEventListener('pointercancel', () => { start = null; });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) { pause(); render(); } });
-  window.addEventListener('pagehide', pause);
-  window.addEventListener('resize', render);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { pause(); stopMotion(); render(); } });
+  window.addEventListener('pagehide', () => { pause(); stopMotion(); });
+  window.addEventListener('resize', () => { stopMotion(); render(); });
   if (!protectedSave) save(); render();
 })();

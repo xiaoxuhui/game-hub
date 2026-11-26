@@ -7,28 +7,40 @@
       throw new Error('宽和高都需要是 2～20 的整数');
     }
   }
-  function slide(board, direction) {
+  function slide(board, direction, track = false) {
     if (!DIRECTIONS.includes(direction)) throw new Error('无效方向');
     const { width, height, cells } = board, next = cells.slice();
     const vertical = direction === 'up' || direction === 'down';
     const reverse = direction === 'down' || direction === 'right';
     const count = vertical ? width : height, length = vertical ? height : width;
     let gained = 0n;
+    const motions = [], merges = [];
     for (let line = 0; line < count; line++) {
       const indices = Array.from({ length }, (_, offset) => {
         const at = reverse ? length - 1 - offset : offset;
         return vertical ? at * width + line : line * width + at;
       });
       const values = indices.map(i => cells[i]).filter(Boolean), merged = [];
+      const sources = track ? indices.filter(i => cells[i]) : null;
       for (let i = 0; i < values.length; i++) {
+        const target = indices[merged.length];
         if (values[i] === values[i + 1] && values[i] < MAX_EXPONENT) {
           const exponent = values[i] + 1;
+          if (track) {
+            motions.push({ from: sources[i], to: target, value: values[i] },
+              { from: sources[i + 1], to: target, value: values[i + 1] });
+            merges.push(target);
+          }
           merged.push(exponent); gained += 1n << BigInt(exponent); i++;
-        } else merged.push(values[i]);
+        } else {
+          if (track) motions.push({ from: sources[i], to: target, value: values[i] });
+          merged.push(values[i]);
+        }
       }
       indices.forEach((index, i) => { next[index] = merged[i] || 0; });
     }
-    return { width, height, cells: next, gained, changed: next.some((value, i) => value !== cells[i]) };
+    return { width, height, cells: next, gained, changed: next.some((value, i) => value !== cells[i]),
+      ...(track ? { motions, merges } : {}) };
   }
   function legalMoves(board) { return DIRECTIONS.filter(direction => slide(board, direction).changed); }
   function spawn(board, random = Math.random) {

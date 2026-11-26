@@ -26,6 +26,7 @@ const { chromium } = require('playwright');
     page.on('dialog', dialog => dialog.accept());
     await page.goto(`http://127.0.0.1:${server.address().port}/`);
     const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('ai-2048-save-v1')));
+    const idle = () => page.waitForFunction(() => !document.querySelector('#board').dataset.motion);
     const fixture = async (width, height, cells) => {
       await page.evaluate(({ width, height, cells }) => localStorage.setItem('ai-2048-save-v1', JSON.stringify({
         schemaVersion: 1, game: 'ai-2048', width, height, cells, score: '0', best: '0', moves: 0
@@ -44,15 +45,66 @@ const { chromium } = require('playwright');
     await fixture(7, 3, [1, ...Array(20).fill(0)]);
     await page.locator('#board').focus(); await page.keyboard.press('ArrowRight');
     assert.equal((await saved()).moves, 1); assert.equal((await saved()).cells[6], 1);
+    await idle();
     await page.locator('#step').click();
     await page.waitForFunction(() => JSON.parse(localStorage.getItem('ai-2048-save-v1')).moves === 2);
+    await idle();
     assert.ok(requests.some(url => url.endsWith('/worker.js')));
     checks.push('Keyboard and actual Worker AI step work on a rectangular board');
+
+    await fixture(3, 2, [1, 1, 2, 0, 0, 0]);
+    const beforeRects = await page.locator('.row > .tile').evaluateAll(tiles => tiles.map(tile => {
+      const rect = tile.getBoundingClientRect(); return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    }));
+    await page.locator('[data-direction="left"]').click();
+    assert.equal(await page.locator('#board').getAttribute('data-motion'), 'sliding');
+    const moving = page.locator('.moving-tile');
+    assert.equal(await moving.count(), 3);
+    assert.deepEqual(await moving.evaluateAll(tiles => tiles.map(tile => [Number(tile.dataset.from), Number(tile.dataset.to), tile.textContent])),
+      [[0, 0, '2'], [1, 0, '2'], [2, 1, '4']]);
+    const positions = await moving.evaluateAll(tiles => tiles.map(tile => {
+      const animation = tile.getAnimations()[0]; animation.pause(); animation.currentTime = 0;
+      const rect = tile.getBoundingClientRect(); return { x: rect.x, y: rect.y };
+    }));
+    positions.forEach((position, index) => {
+      assert.ok(Math.abs(position.x - beforeRects[index].x) < 1);
+      assert.ok(Math.abs(position.y - beforeRects[index].y) < 1);
+    });
+    await moving.evaluateAll(tiles => tiles.forEach(tile => {
+      const animation = tile.getAnimations()[0]; animation.currentTime = animation.effect.getTiming().duration / 2;
+    }));
+    await page.locator('#board').screenshot({ path: join(output, 'moving-3x2.png') });
+    const atEnd = await moving.evaluateAll(tiles => tiles.map(tile => {
+      const animation = tile.getAnimations()[0]; animation.currentTime = animation.effect.getTiming().duration;
+      const rect = tile.getBoundingClientRect(); return { to: Number(tile.dataset.to), x: rect.x, y: rect.y };
+    }));
+    atEnd.forEach(position => {
+      assert.ok(Math.abs(position.x - beforeRects[position.to].x) < 1);
+      assert.ok(Math.abs(position.y - beforeRects[position.to].y) < 1);
+    });
+    await moving.evaluateAll(tiles => tiles.forEach(tile => tile.getAnimations()[0].finish()));
+    await page.waitForFunction(() => document.querySelector('#board').dataset.motion === 'settling');
+    assert.equal(await page.locator('.row > .tile').nth(0).textContent(), '4');
+    assert.equal(await page.locator('.row > .tile.filled').count(), 3);
+    await idle();
+    assert.equal((await saved()).score, '4');
+    checks.push('Each moving tile starts at its measured old position and ends at its traced destination; merging and spawn reveal follow sliding');
+
+    await fixture(7, 3, [1, ...Array(20).fill(0)]);
+    await page.evaluate(() => {
+      const originalSetItem = Storage.prototype.setItem;
+      window.overlappingMoves = 0;
+      Storage.prototype.setItem = function (key, value) {
+        if (key === 'ai-2048-save-v1' && document.querySelector('#board').dataset.motion) window.overlappingMoves++;
+        return originalSetItem.call(this, key, value);
+      };
+    });
 
     await page.locator('#speed').selectOption('70'); await page.locator('#auto').click();
     await page.waitForFunction(() => JSON.parse(localStorage.getItem('ai-2048-save-v1')).moves >= 5);
     await page.locator('#auto').click();
-    const paused = await saved(); await page.waitForTimeout(200); assert.deepEqual(await saved(), paused);
+    const paused = await saved(); await idle(); await page.waitForTimeout(200); assert.deepEqual(await saved(), paused);
+    assert.equal(await page.evaluate(() => window.overlappingMoves), 0);
     await page.reload(); assert.deepEqual(await saved(), paused);
     assert.equal(await page.locator('#auto').getAttribute('aria-pressed'), 'false');
     checks.push('Auto play pauses without an extra move, and reload restores the saved board while paused');
@@ -69,6 +121,16 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(400);
     assert.equal((await saved()).moves, 0); assert.equal((await saved()).height, 20);
     checks.push('Resizing during a pending AI task cancels its result');
+
+    await fixture(3, 2, [1, 1, 0, 0, 0, 0]);
+    await page.locator('[data-direction="left"]').click();
+    await page.locator('#width').fill('2'); await page.locator('#height').fill('3');
+    await page.getByRole('button', { name: '应用尺寸并开始新局' }).click();
+    await page.waitForTimeout(400);
+    assert.equal((await saved()).width, 2); assert.equal((await saved()).height, 3);
+    assert.equal((await saved()).moves, 0); assert.equal(await page.locator('.moving-tile').count(), 0);
+    assert.equal(await page.locator('#board').getAttribute('data-motion'), null);
+    checks.push('Starting a new board during animation removes old layers and prevents old moves from writing back');
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('#width').fill('20'); await page.locator('#height').fill('2');
@@ -116,7 +178,15 @@ const { chromium } = require('playwright');
     await fixture(2, 2, [1, 1, 0, 0]);
     await page.locator('#step').click();
     await page.waitForFunction(() => JSON.parse(localStorage.getItem('ai-2048-save-v1')).moves === 1);
+    await idle();
     checks.push('Bounded fallback AI works when Worker is unavailable');
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await fixture(3, 2, [1, 1, 0, 0, 0, 0]);
+    await page.locator('[data-direction="left"]').click();
+    assert.equal((await saved()).score, '4');
+    assert.equal(await page.locator('#board').getAttribute('data-motion'), null);
+    checks.push('Reduced-motion preference skips visual movement while preserving the move and score');
     assert.deepEqual(errors, []);
     assert.ok(requests.every(url => url.startsWith('http://127.0.0.1:')));
     const result = { browser: browser.version(), checks, errors, externalRequests: 0,

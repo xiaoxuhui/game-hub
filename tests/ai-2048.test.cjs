@@ -27,6 +27,20 @@ test('equal tiles merge once per move, from the moving edge', () => {
   assert.equal(core.slide(b, 'left').gained, 16n);
 });
 
+test('movement traces retain every original position, including both tiles in a merge', () => {
+  const b = board(3, 2, [1, 1, 2, 1, 2, 0]);
+  const plan = core.slide(b, 'left', true);
+  assert.deepEqual(plan.motions, [
+    { from: 0, to: 0, value: 1 }, { from: 1, to: 0, value: 1 },
+    { from: 2, to: 1, value: 2 }, { from: 3, to: 3, value: 1 }, { from: 4, to: 4, value: 2 }
+  ]);
+  assert.deepEqual(plan.merges, [0]);
+  const down = core.slide(b, 'down', true);
+  assert.deepEqual(down.motions.slice(0, 2), [{ from: 3, to: 3, value: 1 }, { from: 0, to: 3, value: 1 }]);
+  assert.deepEqual(down.merges, [3]);
+  assert.equal('motions' in core.slide(b, 'left'), false);
+});
+
 test('invalid moves do not spawn; valid moves spawn exactly one 2 or 4', () => {
   const b = state(board(3, 2, [1, 0, 0, 0, 0, 0]));
   assert.equal(core.move(b, 'left', () => { throw Error('must not use randomness'); }), b);
@@ -74,6 +88,16 @@ test('all board sizes preserve mass while sliding and start with two tiles', () 
       const result = core.slide(b, direction);
       assert.equal(result.cells.length, width * height);
       assert.equal(mass(result.cells), mass(b.cells), `${width}x${height} ${direction}`);
+      const plan = core.slide(b, direction, true), destinations = Array(width * height).fill(0n);
+      assert.deepEqual(plan.cells, result.cells);
+      assert.deepEqual(plan.motions.map(tile => tile.from).sort((a, b) => a - b), b.cells.flatMap((v, i) => v ? [i] : []));
+      for (const tile of plan.motions) {
+        assert.equal(tile.value, b.cells[tile.from]);
+        if (direction === 'left' || direction === 'right') assert.equal(Math.floor(tile.from / width), Math.floor(tile.to / width));
+        else assert.equal(tile.from % width, tile.to % width);
+        destinations[tile.to] += 1n << BigInt(tile.value);
+      }
+      assert.deepEqual(destinations, result.cells.map(v => v ? 1n << BigInt(v) : 0n));
     }
   }
 });
